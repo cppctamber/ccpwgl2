@@ -8,40 +8,49 @@ import { Tw2GpuParticleEmitShader } from "./particleEmit";
  * The GPU particle simulation step.
  *
  * One fullscreen pass over the state textures: every texel is a particle, it is
- * read from the front pair, advanced by one frame, and written to the back pair.
+ * read from the front side, advanced by one frame, and written to the back.
  * {@link Tw2GpuParticleState} owns the textures and the swap.
  *
  * ## GLSL ES 3.00, and it has to be
  *
  * Two reasons, both hard limits of ES 1.00:
  *
- *   - **Two outputs.** Position and velocity are produced from the same reads,
- *     so writing them in one pass halves the work. ES 1.00 has `gl_FragData`
- *     only under an extension; ES 3.00 declares them natively.
- *   - **Dynamic indexing**, once the emitter parameters move into a texture and
- *     a particle looks its own emitter up.
+ *   - **Three outputs.** Position, velocity and attributes are produced from
+ *     the same reads, so writing them in one pass is a third of the work. ES
+ *     1.00 has `gl_FragData` only under an extension; ES 3.00 declares them
+ *     natively.
+ *   - **Dynamic indexing**, which the emitter parameter lookup needs.
  *
  * The shipped legacy shader hit exactly these two walls and could not compile.
  * That is not a reason to avoid its design - it is the reason to write the
  * design out in a language that permits it.
+ *
+ * ## Every particle carries its emitter
+ *
+ * One pass covers the whole system, and particles from different emitters sit
+ * side by side in the textures. So drag, gravity, turbulence and the attractor
+ * cannot be constants: each particle reads its OWN emitter's row out of the
+ * parameter table. {@link Tw2GpuParticleParams} owns that layout and is the
+ * other half of this contract.
+ *
+ * What stays a constant is the frame's `dt` and the gravity AXIS. The first is
+ * the same for everyone by definition; the second is a world convention rather
+ * than a property of an emitter - Carbon stores gravity as one scalar and
+ * applies it downward, and keeping the direction out here states that
+ * convention once instead of baking it into the arithmetic.
  *
  * ## The state layout
  *
  * ```
  *   attachment 0    xyz position    w age
  *   attachment 1    xyz velocity    w lifetime
+ *   attachment 2    x emitter row   y birth seed
  * ```
  *
  * `age < 0` means DEAD, and a dead particle is passed through untouched rather
  * than skipped: every texel must be written every frame, because the pass reads
- * the other side of the ping-pong and anything not written is last frame's
- * value from two frames ago.
- *
- * DIVERGENCE, and a temporary one. The legacy shader packs an emitter index and
- * a phase into the velocity's `w` and looks the lifetime up in an emitter
- * texture. This carries the lifetime there directly, so a single set of emitter
- * parameters can be supplied as constants and the simulation can be verified
- * before the emitter texture exists. The packing goes back when it does.
+ * the other side of the ping-pong and anything not written is that side's value
+ * from two frames ago.
  */
 
 /**
@@ -60,32 +69,31 @@ function constant(name, components, value)
 }
 
 /**
- * Seconds since the last step, in `.x`.
+ * `(delta time, time, unused, unused)`.
  *
- * Clamped by the CALLER, not here: the emitter already bills a long frame at
- * 1/15s and the simulation has to agree with it, so the clamp lives in one
- * place rather than in both.
+ * `dt` is clamped by the CALLER, not here: the emitter already bills a long
+ * frame at 1/15s and the simulation has to agree with it, so the clamp lives in
+ * one place rather than in both. `time` drives turbulence, which has to move or
+ * it is a static distortion field rather than a flow.
  * @type {Object}
  */
 const ParticleTime = constant(
     "ParticleTime",
-    [ "delta time", "unused", "unused", "unused" ],
+    [ "delta time", "time", "unused", "unused" ],
     [ 0, 0, 0, 0 ]
 );
 
 /**
- * `(gravity.xyz, drag)`.
+ * `(gravity axis xyz, parameter table rows)`.
  *
- * Gravity is an acceleration rather than Carbon's single scalar. Carbon stores
- * one float and the legacy shader applies it to Y alone; a vector costs nothing
- * here and does not bake an axis convention into the shader, which is the kind
- * of assumption that is expensive to find later.
+ * The rows are here because the lookup has to turn a row number into a texture
+ * coordinate, and only the caller knows how tall its table is.
  * @type {Object}
  */
-const ParticleForces = constant(
-    "ParticleForces",
-    [ "gravity x", "gravity y", "gravity z", "drag" ],
-    [ 0, 0, 0, 0 ]
+const ParticleWorld = constant(
+    "ParticleWorld",
+    [ "gravity x", "gravity y", "gravity z", "table rows" ],
+    [ 0, -1, 0, 64 ]
 );
 
 /** The front position texture: xyz position, w age. @type {Object} */
@@ -98,13 +106,20 @@ const ParticleVelocityMap = createTex("ParticleVelocityMap", TEX_2D, {
     ui: { components: [ "x", "y", "z", "lifetime" ] }
 });
 
+/** The front attribute texture: x emitter row, y birth seed. @type {Object} */
+const ParticleAttributeMap = createTex("ParticleAttributeMap", TEX_2D, {
+    ui: { components: [ "emitter row", "birth seed", "unused", "unused" ] }
+});
+
+/** The per-emitter parameter table. @type {Object} */
+const ParticleParamsMap = createTex("ParticleParamsMap", TEX_2D, {
+    ui: { components: [ "r", "g", "b", "a" ] }
+});
+
 
 // Positional binding: this order IS the s# order and the cb7 index order.
-const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap ];
-const CONSTANTS = [ ParticleTime, ParticleForces ];
-
-const CB_TIME = "cb7[0]";
-const CB_FORCES = "cb7[1]";
+const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap ];
+const CONSTANTS = [ ParticleTime, ParticleWorld ];
 
 
 const vs = `#version 300 es
@@ -133,6 +148,8 @@ precision highp float;
 
 uniform sampler2D s0;            // ParticlePositionMap
 uniform sampler2D s1;            // ParticleVelocityMap
+uniform sampler2D s2;            // ParticleAttributeMap
+uniform sampler2D s3;            // ParticleParamsMap
 
 uniform vec4 cb7[${CONSTANTS.length}];
 
@@ -140,15 +157,55 @@ in vec2 particleUv;
 
 layout(location = 0) out vec4 outPosition;
 layout(location = 1) out vec4 outVelocity;
+layout(location = 2) out vec4 outAttributes;
+
+// One texel out of the per-emitter table. Eight texels per emitter, one emitter
+// per row - the layout is owned by Tw2GpuParticleParams.Pack and the two must
+// be edited together. Texel CENTRES, because the table is NEAREST and sampling
+// at an edge is a coin flip between two emitters.
+vec4 emitterParam(float row, float texel, float rows)
+{
+    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));
+}
+
+// A stand-in turbulence field, and NOT Carbon's.
+//
+// Carbon samples a noise volume, which has not been ported. This is a sum of
+// two sine octaves at frequencies that do not divide each other: cheap, and it
+// reads as drift rather than as a grid. Each component is driven by the OTHER
+// two axes, which makes the field divergence free - so it swirls particles
+// around instead of pumping them into and out of the same points.
+vec3 turbulence(vec3 p, float frequency, float time)
+{
+    vec3 q = p * frequency + time * 0.3;
+
+    vec3 a = vec3(
+        sin(q.y) + cos(q.z),
+        sin(q.z) + cos(q.x),
+        sin(q.x) + cos(q.y)
+    );
+
+    vec3 r = q * 2.17 + 11.3;
+
+    vec3 b = vec3(
+        sin(r.y) + cos(r.z),
+        sin(r.z) + cos(r.x),
+        sin(r.x) + cos(r.y)
+    );
+
+    return a + b * 0.5;
+}
 
 void main()
 {
     vec4 p = texture(s0, particleUv);
     vec4 v = texture(s1, particleUv);
+    vec4 a = texture(s2, particleUv);
 
-    float dt = ${CB_TIME}.x;
-    vec3 gravity = ${CB_FORCES}.xyz;
-    float drag = ${CB_FORCES}.w;
+    float dt = cb7[0].x;
+    float time = cb7[0].y;
+    vec3 gravityAxis = cb7[1].xyz;
+    float rows = cb7[1].w;
 
     float age = p.w;
     float lifetime = v.w;
@@ -161,6 +218,7 @@ void main()
     {
         outPosition = p;
         outVelocity = v;
+        outAttributes = a;
         return;
     }
 
@@ -173,13 +231,45 @@ void main()
         // cleared.
         outPosition = vec4(p.xyz, -1.0);
         outVelocity = v;
+        outAttributes = a;
         return;
     }
+
+    // ---- this particle's own emitter ----------------------------------------
+    float row = a.x;
+
+    vec4 physics = emitterParam(row, 5.0, rows);     // sizeVariance drag gravity textureIndex
+    vec4 fields = emitterParam(row, 6.0, rows);      // turbulence amp/freq, attractor strength
+    vec4 attractor = emitterParam(row, 7.0, rows);   // attractor position
+
+    float drag = physics.y;
+    float gravity = physics.z;
+
+    float turbulenceAmplitude = fields.x;
+    float turbulenceFrequency = fields.y;
+    float attractorStrength = fields.z;
 
     // Drag opposes motion proportionally, so it is a force on the velocity
     // rather than a scale of it - which keeps it summing with the others
     // instead of ordering against them.
-    vec3 accel = gravity - v.xyz * drag;
+    vec3 accel = gravityAxis * gravity - v.xyz * drag;
+
+    if (turbulenceAmplitude != 0.0)
+    {
+        accel += turbulence(p.xyz, turbulenceFrequency, time) * turbulenceAmplitude;
+    }
+
+    if (attractorStrength != 0.0)
+    {
+        vec3 toAttractor = attractor.xyz - p.xyz;
+
+        // Guarded, because a particle sitting exactly on the attractor gives a
+        // zero length vector and normalize would hand back NaN - which then
+        // spreads into the position and never leaves, since every later step
+        // reads it back.
+        float distance = length(toAttractor);
+        if (distance > 1e-4) accel += (toAttractor / distance) * attractorStrength;
+    }
 
     // Semi-implicit Euler: velocity first, then position from the NEW velocity.
     // Explicit Euler with the old velocity loses energy on every step, which
@@ -189,6 +279,7 @@ void main()
 
     outPosition = vec4(position, aged);
     outVelocity = vec4(velocity, lifetime);
+    outAttributes = a;
 }
 `;
 
@@ -259,9 +350,11 @@ export class Tw2GpuParticleShaders
      */
     static Inputs = {
         Time: ParticleTime,
-        Forces: ParticleForces,
+        World: ParticleWorld,
         PositionMap: ParticlePositionMap,
-        VelocityMap: ParticleVelocityMap
+        VelocityMap: ParticleVelocityMap,
+        AttributeMap: ParticleAttributeMap,
+        ParamsMap: ParticleParamsMap
     };
 
 }

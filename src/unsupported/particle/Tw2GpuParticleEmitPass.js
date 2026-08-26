@@ -1,6 +1,7 @@
 import { tw2 } from "global";
 import { Tw2Effect } from "../../core/mesh/Tw2Effect";
 import { Tw2EffectRes } from "../../core/resource/Tw2EffectRes";
+import { Tw2GpuParticleParams } from "./Tw2GpuParticleParams";
 
 
 /**
@@ -45,6 +46,15 @@ export class Tw2GpuParticleEmitPass
     effect = null;
 
     /**
+     * The per-emitter parameter table every particle this pass spawns will
+     * refer to. Owned here because emission is what decides which row a
+     * particle gets, and a row handed out by one pass and written by another
+     * would be two halves of one decision.
+     * @type {Tw2GpuParticleParams}
+     */
+    params = new Tw2GpuParticleParams();
+
+    /**
      * The next slot the ring will hand out.
      * @type {Number}
      */
@@ -59,12 +69,15 @@ export class Tw2GpuParticleEmitPass
     emitted = 0;
 
     /**
-     * Builds the effect. Safe to call more than once.
+     * Builds the effect and the parameter table. Safe to call more than once.
+     * @param {Number} [emitters=64] - how many distinct emitters the table holds
      * @returns {Tw2GpuParticleEmitPass}
      */
-    Create()
+    Create(emitters = 64)
     {
         if (this.effect) return this;
+
+        this.params.Create(emitters);
 
         const name = Tw2GpuParticleEmitPass.SHADER;
         const effectFilePath = `manual:/${name}.sm_json`;
@@ -90,7 +103,7 @@ export class Tw2GpuParticleEmitPass
      */
     IsGood()
     {
-        return !!(this.effect && this.effect.IsGood());
+        return !!(this.effect && this.effect.IsGood() && this.params.IsGood());
     }
 
     /**
@@ -137,6 +150,13 @@ export class Tw2GpuParticleEmitPass
         const count = Math.min(Math.floor(emitter.count), state.capacity);
         if (count < 1) return 0;
 
+        // The row this emitter's parameters live in. Every particle in the run
+        // records it, and both the simulation and the draw look their values up
+        // through it - so a full table means this batch cannot be expressed and
+        // must not be emitted.
+        const row = this.params.GetRow(request);
+        if (row < 0) return 0;
+
         const
             effect = this.effect,
             params = request.params || {},
@@ -158,6 +178,7 @@ export class Tw2GpuParticleEmitPass
         Tw2GpuParticleEmitPass.SetParameter(effect, "EmitVelocity", [ velocity[0], velocity[1], velocity[2], 0 ]);
 
         Tw2GpuParticleEmitPass.SetParameter(effect, "EmitLife", [ params.minLifeTime || 1, params.maxLifeTime || 1, 0, 0 ]);
+        Tw2GpuParticleEmitPass.SetParameter(effect, "EmitRow", [ row, 0, 0, 0 ]);
 
         const
             device = tw2.device,
@@ -195,6 +216,7 @@ export class Tw2GpuParticleEmitPass
     Destroy()
     {
         this.effect = null;
+        this.params.Destroy();
         return this;
     }
 

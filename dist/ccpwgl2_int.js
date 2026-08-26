@@ -251558,10 +251558,22 @@
 	 *
 	 * ```
 	 *   position texture   xyz = position   w = age
-	 *   velocity texture   xyz = velocity   w = packed lifetime + emitter index
+	 *   velocity texture   xyz = velocity   w = lifetime
+	 *   attribute texture   x = emitter row  y = birth seed
 	 * ```
 	 *
-	 * ## Two sides, two attachments each
+	 * The third texture is a DIVERGENCE from the shipped precursor, which packs the
+	 * emitter index and a phase into the velocity's `w` alongside the lifetime. The
+	 * packing buys bandwidth and costs precision: a float has 24 bits of mantissa,
+	 * so an index and a fraction sharing one leaves the fraction with whatever the
+	 * index does not use. A separate channel keeps both exact, and the emitter row
+	 * is what every parameter lookup depends on.
+	 *
+	 * The birth seed is a per-particle random drawn at emission. It cannot be a
+	 * hash of the slot, because a slot is reused: every particle born there would
+	 * be identical to the last one.
+	 *
+	 * ## Two sides, three attachments each
 	 *
 	 * A shader cannot read and write the same texture in one pass, so the state
 	 * needs a front and a back, and {@link Swap} exchanges them once the frame's
@@ -251569,11 +251581,11 @@
 	 * frame for post-processing; what is new here is that the state has to survive
 	 * ACROSS frames, so these targets are owned and never recycled.
 	 *
-	 * Each side is a {@link Tw2MultiRenderTarget} with TWO attachments, so one pass
-	 * writes both position and velocity - which is what the shipped shaders do, and
-	 * half the passes of writing them separately. Attachment 0 is position,
-	 * attachment 1 is velocity, and a shader writing this must declare both
-	 * outputs.
+	 * Each side is a {@link Tw2MultiRenderTarget} with THREE attachments, so one
+	 * pass writes the whole of a particle's state - which is what the shipped
+	 * shaders do, and a third of the passes of writing them separately. A shader
+	 * writing this must declare all three outputs: anything it leaves out is
+	 * whatever that side held two frames ago, not what it held last frame.
 	 *
 	 * ## Float, and NEAREST
 	 *
@@ -251671,6 +251683,7 @@
 	        // a single clear colour would have to lie about one of them.
 	        gl.clearBufferfv(gl.COLOR, 0, [0, 0, 0, -1]);
 	        gl.clearBufferfv(gl.COLOR, 1, [0, 0, 0, 0]);
+	        gl.clearBufferfv(gl.COLOR, 2, [0, 0, 0, 0]);
 	      });
 	    }
 	    return this;
@@ -251691,7 +251704,7 @@
 	   *
 	   * The two textures rather than the target, because a reader binds textures
 	   * and only a writer binds a framebuffer.
-	   * @returns {{position: ?Tw2TextureRes, velocity: ?Tw2TextureRes}}
+	   * @returns {{position: ?Tw2TextureRes, velocity: ?Tw2TextureRes, attributes: ?Tw2TextureRes}}
 	   */
 	  GetFront() {
 	    var side = this._sides[this._front];
@@ -251701,7 +251714,8 @@
 	    };
 	    return {
 	      position: side.GetTexture(0),
-	      velocity: side.GetTexture(1)
+	      velocity: side.GetTexture(1),
+	      attributes: side.GetTexture(2)
 	    };
 	  }
 
@@ -251784,7 +251798,7 @@
 	    // physics bug rather than a sampler one - and a float texture with
 	    // LINEAR filtering can be rejected outright on a device without
 	    // OES_texture_float_linear.
-	    return new Tw2MultiRenderTarget("particleState".concat(index), this.width, this.height, 2, "rgba32f", "nearest");
+	    return new Tw2MultiRenderTarget("particleState".concat(index), this.width, this.height, 3, "rgba32f", "nearest");
 	  }
 	}, _descriptor$b = _applyDecoratedDescriptor(_class2$c.prototype, "width", [_dec2$c], {
 	  configurable: true,
@@ -252183,6 +252197,23 @@
 	   * @private
 	   */
 	  _SpawnBatch(args, positionStart, positionEnd, velocityStart, velocityEnd, carryOverCount, deltaTime, persistDirection) {
+	    // The identity is refreshed HERE, on every batch, because this is the
+	    // one place every spawn path passes through - the continuous schedule,
+	    // a one-off burst and a swept segment all end up here.
+	    //
+	    // Nothing else called UpdateHash or GenerateID, which left every shared
+	    // emitter reporting hash 0 and id 0. To the system that made them all
+	    // the SAME emitter: one row of parameters shared by every emitter in
+	    // the scene, so the first one to register decided the colour, size and
+	    // drag of all of them. It is invisible until a second emitter exists.
+	    //
+	    // Recomputed rather than cached, deliberately. A shared emitter is not
+	    // allowed to animate these parameters - that is what makes it shared -
+	    // and recomputing means a violation shows up as a new row rather than
+	    // as silently stale values. Thirty-three floats of FNV is nothing
+	    // against a batch of particles.
+	    this.UpdateHash();
+	    this.GenerateID();
 	    var g = Tr2GpuSharedEmitter.global,
 	      emitter = this.GetEmitterData(g.emitter),
 	      move = vec3$3.subtract(g.vec3_4, positionEnd, positionStart),
@@ -284718,11 +284749,16 @@
 	 */
 	var ParticleDrawData = constant$2("ParticleDrawData", ["state width", "state height", "size", "unused"], [512, 1, 1, 0]);
 
-	/** Colour at birth, faded to `ParticleColorEnd` over the particle's life. @type {Object} */
-	var ParticleColorStart = constant$2("ParticleColorStart", ["r", "g", "b", "a"], [1, 1, 1, 1]);
-
-	/** @type {Object} */
-	var ParticleColorEnd = constant$2("ParticleColorEnd", ["r", "g", "b", "a"], [1, 1, 1, 0]);
+	/**
+	 * `(table rows, unused, unused, unused)`.
+	 *
+	 * Colours and sizes are NOT constants: one draw covers the whole system, and
+	 * particles from different emitters sit side by side. Each reads its own
+	 * emitter's row out of the parameter table, which is why only the table's
+	 * height is needed here.
+	 * @type {Object}
+	 */
+	var ParticleTable = constant$2("ParticleTable", ["table rows", "unused", "unused", "unused"], [64, 0, 0, 0]);
 
 	/** The position state: xyz position, w age. @type {Object} */
 	var ParticlePositionMap$1 = createTex("ParticlePositionMap", TEX_2D, {
@@ -284737,10 +284773,24 @@
 	    components: ["x", "y", "z", "lifetime"]
 	  }
 	});
-	var TEXTURES$1 = [ParticlePositionMap$1, ParticleVelocityMap$1];
-	var CONSTANTS$2 = [ParticleDrawData, ParticleColorStart, ParticleColorEnd];
-	var vs$2 = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\n\nuniform vec4 cb1[24];            // per frame; rows 4-7 are the view-projection\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nout vec2 cornerUv;\nout float lifeFraction;\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n    float size = cb7[0].z;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing. Not scaled by w, so the perspective divide shrinks\n    // distant particles - which is what makes the field read as three\n    // dimensional rather than as a flat spray of equal dots.\n    clip.xy += offset * size;\n\n    gl_Position = clip;\n}\n");
-	var ps$2 = "#version 300 es\n\nprecision highp float;\n\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\n\nout vec4 outColor;\n\nvoid main()\n{\n    // A round sprite from the corner coordinates, so a particle is a dot rather\n    // than a visible square - and no texture is needed to see whether the\n    // simulation is working.\n    float r = length(cornerUv);\n    if (r > 1.0) discard;\n\n    float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n\n    vec4 start = cb7[1];\n    vec4 end = cb7[2];\n\n    outColor = mix(start, end, lifeFraction) * falloff;\n}\n");
+
+	/** The attribute state: x emitter row, y birth seed. @type {Object} */
+	var ParticleAttributeMap$1 = createTex("ParticleAttributeMap", TEX_2D, {
+	  ui: {
+	    components: ["emitter row", "birth seed", "unused", "unused"]
+	  }
+	});
+
+	/** The per-emitter parameter table. @type {Object} */
+	var ParticleParamsMap$1 = createTex("ParticleParamsMap", TEX_2D, {
+	  ui: {
+	    components: ["r", "g", "b", "a"]
+	  }
+	});
+	var TEXTURES$1 = [ParticlePositionMap$1, ParticleVelocityMap$1, ParticleAttributeMap$1, ParticleParamsMap$1];
+	var CONSTANTS$2 = [ParticleDrawData, ParticleTable];
+	var vs$2 = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb1[24];            // per frame; rows 4-7 are the view-projection\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nout vec2 cornerUv;\nout float lifeFraction;\nflat out float emitterRow;\n\n// See the note in particleUpdate: this layout belongs to\n// Tw2GpuParticleParams.Pack and the two must be edited together.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n    vec4 attributes = texture(s2, uv);\n\n    emitterRow = attributes.x;\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // ---- size, from this particle's own emitter -----------------------------\n    float rows = cb7[1].x;\n\n    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint\n    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex\n\n    // Sizes are three keys over the particle's life, not one number: EVE\n    // particles grow as they are born and shrink as they die, and a single\n    // size makes a puff look like a swarm of identical dots.\n    float size = lifeFraction < 0.5\n        ? mix(sizeRow.x, sizeRow.y, lifeFraction * 2.0)\n        : mix(sizeRow.y, sizeRow.z, lifeFraction * 2.0 - 1.0);\n\n    // The birth seed rather than a hash of the slot: a slot is reused, and\n    // every particle born in it would otherwise be exactly the same size.\n    size *= 1.0 + (attributes.y * 2.0 - 1.0) * physics.x;\n\n    size *= cb7[0].z;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing. Not scaled by w, so the perspective divide shrinks\n    // distant particles - which is what makes the field read as three\n    // dimensional rather than as a flat spray of equal dots.\n    clip.xy += offset * size;\n\n    gl_Position = clip;\n}\n");
+	var ps$2 = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    // A round sprite from the corner coordinates, so a particle is a dot rather\n    // than a visible square - and no texture is needed to see whether the\n    // simulation is working.\n    float r = length(cornerUv);\n    if (r > 1.0) discard;\n\n    float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n\n    float rows = cb7[1].x;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    outColor = color * falloff;\n}\n");
 	var definition$2 = {
 	  name: "tw2particledraw",
 	  description: "GPU particle draw",
@@ -284783,10 +284833,11 @@
 	/** @type {Object} */
 	Tw2GpuParticleDrawShader.Inputs = {
 	  DrawData: ParticleDrawData,
-	  ColorStart: ParticleColorStart,
-	  ColorEnd: ParticleColorEnd,
+	  Table: ParticleTable,
 	  PositionMap: ParticlePositionMap$1,
-	  VelocityMap: ParticleVelocityMap$1
+	  VelocityMap: ParticleVelocityMap$1,
+	  AttributeMap: ParticleAttributeMap$1,
+	  ParamsMap: ParticleParamsMap$1
 	};
 	/** Six vertices per particle: two triangles, no vertex buffer. @type {Number} */
 	Tw2GpuParticleDrawShader.VERTICES_PER_PARTICLE = 6;
@@ -284875,10 +284926,17 @@
 	/** `(min lifetime, max lifetime, unused, unused)`. @type {Object} */
 	var EmitLife = constant$1("EmitLife", ["min lifetime", "max lifetime", "unused", "unused"], [1, 1, 0, 0]);
 
+	/**
+	 * The row this emitter's parameters live in, written into every particle it
+	 * spawns so the simulation and the draw can look them up.
+	 * @type {Object}
+	 */
+	var EmitRow = constant$1("EmitRow", ["row", "unused", "unused", "unused"], [0, 0, 0, 0]);
+
 	// Positional binding: this order IS the cb7 index order.
-	var CONSTANTS$1 = [EmitRun, EmitSeed, EmitPositionStart, EmitPositionEnd, EmitDirection, EmitCone, EmitVelocity, EmitLife];
+	var CONSTANTS$1 = [EmitRun, EmitSeed, EmitPositionStart, EmitPositionEnd, EmitDirection, EmitCone, EmitVelocity, EmitLife, EmitRow];
 	var vs$1 = "#version 300 es\n\n// The device's full screen quad. The rasterised area is limited by the SCISSOR,\n// not by the geometry, so one quad serves every piece of a split run.\nin vec4 attr0;\nin vec2 attr1;\n\nvoid main()\n{\n    gl_Position = attr0;\n}\n";
-	var ps$1 = "#version 300 es\n\nprecision highp float;\n\nuniform vec4 cb7[".concat(CONSTANTS$1.length, "];\n\nlayout(location = 0) out vec4 outPosition;\nlayout(location = 1) out vec4 outVelocity;\n\n// A cheap integer hash. Successive seeds give independent values, which is all\n// the randomness a spawn needs and costs nothing to reproduce.\nuint hash(uint x)\n{\n    x ^= x >> 16; x *= 0x7feb352du;\n    x ^= x >> 15; x *= 0x846ca68bu;\n    x ^= x >> 16;\n    return x;\n}\n\nfloat random(uint x)\n{\n    // 24 bits into [0,1) - more than a float can distinguish anyway.\n    return float(hash(x) >> 8) * (1.0 / 16777216.0);\n}\n\nvoid main()\n{\n    float runStart = cb7[0].x;\n    float runCount = cb7[0].y;\n    float width = cb7[0].z;\n    float height = cb7[0].w;\n\n    float capacity = width * height;\n\n    // The slot's own index, from where the fragment landed. No varyings, so a\n    // split run needs no per-piece setup.\n    float index = floor(gl_FragCoord.y) * width + floor(gl_FragCoord.x);\n\n    // Where this slot sits WITHIN the batch, wrapped, so the sub-frame spread\n    // stays continuous across a run that wrapped the end of the texture.\n    float sequence = mod(index - runStart + capacity, capacity);\n\n    uint seed = uint(cb7[1].x) ^ hash(uint(index));\n\n    float r0 = random(seed);\n    float r1 = random(seed + 1u);\n    float r2 = random(seed + 2u);\n    float r3 = random(seed + 3u);\n    float r4 = random(seed + 4u);\n    float r5 = random(seed + 5u);\n\n    // ---- position: along the swept segment, then off it by the radius -------\n    float along = runCount > 1.0 ? sequence / runCount : 0.0;\n    vec3 origin = mix(cb7[2].xyz, cb7[3].xyz, along);\n\n    float radius = cb7[2].w;\n\n    // A direction on the sphere from an area preserving mapping - taking two\n    // angles uniformly instead would crowd the poles.\n    float offsetZ = r0 * 2.0 - 1.0;\n    float offsetPhi = r1 * 6.2831853;\n    float offsetR = sqrt(max(0.0, 1.0 - offsetZ * offsetZ));\n    vec3 offsetDir = vec3(offsetR * cos(offsetPhi), offsetR * sin(offsetPhi), offsetZ);\n\n    // Cube root, so particles fill the volume evenly rather than bunching at\n    // the centre.\n    vec3 position = origin + offsetDir * radius * pow(r2, 1.0 / 3.0);\n\n    // ---- direction: inside the cone -----------------------------------------\n    vec3 axis = normalize(cb7[4].xyz);\n\n    // An orthonormal basis around the axis. The branch avoids the degenerate\n    // cross product when the axis happens to BE the reference vector.\n    vec3 reference = abs(axis.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);\n    vec3 right = normalize(cross(reference, axis));\n    vec3 upward = cross(axis, right);\n\n    // Uniform in SOLID angle between the inner and outer cones, which is why\n    // the cosines are interpolated rather than the angles.\n    float cosOuter = cos(cb7[4].w);\n    float cosInner = cos(cb7[5].x);\n    float cosTheta = mix(cosInner, cosOuter, r3);\n    float sinTheta = sqrt(max(0.0, 1.0 - cosTheta * cosTheta));\n    float phi = r4 * 6.2831853;\n\n    vec3 direction = axis * cosTheta + (right * cos(phi) + upward * sin(phi)) * sinTheta;\n\n    float speed = mix(cb7[5].y, cb7[5].z, r5);\n\n    // The emitter's velocity arrives already scaled by inheritVelocity - that\n    // is a property of the emitter, not of the particle.\n    vec3 velocity = direction * speed + cb7[6].xyz;\n\n    float lifetime = mix(cb7[7].x, cb7[7].y, random(seed + 6u));\n\n    // Born at age 0, NOT at a fraction of the frame. The segment already\n    // spreads a batch through space, which is the part that shows; spreading it\n    // through time as well would need the step to integrate each particle by a\n    // different amount.\n    outPosition = vec4(position, 0.0);\n    outVelocity = vec4(velocity, lifetime);\n}\n");
+	var ps$1 = "#version 300 es\n\nprecision highp float;\n\nuniform vec4 cb7[".concat(CONSTANTS$1.length, "];\n\nlayout(location = 0) out vec4 outPosition;\nlayout(location = 1) out vec4 outVelocity;\nlayout(location = 2) out vec4 outAttributes;\n\n// A cheap integer hash. Successive seeds give independent values, which is all\n// the randomness a spawn needs and costs nothing to reproduce.\nuint hash(uint x)\n{\n    x ^= x >> 16; x *= 0x7feb352du;\n    x ^= x >> 15; x *= 0x846ca68bu;\n    x ^= x >> 16;\n    return x;\n}\n\nfloat random(uint x)\n{\n    // 24 bits into [0,1) - more than a float can distinguish anyway.\n    return float(hash(x) >> 8) * (1.0 / 16777216.0);\n}\n\nvoid main()\n{\n    float runStart = cb7[0].x;\n    float runCount = cb7[0].y;\n    float width = cb7[0].z;\n    float height = cb7[0].w;\n\n    float capacity = width * height;\n\n    // The slot's own index, from where the fragment landed. No varyings, so a\n    // split run needs no per-piece setup.\n    float index = floor(gl_FragCoord.y) * width + floor(gl_FragCoord.x);\n\n    // Where this slot sits WITHIN the batch, wrapped, so the sub-frame spread\n    // stays continuous across a run that wrapped the end of the texture.\n    float sequence = mod(index - runStart + capacity, capacity);\n\n    uint seed = uint(cb7[1].x) ^ hash(uint(index));\n\n    float r0 = random(seed);\n    float r1 = random(seed + 1u);\n    float r2 = random(seed + 2u);\n    float r3 = random(seed + 3u);\n    float r4 = random(seed + 4u);\n    float r5 = random(seed + 5u);\n\n    // ---- position: along the swept segment, then off it by the radius -------\n    float along = runCount > 1.0 ? sequence / runCount : 0.0;\n    vec3 origin = mix(cb7[2].xyz, cb7[3].xyz, along);\n\n    float radius = cb7[2].w;\n\n    // A direction on the sphere from an area preserving mapping - taking two\n    // angles uniformly instead would crowd the poles.\n    float offsetZ = r0 * 2.0 - 1.0;\n    float offsetPhi = r1 * 6.2831853;\n    float offsetR = sqrt(max(0.0, 1.0 - offsetZ * offsetZ));\n    vec3 offsetDir = vec3(offsetR * cos(offsetPhi), offsetR * sin(offsetPhi), offsetZ);\n\n    // Cube root, so particles fill the volume evenly rather than bunching at\n    // the centre.\n    vec3 position = origin + offsetDir * radius * pow(r2, 1.0 / 3.0);\n\n    // ---- direction: inside the cone -----------------------------------------\n    vec3 axis = normalize(cb7[4].xyz);\n\n    // An orthonormal basis around the axis. The branch avoids the degenerate\n    // cross product when the axis happens to BE the reference vector.\n    vec3 reference = abs(axis.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);\n    vec3 right = normalize(cross(reference, axis));\n    vec3 upward = cross(axis, right);\n\n    // Uniform in SOLID angle between the inner and outer cones, which is why\n    // the cosines are interpolated rather than the angles.\n    float cosOuter = cos(cb7[4].w);\n    float cosInner = cos(cb7[5].x);\n    float cosTheta = mix(cosInner, cosOuter, r3);\n    float sinTheta = sqrt(max(0.0, 1.0 - cosTheta * cosTheta));\n    float phi = r4 * 6.2831853;\n\n    vec3 direction = axis * cosTheta + (right * cos(phi) + upward * sin(phi)) * sinTheta;\n\n    float speed = mix(cb7[5].y, cb7[5].z, r5);\n\n    // The emitter's velocity arrives already scaled by inheritVelocity - that\n    // is a property of the emitter, not of the particle.\n    vec3 velocity = direction * speed + cb7[6].xyz;\n\n    float lifetime = mix(cb7[7].x, cb7[7].y, random(seed + 6u));\n\n    // Born at age 0, NOT at a fraction of the frame. The segment already\n    // spreads a batch through space, which is the part that shows; spreading it\n    // through time as well would need the step to integrate each particle by a\n    // different amount.\n    outPosition = vec4(position, 0.0);\n    outVelocity = vec4(velocity, lifetime);\n\n    // The emitter row, and a birth seed. The seed has to be STORED rather than\n    // recomputed from the slot: a slot is reused, so every particle born there\n    // would otherwise be identical to the one before it.\n    outAttributes = vec4(cb7[8].x, random(seed + 7u), 0.0, 0.0);\n}\n");
 	var definition$1 = {
 	  name: "tw2particleemit",
 	  description: "GPU particle emission",
@@ -284922,6 +284980,7 @@
 	/** @type {Object} */
 	Tw2GpuParticleEmitShader.Inputs = {
 	  Run: EmitRun,
+	  Row: EmitRow,
 	  Seed: EmitSeed,
 	  PositionStart: EmitPositionStart,
 	  PositionEnd: EmitPositionEnd,
@@ -284935,40 +284994,49 @@
 	 * The GPU particle simulation step.
 	 *
 	 * One fullscreen pass over the state textures: every texel is a particle, it is
-	 * read from the front pair, advanced by one frame, and written to the back pair.
+	 * read from the front side, advanced by one frame, and written to the back.
 	 * {@link Tw2GpuParticleState} owns the textures and the swap.
 	 *
 	 * ## GLSL ES 3.00, and it has to be
 	 *
 	 * Two reasons, both hard limits of ES 1.00:
 	 *
-	 *   - **Two outputs.** Position and velocity are produced from the same reads,
-	 *     so writing them in one pass halves the work. ES 1.00 has `gl_FragData`
-	 *     only under an extension; ES 3.00 declares them natively.
-	 *   - **Dynamic indexing**, once the emitter parameters move into a texture and
-	 *     a particle looks its own emitter up.
+	 *   - **Three outputs.** Position, velocity and attributes are produced from
+	 *     the same reads, so writing them in one pass is a third of the work. ES
+	 *     1.00 has `gl_FragData` only under an extension; ES 3.00 declares them
+	 *     natively.
+	 *   - **Dynamic indexing**, which the emitter parameter lookup needs.
 	 *
 	 * The shipped legacy shader hit exactly these two walls and could not compile.
 	 * That is not a reason to avoid its design - it is the reason to write the
 	 * design out in a language that permits it.
+	 *
+	 * ## Every particle carries its emitter
+	 *
+	 * One pass covers the whole system, and particles from different emitters sit
+	 * side by side in the textures. So drag, gravity, turbulence and the attractor
+	 * cannot be constants: each particle reads its OWN emitter's row out of the
+	 * parameter table. {@link Tw2GpuParticleParams} owns that layout and is the
+	 * other half of this contract.
+	 *
+	 * What stays a constant is the frame's `dt` and the gravity AXIS. The first is
+	 * the same for everyone by definition; the second is a world convention rather
+	 * than a property of an emitter - Carbon stores gravity as one scalar and
+	 * applies it downward, and keeping the direction out here states that
+	 * convention once instead of baking it into the arithmetic.
 	 *
 	 * ## The state layout
 	 *
 	 * ```
 	 *   attachment 0    xyz position    w age
 	 *   attachment 1    xyz velocity    w lifetime
+	 *   attachment 2    x emitter row   y birth seed
 	 * ```
 	 *
 	 * `age < 0` means DEAD, and a dead particle is passed through untouched rather
 	 * than skipped: every texel must be written every frame, because the pass reads
-	 * the other side of the ping-pong and anything not written is last frame's
-	 * value from two frames ago.
-	 *
-	 * DIVERGENCE, and a temporary one. The legacy shader packs an emitter index and
-	 * a phase into the velocity's `w` and looks the lifetime up in an emitter
-	 * texture. This carries the lifetime there directly, so a single set of emitter
-	 * parameters can be supplied as constants and the simulation can be verified
-	 * before the emitter texture exists. The packing goes back when it does.
+	 * the other side of the ping-pong and anything not written is that side's value
+	 * from two frames ago.
 	 */
 
 	/**
@@ -284991,25 +285059,24 @@
 	}
 
 	/**
-	 * Seconds since the last step, in `.x`.
+	 * `(delta time, time, unused, unused)`.
 	 *
-	 * Clamped by the CALLER, not here: the emitter already bills a long frame at
-	 * 1/15s and the simulation has to agree with it, so the clamp lives in one
-	 * place rather than in both.
+	 * `dt` is clamped by the CALLER, not here: the emitter already bills a long
+	 * frame at 1/15s and the simulation has to agree with it, so the clamp lives in
+	 * one place rather than in both. `time` drives turbulence, which has to move or
+	 * it is a static distortion field rather than a flow.
 	 * @type {Object}
 	 */
-	var ParticleTime = constant("ParticleTime", ["delta time", "unused", "unused", "unused"], [0, 0, 0, 0]);
+	var ParticleTime = constant("ParticleTime", ["delta time", "time", "unused", "unused"], [0, 0, 0, 0]);
 
 	/**
-	 * `(gravity.xyz, drag)`.
+	 * `(gravity axis xyz, parameter table rows)`.
 	 *
-	 * Gravity is an acceleration rather than Carbon's single scalar. Carbon stores
-	 * one float and the legacy shader applies it to Y alone; a vector costs nothing
-	 * here and does not bake an axis convention into the shader, which is the kind
-	 * of assumption that is expensive to find later.
+	 * The rows are here because the lookup has to turn a row number into a texture
+	 * coordinate, and only the caller knows how tall its table is.
 	 * @type {Object}
 	 */
-	var ParticleForces = constant("ParticleForces", ["gravity x", "gravity y", "gravity z", "drag"], [0, 0, 0, 0]);
+	var ParticleWorld = constant("ParticleWorld", ["gravity x", "gravity y", "gravity z", "table rows"], [0, -1, 0, 64]);
 
 	/** The front position texture: xyz position, w age. @type {Object} */
 	var ParticlePositionMap = createTex("ParticlePositionMap", TEX_2D, {
@@ -285025,13 +285092,25 @@
 	  }
 	});
 
+	/** The front attribute texture: x emitter row, y birth seed. @type {Object} */
+	var ParticleAttributeMap = createTex("ParticleAttributeMap", TEX_2D, {
+	  ui: {
+	    components: ["emitter row", "birth seed", "unused", "unused"]
+	  }
+	});
+
+	/** The per-emitter parameter table. @type {Object} */
+	var ParticleParamsMap = createTex("ParticleParamsMap", TEX_2D, {
+	  ui: {
+	    components: ["r", "g", "b", "a"]
+	  }
+	});
+
 	// Positional binding: this order IS the s# order and the cb7 index order.
-	var TEXTURES = [ParticlePositionMap, ParticleVelocityMap];
-	var CONSTANTS = [ParticleTime, ParticleForces];
-	var CB_TIME = "cb7[0]";
-	var CB_FORCES = "cb7[1]";
+	var TEXTURES = [ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap];
+	var CONSTANTS = [ParticleTime, ParticleWorld];
 	var vs = "#version 300 es\n\n// The full-screen quad the device supplies: POSITION with four elements then\n// TEXCOORD with two, stride 24.\nin vec4 attr0;\nin vec2 attr1;\n\nout vec2 particleUv;\n\nvoid main()\n{\n    particleUv = attr1;\n    gl_Position = attr0;\n}\n";
-	var ps = "#version 300 es\n\nprecision highp float;\n\n// highp is not a preference here. State is positions in world space and ages in\n// seconds; at mediump a particle's position quantises visibly and its age stops\n// advancing once it is large enough relative to the step.\n\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\n\nuniform vec4 cb7[".concat(CONSTANTS.length, "];\n\nin vec2 particleUv;\n\nlayout(location = 0) out vec4 outPosition;\nlayout(location = 1) out vec4 outVelocity;\n\nvoid main()\n{\n    vec4 p = texture(s0, particleUv);\n    vec4 v = texture(s1, particleUv);\n\n    float dt = ").concat(CB_TIME, ".x;\n    vec3 gravity = ").concat(CB_FORCES, ".xyz;\n    float drag = ").concat(CB_FORCES, ".w;\n\n    float age = p.w;\n    float lifetime = v.w;\n\n    // DEAD PARTICLES ARE COPIED, not skipped. Every texel is written every\n    // frame: the pass writes the other side of the ping-pong, so a texel left\n    // alone keeps whatever that side held two frames ago rather than what it\n    // held last frame.\n    if (age < 0.0)\n    {\n        outPosition = p;\n        outVelocity = v;\n        return;\n    }\n\n    float aged = age + dt;\n\n    if (aged >= lifetime)\n    {\n        // Killed by writing a negative age. The position is kept as it was so a\n        // reader can still see where the particle died, and nothing has to be\n        // cleared.\n        outPosition = vec4(p.xyz, -1.0);\n        outVelocity = v;\n        return;\n    }\n\n    // Drag opposes motion proportionally, so it is a force on the velocity\n    // rather than a scale of it - which keeps it summing with the others\n    // instead of ordering against them.\n    vec3 accel = gravity - v.xyz * drag;\n\n    // Semi-implicit Euler: velocity first, then position from the NEW velocity.\n    // Explicit Euler with the old velocity loses energy on every step, which\n    // shows up as particles falling short over a long life.\n    vec3 velocity = v.xyz + accel * dt;\n    vec3 position = p.xyz + velocity * dt;\n\n    outPosition = vec4(position, aged);\n    outVelocity = vec4(velocity, lifetime);\n}\n");
+	var ps = "#version 300 es\n\nprecision highp float;\n\n// highp is not a preference here. State is positions in world space and ages in\n// seconds; at mediump a particle's position quantises visibly and its age stops\n// advancing once it is large enough relative to the step.\n\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb7[".concat(CONSTANTS.length, "];\n\nin vec2 particleUv;\n\nlayout(location = 0) out vec4 outPosition;\nlayout(location = 1) out vec4 outVelocity;\nlayout(location = 2) out vec4 outAttributes;\n\n// One texel out of the per-emitter table. Eight texels per emitter, one emitter\n// per row - the layout is owned by Tw2GpuParticleParams.Pack and the two must\n// be edited together. Texel CENTRES, because the table is NEAREST and sampling\n// at an edge is a coin flip between two emitters.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\n// A stand-in turbulence field, and NOT Carbon's.\n//\n// Carbon samples a noise volume, which has not been ported. This is a sum of\n// two sine octaves at frequencies that do not divide each other: cheap, and it\n// reads as drift rather than as a grid. Each component is driven by the OTHER\n// two axes, which makes the field divergence free - so it swirls particles\n// around instead of pumping them into and out of the same points.\nvec3 turbulence(vec3 p, float frequency, float time)\n{\n    vec3 q = p * frequency + time * 0.3;\n\n    vec3 a = vec3(\n        sin(q.y) + cos(q.z),\n        sin(q.z) + cos(q.x),\n        sin(q.x) + cos(q.y)\n    );\n\n    vec3 r = q * 2.17 + 11.3;\n\n    vec3 b = vec3(\n        sin(r.y) + cos(r.z),\n        sin(r.z) + cos(r.x),\n        sin(r.x) + cos(r.y)\n    );\n\n    return a + b * 0.5;\n}\n\nvoid main()\n{\n    vec4 p = texture(s0, particleUv);\n    vec4 v = texture(s1, particleUv);\n    vec4 a = texture(s2, particleUv);\n\n    float dt = cb7[0].x;\n    float time = cb7[0].y;\n    vec3 gravityAxis = cb7[1].xyz;\n    float rows = cb7[1].w;\n\n    float age = p.w;\n    float lifetime = v.w;\n\n    // DEAD PARTICLES ARE COPIED, not skipped. Every texel is written every\n    // frame: the pass writes the other side of the ping-pong, so a texel left\n    // alone keeps whatever that side held two frames ago rather than what it\n    // held last frame.\n    if (age < 0.0)\n    {\n        outPosition = p;\n        outVelocity = v;\n        outAttributes = a;\n        return;\n    }\n\n    float aged = age + dt;\n\n    if (aged >= lifetime)\n    {\n        // Killed by writing a negative age. The position is kept as it was so a\n        // reader can still see where the particle died, and nothing has to be\n        // cleared.\n        outPosition = vec4(p.xyz, -1.0);\n        outVelocity = v;\n        outAttributes = a;\n        return;\n    }\n\n    // ---- this particle's own emitter ----------------------------------------\n    float row = a.x;\n\n    vec4 physics = emitterParam(row, 5.0, rows);     // sizeVariance drag gravity textureIndex\n    vec4 fields = emitterParam(row, 6.0, rows);      // turbulence amp/freq, attractor strength\n    vec4 attractor = emitterParam(row, 7.0, rows);   // attractor position\n\n    float drag = physics.y;\n    float gravity = physics.z;\n\n    float turbulenceAmplitude = fields.x;\n    float turbulenceFrequency = fields.y;\n    float attractorStrength = fields.z;\n\n    // Drag opposes motion proportionally, so it is a force on the velocity\n    // rather than a scale of it - which keeps it summing with the others\n    // instead of ordering against them.\n    vec3 accel = gravityAxis * gravity - v.xyz * drag;\n\n    if (turbulenceAmplitude != 0.0)\n    {\n        accel += turbulence(p.xyz, turbulenceFrequency, time) * turbulenceAmplitude;\n    }\n\n    if (attractorStrength != 0.0)\n    {\n        vec3 toAttractor = attractor.xyz - p.xyz;\n\n        // Guarded, because a particle sitting exactly on the attractor gives a\n        // zero length vector and normalize would hand back NaN - which then\n        // spreads into the position and never leaves, since every later step\n        // reads it back.\n        float distance = length(toAttractor);\n        if (distance > 1e-4) accel += (toAttractor / distance) * attractorStrength;\n    }\n\n    // Semi-implicit Euler: velocity first, then position from the NEW velocity.\n    // Explicit Euler with the old velocity loses energy on every step, which\n    // shows up as particles falling short over a long life.\n    vec3 velocity = v.xyz + accel * dt;\n    vec3 position = p.xyz + velocity * dt;\n\n    outPosition = vec4(position, aged);\n    outVelocity = vec4(velocity, lifetime);\n    outAttributes = a;\n}\n");
 	var definition = {
 	  name: "tw2particleupdate",
 	  description: "GPU particle simulation step",
@@ -285096,9 +285175,11 @@
 	 */
 	Tw2GpuParticleShaders.Inputs = {
 	  Time: ParticleTime,
-	  Forces: ParticleForces,
+	  World: ParticleWorld,
 	  PositionMap: ParticlePositionMap,
-	  VelocityMap: ParticleVelocityMap
+	  VelocityMap: ParticleVelocityMap,
+	  AttributeMap: ParticleAttributeMap,
+	  ParamsMap: ParticleParamsMap
 	};
 
 	/**
@@ -285107,6 +285188,281 @@
 	 * The shader definitions themselves are not classes, so they are reached
 	 * through `Tw2GpuParticleShaders` statics rather than exported loose.
 	 */
+
+	/**
+	 * The per-emitter parameters, as a texture the shaders can index.
+	 *
+	 * One simulation pass covers every particle in the system, and particles from
+	 * different emitters sit side by side in the state textures. So the pass cannot
+	 * take drag, gravity or colour as constants - each particle has to look up its
+	 * OWN emitter's values. A texture indexed by a row number is the only lookup
+	 * WebGL2 offers that is big enough to matter.
+	 *
+	 * ## The hash is the identity
+	 *
+	 * `Tr2GpuSharedEmitter.GetHash` already exists and already means exactly this:
+	 * two shared emitters that hash alike are interchangeable. So a row is keyed by
+	 * the hash, and every emitter agreeing on one shares it - which is what makes a
+	 * shared emitter cheap and is the entire reason the hash was ported.
+	 *
+	 * A UNIQUE emitter is keyed by its id instead, and its row is rewritten every
+	 * frame. Unique emitters are allowed to animate their parameters; that is what
+	 * makes them unique, and it is why they cannot share.
+	 *
+	 * ## The layout
+	 *
+	 * Eight texels per emitter, one emitter per row:
+	 *
+	 * ```
+	 *   0  color0                    4  sizes.xyz          colorMidpoint
+	 *   1  color1                    5  sizeVariance drag  gravity  textureIndex
+	 *   2  color2                    6  turbulence amp/freq  attractor strength
+	 *   3  color3                       velocityStretchRotation
+	 *                                7  attractorPosition.xyz
+	 * ```
+	 *
+	 * `Pack` is static and pure, so the layout can be checked against the shader's
+	 * reads without a device. The shader is the other half of this table and the
+	 * two have to be edited together.
+	 */
+	class Tw2GpuParticleParams {
+	  constructor() {
+	    /**
+	     * The parameter texture.
+	     * @type {?Tw2TextureRes}
+	     */
+	    this.texture = null;
+	    /**
+	     * How many emitters the texture can hold.
+	     * @type {Number}
+	     */
+	    this.capacity = 0;
+	    /**
+	     * key -> row.
+	     * @type {Map<String, Number>}
+	     * @private
+	     */
+	    this._rows = new Map();
+	    /**
+	     * The next unused row.
+	     * @type {Number}
+	     * @private
+	     */
+	    this._next = 0;
+	    /**
+	     * Scratch for one row, reused - packing allocates nothing per frame.
+	     * @type {Float32Array}
+	     * @private
+	     */
+	    this._scratch = new Float32Array(Tw2GpuParticleParams.TEXELS_PER_EMITTER * 4);
+	    /**
+	     * @type {Boolean}
+	     * @private
+	     */
+	    this._warned = false;
+	  }
+	  /**
+	   * Allocates the texture.
+	   *
+	   * @param {Number} [capacity=64] - how many distinct emitters to allow
+	   * @returns {Boolean} whether it allocated
+	   */
+	  Create() {
+	    var capacity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 64;
+	    this.Destroy();
+	    var device = tw2.device,
+	      gl = device.gl;
+	    if (device.glVersion < 2 || !device.canRenderToFloat) return false;
+	    this.capacity = Math.max(1, capacity);
+	    var width = Tw2GpuParticleParams.TEXELS_PER_EMITTER,
+	      height = this.capacity;
+	    var res = new Tw2TextureRes();
+	    res.suppressLogging = true;
+	    res.Attach(gl.createTexture());
+	    res._target = gl.TEXTURE_2D;
+	    res._internalFormat = gl.RGBA32F;
+	    res._format = gl.RGBA;
+	    res._type = gl.FLOAT;
+	    res._hasMipMaps = false;
+	    res._forceMipMaps = false;
+	    res._width = width;
+	    res._height = height;
+	    gl.bindTexture(gl.TEXTURE_2D, res.texture);
+	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, width, height, 0, gl.RGBA, gl.FLOAT, null);
+
+	    // NEAREST on both, and CLAMP_TO_EDGE. This is a table, not a picture:
+	    // an interpolated row is two emitters averaged together, which would be
+	    // a plausible looking value belonging to no emitter at all.
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+	    // Tw2TextureRes re-applies an effect's sampler when it binds, which
+	    // would put LINEAR back.
+	    res._forceNearest = true;
+	    gl.bindTexture(gl.TEXTURE_2D, null);
+	    this.texture = res;
+	    return true;
+	  }
+
+	  /**
+	   * @returns {Boolean}
+	   */
+	  IsGood() {
+	    return !!(this.texture && this.texture.texture);
+	  }
+
+	  /**
+	   * The row a request's parameters live in, uploading them if they are not
+	   * there yet.
+	   *
+	   * @param {Object} request - as `Tw2GpuParticleSystem.Emit` stored it
+	   * @returns {Number} the row, or -1 if there is no room
+	   */
+	  GetRow(request) {
+	    if (!this.IsGood() || !request) return -1;
+	    var unique = Tw2GpuParticleParams.IsUnique(request.id),
+	      key = unique ? "u".concat(request.id) : "h".concat(request.hash);
+	    var row = this._rows.get(key);
+	    if (row === undefined) {
+	      // FULL is not an error to throw over - it is a budget being reached
+	      // mid-frame, and dropping the emission is better than dropping the
+	      // frame. It says so once rather than every frame.
+	      if (this._next >= this.capacity) {
+	        if (!this._warned) {
+	          this._warned = true;
+	          tw2.Warning({
+	            name: "GPU particles",
+	            description: "More than ".concat(this.capacity, " distinct emitters - the rest will not emit")
+	          });
+	        }
+	        return -1;
+	      }
+	      row = this._next++;
+	      this._rows.set(key, row);
+	    } else if (!unique) {
+	      // A shared row never changes: the hash IS the parameters. Rewriting
+	      // it every frame would upload the same bytes forever.
+	      return row;
+	    }
+	    this.Write(row, request.params);
+	    return row;
+	  }
+
+	  /**
+	   * Uploads one row.
+	   *
+	   * @param {Number} row
+	   * @param {Object} params
+	   * @returns {Tw2GpuParticleParams}
+	   */
+	  Write(row, params) {
+	    if (!this.IsGood() || row < 0 || row >= this.capacity) return this;
+	    Tw2GpuParticleParams.Pack(params, this._scratch);
+	    var gl = tw2.device.gl;
+	    gl.bindTexture(gl.TEXTURE_2D, this.texture.texture);
+	    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, row, Tw2GpuParticleParams.TEXELS_PER_EMITTER, 1, gl.RGBA, gl.FLOAT, this._scratch);
+	    gl.bindTexture(gl.TEXTURE_2D, null);
+	    return this;
+	  }
+
+	  /**
+	   * Forgets every row.
+	   *
+	   * Rows are handed out and never reclaimed while they are in use, because a
+	   * particle already alive still refers to its emitter's row. So this is for
+	   * tearing a system down, not for tidying up between frames.
+	   * @returns {Tw2GpuParticleParams}
+	   */
+	  Reset() {
+	    this._rows.clear();
+	    this._next = 0;
+	    this._warned = false;
+	    return this;
+	  }
+
+	  /**
+	   * Releases the texture.
+	   * @returns {Tw2GpuParticleParams}
+	   */
+	  Destroy() {
+	    if (this.texture) {
+	      this.texture.DeleteGL();
+	      this.texture = null;
+	    }
+	    this.Reset();
+	    this.capacity = 0;
+	    return this;
+	  }
+	  /**
+	   * Packs one emitter's parameters into the texel layout.
+	   *
+	   * Static and pure: this is the CPU half of a contract whose other half is
+	   * in the shaders, and it is worth being able to check the two agree without
+	   * a device.
+	   *
+	   * @param {Object} params - as `Tr2GpuSharedEmitter.GetParamsData` fills it
+	   * @param {Float32Array} [out]
+	   * @returns {Float32Array}
+	   */
+	  static Pack(params) {
+	    var out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Float32Array(Tw2GpuParticleParams.TEXELS_PER_EMITTER * 4);
+	    var p = params || {},
+	      colors = p.colors || [],
+	      sizes = p.sizes || [1, 1, 1],
+	      attractor = p.attractorPosition || [0, 0, 0];
+	    for (var i = 0; i < 4; i++) {
+	      var c = colors[i] || [1, 1, 1, 1];
+	      out[i * 4 + 0] = c[0];
+	      out[i * 4 + 1] = c[1];
+	      out[i * 4 + 2] = c[2];
+	      out[i * 4 + 3] = c[3];
+	    }
+	    out[16] = sizes[0];
+	    out[17] = sizes[1];
+	    out[18] = sizes[2];
+	    out[19] = p.colorMidpoint === undefined ? 0.5 : p.colorMidpoint;
+	    out[20] = p.sizeVariance || 0;
+	    out[21] = p.drag || 0;
+	    out[22] = p.gravity || 0;
+	    out[23] = p.textureIndex || 0;
+	    out[24] = p.turbulenceAmplitude || 0;
+	    out[25] = p.turbulenceFrequency || 0;
+	    out[26] = p.attractorStrength || 0;
+	    out[27] = p.velocityStretchRotation || 0;
+	    out[28] = attractor[0];
+	    out[29] = attractor[1];
+	    out[30] = attractor[2];
+	    out[31] = 0;
+	    return out;
+	  }
+
+	  /**
+	   * Whether an emitter id belongs to a unique emitter.
+	   *
+	   * Carbon sets the top bit of the pointer-sized id. The JS side keeps the
+	   * same convention at a width JS can actually hold - see
+	   * `Tr2GpuUniqueEmitter.NextID`.
+	   *
+	   * @param {Number} id
+	   * @returns {Boolean}
+	   */
+	  static IsUnique(id) {
+	    return (id & Tw2GpuParticleParams.UNIQUE_BIT) !== 0;
+	  }
+
+	  /**
+	   * Texels of parameters per emitter. The shaders read this same number.
+	   * @type {Number}
+	   */
+	}
+	Tw2GpuParticleParams.TEXELS_PER_EMITTER = 8;
+	/**
+	 * The bit that says an id belongs to a unique emitter.
+	 * @type {Number}
+	 */
+	Tw2GpuParticleParams.UNIQUE_BIT = 1 << 7;
 
 	/**
 	 * Runs the emission shader over the slots a batch of requests claims.
@@ -285148,6 +285504,14 @@
 	     */
 	    this.effect = null;
 	    /**
+	     * The per-emitter parameter table every particle this pass spawns will
+	     * refer to. Owned here because emission is what decides which row a
+	     * particle gets, and a row handed out by one pass and written by another
+	     * would be two halves of one decision.
+	     * @type {Tw2GpuParticleParams}
+	     */
+	    this.params = new Tw2GpuParticleParams();
+	    /**
 	     * The next slot the ring will hand out.
 	     * @type {Number}
 	     */
@@ -285161,11 +285525,14 @@
 	    this.emitted = 0;
 	  }
 	  /**
-	   * Builds the effect. Safe to call more than once.
+	   * Builds the effect and the parameter table. Safe to call more than once.
+	   * @param {Number} [emitters=64] - how many distinct emitters the table holds
 	   * @returns {Tw2GpuParticleEmitPass}
 	   */
 	  Create() {
+	    var emitters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 64;
 	    if (this.effect) return this;
+	    this.params.Create(emitters);
 	    var name = Tw2GpuParticleEmitPass.SHADER;
 	    var effectFilePath = "manual:/".concat(name, ".sm_json");
 	    if (!tw2.resMan.motherLode.Has(effectFilePath)) Tw2EffectRes.fromManual(name);
@@ -285186,7 +285553,7 @@
 	   * @returns {Boolean}
 	   */
 	  IsGood() {
-	    return !!(this.effect && this.effect.IsGood());
+	    return !!(this.effect && this.effect.IsGood() && this.params.IsGood());
 	  }
 
 	  /**
@@ -285227,6 +285594,13 @@
 	    // running short.
 	    var count = Math.min(Math.floor(emitter.count), state.capacity);
 	    if (count < 1) return 0;
+
+	    // The row this emitter's parameters live in. Every particle in the run
+	    // records it, and both the simulation and the draw look their values up
+	    // through it - so a full table means this batch cannot be expressed and
+	    // must not be emitted.
+	    var row = this.params.GetRow(request);
+	    if (row < 0) return 0;
 	    var effect = this.effect,
 	      params = request.params || {},
 	      start = this.cursor;
@@ -285243,6 +285617,7 @@
 	    var velocity = emitter.velocity;
 	    Tw2GpuParticleEmitPass.SetParameter(effect, "EmitVelocity", [velocity[0], velocity[1], velocity[2], 0]);
 	    Tw2GpuParticleEmitPass.SetParameter(effect, "EmitLife", [params.minLifeTime || 1, params.maxLifeTime || 1, 0, 0]);
+	    Tw2GpuParticleEmitPass.SetParameter(effect, "EmitRow", [row, 0, 0, 0]);
 	    var device = tw2.device,
 	      gl = device.gl,
 	      target = state.GetFrontTarget();
@@ -285268,6 +285643,7 @@
 	   */
 	  Destroy() {
 	    this.effect = null;
+	    this.params.Destroy();
 	    return this;
 	  }
 
@@ -285357,6 +285733,7 @@
 	exports.Tw2CarbonResourceBinder = Tw2CarbonResourceBinderExports.Tw2CarbonResourceBinder;
 	exports.Tw2Effect = Tw2Effect;
 	exports.Tw2GpuParticleEmitPass = Tw2GpuParticleEmitPass;
+	exports.Tw2GpuParticleParams = Tw2GpuParticleParams;
 	exports.Tw2GpuParticleState = Tw2GpuParticleState;
 	exports.Tw2MaterialPickResult = Tw2MaterialPickResult;
 	exports.Tw2MaterialPicker = Tw2MaterialPicker;

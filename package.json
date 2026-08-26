@@ -80,7 +80,8 @@
     "test:picking-shader-map": "node scripts/test-picking-shader-map.js",
     "test:gpu-emitters": "node scripts/test-gpu-emitters.js",
     "test:gpu-particle-state": "node scripts/test-gpu-particle-state.js",
-    "test:gpu-emit-pass": "node scripts/test-gpu-emit-pass.js"
+    "test:gpu-emit-pass": "node scripts/test-gpu-emit-pass.js",
+    "test:gpu-particle-params": "node scripts/test-gpu-particle-params.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {

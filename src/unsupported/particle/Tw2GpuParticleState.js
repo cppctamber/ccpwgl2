@@ -14,10 +14,22 @@ import { Tw2MultiRenderTarget } from "core/Tw2MultiRenderTarget";
  *
  * ```
  *   position texture   xyz = position   w = age
- *   velocity texture   xyz = velocity   w = packed lifetime + emitter index
+ *   velocity texture   xyz = velocity   w = lifetime
+ *   attribute texture   x = emitter row  y = birth seed
  * ```
  *
- * ## Two sides, two attachments each
+ * The third texture is a DIVERGENCE from the shipped precursor, which packs the
+ * emitter index and a phase into the velocity's `w` alongside the lifetime. The
+ * packing buys bandwidth and costs precision: a float has 24 bits of mantissa,
+ * so an index and a fraction sharing one leaves the fraction with whatever the
+ * index does not use. A separate channel keeps both exact, and the emitter row
+ * is what every parameter lookup depends on.
+ *
+ * The birth seed is a per-particle random drawn at emission. It cannot be a
+ * hash of the slot, because a slot is reused: every particle born there would
+ * be identical to the last one.
+ *
+ * ## Two sides, three attachments each
  *
  * A shader cannot read and write the same texture in one pass, so the state
  * needs a front and a back, and {@link Swap} exchanges them once the frame's
@@ -25,11 +37,11 @@ import { Tw2MultiRenderTarget } from "core/Tw2MultiRenderTarget";
  * frame for post-processing; what is new here is that the state has to survive
  * ACROSS frames, so these targets are owned and never recycled.
  *
- * Each side is a {@link Tw2MultiRenderTarget} with TWO attachments, so one pass
- * writes both position and velocity - which is what the shipped shaders do, and
- * half the passes of writing them separately. Attachment 0 is position,
- * attachment 1 is velocity, and a shader writing this must declare both
- * outputs.
+ * Each side is a {@link Tw2MultiRenderTarget} with THREE attachments, so one
+ * pass writes the whole of a particle's state - which is what the shipped
+ * shaders do, and a third of the passes of writing them separately. A shader
+ * writing this must declare all three outputs: anything it leaves out is
+ * whatever that side held two frames ago, not what it held last frame.
  *
  * ## Float, and NEAREST
  *
@@ -154,6 +166,7 @@ export class Tw2GpuParticleState
                 // a single clear colour would have to lie about one of them.
                 gl.clearBufferfv(gl.COLOR, 0, [ 0, 0, 0, -1 ]);
                 gl.clearBufferfv(gl.COLOR, 1, [ 0, 0, 0, 0 ]);
+                gl.clearBufferfv(gl.COLOR, 2, [ 0, 0, 0, 0 ]);
             });
         }
 
@@ -178,13 +191,13 @@ export class Tw2GpuParticleState
      *
      * The two textures rather than the target, because a reader binds textures
      * and only a writer binds a framebuffer.
-     * @returns {{position: ?Tw2TextureRes, velocity: ?Tw2TextureRes}}
+     * @returns {{position: ?Tw2TextureRes, velocity: ?Tw2TextureRes, attributes: ?Tw2TextureRes}}
      */
     GetFront()
     {
         const side = this._sides[this._front];
         if (!side) return { position: null, velocity: null };
-        return { position: side.GetTexture(0), velocity: side.GetTexture(1) };
+        return { position: side.GetTexture(0), velocity: side.GetTexture(1), attributes: side.GetTexture(2) };
     }
 
     /**
@@ -275,7 +288,7 @@ export class Tw2GpuParticleState
             `particleState${index}`,
             this.width,
             this.height,
-            2,
+            3,
             "rgba32f",
             "nearest"
         );

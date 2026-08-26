@@ -82,6 +82,13 @@ const EmitVelocity = constant("EmitVelocity", [ "x", "y", "z", "unused" ], [ 0, 
 /** `(min lifetime, max lifetime, unused, unused)`. @type {Object} */
 const EmitLife = constant("EmitLife", [ "min lifetime", "max lifetime", "unused", "unused" ], [ 1, 1, 0, 0 ]);
 
+/**
+ * The row this emitter's parameters live in, written into every particle it
+ * spawns so the simulation and the draw can look them up.
+ * @type {Object}
+ */
+const EmitRow = constant("EmitRow", [ "row", "unused", "unused", "unused" ], [ 0, 0, 0, 0 ]);
+
 
 // Positional binding: this order IS the cb7 index order.
 const CONSTANTS = [
@@ -92,7 +99,8 @@ const CONSTANTS = [
     EmitDirection,
     EmitCone,
     EmitVelocity,
-    EmitLife
+    EmitLife,
+    EmitRow
 ];
 
 
@@ -117,6 +125,7 @@ uniform vec4 cb7[${CONSTANTS.length}];
 
 layout(location = 0) out vec4 outPosition;
 layout(location = 1) out vec4 outVelocity;
+layout(location = 2) out vec4 outAttributes;
 
 // A cheap integer hash. Successive seeds give independent values, which is all
 // the randomness a spawn needs and costs nothing to reproduce.
@@ -210,6 +219,11 @@ void main()
     // different amount.
     outPosition = vec4(position, 0.0);
     outVelocity = vec4(velocity, lifetime);
+
+    // The emitter row, and a birth seed. The seed has to be STORED rather than
+    // recomputed from the slot: a slot is reused, so every particle born there
+    // would otherwise be identical to the one before it.
+    outAttributes = vec4(cb7[8].x, random(seed + 7u), 0.0, 0.0);
 }
 `;
 
@@ -256,6 +270,7 @@ export class Tw2GpuParticleEmitShader
     /** @type {Object} */
     static Inputs = {
         Run: EmitRun,
+        Row: EmitRow,
         Seed: EmitSeed,
         PositionStart: EmitPositionStart,
         PositionEnd: EmitPositionEnd,

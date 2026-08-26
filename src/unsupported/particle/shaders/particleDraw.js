@@ -72,11 +72,16 @@ const ParticleDrawData = constant(
     [ 512, 1, 1, 0 ]
 );
 
-/** Colour at birth, faded to `ParticleColorEnd` over the particle's life. @type {Object} */
-const ParticleColorStart = constant("ParticleColorStart", [ "r", "g", "b", "a" ], [ 1, 1, 1, 1 ]);
-
-/** @type {Object} */
-const ParticleColorEnd = constant("ParticleColorEnd", [ "r", "g", "b", "a" ], [ 1, 1, 1, 0 ]);
+/**
+ * `(table rows, unused, unused, unused)`.
+ *
+ * Colours and sizes are NOT constants: one draw covers the whole system, and
+ * particles from different emitters sit side by side. Each reads its own
+ * emitter's row out of the parameter table, which is why only the table's
+ * height is needed here.
+ * @type {Object}
+ */
+const ParticleTable = constant("ParticleTable", [ "table rows", "unused", "unused", "unused" ], [ 64, 0, 0, 0 ]);
 
 /** The position state: xyz position, w age. @type {Object} */
 const ParticlePositionMap = createTex("ParticlePositionMap", TEX_2D, {
@@ -88,9 +93,19 @@ const ParticleVelocityMap = createTex("ParticleVelocityMap", TEX_2D, {
     ui: { components: [ "x", "y", "z", "lifetime" ] }
 });
 
+/** The attribute state: x emitter row, y birth seed. @type {Object} */
+const ParticleAttributeMap = createTex("ParticleAttributeMap", TEX_2D, {
+    ui: { components: [ "emitter row", "birth seed", "unused", "unused" ] }
+});
 
-const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap ];
-const CONSTANTS = [ ParticleDrawData, ParticleColorStart, ParticleColorEnd ];
+/** The per-emitter parameter table. @type {Object} */
+const ParticleParamsMap = createTex("ParticleParamsMap", TEX_2D, {
+    ui: { components: [ "r", "g", "b", "a" ] }
+});
+
+
+const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap ];
+const CONSTANTS = [ ParticleDrawData, ParticleTable ];
 
 
 const vs = `#version 300 es
@@ -101,18 +116,27 @@ precision highp float;
 // at least 16 - and the reason the state can live in a texture at all.
 uniform sampler2D s0;            // ParticlePositionMap
 uniform sampler2D s1;            // ParticleVelocityMap
+uniform sampler2D s2;            // ParticleAttributeMap
+uniform sampler2D s3;            // ParticleParamsMap
 
 uniform vec4 cb1[24];            // per frame; rows 4-7 are the view-projection
 uniform vec4 cb7[${CONSTANTS.length}];
 
 out vec2 cornerUv;
 out float lifeFraction;
+flat out float emitterRow;
+
+// See the note in particleUpdate: this layout belongs to
+// Tw2GpuParticleParams.Pack and the two must be edited together.
+vec4 emitterParam(float row, float texel, float rows)
+{
+    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));
+}
 
 void main()
 {
     float width = cb7[0].x;
     float height = cb7[0].y;
-    float size = cb7[0].z;
 
     int particle = gl_VertexID / 6;
     int corner = gl_VertexID % 6;
@@ -125,6 +149,9 @@ void main()
 
     vec4 state = texture(s0, uv);
     vec4 motion = texture(s1, uv);
+    vec4 attributes = texture(s2, uv);
+
+    emitterRow = attributes.x;
 
     float age = state.w;
     float lifetime = max(motion.w, 1e-6);
@@ -138,6 +165,25 @@ void main()
 
     vec2 offset = offsets[corner];
     cornerUv = offset;
+
+    // ---- size, from this particle's own emitter -----------------------------
+    float rows = cb7[1].x;
+
+    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint
+    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex
+
+    // Sizes are three keys over the particle's life, not one number: EVE
+    // particles grow as they are born and shrink as they die, and a single
+    // size makes a puff look like a swarm of identical dots.
+    float size = lifeFraction < 0.5
+        ? mix(sizeRow.x, sizeRow.y, lifeFraction * 2.0)
+        : mix(sizeRow.y, sizeRow.z, lifeFraction * 2.0 - 1.0);
+
+    // The birth seed rather than a hash of the slot: a slot is reused, and
+    // every particle born in it would otherwise be exactly the same size.
+    size *= 1.0 + (attributes.y * 2.0 - 1.0) * physics.x;
+
+    size *= cb7[0].z;
 
     // Dead collapses to a point and covers nothing.
     if (age < 0.0) offset = vec2(0.0);
@@ -164,12 +210,20 @@ const ps = `#version 300 es
 
 precision highp float;
 
+uniform sampler2D s3;            // ParticleParamsMap
+
 uniform vec4 cb7[${CONSTANTS.length}];
 
 in vec2 cornerUv;
 in float lifeFraction;
+flat in float emitterRow;
 
 out vec4 outColor;
+
+vec4 emitterParam(float row, float texel, float rows)
+{
+    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));
+}
 
 void main()
 {
@@ -181,10 +235,33 @@ void main()
 
     float falloff = 1.0 - smoothstep(0.4, 1.0, r);
 
-    vec4 start = cb7[1];
-    vec4 end = cb7[2];
+    float rows = cb7[1].x;
 
-    outColor = mix(start, end, lifeFraction) * falloff;
+    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not
+    // a gradient between two ends. The midpoint is what lets an effect flash
+    // and then fade slowly, rather than crossing its whole range at a constant
+    // rate.
+    vec4 color0 = emitterParam(emitterRow, 0.0, rows);
+    vec4 color1 = emitterParam(emitterRow, 1.0, rows);
+    vec4 color2 = emitterParam(emitterRow, 2.0, rows);
+    vec4 color3 = emitterParam(emitterRow, 3.0, rows);
+
+    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);
+
+    vec4 color;
+
+    if (lifeFraction < midpoint)
+    {
+        float t = lifeFraction / midpoint;
+        color = mix(color0, mix(color1, color2, t), t);
+    }
+    else
+    {
+        float t = (lifeFraction - midpoint) / (1.0 - midpoint);
+        color = mix(color2, color3, t);
+    }
+
+    outColor = color * falloff;
 }
 `;
 
@@ -235,10 +312,11 @@ export class Tw2GpuParticleDrawShader
     /** @type {Object} */
     static Inputs = {
         DrawData: ParticleDrawData,
-        ColorStart: ParticleColorStart,
-        ColorEnd: ParticleColorEnd,
+        Table: ParticleTable,
         PositionMap: ParticlePositionMap,
-        VelocityMap: ParticleVelocityMap
+        VelocityMap: ParticleVelocityMap,
+        AttributeMap: ParticleAttributeMap,
+        ParamsMap: ParticleParamsMap
     };
 
     /** Six vertices per particle: two triangles, no vertex buffer. @type {Number} */

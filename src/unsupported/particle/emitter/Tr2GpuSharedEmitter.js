@@ -537,6 +537,24 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
      */
     _SpawnBatch(args, positionStart, positionEnd, velocityStart, velocityEnd, carryOverCount, deltaTime, persistDirection)
     {
+        // The identity is refreshed HERE, on every batch, because this is the
+        // one place every spawn path passes through - the continuous schedule,
+        // a one-off burst and a swept segment all end up here.
+        //
+        // Nothing else called UpdateHash or GenerateID, which left every shared
+        // emitter reporting hash 0 and id 0. To the system that made them all
+        // the SAME emitter: one row of parameters shared by every emitter in
+        // the scene, so the first one to register decided the colour, size and
+        // drag of all of them. It is invisible until a second emitter exists.
+        //
+        // Recomputed rather than cached, deliberately. A shared emitter is not
+        // allowed to animate these parameters - that is what makes it shared -
+        // and recomputing means a violation shows up as a new row rather than
+        // as silently stale values. Thirty-three floats of FNV is nothing
+        // against a batch of particles.
+        this.UpdateHash();
+        this.GenerateID();
+
         const
             g = Tr2GpuSharedEmitter.global,
             emitter = this.GetEmitterData(g.emitter),
