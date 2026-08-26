@@ -219,17 +219,19 @@ export class Tw2GpuParticleState
      */
     _CreateSide(index)
     {
-        const side = new Tw2MultiRenderTarget(`particleState${index}`, this.width, this.height, 2, "rgba32f");
-
-        // NEAREST, always. A filtered read averages two unrelated particles,
-        // which looks like a physics bug rather than a sampler one.
-        for (let i = 0; i < 2; i++)
-        {
-            const texture = side.GetTexture(i);
-            if (texture) texture._forceNearest = true;
-        }
-
-        return side;
+        // NEAREST is the target's default and is asked for explicitly anyway.
+        // A filtered read averages two unrelated particles, which looks like a
+        // physics bug rather than a sampler one - and a float texture with
+        // LINEAR filtering can be rejected outright on a device without
+        // OES_texture_float_linear.
+        return new Tw2MultiRenderTarget(
+            `particleState${index}`,
+            this.width,
+            this.height,
+            2,
+            "rgba32f",
+            "nearest"
+        );
     }
 
 }

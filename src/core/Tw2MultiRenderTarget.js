@@ -54,6 +54,20 @@ export class Tw2MultiRenderTarget
     @meta.string
     colorFormat = null;
 
+    /**
+     * "nearest" or "linear", applied at CREATION.
+     *
+     * Defaults to nearest, unlike `Tw2RenderTarget`, and deliberately. A target
+     * with several outputs is nearly always carrying DATA rather than a
+     * picture, where filtering averages two unrelated values. It also avoids a
+     * completeness trap: a float texture with LINEAR filtering needs
+     * `OES_texture_float_linear`, which is not guaranteed, and a device without
+     * it can reject the texture rather than merely filtering differently.
+     * @type {String}
+     */
+    @meta.string
+    filter = "nearest";
+
     _textures = [];
     _frameBuffer = null;
     _renderBuffer = null;
@@ -68,12 +82,14 @@ export class Tw2MultiRenderTarget
      * @param {Number} [height]
      * @param {Number} [count=2]
      * @param {String} [colorFormat]
+     * @param {String} [filter="nearest"]
      */
-    constructor(name = "", width, height, count = 2, colorFormat = null)
+    constructor(name = "", width, height, count = 2, colorFormat = null, filter = "nearest")
     {
         this.name = name;
         this.colorFormat = colorFormat;
-        if (width && height) this.Create(width, height, count, colorFormat);
+        this.filter = filter;
+        if (width && height) this.Create(width, height, count, colorFormat, filter);
     }
 
     /**
@@ -83,9 +99,10 @@ export class Tw2MultiRenderTarget
      * @param {Number} height
      * @param {Number} [count=2]
      * @param {String} [colorFormat=this.colorFormat]
+     * @param {String} [filter=this.filter]
      * @returns {Boolean} true if the target is usable
      */
-    Create(width, height, count = 2, colorFormat = this.colorFormat)
+    Create(width, height, count = 2, colorFormat = this.colorFormat, filter = this.filter)
     {
         const { gl, device } = tw2;
 
@@ -122,6 +139,9 @@ export class Tw2MultiRenderTarget
         this.height = height;
         this.count = count;
         this.colorFormat = colorFormat;
+        this.filter = filter;
+
+        const glFilter = filter === "linear" ? gl.LINEAR : gl.NEAREST;
 
         this._frameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
@@ -145,9 +165,17 @@ export class Tw2MultiRenderTarget
 
             gl.bindTexture(gl.TEXTURE_2D, res.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            // BOTH filters, set here rather than left to a default. The single
+            // target leaves MAG alone, which is survivable for a picture and not
+            // for data.
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, glFilter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, glFilter);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+            // And again for the effect-bound path: Tw2TextureRes re-applies an
+            // effect's sampler when it binds, which would put LINEAR back.
+            res._forceNearest = glFilter === gl.NEAREST;
             gl.bindTexture(gl.TEXTURE_2D, null);
 
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, res.texture, 0);
@@ -274,9 +302,13 @@ export class Tw2MultiRenderTarget
     {
         const { gl } = tw2;
 
+        // DeleteGL, not Unload. These textures are OWNED by the target and have
+        // no resource lifecycle of their own - Unload runs the resource path,
+        // which is for things the resource manager loaded. Tw2DepthRenderTarget
+        // is the one that gets this right.
         for (let i = 0; i < this._textures.length; i++)
         {
-            if (this._textures[i]) this._textures[i].Unload();
+            if (this._textures[i]) this._textures[i].DeleteGL();
         }
 
         this._textures = [];
