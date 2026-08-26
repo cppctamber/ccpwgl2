@@ -81,7 +81,7 @@ const ParticleDrawData = constant(
  * height is needed here.
  * @type {Object}
  */
-const ParticleTable = constant("ParticleTable", [ "table rows", "unused", "unused", "unused" ], [ 64, 0, 0, 0 ]);
+const ParticleTable = constant("ParticleTable", [ "table rows", "atlas tiles", "unused", "unused" ], [ 64, 0, 0, 0 ]);
 
 /** The position state: xyz position, w age. @type {Object} */
 const ParticlePositionMap = createTex("ParticlePositionMap", TEX_2D, {
@@ -103,8 +103,21 @@ const ParticleParamsMap = createTex("ParticleParamsMap", TEX_2D, {
     ui: { components: [ "r", "g", "b", "a" ] }
 });
 
+/**
+ * The sprite atlas.
+ *
+ * EVE ships one at `res:/fisfx/gpuparticles/systematlas.dds`: 1024x128, which
+ * against the shipped `AtlasMapSize` of `(1024, 8)` is a STRIP of eight 128x128
+ * tiles, not a grid. An emitter picks its tile with `textureIndex`, which is
+ * why that field is in the parameter table.
+ * @type {Object}
+ */
+const ParticleAtlasMap = createTex("ParticleAtlasMap", TEX_2D, {
+    ui: { components: [ "r", "g", "b", "a" ] }
+});
 
-const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap ];
+
+const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap, ParticleAtlasMap ];
 const CONSTANTS = [ ParticleDrawData, ParticleTable ];
 
 
@@ -211,6 +224,7 @@ const ps = `#version 300 es
 precision highp float;
 
 uniform sampler2D s3;            // ParticleParamsMap
+uniform sampler2D s4;            // ParticleAtlasMap
 
 uniform vec4 cb7[${CONSTANTS.length}];
 
@@ -227,15 +241,8 @@ vec4 emitterParam(float row, float texel, float rows)
 
 void main()
 {
-    // A round sprite from the corner coordinates, so a particle is a dot rather
-    // than a visible square - and no texture is needed to see whether the
-    // simulation is working.
-    float r = length(cornerUv);
-    if (r > 1.0) discard;
-
-    float falloff = 1.0 - smoothstep(0.4, 1.0, r);
-
     float rows = cb7[1].x;
+    float tiles = cb7[1].y;
 
     // FOUR colour keys with a movable midpoint, which is Carbon's curve and not
     // a gradient between two ends. The midpoint is what lets an effect flash
@@ -261,7 +268,30 @@ void main()
         color = mix(color2, color3, t);
     }
 
-    outColor = color * falloff;
+    vec4 sprite;
+
+    if (tiles >= 1.0)
+    {
+        // A strip of tiles across one texture, so only the horizontal
+        // coordinate is divided.
+        float tile = clamp(floor(emitterParam(emitterRow, 5.0, rows).w), 0.0, tiles - 1.0);
+
+        vec2 tileUv = cornerUv * 0.5 + 0.5;
+        sprite = texture(s4, vec2((tile + tileUv.x) / tiles, tileUv.y));
+    }
+    else
+    {
+        // NO ATLAS BOUND. A round dot from the corner coordinates, so the
+        // simulation can be looked at before there is any art - which is how
+        // every stage of this was built. Without the branch an unbound sampler
+        // reads black and the whole system is invisible for a reason that has
+        // nothing to do with particles.
+        float r = length(cornerUv);
+        if (r > 1.0) discard;
+        sprite = vec4(1.0 - smoothstep(0.4, 1.0, r));
+    }
+
+    outColor = color * sprite;
 }
 `;
 
@@ -316,7 +346,22 @@ export class Tw2GpuParticleDrawShader
         PositionMap: ParticlePositionMap,
         VelocityMap: ParticleVelocityMap,
         AttributeMap: ParticleAttributeMap,
-        ParamsMap: ParticleParamsMap
+        ParamsMap: ParticleParamsMap,
+        AtlasMap: ParticleAtlasMap
+    };
+
+    /**
+     * The atlas EVE ships, and how many tiles it holds.
+     *
+     * Both read off the shipped `Tr2GpuParticleSystem` at
+     * `res:/fisfx/gpuparticles/system.black` rather than guessed: its `render`
+     * effect binds this texture with an `AtlasMapSize` of `(1024, 8)`, and the
+     * file measures 1024x128.
+     * @type {Object}
+     */
+    static ATLAS = {
+        path: "res:/fisfx/gpuparticles/systematlas.dds",
+        tiles: 8
     };
 
     /** Six vertices per particle: two triangles, no vertex buffer. @type {Number} */

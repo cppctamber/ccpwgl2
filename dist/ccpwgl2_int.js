@@ -284758,7 +284758,7 @@
 	 * height is needed here.
 	 * @type {Object}
 	 */
-	var ParticleTable = constant$2("ParticleTable", ["table rows", "unused", "unused", "unused"], [64, 0, 0, 0]);
+	var ParticleTable = constant$2("ParticleTable", ["table rows", "atlas tiles", "unused", "unused"], [64, 0, 0, 0]);
 
 	/** The position state: xyz position, w age. @type {Object} */
 	var ParticlePositionMap$1 = createTex("ParticlePositionMap", TEX_2D, {
@@ -284787,10 +284787,25 @@
 	    components: ["r", "g", "b", "a"]
 	  }
 	});
-	var TEXTURES$1 = [ParticlePositionMap$1, ParticleVelocityMap$1, ParticleAttributeMap$1, ParticleParamsMap$1];
+
+	/**
+	 * The sprite atlas.
+	 *
+	 * EVE ships one at `res:/fisfx/gpuparticles/systematlas.dds`: 1024x128, which
+	 * against the shipped `AtlasMapSize` of `(1024, 8)` is a STRIP of eight 128x128
+	 * tiles, not a grid. An emitter picks its tile with `textureIndex`, which is
+	 * why that field is in the parameter table.
+	 * @type {Object}
+	 */
+	var ParticleAtlasMap = createTex("ParticleAtlasMap", TEX_2D, {
+	  ui: {
+	    components: ["r", "g", "b", "a"]
+	  }
+	});
+	var TEXTURES$1 = [ParticlePositionMap$1, ParticleVelocityMap$1, ParticleAttributeMap$1, ParticleParamsMap$1, ParticleAtlasMap];
 	var CONSTANTS$2 = [ParticleDrawData, ParticleTable];
 	var vs$2 = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb1[24];            // per frame; rows 4-7 are the view-projection\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nout vec2 cornerUv;\nout float lifeFraction;\nflat out float emitterRow;\n\n// See the note in particleUpdate: this layout belongs to\n// Tw2GpuParticleParams.Pack and the two must be edited together.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n    vec4 attributes = texture(s2, uv);\n\n    emitterRow = attributes.x;\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // ---- size, from this particle's own emitter -----------------------------\n    float rows = cb7[1].x;\n\n    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint\n    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex\n\n    // Sizes are three keys over the particle's life, not one number: EVE\n    // particles grow as they are born and shrink as they die, and a single\n    // size makes a puff look like a swarm of identical dots.\n    float size = lifeFraction < 0.5\n        ? mix(sizeRow.x, sizeRow.y, lifeFraction * 2.0)\n        : mix(sizeRow.y, sizeRow.z, lifeFraction * 2.0 - 1.0);\n\n    // The birth seed rather than a hash of the slot: a slot is reused, and\n    // every particle born in it would otherwise be exactly the same size.\n    size *= 1.0 + (attributes.y * 2.0 - 1.0) * physics.x;\n\n    size *= cb7[0].z;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing. Not scaled by w, so the perspective divide shrinks\n    // distant particles - which is what makes the field read as three\n    // dimensional rather than as a flat spray of equal dots.\n    clip.xy += offset * size;\n\n    gl_Position = clip;\n}\n");
-	var ps$2 = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    // A round sprite from the corner coordinates, so a particle is a dot rather\n    // than a visible square - and no texture is needed to see whether the\n    // simulation is working.\n    float r = length(cornerUv);\n    if (r > 1.0) discard;\n\n    float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n\n    float rows = cb7[1].x;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    outColor = color * falloff;\n}\n");
+	var ps$2 = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\nuniform sampler2D s4;            // ParticleAtlasMap\n\nuniform vec4 cb7[".concat(CONSTANTS$2.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float rows = cb7[1].x;\n    float tiles = cb7[1].y;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    vec4 sprite;\n\n    if (tiles >= 1.0)\n    {\n        // A strip of tiles across one texture, so only the horizontal\n        // coordinate is divided.\n        float tile = clamp(floor(emitterParam(emitterRow, 5.0, rows).w), 0.0, tiles - 1.0);\n\n        vec2 tileUv = cornerUv * 0.5 + 0.5;\n        sprite = texture(s4, vec2((tile + tileUv.x) / tiles, tileUv.y));\n    }\n    else\n    {\n        // NO ATLAS BOUND. A round dot from the corner coordinates, so the\n        // simulation can be looked at before there is any art - which is how\n        // every stage of this was built. Without the branch an unbound sampler\n        // reads black and the whole system is invisible for a reason that has\n        // nothing to do with particles.\n        float r = length(cornerUv);\n        if (r > 1.0) discard;\n        sprite = vec4(1.0 - smoothstep(0.4, 1.0, r));\n    }\n\n    outColor = color * sprite;\n}\n");
 	var definition$2 = {
 	  name: "tw2particledraw",
 	  description: "GPU particle draw",
@@ -284837,7 +284852,21 @@
 	  PositionMap: ParticlePositionMap$1,
 	  VelocityMap: ParticleVelocityMap$1,
 	  AttributeMap: ParticleAttributeMap$1,
-	  ParamsMap: ParticleParamsMap$1
+	  ParamsMap: ParticleParamsMap$1,
+	  AtlasMap: ParticleAtlasMap
+	};
+	/**
+	 * The atlas EVE ships, and how many tiles it holds.
+	 *
+	 * Both read off the shipped `Tr2GpuParticleSystem` at
+	 * `res:/fisfx/gpuparticles/system.black` rather than guessed: its `render`
+	 * effect binds this texture with an `AtlasMapSize` of `(1024, 8)`, and the
+	 * file measures 1024x128.
+	 * @type {Object}
+	 */
+	Tw2GpuParticleDrawShader.ATLAS = {
+	  path: "res:/fisfx/gpuparticles/systematlas.dds",
+	  tiles: 8
 	};
 	/** Six vertices per particle: two triangles, no vertex buffer. @type {Number} */
 	Tw2GpuParticleDrawShader.VERTICES_PER_PARTICLE = 6;
