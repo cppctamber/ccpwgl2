@@ -535,7 +535,7 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
      * @returns {Number} the fractional particle carried into the next call
      * @private
      */
-    _SpawnBatch(args, positionStart, positionEnd, velocityStart, velocityEnd, carryOverCount, deltaTime)
+    _SpawnBatch(args, positionStart, positionEnd, velocityStart, velocityEnd, carryOverCount, deltaTime, persistDirection)
     {
         const
             g = Tr2GpuSharedEmitter.global,
@@ -570,8 +570,23 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
             vec3.scale(emitter.velocity, velocityEnd, this.inheritVelocity);
             vec3.scale(emitter.velocityPrevious, velocityStart, this.inheritVelocity);
 
-            vec3.copy(emitter.directionPrevious, emitter.direction);
+            // The PREVIOUS direction is this emitter's own, from its last
+            // batch, and it has to be - the shader interpolates between the two
+            // so a turning emitter sweeps rather than snapping.
+            //
+            // It is kept on the emitter rather than in the scratch struct
+            // because the scratch is shared: reading `emitter.direction` back
+            // out of it, as the first version of this did, hands one emitter
+            // whichever direction the last DIFFERENT emitter happened to leave
+            // there.
+            vec3.copy(emitter.directionPrevious, this._prevDirection);
             Tr2GpuSharedEmitter.TransformNormal(emitter.direction, this.direction, args.parentTransform);
+
+            // Only the continuous path remembers it. Carbon makes the same
+            // distinction by passing the member by reference from Update
+            // (cpp:141) and a COPY from the burst paths (cpp:160, 187), so a
+            // burst reads the running direction without disturbing it.
+            if (persistDirection) vec3.copy(this._prevDirection, emitter.direction);
 
             args.system.Emit(emitter, this._emitterId, this._paramsHash, this.GetParamsData(g.params));
         }

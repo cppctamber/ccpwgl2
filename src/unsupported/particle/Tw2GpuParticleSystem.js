@@ -60,6 +60,13 @@ export class Tr2GpuParticleSystem
     @meta.uint
     visibleCount = 0;
 
+    /**
+     * Batches taken from emitters this frame, awaiting the compute dispatch
+     * that does not exist yet.
+     * @type {Array<Object>}
+     */
+    _emitRequests = [];
+
     InitializeBuffers()
     {
     }
@@ -154,6 +161,11 @@ export class Tr2GpuParticleSystem
     Clear()
     {
         this.visibleCount = 0;
+
+        // Pending batches go with the particles. Keeping them would emit, on
+        // the next frame, a burst that was accounted for against a pool that no
+        // longer exists.
+        this._emitRequests.length = 0;
     }
 
     /**
@@ -174,11 +186,15 @@ export class Tr2GpuParticleSystem
     {
         if (!this.enableEmit) return null;
 
+        // COPIED, vectors and all. The emitter fills one scratch struct and
+        // reuses it for every batch, so a shallow copy would leave every
+        // request in the frame pointing at the same vectors - and they would
+        // all read as whatever the last batch wrote.
         const request = {
-            emitter: Object.assign({}, emitter),
+            emitter: CopyStruct(emitter),
             id,
             hash,
-            params: Object.assign({}, params)
+            params: CopyStruct(params)
         };
 
         // Clamped to the whole system's capacity, not to what is free. Carbon
@@ -249,4 +265,41 @@ export class Tr2GpuParticleSystem
         return out;
     }
 
+}
+
+
+/**
+ * Copies a plain struct, taking its typed arrays by VALUE.
+ *
+ * The particle structs are flat: numbers, typed-array vectors, and one array of
+ * vectors for the colours. Nothing nested beyond that, so this does not need to
+ * be general - and a general deep clone would be slower and would quietly
+ * accept shapes this should reject.
+ *
+ * @param {Object} src
+ * @returns {Object}
+ */
+function CopyStruct(src)
+{
+    const out = {};
+
+    for (const key in src)
+    {
+        const value = src[key];
+
+        if (ArrayBuffer.isView(value))
+        {
+            out[key] = value.slice();
+        }
+        else if (Array.isArray(value))
+        {
+            out[key] = value.map(v => (ArrayBuffer.isView(v) ? v.slice() : v));
+        }
+        else
+        {
+            out[key] = value;
+        }
+    }
+
+    return out;
 }

@@ -448,9 +448,14 @@ export class EveStretch2 extends meta.Model
      * advances the start/loop/end curve sets and rebuilds the endpoint
      * transforms. Not reproduced: pushing `updateContext`-derived time into
      * `sourceObserver`/`destinationObserver` (`TriObserverLocal` has no
-     * `Update` method ported yet) or `sourceEmitter`/`destinationEmitter`
-     * (`Tr2GpuSharedEmitter.Update()` takes no arguments in ccpwgl and does
-     * nothing - the GPU particle system isn't wired to this layer).
+     * `Update` method ported yet) or `sourceEmitter`/`destinationEmitter`.
+     *
+     * Those emitters now DO emit - `Tr2GpuSharedEmitter.Update(args)` is
+     * implemented - but they have nothing to emit into: they need
+     * `args.system`, and no ccpwgl scene owns a `Tr2GpuParticleSystem`. In
+     * Carbon the system is a property of the SCENE (`EveSpaceScene_Blue.cpp:473`)
+     * and reaches an emitter through the update context, which is the wiring
+     * this layer is missing.
      * @param {Number} dt
      */
     Update(dt)

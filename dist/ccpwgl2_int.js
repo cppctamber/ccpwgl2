@@ -185165,9 +185165,14 @@
 	   * advances the start/loop/end curve sets and rebuilds the endpoint
 	   * transforms. Not reproduced: pushing `updateContext`-derived time into
 	   * `sourceObserver`/`destinationObserver` (`TriObserverLocal` has no
-	   * `Update` method ported yet) or `sourceEmitter`/`destinationEmitter`
-	   * (`Tr2GpuSharedEmitter.Update()` takes no arguments in ccpwgl and does
-	   * nothing - the GPU particle system isn't wired to this layer).
+	   * `Update` method ported yet) or `sourceEmitter`/`destinationEmitter`.
+	   *
+	   * Those emitters now DO emit - `Tr2GpuSharedEmitter.Update(args)` is
+	   * implemented - but they have nothing to emit into: they need
+	   * `args.system`, and no ccpwgl scene owns a `Tr2GpuParticleSystem`. In
+	   * Carbon the system is a property of the SCENE (`EveSpaceScene_Blue.cpp:473`)
+	   * and reaches an emitter through the update context, which is the wiring
+	   * this layer is missing.
 	   * @param {Number} dt
 	   */
 	  Update(dt) {
@@ -251375,7 +251380,7 @@
 	   * @returns {Number} the fractional particle carried into the next call
 	   * @private
 	   */
-	  _SpawnBatch(args, positionStart, positionEnd, velocityStart, velocityEnd, carryOverCount, deltaTime) {
+	  _SpawnBatch(args, positionStart, positionEnd, velocityStart, velocityEnd, carryOverCount, deltaTime, persistDirection) {
 	    var g = Tr2GpuSharedEmitter.global,
 	      emitter = this.GetEmitterData(g.emitter),
 	      move = vec3$3.subtract(g.vec3_4, positionEnd, positionStart),
@@ -251400,8 +251405,24 @@
 	      vec3$3.copy(emitter.positionPrevious, positionStart);
 	      vec3$3.scale(emitter.velocity, velocityEnd, this.inheritVelocity);
 	      vec3$3.scale(emitter.velocityPrevious, velocityStart, this.inheritVelocity);
-	      vec3$3.copy(emitter.directionPrevious, emitter.direction);
+
+	      // The PREVIOUS direction is this emitter's own, from its last
+	      // batch, and it has to be - the shader interpolates between the two
+	      // so a turning emitter sweeps rather than snapping.
+	      //
+	      // It is kept on the emitter rather than in the scratch struct
+	      // because the scratch is shared: reading `emitter.direction` back
+	      // out of it, as the first version of this did, hands one emitter
+	      // whichever direction the last DIFFERENT emitter happened to leave
+	      // there.
+	      vec3$3.copy(emitter.directionPrevious, this._prevDirection);
 	      Tr2GpuSharedEmitter.TransformNormal(emitter.direction, this.direction, args.parentTransform);
+
+	      // Only the continuous path remembers it. Carbon makes the same
+	      // distinction by passing the member by reference from Update
+	      // (cpp:141) and a COPY from the burst paths (cpp:160, 187), so a
+	      // burst reads the running direction without disturbing it.
+	      if (persistDirection) vec3$3.copy(this._prevDirection, emitter.direction);
 	      args.system.Emit(emitter, this._emitterId, this._paramsHash, this.GetParamsData(g.params));
 	    }
 	    return carryOverCount;
@@ -251944,6 +251965,12 @@
 	    _initializerDefineProperty(this, "display", _descriptor12$1, this);
 	    _initializerDefineProperty(this, "updateVisibleCount", _descriptor13$1, this);
 	    _initializerDefineProperty(this, "visibleCount", _descriptor14$1, this);
+	    /**
+	     * Batches taken from emitters this frame, awaiting the compute dispatch
+	     * that does not exist yet.
+	     * @type {Array<Object>}
+	     */
+	    this._emitRequests = [];
 	  }
 	  InitializeBuffers() {}
 	  RegisterVariables() {}
@@ -251984,6 +252011,11 @@
 	  ReleaseResources() {}
 	  Clear() {
 	    this.visibleCount = 0;
+
+	    // Pending batches go with the particles. Keeping them would emit, on
+	    // the next frame, a burst that was accounted for against a pool that no
+	    // longer exists.
+	    this._emitRequests.length = 0;
 	  }
 
 	  /**
@@ -252002,11 +252034,16 @@
 	   */
 	  Emit(emitter, id, hash, params) {
 	    if (!this.enableEmit) return null;
+
+	    // COPIED, vectors and all. The emitter fills one scratch struct and
+	    // reuses it for every batch, so a shallow copy would leave every
+	    // request in the frame pointing at the same vectors - and they would
+	    // all read as whatever the last batch wrote.
 	    var request = {
-	      emitter: Object.assign({}, emitter),
+	      emitter: CopyStruct(emitter),
 	      id,
 	      hash,
-	      params: Object.assign({}, params)
+	      params: CopyStruct(params)
 	    };
 
 	    // Clamped to the whole system's capacity, not to what is free. Carbon
@@ -252176,6 +252213,32 @@
 	    return 0;
 	  }
 	}), _class2$9)) || _class$j) || _class$j);
+
+	/**
+	 * Copies a plain struct, taking its typed arrays by VALUE.
+	 *
+	 * The particle structs are flat: numbers, typed-array vectors, and one array of
+	 * vectors for the colours. Nothing nested beyond that, so this does not need to
+	 * be general - and a general deep clone would be slower and would quietly
+	 * accept shapes this should reject.
+	 *
+	 * @param {Object} src
+	 * @returns {Object}
+	 */
+	function CopyStruct(src) {
+	  var out = {};
+	  for (var key in src) {
+	    var value = src[key];
+	    if (ArrayBuffer.isView(value)) {
+	      out[key] = value.slice();
+	    } else if (Array.isArray(value)) {
+	      out[key] = value.map(v => ArrayBuffer.isView(v) ? v.slice() : v);
+	    } else {
+	      out[key] = value;
+	    }
+	  }
+	  return out;
+	}
 
 	var unsupported = {
 		__proto__: null,
