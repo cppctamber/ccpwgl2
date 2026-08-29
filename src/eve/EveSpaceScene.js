@@ -129,6 +129,33 @@ export class EveSpaceScene extends meta.Model
     @meta.boolean
     carbonShadowAutoDistance = true;
 
+    /**
+     * A near/far the scene must use, in place of anything it would work out.
+     *
+     * ## Why an override rather than a switch
+     *
+     * The fit is right for what this engine usually draws - a ship against
+     * empty space, where sizing the cascades to the subject is the whole
+     * difference between visible self-shadowing and a grey wash. It is wrong
+     * inside a station: the scene is 22km of building, the fit spreads four
+     * cascades over kilometres, and every shadow in the room breaks up into the
+     * cascade grid.
+     *
+     * Turning the fit OFF and setting 'carbonShadowDistance' would work, and it
+     * is two facts about one decision - a flag, and a value that means nothing
+     * unless the flag agrees, each settable without the other. This is one: a
+     * caller says the range it wants and gets it until it says otherwise
+     * (operator, 2026-08-29). Null means nobody has asked, which is the only
+     * state in which the fit and the fixed distance are consulted at all.
+     *
+     * Set through {@link ShadowNearFarOverrideOn}, cleared through
+     * {@link ShadowNearFarOverrideOff}.
+     *
+     * @type {?Array} [ near, far ], or null
+     */
+    @meta.plain
+    carbonShadowNearFarOverride = null;
+
     @meta.path
     @meta.isPrivate
     envMap1ResPath = "";
@@ -1712,7 +1739,18 @@ export class EveSpaceScene extends meta.Model
         // itself or on another object, so "shadows are invisible unless you are
         // next to the hull" is a resolution problem, not a missing shadow -
         // sizing the range to what is actually there is what fixes it.
-        if (this.carbonShadowAutoDistance)
+        // THE OVERRIDE FIRST, and it is the whole answer when there is one: a
+        // caller that has said which range it wants is not asking to be fitted
+        // to, and a fit that still ran would be a fit whose result is thrown
+        // away. See 'carbonShadowNearFarOverride'.
+        const override = this.carbonShadowNearFarOverride;
+
+        if (override)
+        {
+            producer.shadowNear = override[0];
+            producer.shadowDistance = override[1];
+        }
+        else if (this.carbonShadowAutoDistance)
         {
             const bounds = this.GetAutoNearFar({ minNear: 1, margin: 0.25 });
             if (bounds) producer.shadowDistance = Math.max(bounds.far, this.carbonShadowNear * 8);
@@ -1727,11 +1765,47 @@ export class EveSpaceScene extends meta.Model
         producer.cellsX = this.carbonShadowCascades;
         producer.cellsY = 1;
         producer.tileSize = this.carbonShadowTileSize;
-        // shadowDistance is set above - auto-fitted or from carbonShadowDistance.
-        producer.shadowNear = this.carbonShadowNear;
+        // Both are set above when there is an override. Without one the distance
+        // is auto-fitted or taken from carbonShadowDistance, and the near is the
+        // scene's own.
+        if (!override) producer.shadowNear = this.carbonShadowNear;
         producer.disableShimmer = this.carbonShadowStabilize;
 
         return renderer;
+    }
+
+    /**
+     * Fixes the shadow range, until something says otherwise.
+     *
+     * For a scene whose contents are not its subject - a station interior, where
+     * the fit measures the building while the shadows that matter fall on a
+     * landing pad. See 'carbonShadowNearFarOverride'.
+     *
+     * @param {Number} near - where the first cascade starts, in scene units
+     * @param {Number} far - how far the shadows reach
+     * @returns {Boolean} whether the values were usable
+     */
+    ShadowNearFarOverrideOn(near, far)
+    {
+        near = Number(near);
+        far = Number(far);
+
+        // Refused rather than clamped. A near past the far, or either at zero,
+        // is a caller that has worked something out wrongly, and taking it
+        // silently would show up as shadows that are merely odd.
+        if (!isFinite(near) || !isFinite(far) || near <= 0 || far <= near) return false;
+
+        this.carbonShadowNearFarOverride = [ near, far ];
+
+        return true;
+    }
+
+    /** Hands the range back to the scene's own fit. */
+    ShadowNearFarOverrideOff()
+    {
+        this.carbonShadowNearFarOverride = null;
+
+        return true;
     }
 
     GetAOHandler(create = true)
