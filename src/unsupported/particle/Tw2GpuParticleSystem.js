@@ -1,6 +1,27 @@
 import { meta } from "utils";
 
 
+/**
+ * The shipped `Tr2GpuParticleSystem` object, as data.
+ *
+ * This is the schema mirror only - every method here is an empty stub, and the
+ * system that actually runs is `Tw2GpuParticleRenderer`. The effect slots below
+ * are what the shipped `.black` carries, not a list of things to implement.
+ *
+ * ## There is nothing to port behind `sort`, `sortStep`, `sortInner` or
+ * `setSortParameters`
+ *
+ * Those four slots exist because the effect list demands them. On the gles2
+ * profile this engine targets, the shipped `sort`, `sortinner`, `sortstep`,
+ * `setsortargs` and `setdrawparameters` effects are ONE 990-byte file under five
+ * names - byte-identical to each other - whose entire body writes a degenerate
+ * point at the origin. The sorting stage never existed in this version of the
+ * system; it lives only in the dx11 compute programs.
+ *
+ * Nor is it wanted. The draw pass blends SRCALPHA over ONE (see
+ * `shaders/particleDraw`), which is commutative, so particle order cannot change
+ * a pixel. A sort added here would cost a pass and change nothing.
+ */
 @meta.notImplemented
 @meta.define("Tr2GpuParticleSystem", true)
 export class Tr2GpuParticleSystem
@@ -66,6 +87,7 @@ export class Tr2GpuParticleSystem
      * @type {Array<Object>}
      */
     _emitRequests = [];
+    _originalMaxParticles = 0;
 
     InitializeBuffers()
     {
@@ -80,7 +102,22 @@ export class Tr2GpuParticleSystem
         this.InitializeBuffers();
         this.RegisterVariables();
         this.SetMaxParticles(this.maxParticles);
+        this._originalMaxParticles = this.maxParticles;
         return true;
+    }
+
+    GetOriginalMaxParticles()
+    {
+        return this._originalMaxParticles;
+    }
+
+    SetMaxParticleCount(maxParticles)
+    {
+        this.SetMaxParticles(maxParticles);
+    }
+
+    UpdateViewDependentData()
+    {
     }
 
     SetMaxParticles(maxParticles)
