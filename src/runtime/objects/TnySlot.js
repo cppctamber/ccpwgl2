@@ -540,7 +540,7 @@ export class TnySlot extends Tw2EventEmitter
      * @param {Array} targetArray   - the slot array to reconcile
      * @returns {Promise<Array>}
      */
-    static async RebuildLocatorSlots(parent, wrappedObjects, type, targetArray)
+    static async rebuildLocatorSlots(parent, wrappedObjects, type, targetArray)
     {
         const
             re = RegExp(String.raw`^(locator_${type})_([0-9]+)([a-z]+)`, "i"),

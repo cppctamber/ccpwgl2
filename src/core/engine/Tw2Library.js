@@ -444,6 +444,21 @@ export class Tw2Library extends Tw2EventEmitter
      * it; when set, Initialize skips fetching the full data.black.
      * @param {null|Function} handler - async (dna|null) => EveSOFData
      */
+    /**
+     * Gets the space object factory that serves a dna string.
+     *
+     * A registered dna handler may return a DIFFERENT factory per dna - that
+     * is what lazy sof loading is - so anything wanting hull data for a dna
+     * must ask here rather than read `tw2.eveSof`, which is only the default.
+     *
+     * @param {String} [dna] - the dna the factory is wanted for
+     * @returns {Promise<EveSOFData>}
+     */
+    async GetEveSof(dna)
+    {
+        return this._dnaHandler ? await this._dnaHandler(dna) : this.eveSof;
+    }
+
     SetDnaHandler(handler)
     {
         if (handler !== null && typeof handler !== "function")
@@ -1208,7 +1223,7 @@ export class Tw2Library extends Tw2EventEmitter
         {
             if (util.isDNA(value))
             {
-                const eveSof = this._dnaHandler ? await this._dnaHandler(value) : this.eveSof;
+                const eveSof = await this.GetEveSof(value);
                 result = await eveSof.Build(value);
             }
             else if (util.isString(value))

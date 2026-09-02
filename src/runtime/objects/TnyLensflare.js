@@ -53,6 +53,11 @@ export class TnyLensflare extends meta.Model
             throw new TypeError("Invalid wrapped lensflare");
         }
 
+        // Hidden HERE rather than in `fetch`, so it happens however the flare
+        // arrived - `TnyScene.Fetch` builds through `tw2.Fetch` and infers the
+        // class from the result, so it never passes through `fetch` at all.
+        if (wrapped) this.constructor.disableBrokenAreas(wrapped);
+
         this.wrapped = wrapped || null;
         return this;
     }
@@ -104,6 +109,10 @@ export class TnyLensflare extends meta.Model
      * guarded on it - skindr's `SunControl` does exactly that - silently loaded
      * no flare at all.
      *
+     * Named `Fetch` like every other runtime class. It was `fetch` while the
+     * scene was its only caller; now that `FetchInto` resolves a class and
+     * calls `Constructor.Fetch`, a lowercase one is simply unfetchable.
+     *
      * @param {String|Object} options - a res path, or values carrying `resPath`
      * @returns {Promise<TnyLensflare>}
      */
@@ -117,8 +126,6 @@ export class TnyLensflare extends meta.Model
         // A res path authored as .red names the same asset as the .black
         // container ccpwgl actually reads, as everywhere else in tny.
         const wrapped = await tw2.Fetch(resPath.replace(/\.red$/i, ".black"));
-
-        TnyLensflare.DisableBrokenAreas(wrapped);
 
         return new this(wrapped, values);
     }
@@ -142,7 +149,7 @@ export class TnyLensflare extends meta.Model
      * @param {EveLensflare} wrapped
      * @returns {Number} how many areas were hidden
      */
-    static DisableBrokenAreas(wrapped)
+    static disableBrokenAreas(wrapped)
     {
         const areas = wrapped && wrapped.mesh && wrapped.mesh.additiveAreas;
         if (!areas) return 0;
@@ -165,27 +172,27 @@ export class TnyLensflare extends meta.Model
     }
 
     /**
-     * The additive area names hidden by {@link DisableBrokenAreas}.
+     * The additive area names hidden by {@link disableBrokenAreas}.
      * @type {Array<String>}
      */
     static brokenAreaNames = [ "sun0", "dimwhite" ];
 
-    static FromWrapped(wrapped, values)
+    static fromWrapped(wrapped, values)
     {
         return new this(wrapped, values);
     }
 
-    static GetWrapped(item)
+    static getWrapped(item)
     {
         return item ? item.wrapped || null : null;
     }
 
-    static HasWrapped(item)
+    static hasWrapped(item)
     {
-        return !!this.GetWrapped(item);
+        return !!this.getWrapped(item);
     }
 
-    static ClearWrapped(item)
+    static clearWrapped(item)
     {
         if (item && item.SetWrapped)
         {

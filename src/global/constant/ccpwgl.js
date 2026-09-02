@@ -13,17 +13,34 @@ export const DeviceShaderQuality = {
     LOW: "lo"
 };
 
-export const SceneLodSettings = {
-    LOD_DISABLED: 0,
-    LOD_ENABLED: 1
+/**
+ * Values for the effectProfile option, naming the compiled-effect namespace a
+ * `/effect/` path is routed to.
+ *
+ * GLES2 and WEBGL2 both expect shaders that already exist as GLSL. DX11 reads
+ * Carbon containers carrying DXBC and translates them at load time, which is a
+ * build step running at runtime and is still alpha.
+ */
+export const DeviceEffectProfile = {
+    GLES2: "effect.gles2",
+    WEBGL2: "effect.webgl2",
+    DX11: "effect.dx11"
 };
 
-export const LodLevelPixels = {
-    ZERO: 20,
-    ONE: 100,
-    TWO: 250
-};
-
+/**
+ * Carbon's logical level-of-detail vocabulary.
+ *
+ * This describes update/render detail only. Visibility is tracked separately,
+ * and these values never select a geometry resource in ccpwgl.
+ */
+export const Tr2Lod = Object.freeze({
+    TR2_LOD_UNSPECIFIED: -1,
+    TR2_LOD_LOW: 0,
+    TR2_LOD_MEDIUM: 1,
+    TR2_LOD_HIGH: 2,
+    TR2_LOD_ULTRA: 3,
+    TR2_LOD_COUNT: 4
+});
 
 export const DisplayFilter = [
     "LOW",

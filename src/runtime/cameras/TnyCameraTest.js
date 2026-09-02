@@ -207,7 +207,7 @@ export class TnyCameraTest extends meta.Model
 
     AttachCanvas(canvas)
     {
-        canvas = this.constructor.ResolveCanvas(canvas);
+        canvas = this.constructor.resolveCanvas(canvas);
         this.wrapped = new WrappedTestCamera(canvas, this.GetCameraValues());
         this.ApplyValuesToWrapped();
         this.wrapped.controller = this._controller;
@@ -477,7 +477,7 @@ export class TnyCameraTest extends meta.Model
         return true;
     }
 
-    static ResolveCanvas(canvas)
+    static resolveCanvas(canvas)
     {
         if (isString(canvas))
         {
@@ -496,17 +496,17 @@ export class TnyCameraTest extends meta.Model
         return canvas;
     }
 
-    static GetWrapped(item)
+    static getWrapped(item)
     {
         return item ? item.wrapped || null : null;
     }
 
-    static HasWrapped(item)
+    static hasWrapped(item)
     {
-        return !!this.GetWrapped(item);
+        return !!this.getWrapped(item);
     }
 
-    static ClearWrapped(item)
+    static clearWrapped(item)
     {
         if (item)
         {

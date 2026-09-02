@@ -2,7 +2,11 @@ import { resMan, tw2 } from "global";
 import { isString, isVector, meta } from "utils";
 import { Tw2Picker, Tw2RayCaster } from "core";
 import { EveSpaceScene } from "eve/EveSpaceScene";
+import { TnyClient } from "./TnyClient";
 import { TnyLensflare } from "./objects/TnyLensflare";
+import { TnyPlanet } from "./objects/TnyPlanet";
+import { TnySpaceObject } from "./objects/TnySpaceObject";
+import { TnyStrategicCruiser } from "./objects/TnyStrategicCruiser";
 
 
 /**
@@ -286,6 +290,13 @@ export class TnyScene extends meta.Model
         for (let i = 0; i < this.objects.length; i++)
         {
             const object = this.objects[i];
+
+            if (object instanceof TnyStrategicCruiser)
+            {
+                object.GetParts(objects);
+                continue;
+            }
+
             const raw = object.wrapped || object;
             if (object.isPlanet && !this._treatPlanetsAsObjects && Array.isArray(planets)) planets.push(raw);
             else objects.push(raw);
@@ -337,6 +348,282 @@ export class TnyScene extends meta.Model
     }
 
     /**
+     * Await an object's resources before it goes into the scene.
+     *
+     * Moved here from TnyClient with the rest of the fetch family. With it
+     * set, a hull is fully built before anything can draw it; without it the
+     * object is added straight away and fills in as it loads, which is what
+     * makes something appear immediately.
+     *
+     * `FetchLensflare` used to read this off the scene while it only existed
+     * on the client, so the flare watch was dead code. It is a real property
+     * now.
+     * @type {Boolean}
+     */
+    doWatch = false;
+
+    /**
+     * Resolves a runtime class by name.
+     *
+     * The store is class-level on `TnyClient`, so this works without a client
+     * instance - a scene is reachable before any client has seen it, and one
+     * that could not resolve its own classes could not fetch into itself.
+     * @param {String} name
+     * @returns {?Function}
+     */
+    GetClass(name)
+    {
+        return TnyClient.getClass(name);
+    }
+
+    /**
+     * True if a class name is registered.
+     *
+     * Asked before `GetClass`, because the store THROWS its own
+     * `ErrStoreKeyUnregistered` on a miss. Letting that out of a scene fetch
+     * reports an engine store key rather than the bad `type` the caller wrote.
+     * @param {String} name
+     * @returns {Boolean}
+     */
+    HasClass(name)
+    {
+        return TnyClient.hasClass(name);
+    }
+
+    /**
+     * Fetches by NAMED type, and unless told not to, puts it in THIS scene.
+     *
+     * The scene owns this, not the client. A client holds whichever scene is
+     * active; it does not get to decide that the active one is the right home
+     * for an object being built. A consumer with several scenes alive - a page
+     * that swaps backdrops, a preview beside a stage - would otherwise have
+     * every fetch land wherever the last swap left the client, which is a race
+     * rather than a choice.
+     *
+     * `tw2.Fetch` already builds from either a dna string or a res path, so
+     * there is one path here and not two. Resolve whatever the caller named
+     * down to a source, build it, then look at the eve root class that came
+     * back and wrap it in the matching Tny class.
+     *
+     * Inferring AFTER the build is what makes the named fetchers unnecessary
+     * as dispatch: the object says what it is. `type` is still accepted for a
+     * caller that wants to force a wrapper.
+     *
+     *     scene.Fetch(dna)                  // -> TnyShip / TnyStationary / ...
+     *     scene.Fetch(typeID)               // resolves to dna first
+     *     scene.Fetch(skinrUUID)            // ditto, pattern injected
+     *     scene.Fetch("res:/.../x.black")   // -> whatever it built
+     *     scene.Fetch([ a, b ])             // an array in, an array out
+     *     scene.Fetch(dna, null, true)      // built, not added
+     *
+     * Signature follows WrappedScene's fetchers - `(options, onProgress,
+     * doNotAdd)` - because callers of those already know it. Passing
+     * `onProgress` turns watching on for that fetch: asking to be told about
+     * loading is asking for the load to be waited on.
+     *
+     * @param {String|Number|Object|Array} options - see TnySpaceObject.resolve
+     * @param {String} [options.type] - force a registered class instead of inferring
+     * @param {Function} [onProgress] - resource watcher callback; implies doWatch
+     * @param {Boolean} [doNotAdd] - hand it back without adding it
+     * @returns {Promise<*|Array>} the object, or an array of them
+     */
+    async Fetch(options, onProgress, doNotAdd)
+    {
+        if (Array.isArray(options))
+        {
+            return Promise.all(options.map(x => this.Fetch(x, onProgress, doNotAdd)));
+        }
+
+        // A named type skips inference entirely and uses that class's own
+        // fetch - which is how a celestial gets here, since it assembles from
+        // sde parts rather than from one resource.
+        if (options && typeof options === "object" && options.type)
+        {
+            const { type, ...rest } = options;
+            if (!this.HasClass(type)) throw new TypeError(`Unregistered object type: ${type}`);
+            return this.constructor._fetch(this, this.GetClass(type), rest, onProgress, doNotAdd);
+        }
+
+        const { dna, resPath, blendMode, awaitResources, ...values } = await TnySpaceObject.resolve(options);
+        const source = dna || resPath;
+
+        const wrapped = await tw2.Fetch(source, awaitResources);
+        wrapped._resPath = source;
+
+        // Carbon compiles the blend mode in as a permutation, so it cannot ride
+        // along in the dna.
+        if (blendMode && wrapped.SetBlendMode) wrapped.SetBlendMode(blendMode);
+
+        const object = this.GetClass(this.constructor.getTnyClassName(wrapped)).fromWrapped(wrapped, values);
+        if (object.RebuildSlots) await object.RebuildSlots();
+
+        return this.constructor._attach(this, object, onProgress, doNotAdd);
+    }
+
+    /**
+     * The Tny class that wraps a built eve object.
+     *
+     * Matched on the eve class NAME, walking up the prototype chain until a
+     * mapped one is found, rather than with `instanceof`. ccpwgl's
+     * `EveStation2` extends `EveShip2`, so an `instanceof` ladder silently
+     * depends on being written most-specific-first; walking the chain cannot
+     * get that wrong.
+     *
+     * @param {*} wrapped - a built eve object
+     * @returns {String} a registered Tny class name
+     */
+    static getTnyClassName(wrapped)
+    {
+        let proto = wrapped && Object.getPrototypeOf(wrapped);
+        while (proto && proto.constructor)
+        {
+            const name = this.EVE_CLASS[proto.constructor.name];
+            if (name) return name;
+            proto = Object.getPrototypeOf(proto);
+        }
+        return "TnySpaceObject";
+    }
+
+    /**
+     * Eve root class to the Tny class that wraps it.
+     *
+     * KNOWN LIMIT: ccpwgl's sof builder has one branch,
+     * `buildClass === 2 ? new EveStation2() : new EveShip2()`
+     * (`src/sof/EveSOFData.js:1209`), so buildClass 1 (mobile), 3 (swarm) and
+     * 4 (extension) all arrive here as `EveShip2` and come back `TnyShip`.
+     * A citadel therefore wraps as a ship. It still WORKS - `TnyShip` extends
+     * `TnyMobile`, so the turret slots a citadel needs are there - but the
+     * class is not what Carbon would have built. The fix belongs in the
+     * builder: teach it `EveMobile` and `EveSwarm` and this map is right for
+     * free, with no dispatch table to keep in step.
+     *
+     * Names rather than constructors, so a consumer can register its own class
+     * under one of these and have `Fetch` return it.
+     * @type {Object<String, String>}
+     */
+    static EVE_CLASS = {
+        EvePlanet: "TnyPlanet",
+        EveOldPlanet: "TnyPlanet",
+        EveLensflare: "TnyLensflare",
+        EveStation2: "TnyStationary",
+        EveShip2: "TnyShip",
+        EveShip: "TnyShip",
+        EveSpaceObject: "TnySpaceObject",
+        EveEffectRoot2: "TnySpaceObject",
+        EveEffectRoot: "TnySpaceObject",
+        EveTransform: "TnySpaceObject"
+    };
+
+    /**
+     * The body every fetcher here shares: build an unattached object through
+     * the class's own static `fetch`, optionally wait on its resources, add it.
+     *
+     * Static, and the scene is an argument rather than `this`, so the scene an
+     * object lands in is named at the call site every time. That is the whole
+     * point of the change this belongs to - a fetch must never resolve its
+     * destination from ambient state.
+     *
+     * @param {TnyScene} scene - the scene the result belongs to
+     * @param {Function} Constructor - a runtime class with a static fetch
+     * @param {String|Number|Object} [options]
+     * @param {Function} [onProgress]
+     * @param {Boolean} [doNotAdd]
+     * @returns {Promise<*>}
+     */
+    static async _fetch(scene, Constructor, options, onProgress, doNotAdd)
+    {
+        if (!Constructor || !Constructor.fetch) throw new TypeError("Unfetchable object type");
+        return this._attach(scene, await Constructor.fetch(options), onProgress, doNotAdd);
+    }
+
+    /**
+     * The tail every fetcher shares: optionally wait on resources, then add.
+     *
+     * Separate from `_fetch` because `FetchResPath` has to BUILD before it can
+     * know which class to wrap in, so it arrives here with an object already
+     * in hand.
+     *
+     * @param {TnyScene} scene - the scene the object belongs to
+     * @param {*} object
+     * @param {Function} [onProgress]
+     * @param {Boolean} [doNotAdd]
+     * @returns {Promise<*>}
+     */
+    static async _attach(scene, object, onProgress, doNotAdd)
+    {
+        if (!scene || !scene.AddObject) throw new TypeError("Invalid scene");
+
+        if (scene.doWatch || onProgress)
+        {
+            await this.watchQuietly(object, onProgress);
+        }
+
+        if (!doNotAdd) scene.AddObject(object);
+        return object;
+    }
+
+    /**
+     * Watches an object's resources without letting one bad resource throw.
+     *
+     * `resMan.Watch` rejects when ANY watched resource errors. The object is
+     * built by then, so a failed texture would otherwise discard a usable
+     * hull - report it and carry on, which is what `Fetch` does with a failed
+     * nebula and `FetchLensflare` with an absent occluder.
+     *
+     * @param {*} object
+     * @param {Function} [onProgress]
+     * @returns {Promise<*>} the object
+     */
+    static async watchQuietly(object, onProgress)
+    {
+        try
+        {
+            await resMan.Watch(object, onProgress || undefined);
+        }
+        catch (err)
+        {
+            tw2.Debug({
+                name: "TnyScene",
+                message: "Object loaded with failed resources",
+                data: { err }
+            });
+        }
+        return object;
+    }
+
+    /**
+     * Fetches a ship. An alias for `Fetch`, kept because callers say it and it
+     * reads better at a call site that knows what it is asking for - but the
+     * built object still decides its own class.
+     * @param {String|Number|Object} options - see TnySpaceObject.resolve
+     * @param {Function} [onProgress]
+     * @param {Boolean} [doNotAdd]
+     * @returns {Promise<*>}
+     */
+    async FetchShip(options, onProgress, doNotAdd)
+    {
+        return this.Fetch(options, onProgress, doNotAdd);
+    }
+
+    /**
+     * Fetches a celestial - planet, moon or sun.
+     *
+     * One method, because there is one class. Carbon has a single celestial
+     * class and a sun is one of them; kind is content, not type. Pass
+     * `moonID` or `planetID` and the SDE decides what gets assembled - see
+     * `TnyPlanet`.
+     *
+     * @param {Number|Object} options - see TnyPlanet.fetch
+     * @param {Function} [onProgress] - resource watcher callback
+     * @param {Boolean} [doNotAdd] - hand it back without adding it
+     * @returns {Promise<TnyPlanet>}
+     */
+    async FetchPlanet(options, onProgress, doNotAdd)
+    {
+        return this.constructor._fetch(this, TnyPlanet, options, onProgress, doNotAdd);
+    }
+
+    /**
      * Fetches a lensflare and, unless told not to, adds it to this scene.
      *
      * Restored from `WrappedScene.FetchLensflare`, which went with `src/wrapped`
@@ -356,48 +643,24 @@ export class TnyScene extends meta.Model
      */
     async FetchLensflare(options, onProgress, doNotAdd)
     {
-        const lensflare = await TnyLensflare.fetch(options);
-
-        // The archived version gated this on `this.doWatch`, which was a
-        // WrappedScene property and does not exist here - reading it would have
-        // made the watch dead code. TnyClient's rule is the live one: watch when
-        // asked to, or whenever a progress callback was supplied, since supplying
-        // one and never being called is the confusing outcome.
+        // Shares the body with every other member of the family, so the watch
+        // rule and the failed-resource tolerance are stated once.
         //
-        // Wrapped in try/catch for the same reason `Fetch` below is: a Watch
-        // rejects if ANY watched resource errors, and the flare is already built
-        // by then. `collectsamples.fx` is absent from shipped data, so an
-        // occluder resource failing is the normal case rather than the
-        // exceptional one - discarding the flare over it would mean never
-        // returning one at all.
-        if (this.doWatch || onProgress)
-        {
-            try
-            {
-                await resMan.Watch(lensflare, onProgress);
-            }
-            catch (err)
-            {
-                tw2.Debug({
-                    name: "TnyScene",
-                    message: "Lensflare loaded with failed resources",
-                    data: { err }
-                });
-            }
-        }
-
-        if (!doNotAdd) this.AddObject(lensflare);
-
-        return lensflare;
+        // Tolerating a failed resource matters more here than anywhere else:
+        // `collectsamples.fx` is absent from shipped data, so an occluder
+        // failing is the NORMAL case. Letting a Watch rejection through would
+        // mean never returning a flare at all.
+        return this.constructor._fetch(this, TnyLensflare, options, onProgress, doNotAdd);
     }
 
     /**
-     * Fetches a scene.
+     * Fetches a SCENE - the static, as against the instance `Fetch` above,
+     * which puts something into a scene that already exists.
      * @param {String|Object|Array} options - res path, clear colour, or values
      * @param {Function} [onProgress]
      * @returns {Promise<TnyScene>}
      */
-    static async Fetch(options = {}, onProgress)
+    static async fetch(options = {}, onProgress)
     {
         if (isString(options)) options = { resPath: options };
         else if (isVector(options)) options = { background: options };

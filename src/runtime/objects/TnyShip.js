@@ -1,10 +1,10 @@
 import { meta } from "utils";
 import { EveShip, EveShip2 } from "eve/object";
-import { TnySpaceObject } from "./TnySpaceObject";
+import { TnyMobile } from "./TnyMobile";
 
 
 @meta.define("TnyShip")
-export class TnyShip extends TnySpaceObject
+export class TnyShip extends TnyMobile
 {
 
     @meta.uint
@@ -24,7 +24,7 @@ export class TnyShip extends TnySpaceObject
     @meta.uint
     get boosterStrength()
     {
-        const part = this.constructor.GetBoosterPart(this.wrapped);
+        const part = this.constructor.getBoosterPart(this.wrapped);
         return part ? part.boosterGain || 0 : 0;
     }
 
@@ -36,13 +36,13 @@ export class TnyShip extends TnySpaceObject
     @meta.uint
     get boosterLength()
     {
-        const scale = this.constructor.GetBoosterScale(this.wrapped);
+        const scale = this.constructor.getBoosterScale(this.wrapped);
         return scale ? scale.z || scale[2] || 0 : 0;
     }
 
     set boosterLength(value)
     {
-        const scale = this.constructor.GetBoosterScale(this.wrapped);
+        const scale = this.constructor.getBoosterScale(this.wrapped);
         if (scale)
         {
             if ("z" in scale) scale.z = value;
@@ -69,7 +69,7 @@ export class TnyShip extends TnySpaceObject
 
     SetBoosterStrength(value, part)
     {
-        part = this.constructor.GetBoosterPart(part || this.wrapped);
+        part = this.constructor.getBoosterPart(part || this.wrapped);
         if (!part)
         {
             return false;
@@ -81,17 +81,17 @@ export class TnyShip extends TnySpaceObject
 
     HasBoosters(part)
     {
-        return !!this.constructor.GetBoosterPart(part || this.wrapped);
+        return !!this.constructor.getBoosterPart(part || this.wrapped);
     }
 
-    static GetBoosterPart(part)
+    static getBoosterPart(part)
     {
         return part && part.boosters ? part : null;
     }
 
-    static GetBoosterScale(part)
+    static getBoosterScale(part)
     {
-        part = this.GetBoosterPart(part);
+        part = this.getBoosterPart(part);
         return part &&
             part.boosters &&
             part.boosters.effect &&

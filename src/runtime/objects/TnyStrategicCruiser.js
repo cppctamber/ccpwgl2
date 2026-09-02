@@ -355,10 +355,7 @@ export class TnyStrategicCruiser extends TnyShip
         for (let i = 0; i < this.subsystems.length; i++)
         {
             const subsystem = this.subsystems[i];
-            if (subsystem.GetBatches)
-            {
-                subsystem.GetBatches(mode, accumulator);
-            }
+            subsystem.GetBatches(mode, accumulator);
         }
 
         return accumulator.length !== count;
@@ -478,26 +475,26 @@ export class TnyStrategicCruiser extends TnyShip
     {
         if (key !== undefined && key !== null)
         {
-            return TnyShip.GetBoosterPart(this.GetPart(key));
+            return TnyShip.getBoosterPart(this.GetPart(key));
         }
 
         for (let i = this.subsystems.length - 1; i >= 0; i--)
         {
-            const part = TnyShip.GetBoosterPart(this.subsystems[i]);
+            const part = TnyShip.getBoosterPart(this.subsystems[i]);
             if (part)
             {
                 return part;
             }
         }
 
-        return TnyShip.GetBoosterPart(this.wrapped);
+        return TnyShip.getBoosterPart(this.wrapped);
     }
 
     GetBoosterParts(out = [])
     {
         this.ForEachPart(part =>
         {
-            if (TnyShip.GetBoosterPart(part))
+            if (TnyShip.getBoosterPart(part))
             {
                 out.push(part);
             }
@@ -512,31 +509,42 @@ export class TnyStrategicCruiser extends TnyShip
 
         for (let i = 0; i < this.subsystems.length; i++)
         {
-            const subsystem = this.subsystems[i];
-            if (subsystem.Update)
-            {
-                subsystem.Update(dt);
-            }
+            this.subsystems[i].Update(dt);
         }
 
         return true;
     }
 
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        this._ForEachPart("UpdateLod", frustum);
+        if (this.wrapped) this.wrapped.UpdateLod(updateContext);
+
+        for (let i = 0; i < this.subsystems.length; i++)
+        {
+            this.subsystems[i].UpdateLod(updateContext);
+        }
     }
 
     ResetLod()
     {
-        this._ForEachPart("ResetLod");
+        if (this.wrapped) this.wrapped.ResetLod();
+
+        for (let i = 0; i < this.subsystems.length; i++)
+        {
+            this.subsystems[i].ResetLod();
+        }
     }
 
     UpdateViewDependentData(parentTransform, dt)
     {
         this.SetParentTransform(parentTransform || null);
         this.RebuildTransforms({ skipUpdate: true });
-        this._ForEachPart("UpdateViewDependentData", TnyStrategicCruiser.global.mat4_ID, dt);
+        if (this.wrapped) this.wrapped.UpdateViewDependentData(TnyStrategicCruiser.global.mat4_ID, dt);
+
+        for (let i = 0; i < this.subsystems.length; i++)
+        {
+            this.subsystems[i].UpdateViewDependentData(TnyStrategicCruiser.global.mat4_ID, dt);
+        }
     }
 
     OnWorldTransformModified(world)
@@ -610,23 +618,6 @@ export class TnyStrategicCruiser extends TnyShip
         }
     }
 
-    _ForEachPart(methodName, arg0, arg1)
-    {
-        if (this.wrapped && this.wrapped[methodName])
-        {
-            this.wrapped[methodName](arg0, arg1);
-        }
-
-        for (let i = 0; i < this.subsystems.length; i++)
-        {
-            const subsystem = this.subsystems[i];
-            if (subsystem[methodName])
-            {
-                subsystem[methodName](arg0, arg1);
-            }
-        }
-    }
-
     _AssertShip(ship, message)
     {
         if (ship && !(ship instanceof EveShip2 || ship instanceof EveShip))
@@ -651,18 +642,18 @@ export class TnyStrategicCruiser extends TnyShip
 
     static SUBSYSTEM_VARIANTS = [ "v1", "v2", "v3" ];
 
-    static GetHullNameForRace(race)
+    static getHullNameForRace(race)
     {
         const key = race ? String(race).toLowerCase() : "";
         return this.HULLS_BY_RACE[key] || "";
     }
 
-    static GetSofHullPath(hullName)
+    static getSofHullPath(hullName)
     {
         return hullName ? `${this.SOF_HULL_ROOT}/${hullName}.black` : "";
     }
 
-    static GetSofSubsystemPath(hullName, subsystem, variant)
+    static getSofSubsystemPath(hullName, subsystem, variant)
     {
         if (!hullName || !subsystem || !variant)
         {

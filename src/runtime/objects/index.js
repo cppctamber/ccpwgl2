@@ -1,7 +1,9 @@
 export { TnyLensflare } from "./TnyLensflare";
 export { TnySlot } from "./TnySlot";
-export { TnyMoon } from "./TnyMoon";
 export { TnyPlanet } from "./TnyPlanet";
 export { TnySpaceObject } from "./TnySpaceObject";
+export { TnyMobile } from "./TnyMobile";
 export { TnyShip } from "./TnyShip";
+export { TnyStationary } from "./TnyStationary";
+export { TnySwarm } from "./TnySwarm";
 export { TnyStrategicCruiser } from "./TnyStrategicCruiser";

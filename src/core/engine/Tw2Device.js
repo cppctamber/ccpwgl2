@@ -58,7 +58,8 @@ import {
     BlendTable,
     VendorWebglPrefixes,
     VendorRequestAnimationFrame,
-    VendorCancelAnimationFrame
+    VendorCancelAnimationFrame,
+    DeviceEffectProfile
 } from "constant";
 
 
@@ -76,14 +77,14 @@ export class Tw2Device extends Tw2EventEmitter
      * @type {Object.<string, string>}
      */
     static EffectProfiles = {
-        "effect.gles2": "/effect.gles2/",
-        "effect.webgl2": "/effect.webgl2/",
+        [DeviceEffectProfile.GLES2]: "/effect.gles2/",
+        [DeviceEffectProfile.WEBGL2]: "/effect.webgl2/",
         // Carbon v15 sources carrying DXBC. Not renderable as-is: Tw2EffectRes
         // translates them to GLSL in memory at load, which is a build step
         // running at runtime and costs real time on a large effect. Useful for
         // testing the Carbon path without a pre-translated effect.webgl2 tree;
         // point `effectProfile` here to route authored /effect/ paths at it.
-        "effect.dx11": "/effect.dx11/"
+        [DeviceEffectProfile.DX11]: "/effect.dx11/"
     };
 
     name = "Device";
@@ -129,7 +130,7 @@ export class Tw2Device extends Tw2EventEmitter
     viewportAspect = 0;
     viewportPixelRatio = ("devicePixelRatio" in window) ? window.devicePixelRatio : 1;
 
-    effectProfile = "effect.gles2";
+    effectProfile = DeviceEffectProfile.GLES2;
     effectDir = Tw2Device.EffectProfiles[this.effectProfile];
     mipLevelSkipCount = 0;
     shaderModel = "hi";

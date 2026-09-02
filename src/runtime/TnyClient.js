@@ -1,29 +1,33 @@
 import { mat4 } from "math";
-import { Tw2BatchAccumulator } from "core/batch";
 import { Tw2ConstructorStore } from "core/store";
 import { getApiService } from "./api";
-import { device, resMan, tw2 } from "global";
+import { device, tw2 } from "global";
 import { isString, meta } from "utils";
-import { TnyShip } from "./objects/TnyShip";
-import { TnyPlanet } from "./objects/TnyPlanet";
-import { TnyMoon } from "./objects/TnyMoon";
 import { TnyScene } from "./TnyScene";
 
 
+/**
+ * The runtime client: whichever scene is active, the cameras, the render loop,
+ * the viewport, and the services those need.
+ *
+ * It does NOT own objects. A client holds the active scene; it does not get to
+ * assume that the active one is the right home for an object somebody is
+ * building. Objects belong to a scene, and the scene is what fetches them -
+ * see `TnyScene.FetchInto` and friends. A consumer with more than one scene
+ * alive would otherwise have every fetch land wherever the last swap left the
+ * client, and every removal aimed at the same moving target.
+ */
 @meta.define("TnyClient")
 export class TnyClient extends meta.Model
 {
 
     options = {};
     services = new Map();
-    objects = [];
     cameras = [];
     camera = null;
     scene = null;
     post = null;
     renderer = null;
-    accumulator = new Tw2BatchAccumulator();
-    constructors = new Tw2ConstructorStore();
     constructor(options = {})
     {
         super();
@@ -33,7 +37,6 @@ export class TnyClient extends meta.Model
             apiService,
             camera,
             cameras,
-            objects,
             scene,
             post,
             renderer,
@@ -82,11 +85,6 @@ export class TnyClient extends meta.Model
         if (camera)
         {
             this.SetCamera(camera);
-        }
-
-        if (objects)
-        {
-            this.AddObject(objects);
         }
     }
 
@@ -138,7 +136,6 @@ export class TnyClient extends meta.Model
             scene,
             camera,
             cameras,
-            objects,
             post,
             renderer,
             ...engineOptions
@@ -151,11 +148,10 @@ export class TnyClient extends meta.Model
         if (renderer) this.SetRenderer(renderer);
         if (post) this.SetPost(post);
         if (cameras) this.AddCamera(cameras);
-        if (objects) this.AddObject(objects);
 
         // Instances can be set now; config has to wait for the device below.
         if (scene && scene.isScene) this.SetScene(scene);
-        if (camera && this.constructor.IsCamera(camera)) this.SetCamera(camera);
+        if (camera && this.constructor.isCamera(camera)) this.SetCamera(camera);
 
         await tw2.Initialize({
             ...engineOptions,
@@ -164,7 +160,7 @@ export class TnyClient extends meta.Model
 
         // Camera before scene: fetching a scene yields to the network, and a
         // frame that ticks in that gap renders nothing without a camera.
-        if (camera && !this.constructor.IsCamera(camera))
+        if (camera && !this.constructor.isCamera(camera))
         {
             this.SetCamera(this.CreateCamera(camera));
         }
@@ -211,8 +207,23 @@ export class TnyClient extends meta.Model
         return this.services.get(name) || null;
     }
 
-    /** Registers client-owned runtime constructor groups. */
-    Register(options = {})
+    /**
+     * The runtime's constructor store, reached through the instance helpers
+     * below or through `TnyClient` directly.
+     *
+     * Class-level because there is one client at a time, and because a scene
+     * fetches its own objects: `FetchObjects([{ type: "TnyShip" }])` has to
+     * turn a name into a constructor, and a scene is reachable without a
+     * client to ask. `TnyClient.getClass(...)` answers without one.
+     *
+     * Separate from `tw2`'s: Tny wrappers resolve here, the engine classes
+     * they wrap through `tw2.GetClass()`.
+     * @type {Tw2ConstructorStore}
+     */
+    static constructors = new Tw2ConstructorStore();
+
+    /** Registers runtime constructor groups. */
+    static register(options = {})
     {
         if (options.constructors)
         {
@@ -221,20 +232,47 @@ export class TnyClient extends meta.Model
         return this;
     }
 
-    HasClass(name)
+    static hasClass(name)
     {
         return this.constructors.Has(name);
     }
 
-    /** Resolves a constructor from this client, independently of tw2. */
-    GetClass(name)
+    /** Resolves a constructor, independently of tw2. */
+    static getClass(name)
     {
         return this.constructors.Get(name);
     }
 
-    SetClass(name, Constructor)
+    static setClass(name, Constructor)
     {
         return this.constructors.Set(name, Constructor);
+    }
+
+    /** The store, so `client.constructors` still reads. */
+    get constructors()
+    {
+        return this.constructor.constructors;
+    }
+
+    Register(options = {})
+    {
+        this.constructor.register(options);
+        return this;
+    }
+
+    HasClass(name)
+    {
+        return this.constructor.hasClass(name);
+    }
+
+    GetClass(name)
+    {
+        return this.constructor.getClass(name);
+    }
+
+    SetClass(name, Constructor)
+    {
+        return this.constructor.setClass(name, Constructor);
     }
 
     /**
@@ -297,37 +335,39 @@ export class TnyClient extends meta.Model
         return this.renderer;
     }
 
+    /**
+     * Sets the active scene.
+     *
+     * Nothing migrates. The scene that is leaving keeps its own objects,
+     * because they are its objects - a client swapping backdrops is choosing
+     * what to draw, not rehoming everything in the outgoing scene. Swap back
+     * and the previous scene is still furnished.
+     *
+     * @param {?TnyScene} scene
+     * @returns {TnyClient}
+     */
     SetScene(scene)
     {
+        if (scene === this.scene) return this;
+
+        const previous = this.scene;
         this.scene = scene || null;
-
-        // Objects added before the scene arrived move into it, so they are
-        // lit like everything added afterwards.
-        if (this.scene && this.scene.AddObject && this.objects.length)
-        {
-            const migrating = this.objects.splice(0);
-            for (let i = 0; i < migrating.length; i++) this.scene.AddObject(migrating[i]);
-        }
-
+        this.EmitEvent("scene_changed", this, this.scene, previous);
         return this;
     }
 
     /**
-     * Fetches a scene and sets it as the client's scene
-     * @param {String|Object|Array} options - see TnyScene.Fetch
-     * @returns {Promise<TnyScene>} the fetched scene
-     */
-    /**
-     * Fetches a scene and makes it the client's.
+     * Fetches a scene and makes it the active one.
      *
-     * `objects` is optional and may name anything the runtime can build -
-     * a dna string, a typeID, a SKINR id, or an options object. They are
-     * fetched AFTER the scene is set so each one lands in it; fetched
-     * before, they would be added to the client's own list and then drawn
-     * outside the scene, which means unlit.
+     * `objects` is optional and may name anything the runtime can build - a
+     * dna string, a typeID, a SKINR id, or an options object. They are fetched
+     * through the SCENE, and before it is installed: the scene owns its
+     * contents, so populating it does not depend on it being the active one,
+     * and a caller can build a furnished scene to swap in later.
      *
      * @param {String|Object} options - res path, or TnyScene.Fetch options
      * @param {Array} [options.objects] - object specs to populate it with
+     * @param {Function} [onProgress]
      * @returns {Promise<TnyScene>}
      */
     async FetchScene(options, onProgress)
@@ -338,147 +378,11 @@ export class TnyClient extends meta.Model
             ({ objects, ...options } = options);
         }
 
-        const scene = await TnyScene.Fetch(options, onProgress);
+        const scene = await TnyScene.fetch(options, onProgress);
+        if (objects) await scene.Fetch(objects, onProgress);
+
         this.SetScene(scene);
-
-        if (objects) await this.FetchObjects(objects, onProgress);
         return scene;
-    }
-
-    /**
-     * Fetches several objects into the scene, in parallel.
-     *
-     * Each spec may carry a `type` naming a registered class; without one it
-     * is a ship, which is what all but a handful of objects are.
-     *
-     * @param {Array|*} specs
-     * @returns {Promise<Array>} the fetched objects
-     */
-    async FetchObjects(specs, onProgress)
-    {
-        const list = Array.isArray(specs) ? specs : [ specs ];
-        return Promise.all(list.map(spec =>
-        {
-            if (spec && !isString(spec) && spec.type)
-            {
-                const { type, ...rest } = spec;
-                const Constructor = this.GetClass(type);
-                if (!Constructor || !Constructor.Fetch)
-                {
-                    throw new TypeError(`Unregistered or unfetchable object type: ${type}`);
-                }
-                return this.FetchInto(Constructor, rest, onProgress);
-            }
-            return this.FetchShip(spec, onProgress);
-        }));
-    }
-
-    /**
-     * Await an object's resources before it goes into the scene.
-     *
-     * Carried over from WrappedScene, where it was the same flag with the
-     * same name. With it set, a hull is fully built before anything can draw
-     * it; without it the object is added straight away and fills in as it
-     * loads, which is what makes something appear immediately.
-     * @type {Boolean}
-     */
-    doWatch = false;
-
-    /**
-     * Fetches through a runtime class and puts the result in the scene.
-     *
-     * Signature follows WrappedScene's fetchers - `(options, onProgress,
-     * doNotAdd)` - because callers of those already know it and the two mean
-     * the same things here.
-     *
-     * Passing `onProgress` turns watching on for that fetch. Wrapped watched
-     * only when `doWatch` was set, so a caller who supplied a callback without
-     * it got silence; asking to be told about loading is asking for the load
-     * to be waited on.
-     *
-     * @param {Function} Constructor - a runtime class with a static Fetch
-     * @param {String|Number|Object} [options] - see TnySpaceObject.Fetch
-     * @param {Function} [onProgress] - resource watcher callback; implies doWatch
-     * @param {Boolean} [doNotAdd] - hand it back without adding it
-     * @returns {Promise<*>} the fetched object
-     */
-    async FetchInto(Constructor, options, onProgress, doNotAdd)
-    {
-        const object = await Constructor.Fetch(options);
-
-        if (this.doWatch || onProgress)
-        {
-            await this.constructor.WatchQuietly(object, onProgress);
-        }
-
-        if (!doNotAdd) this.AddObject(object);
-        return object;
-    }
-
-    /**
-     * Watches an object's resources without letting one bad resource throw.
-     *
-     * `resMan.Watch` rejects when ANY watched resource errors. The object is
-     * built by then, so a failed texture would otherwise discard a usable
-     * hull - report it and carry on, which is what TnyScene.Fetch does with
-     * a failed nebula.
-     *
-     * @param {*} object
-     * @param {Function} [onProgress]
-     * @returns {Promise<*>} the object
-     */
-    static async WatchQuietly(object, onProgress)
-    {
-        try
-        {
-            await resMan.Watch(object, onProgress || undefined);
-        }
-        catch (err)
-        {
-            tw2.Debug({
-                name: "TnyClient",
-                message: "Object loaded with failed resources",
-                data: { err }
-            });
-        }
-        return object;
-    }
-
-    /**
-     * Fetches a ship (dna string, typeID, SKINR id or options object) and
-     * adds it to the client's objects
-     * @param {String|Number|Object} options - see TnySpaceObject.Fetch
-     * @param {Function} [onProgress] - resource watcher callback
-     * @param {Boolean} [doNotAdd] - hand it back without adding it
-     * @returns {Promise<TnyShip>}
-     */
-    async FetchShip(options, onProgress, doNotAdd)
-    {
-        return this.FetchInto(TnyShip, options, onProgress, doNotAdd);
-    }
-
-    /**
-     * Fetches a planet (or moon) and adds it to the scene
-     * @param {Number|Object} options - see TnyPlanet.Fetch
-     * @param {Function} [onProgress] - resource watcher callback
-     * @param {Boolean} [doNotAdd] - hand it back without adding it
-     * @returns {Promise<TnyPlanet>}
-     */
-    async FetchPlanet(options, onProgress, doNotAdd)
-    {
-        return this.FetchInto(TnyPlanet, options, onProgress, doNotAdd);
-    }
-
-    /**
-     * Fetches a moon and adds it to the scene
-     * @param {Number|Object} options - see TnyMoon.Fetch
-     * @param {Function} [onProgress] - resource watcher callback
-     * @param {Boolean} [doNotAdd] - hand it back without adding it
-     * @returns {Promise<TnyMoon>}
-     */
-    async FetchMoon(options, onProgress, doNotAdd)
-    {
-        return this.FetchInto(TnyMoon, options, onProgress, doNotAdd);
     }
 
     GetScene()
@@ -505,7 +409,7 @@ export class TnyClient extends meta.Model
      * @param {*} value
      * @returns {Boolean}
      */
-    static IsCamera(value)
+    static isCamera(value)
     {
         if (!value || typeof value !== "object") return false;
         return !!(value.isCamera ||
@@ -561,13 +465,13 @@ export class TnyClient extends meta.Model
 
     AddCamera(camera)
     {
-        this.constructor.AddItems(this.cameras, camera);
+        this.constructor.addItems(this.cameras, camera);
         return this;
     }
 
     RemoveCamera(camera)
     {
-        this.constructor.RemoveItem(this.cameras, camera);
+        this.constructor.removeItem(this.cameras, camera);
         if (this.camera === camera)
         {
             this.camera = this.cameras[0] || null;
@@ -585,51 +489,6 @@ export class TnyClient extends meta.Model
     {
         this.cameras.splice(0);
         this.camera = null;
-        return this;
-    }
-
-    SetObjects(objects)
-    {
-        this.ClearObjects();
-        return this.AddObject(objects);
-    }
-
-    /**
-     * Adds an object. When a scene is set the object goes into the scene:
-     * EveSpaceScene applies per-frame lighting and environment data before
-     * collecting batches, so an object rendered beside it comes out unlit.
-     * Without a scene the client renders it from its own list.
-     * @param {*} object
-     * @returns {TnyClient}
-     */
-    AddObject(object)
-    {
-        if (this.scene && this.scene.AddObject)
-        {
-            this.scene.AddObject(object);
-            return this;
-        }
-
-        this.constructor.AddItems(this.objects, object);
-        return this;
-    }
-
-    RemoveObject(object)
-    {
-        if (this.scene && this.scene.RemoveObject) this.scene.RemoveObject(object);
-        this.constructor.RemoveItem(this.objects, object);
-        return this;
-    }
-
-    GetObjects(out = [])
-    {
-        out.push(...this.objects);
-        return out;
-    }
-
-    ClearObjects()
-    {
-        this.objects.splice(0);
         return this;
     }
 
@@ -651,15 +510,6 @@ export class TnyClient extends meta.Model
         if (this.scene && this.scene.Update)
         {
             this.scene.Update(dt);
-        }
-
-        for (let i = 0; i < this.objects.length; i++)
-        {
-            const object = this.objects[i];
-            if (object && object.Update)
-            {
-                object.Update(dt);
-            }
         }
 
         if (this.post && this.post.Update)
@@ -688,7 +538,7 @@ export class TnyClient extends meta.Model
 
         if (this.renderer)
         {
-            rendered = this.constructor.RenderItem(this.renderer, dt, this) || rendered;
+            rendered = this.constructor.renderItem(this.renderer, dt, this) || rendered;
         }
         else
         {
@@ -697,13 +547,8 @@ export class TnyClient extends meta.Model
             if (this.scene)
             {
                 this.EmitEvent("pre_scene_render", this, dt);
-                rendered = this.constructor.RenderItem(this.scene, dt, this) || rendered;
+                rendered = this.constructor.renderItem(this.scene, dt, this) || rendered;
                 this.EmitEvent("post_scene_render", this, dt);
-            }
-
-            if (this.objects.length)
-            {
-                rendered = this.RenderObjects(dt) || rendered;
             }
         }
 
@@ -761,43 +606,13 @@ export class TnyClient extends meta.Model
         return out;
     }
 
-    RenderObjects(dt, accumulator = this.accumulator)
-    {
-        if (!this.objects.length)
-        {
-            return false;
-        }
-
-        accumulator = this.accumulator;
-        accumulator.Clear();
-
-        for (let i = 0; i < this.objects.length; i++)
-        {
-            const object = this.objects[i];
-            if (!object || !object.GetBatches) continue;
-
-            object.GetBatches(device.RM_OPAQUE, accumulator);
-            object.GetBatches(device.RM_DECAL, accumulator);
-            object.GetBatches(device.RM_TRANSPARENT, accumulator);
-            object.GetBatches(device.RM_ADDITIVE, accumulator);
-        }
-
-        if (!accumulator.length)
-        {
-            return false;
-        }
-
-        accumulator.Render();
-        return true;
-    }
-
-    static AddItems(target, items)
+    static addItems(target, items)
     {
         if (Array.isArray(items))
         {
             for (let i = 0; i < items.length; i++)
             {
-                this.AddItems(target, items[i]);
+                this.addItems(target, items[i]);
             }
             return this;
         }
@@ -815,7 +630,7 @@ export class TnyClient extends meta.Model
         return this;
     }
 
-    static RemoveItem(target, item)
+    static removeItem(target, item)
     {
         const index = target.indexOf(item);
         if (index !== -1)
@@ -824,7 +639,7 @@ export class TnyClient extends meta.Model
         }
     }
 
-    static RenderItem(item, dt, client)
+    static renderItem(item, dt, client)
     {
         if (!item)
         {

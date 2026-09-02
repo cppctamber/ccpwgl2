@@ -3,7 +3,6 @@ import { box3, mat4, sph3, vec3 } from "math";
 import { tw2 } from "global";
 import { WglTransform } from "core/WglTransform";
 import { getApiService } from "../api";
-import { TnySlot } from "./TnySlot";
 
 
 @meta.define("TnySpaceObject")
@@ -15,19 +14,6 @@ export class TnySpaceObject extends WglTransform
 
     @meta.plain
     custom = {};
-
-    /** @type {Array<TnySlot>} */
-    turrets = [];
-    /** @type {Array<TnySlot>} */
-    xlTurrets = [];
-    /** @type {Array<TnySlot>} */
-    launchers = [];
-    /** @type {Array<TnySlot>} */
-    chains = [];
-    /** @type {Array<TnySlot>} */
-    atomics = [];
-    /** @type {Array<TnySlot>} */
-    bombs = [];
 
     get display()
     {
@@ -336,19 +322,27 @@ export class TnySpaceObject extends WglTransform
         }
     }
 
-    static FromWrapped(wrapped, values)
+    static fromWrapped(wrapped, values)
     {
         return new this(wrapped, values);
     }
 
     /**
-     * Fetches a space object async, building through tw2.Fetch so a
-     * registered dna handler (lazy sof loading) is honoured.
+     * Works out WHAT to build, without building it.
      *
-     * Four ways to name what to build, in resolution order: a SKINR design
-     * id, a typeID, a graphicID, or dna/res path directly. Each resolves to
-     * dna before anything is fetched, so they all take the same path through
-     * the engine.
+     * Four ways to name a thing, in resolution order: a SKINR design id, a
+     * typeID, a graphicID, or dna/res path directly. All but a bare res path
+     * resolve to DNA - a SKINR design resolves to dna too, once its pattern is
+     * injected - so nearly everything ends up on the same path.
+     *
+     * Split out from `fetch` because the sof `buildClass` lives in the DNA, so
+     * anything wanting to choose a CLASS from the data has to resolve first and
+     * build second - see `TnyScene.FetchDNA`. Doing it inside `fetch` would
+     * mean resolving twice for a SKINR design: two api round trips and a double
+     * pattern registration.
+     *
+     * The result is itself valid `options`, and re-resolving it is a no-op: it
+     * carries `dna` and none of the id forms, so every branch below is skipped.
      *
      * A bare string is dispatched by shape - a UUID is a SKINR design, dna
      * looks like dna, anything else is a res path - and a bare number is a
@@ -366,9 +360,9 @@ export class TnySpaceObject extends WglTransform
      * @param {Array} [options.translation]
      * @param {Array} [options.rotation]
      * @param {Boolean|Function} [options.awaitResources] - await (or watch) resource loading
-     * @returns {Promise<TnySpaceObject>}
+     * @returns {Promise<Object>} `{ dna, resPath, blendMode, awaitResources, ...values }`
      */
-    static async Fetch(options = {})
+    static async resolve(options = {})
     {
         // Polymorphic by shape. Each form is identified POSITIVELY, in order,
         // so that dna - the one with the loosest shape - is what is left over
@@ -387,9 +381,9 @@ export class TnySpaceObject extends WglTransform
         if (isString(options))
         {
             const value = options.trim();
-            options = this.IsSkinrID(value) ? { skinrUUID: value }
+            options = this.isSkinrID(value) ? { skinrUUID: value }
                 : /^[0-9]+$/.test(value) ? { typeID: Number(value) }
-                    : this.IsResPath(value) ? { resPath: value }
+                    : this.isResPath(value) ? { resPath: value }
                         : { dna: value };
         }
         else if (isNumber(options))
@@ -399,7 +393,7 @@ export class TnySpaceObject extends WglTransform
 
         let {
             dna, resPath, typeID, graphicID, skinID, skinrUUID,
-            awaitResources, position, ...values
+            awaitResources, position, blendMode = null, ...values
         } = options;
 
         // `position` and `translation` are both accepted; the wrapped object
@@ -409,8 +403,6 @@ export class TnySpaceObject extends WglTransform
         {
             values.translation = position;
         }
-
-        let blendMode = null;
 
         if (skinrUUID)
         {
@@ -423,7 +415,7 @@ export class TnySpaceObject extends WglTransform
             // resolves pattern names while building, so a design whose pattern
             // arrives late draws as an unpatterned hull - which looks like the
             // skin failing rather than a missing registration.
-            if (design.pattern) this.RegisterPattern(design.pattern);
+            if (design.pattern) this.registerPattern(design.pattern);
         }
         else if (typeID !== undefined && typeID !== null)
         {
@@ -437,11 +429,28 @@ export class TnySpaceObject extends WglTransform
             // are not sof at all - so it feeds whichever of the two applies.
             const path = await getApiService().GetResPathFromGraphicID(graphicID);
             if (!path) throw new ReferenceError(`Graphic ${graphicID} has no SOF DNA or graphic file`);
-            if (this.IsResPath(path)) resPath = path; else dna = path;
+            if (this.isResPath(path)) resPath = path; else dna = path;
         }
 
+        if (!dna && !resPath) throw new ReferenceError("Could not identify a dna or resource path");
+
+        return { dna, resPath, blendMode, awaitResources, ...values };
+    }
+
+    /**
+     * Fetches a space object async, building through tw2.Fetch so a registered
+     * dna handler (lazy sof loading) is honoured.
+     *
+     * Takes anything `resolve` takes, including a spec `resolve` already
+     * returned - re-resolving one is a no-op.
+     *
+     * @param {String|Number|Object} options - see `resolve`
+     * @returns {Promise<TnySpaceObject>}
+     */
+    static async fetch(options = {})
+    {
+        const { dna, resPath, blendMode, awaitResources, ...values } = await this.resolve(options);
         const source = dna || resPath;
-        if (!source) throw new ReferenceError("Could not identify a dna or resource path");
 
         const wrapped = await tw2.Fetch(source, awaitResources);
         wrapped._resPath = source;
@@ -453,7 +462,9 @@ export class TnySpaceObject extends WglTransform
         // right, and the two profiles disagree over one design.
         if (blendMode && wrapped.SetBlendMode) wrapped.SetBlendMode(blendMode);
 
-        await object.RebuildSlots();
+        // Slots live on TnyMobile and below - a station or a jump gate has
+        // none, and Carbon puts turrets on EveMobile for the same reason.
+        if (object.RebuildSlots) await object.RebuildSlots();
         return object;
     }
 
@@ -478,7 +489,7 @@ export class TnySpaceObject extends WglTransform
      */
     static RES_PREFIX_MAX_LENGTH = 16;
 
-    static IsResPath(value)
+    static isResPath(value)
     {
         if (!isString(value)) return false;
 
@@ -493,7 +504,7 @@ export class TnySpaceObject extends WglTransform
      * @param {String} value
      * @returns {Boolean}
      */
-    static IsSkinrID(value)
+    static isSkinrID(value)
     {
         return isString(value) &&
             /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
@@ -506,7 +517,7 @@ export class TnySpaceObject extends WglTransform
      * @param {Object} pattern
      * @returns {?Object} the registered pattern
      */
-    static RegisterPattern(pattern)
+    static registerPattern(pattern)
     {
         const sof = tw2.eveSof;
         if (!sof || !Array.isArray(sof.pattern) || !pattern || !isString(pattern.name))
@@ -520,48 +531,17 @@ export class TnySpaceObject extends WglTransform
         return pattern;
     }
 
-    /**
-     * Reconciles the weapon/utility slot arrays from the wrapped object's
-     * locators. Call again after the wrapped object (or its parts) change.
-     * @param {*|Array} [parts=this.wrapped] - wrapped source object(s)
-     * @returns {Promise<this>}
-     */
-    async RebuildSlots(parts = this.wrapped)
-    {
-        if (!parts) return this;
-        await Promise.all([
-            TnySlot.RebuildLocatorSlots(this, parts, "turret", this.turrets),
-            TnySlot.RebuildLocatorSlots(this, parts, "xl", this.xlTurrets),
-            TnySlot.RebuildLocatorSlots(this, parts, "launcher", this.launchers),
-            TnySlot.RebuildLocatorSlots(this, parts, "chain", this.chains),
-            TnySlot.RebuildLocatorSlots(this, parts, "atomic", this.atomics),
-            TnySlot.RebuildLocatorSlots(this, parts, "bomb", this.bombs)
-        ]);
-        return this;
-    }
-
-    /**
-     * Gets all slot arrays as one list
-     * @param {Array} [out=[]]
-     * @returns {Array<TnySlot>}
-     */
-    GetSlots(out = [])
-    {
-        out.push(...this.turrets, ...this.xlTurrets, ...this.launchers, ...this.chains, ...this.atomics, ...this.bombs);
-        return out;
-    }
-
-    static GetWrapped(item)
+    static getWrapped(item)
     {
         return item ? item.wrapped || null : null;
     }
 
-    static HasWrapped(item)
+    static hasWrapped(item)
     {
-        return !!this.GetWrapped(item);
+        return !!this.getWrapped(item);
     }
 
-    static ClearWrapped(item)
+    static clearWrapped(item)
     {
         if (item && item.SetWrapped)
         {
@@ -571,9 +551,9 @@ export class TnySpaceObject extends WglTransform
         return item;
     }
 
-    static GetParts(item, out = [])
+    static getParts(item, out = [])
     {
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         if (wrapped)
         {
             out.push(wrapped);
@@ -582,14 +562,14 @@ export class TnySpaceObject extends WglTransform
         return out;
     }
 
-    static GetPart(item, index = 0)
+    static getPart(item, index = 0)
     {
-        return index === 0 ? this.GetWrapped(item) : null;
+        return index === 0 ? this.getWrapped(item) : null;
     }
 
-    static ForEachPart(item, callback)
+    static forEachPart(item, callback)
     {
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         if (wrapped && callback)
         {
             callback(wrapped, 0, "wrapped");
@@ -598,27 +578,27 @@ export class TnySpaceObject extends WglTransform
         return item;
     }
 
-    static HasWrappedValue(item, name)
+    static hasWrappedValue(item, name)
     {
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         return !!(wrapped && name in wrapped);
     }
 
-    static GetWrappedValue(item, name, fallback)
+    static getWrappedValue(item, name, fallback)
     {
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         return wrapped && name in wrapped ? wrapped[name] : fallback;
     }
 
-    static GetWrappedValues(item, out = {}, opt)
+    static getWrappedValues(item, out = {}, opt)
     {
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         return wrapped && wrapped.GetValues ? wrapped.GetValues(out, opt) : out;
     }
 
-    static SetWrappedValue(item, name, value)
+    static setWrappedValue(item, name, value)
     {
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         if (!wrapped || !(name in wrapped))
         {
             return false;
@@ -628,14 +608,14 @@ export class TnySpaceObject extends WglTransform
         return true;
     }
 
-    static SetWrappedValues(item, values, opt)
+    static setWrappedValues(item, values, opt)
     {
         if (!values)
         {
             return false;
         }
 
-        const wrapped = this.GetWrapped(item);
+        const wrapped = this.getWrapped(item);
         if (!wrapped)
         {
             return false;
@@ -651,7 +631,7 @@ export class TnySpaceObject extends WglTransform
         {
             if (values.hasOwnProperty(name))
             {
-                updated = this.SetWrappedValue(item, name, values[name]) || updated;
+                updated = this.setWrappedValue(item, name, values[name]) || updated;
             }
         }
 
