@@ -448,8 +448,8 @@ export class TnyApiService extends meta.Model
     }
 
     /**
-     * @param {Object} skin - a SKINR skin payload
-     * @returns {Promise<Object>} a skinrSofPattern document
+     * @param {TnySkinrSkin} skin
+     * @returns {Promise<TnySkinrSofPattern>}
      */
     GetSkinrPattern(...args)
     {
@@ -457,7 +457,7 @@ export class TnyApiService extends meta.Model
     }
 
     /**
-     * @param {Object} skin - a SKINR skin payload
+     * @param {TnySkinrSkin} skin
      * @returns {Promise<TnySkinrDesign>}
      */
     GenerateSkinrDna(...args)
