@@ -112,6 +112,27 @@ export class Tw2AudioMan
      */
     async FetchLibrary(path = "aud:/library.json")
     {
+        const audio = this._EnsureAudio();
+
+        // The manager-owned loader seam arrived with the combined runtime;
+        // the published runtime-audio predates it, so fetch directly there.
+        if (typeof audio.LoadLibraryAsync === "function")
+        {
+            await audio.LoadLibraryAsync(path);
+            return this.library;
+        }
+
+        this.InstallLibrary(await this._LoadLibraryDocument(path));
+        return this.library;
+    }
+
+    /**
+     * Fetches and parses one complete library document.
+     * @param {String} path Resource path.
+     * @return {Promise<Object>} Parsed plain document.
+     */
+    async _LoadLibraryDocument(path)
+    {
         const url = this._ResolveAudioEndpoint(path);
         const response = await this._GetFetch()(url);
 
@@ -122,8 +143,7 @@ export class Tw2AudioMan
             );
         }
 
-        this.InstallLibrary(await response.json());
-        return this.library;
+        return response.json();
     }
 
     /**
@@ -624,6 +644,7 @@ export class Tw2AudioMan
 
             this.audio = new CjsAudioMan(null, {
                 mediaProvider: provider,
+                resourceLoader: path => this._LoadLibraryDocument(path),
                 createContext: () => this._CreateContext(),
                 languages: [ this.language ],
                 distanceScale: this.distanceScale,
