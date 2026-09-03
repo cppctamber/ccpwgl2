@@ -573,6 +573,24 @@ export class TnyTransformGizmo extends WglTransform
         return true;
     }
 
+    /** Gizmos remain at full detail; this satisfies the scene root contract. */
+    UpdateLod(updateContext)
+    {
+
+    }
+
+    /** Gizmos own no logical-LOD state. */
+    ResetLod()
+    {
+
+    }
+
+    /** Gizmos own no dynamic scene lights. */
+    GetLights(collector, parentContext)
+    {
+
+    }
+
     /**
      * Intersects a local-space ring proxy as a sampled tube.
      * @param {Object} proxy

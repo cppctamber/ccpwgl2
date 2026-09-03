@@ -1,9 +1,19 @@
 import { meta } from "utils";
+import { device } from "global";
 
 
 @meta.define("Tr2Controller", true)
 export class Tr2Controller extends meta.Model
 {
+
+    @meta.boolean
+    updateThrottle = true;
+
+    @meta.uint
+    minUpdateFrequency = 2;
+
+    @meta.uint
+    maxUpdateFrequency = 20;
 
     @meta.string
     name = "";
@@ -31,6 +41,14 @@ export class Tr2Controller extends meta.Model
     _callbacks = null;
 
     _isActive = false;
+
+    _currentUpdateFrequency = 10;
+
+    _nextUpdateTime = 0;
+
+    _accumulatedUpdateDelta = 0;
+
+    _fallbackUpdateTime = 0;
 
     OnListModified(event, key, key2, value, list)
     {
@@ -195,6 +213,8 @@ export class Tr2Controller extends meta.Model
         }
 
         this._isActive = true;
+        this._nextUpdateTime = 0;
+        this._accumulatedUpdateDelta = 0;
     }
 
     Stop()
@@ -216,14 +236,34 @@ export class Tr2Controller extends meta.Model
         this._isActive = false;
     }
 
-    Update(dt = 0)
+    Update(dt = 0, normalizedUpdateFrequency = null)
     {
         if (!this._isActive)
         {
             return;
         }
 
-        this._time += dt;
+        this._accumulatedUpdateDelta += dt;
+
+        if (normalizedUpdateFrequency !== null && this.updateThrottle)
+        {
+            const currentTime = Number.isFinite(device.currentTime)
+                ? device.currentTime
+                : (this._fallbackUpdateTime += dt);
+
+            if (currentTime < this._nextUpdateTime) return;
+
+            const updateFrequency = normalizedUpdateFrequency *
+                (this.maxUpdateFrequency - this.minUpdateFrequency) +
+                this.minUpdateFrequency;
+
+            this._currentUpdateFrequency = Math.max(updateFrequency, 0.1);
+            this._nextUpdateTime = currentTime + 1 / this._currentUpdateFrequency;
+        }
+
+        const updateDelta = this._accumulatedUpdateDelta;
+        this._accumulatedUpdateDelta = 0;
+        this._time += updateDelta;
         const dirtyVariables = this._dirtyVariables || new Set();
         this._dirtyVariables = new Set();
 
@@ -232,7 +272,7 @@ export class Tr2Controller extends meta.Model
             const stateMachine = this.stateMachines[i];
             if (stateMachine && stateMachine.Update)
             {
-                stateMachine.Update(dt, dirtyVariables);
+                stateMachine.Update(updateDelta, dirtyVariables);
             }
         }
 
@@ -242,7 +282,7 @@ export class Tr2Controller extends meta.Model
             {
                 if (updateable && updateable.Update)
                 {
-                    updateable.Update(dt, this, this._owner);
+                    updateable.Update(updateDelta, this, this._owner);
                 }
             }
         }

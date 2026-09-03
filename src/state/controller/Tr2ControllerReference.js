@@ -153,12 +153,13 @@ export class Tr2ControllerReference extends meta.Model
     /**
      * Per frame update, forwarded to the referenced controller
      * @param {Number} [dt=0]
+     * @param {Number|null} [normalizedUpdateFrequency=null]
      */
-    Update(dt = 0)
+    Update(dt = 0, normalizedUpdateFrequency = null)
     {
         if (this._controller && this._controller.Update)
         {
-            this._controller.Update(dt);
+            this._controller.Update(dt, normalizedUpdateFrequency);
         }
     }
 
