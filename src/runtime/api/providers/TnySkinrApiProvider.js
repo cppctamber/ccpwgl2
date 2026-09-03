@@ -6,6 +6,7 @@ import {
     EveSOFDataPatternPerHull,
     EveSOFDataPatternTransform
 } from "sof";
+import { EveCustomMask } from "eve/item/EveCustomMask";
 import { TnyGeneratedLibraryProvider } from "./TnyGeneratedLibraryProvider";
 import { TnySkinApiProvider } from "./TnySkinApiProvider";
 
@@ -120,10 +121,16 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     /**
      * Hydrates a generated SOF pattern payload into real SOF classes.
      *
-     * The payload is already final-form: the service resolved the cosmetic-slot
-     * to material-layer conversion, the projection types and the blend mode
-     * before serializing it. Nothing here translates anything, because the
-     * model classes translate nothing either - they expect the answers.
+     * The payload is expected to be final-form: the service resolves the
+     * cosmetic-slot to material-layer conversion, the projection types and the
+     * blend mode before serializing it. Nothing here translates anything,
+     * because the model classes translate nothing either - they expect the
+     * answers.
+     *
+     * That expectation is now CHECKED rather than assumed. A service that skips
+     * the translation used to slip through silently: `projectionTypeU` fell to
+     * 0, which `ToAddressMode` reads as wrap, and an unrecognised blend mode
+     * became NONE. Both render, wrongly, which is the worst way to fail.
      *
      * Built explicitly rather than through Model.from: that hydrates a single
      * level, so the nested layers, projections and transforms would arrive as
@@ -145,10 +152,10 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
             value.isTargetMtl2 = !!source.isTargetMtl2;
             value.isTargetMtl3 = !!source.isTargetMtl3;
             value.isTargetMtl4 = !!source.isTargetMtl4;
-            value.blendMode = source.blendMode || "normal";
+            value.blendMode = BlendMode(source.blendMode);
             value.materialSource = source.materialSource || 0;
-            value.projectionTypeU = source.projectionTypeU || 0;
-            value.projectionTypeV = source.projectionTypeV || 0;
+            value.projectionTypeU = ProjectionType(source.projectionTypeU, "projectionTypeU");
+            value.projectionTypeV = ProjectionType(source.projectionTypeV, "projectionTypeV");
             if (source.textureResFilePath) value.textureResFilePath = source.textureResFilePath;
             return value;
         };
@@ -429,4 +436,68 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
         return { patternID: pattern.id, values };
     }
 
+}
+
+
+/**
+ * Keeps a layer's blend mode as the STRING the sof classes hold, having first
+ * checked the vocabulary recognises it.
+ *
+ * `EveCustomMask.GetBlendMode` is the one translator: it takes a number or a
+ * string in any spelling, splitting camelCase before upper-casing, so
+ * `nestedInverted`, `nested-inverted` and `NESTED_INVERTED` all resolve. Asking
+ * it with a -1 fallback turns it into a detector, because -1 is not a mode.
+ *
+ * "normal" and "overlay" are both ccpwgl spellings of no blending, so the
+ * historical `|| "normal"` default survives as the absent case.
+ *
+ * @param {String|Number} [value]
+ * @returns {String} the blend mode, unchanged
+ * @throws {TypeError} when the vocabulary does not recognise it
+ */
+function BlendMode(value)
+{
+    if (value === undefined || value === null || value === "") return "normal";
+
+    if (EveCustomMask.GetBlendMode(value, -1) === -1)
+    {
+        throw new TypeError(
+            `Unknown pattern blend mode: ${JSON.stringify(value)}. `
+            + "The service is expected to resolve blend modes before serializing."
+        );
+    }
+
+    return value;
+}
+
+/**
+ * Checks a projection type is one the sof path understands.
+ *
+ * The translated domain is 0, 1 and 2 - all `ToAddressMode` switches on. A
+ * string has plainly not been translated, and a number outside the domain is
+ * usually an ADDRESS MODE sent by mistake, since `FromAddressMode` maps 4 to 2
+ * and 3 to 1.
+ *
+ * The one case this cannot catch is address mode 1, which is also projection
+ * type 1. Everything else is detectable.
+ *
+ * @param {Number} [value]
+ * @param {String} field - the field name, for the error
+ * @returns {Number}
+ * @throws {TypeError} when it has not been translated
+ */
+function ProjectionType(value, field)
+{
+    if (value === undefined || value === null) return 0;
+
+    if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 2)
+    {
+        throw new TypeError(
+            `Untranslated pattern ${field}: ${JSON.stringify(value)}. `
+            + "Expected 0, 1 or 2; the service is expected to resolve projection "
+            + "types before serializing."
+        );
+    }
+
+    return value;
 }
