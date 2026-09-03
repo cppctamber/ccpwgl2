@@ -88,7 +88,8 @@ export class EveCustomMask extends WglTransform
     GetPerObjectDataBagOfStuff(parentTransform, out = {}, index, visible)
     {
         this.SetParentTransform(parentTransform).RebuildTransforms();
-        const targets = this.display && visible ? this.targetMaterials : vec4.ZERO;
+        const enabled = Boolean(this.display && visible);
+        const targets = enabled ? this.targetMaterials : vec4.ZERO;
 
         let clampToBorderU = 0,
             clampToBorderV = 0,
@@ -127,7 +128,13 @@ export class EveCustomMask extends WglTransform
         materialID[3] = clampToBorderW;
 
         const customMaskData = this._customMaskData;
-        customMaskData[0] = 0;
+        // Carbon's first lane is the projection enable flag. The former direct
+        // writer changed only lane 1 with `SetIndex(..., 1, mirrored)`, leaving
+        // lane 0 at its declared default of 1. The bag refactor accidentally
+        // replaced that untouched default with 0, which disables both masks in
+        // translated DX11 shaders even while the GLES path continues to gate
+        // them through `CustomMaskTarget`. Keep the two gates in agreement.
+        customMaskData[0] = enabled ? 1 : 0;
         customMaskData[1] = this.isMirrored ? 1 : 0;
         customMaskData[2] = 0;
         customMaskData[3] = 0;
