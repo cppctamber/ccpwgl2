@@ -1,7 +1,9 @@
 import { meta } from "utils";
-import { vec3, mat4 } from "math";
+import { vec3, mat4, sph3 } from "math";
 import { Tw2Float } from "core";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
+import { EveLODHelper } from "../EveLODHelper";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 @meta.define("EveStretch", true)
@@ -56,9 +58,8 @@ export class EveStretch extends meta.Model
     @meta.boolean
     update = true;
 
-    @meta.notImplemented
     @meta.boolean
-    useCurveLod = false;
+    useCurveLod = true;
 
 
     _destinationPosition = vec3.create();
@@ -70,7 +71,10 @@ export class EveStretch extends meta.Model
     _sourceTransform = null;
     _time = 0;
     _useParentMatrix = false;
+    _lastCurveUpdateDelta = EveLODHelper.lowUpdateRate;
 
+    /** Carbon logical LOD merged from every object in the stretch. */
+    lodLevel = Tr2Lod.TR2_LOD_LOW;
 
     /**
      * Constructor
@@ -275,9 +279,20 @@ export class EveStretch extends meta.Model
      */
     Update(dt)
     {
-        for (let i = 0; i < this.curveSets.length; ++i)
+        if (this.curveSets.length)
         {
-            this.curveSets[i].UpdateDelta(dt);
+            this._lastCurveUpdateDelta += dt;
+
+            if (!this.useCurveLod || EveLODHelper.ShouldUpdate(this.lodLevel, this._lastCurveUpdateDelta))
+            {
+                const curveDelta = this._lastCurveUpdateDelta;
+                this._lastCurveUpdateDelta = 0;
+
+                for (let i = 0; i < this.curveSets.length; ++i)
+                {
+                    this.curveSets[i].UpdateDelta(curveDelta);
+                }
+            }
         }
 
         this._time += dt;
@@ -316,6 +331,61 @@ export class EveStretch extends meta.Model
         {
             this.stretchObject.Update(dt);
         }
+    }
+
+    /**
+     * Merges logical LOD from the stretch's source, destination and body.
+     * The nested transforms are prepared by UpdateViewDependentData before
+     * this visibility pass.
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        let lodLevel = Tr2Lod.TR2_LOD_LOW;
+
+        if (!this.display)
+        {
+            this.lodLevel = lodLevel;
+            return;
+        }
+
+        if (this.sourceObject && this._displaySourceObject)
+        {
+            this.sourceObject.UpdateLod(updateContext);
+            lodLevel = EveLODHelper.MergeLOD(lodLevel, this.sourceObject.lodLevel);
+        }
+
+        if (this.destObject && this._displayDestObject)
+        {
+            this.destObject.UpdateLod(updateContext);
+            lodLevel = EveLODHelper.MergeLOD(lodLevel, this.destObject.lodLevel);
+        }
+
+        if (this.stretchObject)
+        {
+            this.stretchObject.UpdateLod(updateContext);
+            lodLevel = EveLODHelper.MergeLOD(lodLevel, this.stretchObject.lodLevel);
+
+            const
+                sphere = EveStretch.global.sph3_0,
+                radius = vec3.distance(this._sourcePosition, this._destinationPosition) * 0.5;
+
+            vec3.lerp(sphere, this._sourcePosition, this._destinationPosition, 0.5);
+            sphere[3] = radius;
+            lodLevel = EveLODHelper.MergeLOD(lodLevel, sphere, updateContext);
+        }
+
+        this.lodLevel = lodLevel;
+    }
+
+    /** Restores high-detail updates. */
+    ResetLod()
+    {
+        this.lodLevel = Tr2Lod.TR2_LOD_HIGH;
+
+        if (this.sourceObject) this.sourceObject.ResetLod();
+        if (this.destObject) this.destObject.ResetLod();
+        if (this.stretchObject) this.stretchObject.ResetLod();
     }
 
     /**
@@ -402,7 +472,7 @@ export class EveStretch extends meta.Model
         for (let i = 0; i < this.sourceLights.length; i++)
         {
             const light = this.sourceLights[i];
-            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
+            if (!light) continue;
 
             light.Update(dt, worldTransform, bones);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
@@ -420,6 +490,7 @@ export class EveStretch extends meta.Model
                 vec3_0: vec3.create(),
                 vec3_1: vec3.create(),
                 vec3_2: vec3.create(),
+                sph3_0: sph3.create(),
                 mat4_0: mat4.create(),
                 mat4_1: mat4.create()
             };

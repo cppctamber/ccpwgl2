@@ -4,10 +4,13 @@ import { mat4, vec3, sph3, box3 } from "math";
 import { WglTransform } from "core/WglTransform";
 import { EvePlaneSet } from "eve";
 import { Tw2TextureParameter } from "core";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 export class EveObject extends WglTransform
 {
+
+    _controllerUpdateFrequency = 0.5;
 
     @meta.string
     name = "";
@@ -18,23 +21,56 @@ export class EveObject extends WglTransform
     @meta.float
     clip = 1.0;
 
-    _lod = 3;
+    /** Carbon logical LOD. Visibility is tracked independently. */
+    lodLevel = Tr2Lod.TR2_LOD_HIGH;
+
+    /** Logical LOD after bounds contributed by children are included. */
+    lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+
+    /** Whether the complete object graph passed the last visibility update. */
+    isVisible = true;
+
+    /** Whether the root mesh sphere intersects the current frustum. */
+    _isMeshVisible = true;
+
+    /** Current projected diameter of the root mesh sphere in pixels. */
+    estimatedPixelDiameter = 0;
+
+    /** Current projected diameter of the combined object bounds in pixels. */
+    estimatedPixelDiameterWithChildren = 0;
 
     /**
      * Resets LOD
      */
     ResetLod()
     {
-        this._lod = 3;
+        this._controllerUpdateFrequency = 1;
+        this._SetLodState(true, Tr2Lod.TR2_LOD_HIGH, Tr2Lod.TR2_LOD_HIGH, true);
     }
 
     /**
      * Updates LOD
-     * @param {Tw2Frustum} frustum
+     * @param {EveUpdateContext} updateContext
      */
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        this._lod = 3;
+        this._SetLodState(true, Tr2Lod.TR2_LOD_HIGH, Tr2Lod.TR2_LOD_HIGH, true);
+    }
+
+    /**
+     * Commits Carbon logical visibility and detail.
+     * @param {Boolean} visible
+     * @param {Number} lodLevel
+     * @param {Number} lodLevelWithChildren
+     * @param {Boolean} meshVisible
+     * @protected
+     */
+    _SetLodState(visible, lodLevel, lodLevelWithChildren, meshVisible)
+    {
+        this.isVisible = visible;
+        this._isMeshVisible = meshVisible;
+        this.lodLevel = lodLevel;
+        this.lodLevelWithChildren = lodLevelWithChildren;
     }
 
     /**
@@ -54,6 +90,18 @@ export class EveObject extends WglTransform
      */
     @meta.abstract
     Update(dt)
+    {
+
+    }
+
+    /**
+     * Prepares current-frame transform and per-object state before visibility
+     * and batch collection. Concrete scene objects override as needed.
+     * @param {mat4} parentTransform
+     * @param {Number} dt
+     */
+    @meta.abstract
+    UpdateViewDependentData(parentTransform, dt)
     {
 
     }
@@ -104,10 +152,7 @@ export class EveObject extends WglTransform
             for (let i = 0; i < list.length; i++)
             {
                 const child = list[i];
-                if (child && typeof child.GetLights === "function")
-                {
-                    child.GetLights(collector, parentContext);
-                }
+                if (child) child.GetLights(collector, parentContext);
             }
         }
     }
@@ -178,8 +223,9 @@ export class EveObject extends WglTransform
         mat4_2: mat4.create(),
         mat4_ID: mat4.create(),
         box3_0: box3.create(),
-        sph3_0: sph3.create()
+        sph3_0: sph3.create(),
+        sph3_1: sph3.create(),
+        sph3_2: sph3.create()
     };
 
 }
-

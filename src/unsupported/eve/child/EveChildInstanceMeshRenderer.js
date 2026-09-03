@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 import { skippedObject } from "core/reader/Tw2BlackPropertyReaders";
+import { EveChild } from "eve/child";
 
 
 /**
@@ -17,7 +18,7 @@ import { skippedObject } from "core/reader/Tw2BlackPropertyReaders";
  */
 @meta.notImplemented
 @meta.define("EveChildInstanceMeshRenderer", true)
-export class EveChildInstanceMeshRenderer extends meta.Model
+export class EveChildInstanceMeshRenderer extends EveChild
 {
     @meta.string
     name = "";
@@ -35,7 +36,7 @@ export class EveChildInstanceMeshRenderer extends meta.Model
     localTransform = mat4.create();
 
     @meta.uint
-    lowestLodVisible = 2;
+    lowestLodVisible = 0;
 
     @meta.struct([ "Tw2Mesh", "Tw2InstancedMesh" ])
     mesh = null;
@@ -94,21 +95,6 @@ export class EveChildInstanceMeshRenderer extends meta.Model
     static blackReaders = {
         distribution: skippedObject
     };
-
-    get isEffectChild()
-    {
-        return true;
-    }
-
-    UpdateLod()
-    {
-
-    }
-
-    ResetLod()
-    {
-
-    }
 
     Update()
     {

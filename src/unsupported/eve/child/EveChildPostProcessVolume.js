@@ -1,10 +1,11 @@
 import { meta } from "utils";
 import { vec3 } from "math";
+import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
 @meta.define("EveChildPostProcessVolume", true)
-export class EveChildPostProcessVolume
+export class EveChildPostProcessVolume extends EveChild
 {
     @meta.string
     name = "";
@@ -23,21 +24,6 @@ export class EveChildPostProcessVolume
 
     @meta.struct()
     postProcessAttributes = null;
-
-    get isEffectChild()
-    {
-        return true;
-    }
-
-    UpdateLod()
-    {
-
-    }
-
-    ResetLod()
-    {
-
-    }
 
     Update()
     {

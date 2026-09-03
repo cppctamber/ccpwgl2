@@ -63,7 +63,7 @@ export class EveLensflare extends meta.Model
     @meta.float
     cameraFactor = 20;
 
-    @meta.list("EveLensflare")
+    @meta.list("EveTransform")
     @meta.todo("Deprecated?")
     flares = [];
 
@@ -81,6 +81,7 @@ export class EveLensflare extends meta.Model
     _direction = vec3.create();
     _transform = mat4.create();
     _backBuffer = null;
+    _isVisible = true;
 
 
     /**
@@ -200,7 +201,7 @@ export class EveLensflare extends meta.Model
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display) return false;
+        if (!this.display || !this._isVisible) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const viewDir = vec4.set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
@@ -221,6 +222,30 @@ export class EveLensflare extends meta.Model
         }
 
         return accumulator.length !== c;
+    }
+
+    /** Applies Carbon's front-facing lensflare visibility and child LOD pass. */
+    UpdateLod(updateContext)
+    {
+        const viewDir = vec4.set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
+        vec4.transformMat4(viewDir, viewDir, device.viewInverse);
+        this._isVisible = this.display && vec3.dot(viewDir, this._direction) >= 0;
+
+        for (let i = 0; i < this.flares.length; i++)
+        {
+            this.flares[i].UpdateLod(updateContext);
+        }
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this._isVisible = true;
+
+        for (let i = 0; i < this.flares.length; i++)
+        {
+            this.flares[i].ResetLod();
+        }
     }
 
     /**

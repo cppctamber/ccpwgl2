@@ -1,10 +1,11 @@
 import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
+import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
 @meta.define("EveChildBehaviorSystem", true)
-export class EveChildBehaviorSystem
+export class EveChildBehaviorSystem extends EveChild
 {
     @meta.boolean
     display = true;
@@ -38,21 +39,6 @@ export class EveChildBehaviorSystem
 
     @meta.list()
     splineTunnels = [];
-
-    get isEffectChild()
-    {
-        return true;
-    }
-
-    UpdateLod()
-    {
-
-    }
-
-    ResetLod()
-    {
-
-    }
 
     Update()
     {

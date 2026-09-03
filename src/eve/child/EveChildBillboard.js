@@ -61,14 +61,8 @@ export class EveChildBillboard extends EveChild
      */
     Intersect(ray, intersects, _worldTransform, cache)
     {
-        if (!this.display || ray.IsMasked(this)) return null;
+        if (!this.display || this.lodLevel < this.lowestLodVisible || ray.IsMasked(this)) return null;
         if (ray.GetOption("effectChildren", "skip")) return null;
-
-        // NOT gated on lod. A hit test agreeing with what is drawn is the right
-        // idea, but lod is not implemented properly yet - so a wrong `_lod`
-        // would make a visible child silently unpickable, and that reads as an
-        // intersection bug rather than as the lod system being unfinished. Add
-        // the gate deliberately when lod lands.
 
         const target = this.mesh;
         if (!target || !target.Intersect) return null;
@@ -108,12 +102,18 @@ export class EveChildBillboard extends EveChild
      */
     Update(dt, parentTransform)
     {
+        mat4.copy(this._worldTransformLast, this._worldTransform);
+        this.PrepareLod(parentTransform);
+    }
+
+    /** Rebuilds the current camera-facing transform before logical LOD. */
+    PrepareLod(parentTransform)
+    {
         if (this.useSRT)
         {
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
 
-        mat4.copy(this._worldTransformLast, this._worldTransform);
         mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
 
         const
@@ -144,7 +144,7 @@ export class EveChildBillboard extends EveChild
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || !this.mesh || !this.mesh.IsGood() || this._lod < this.lowestLodVisible)
+        if (!this.display || !this.mesh || !this.mesh.IsGood() || this.lodLevel < this.lowestLodVisible)
         {
             return false;
         }

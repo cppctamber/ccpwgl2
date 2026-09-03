@@ -385,6 +385,33 @@ export class EveTurretFiringFX extends meta.Model
     }
 
     /**
+     * Updates visibility for active per-muzzle stretch effects.
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        if (!this.display || !this._isFiring) return;
+
+        for (let i = 0; i < this.stretch.length; ++i)
+        {
+            if (this._perMuzzleData[i].started &&
+                (this._perMuzzleData[i].elapsedTime <= this._firingDuration || this.isLoopFiring))
+            {
+                this.stretch[i].UpdateLod(updateContext);
+            }
+        }
+    }
+
+    /** Restores every stretch to authored LOD state. */
+    ResetLod()
+    {
+        for (let i = 0; i < this.stretch.length; ++i)
+        {
+            this.stretch[i].ResetLod();
+        }
+    }
+
+    /**
      * Per frame update
      * @param {number} dt - Delta time
      */

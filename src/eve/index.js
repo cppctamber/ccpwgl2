@@ -4,14 +4,15 @@ export * from "./item";
 export * from "./object";
 export * from "./pi";
 
-// Registered, but UNSUPPORTED - see the note at the top of src/index.js for what
-// is still missing. EveSmartLightQuad is excluded from its own barrel because it
-// has unresolved imports; the rest hydrate but do not yet emit light.
+// Smart-light and distribution types hydrate through these barrels. Their
+// ccpwgl-specific CPU rendering adaptations live with the concrete classes.
 export * from "./distribution";
 export * from "./lights";
 export * from "./smartLights";
 
 export * from "./EveMissile";
+export * from "./EveLODHelper";
+export * from "./EveUpdateContext";
 export * from "./EveChildUpdateParams";
 export * from "./PlacementDataWithIdentifier";
 export * from "./EveTurretTarget";

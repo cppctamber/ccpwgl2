@@ -1,15 +1,16 @@
 import { isArray, meta } from "utils";
 import { SetControllerVariableOn } from "../../state/controllerVariables";
 import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
-import { vec3, vec4, mat4, sph3, box3 } from "math";
+import { vec3, vec4, mat4, sph3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
 import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
-import { LodLevelPixels, CustomMaskBlendMode } from "constant/ccpwgl";
+import { Tr2Lod, CustomMaskBlendMode } from "constant/ccpwgl";
 import { tw2 } from "global";
+import { EveLODHelper } from "../EveLODHelper";
 
 
 @meta.define("EveShip2", true)
@@ -23,6 +24,9 @@ export class EveShip2 extends EveObject
 
     @meta.list("EveObjectSet")
     attachments = [];
+
+    @meta.list("Tw2CurveSet")
+    curveSets = [];
 
     @meta.struct("EveBoosterSet2")
     boosters = null;
@@ -214,6 +218,7 @@ export class EveShip2 extends EveObject
     _parentTransform = mat4.create();
     _perObjectData = new GLESPerObjectDataEveSpaceObject();
     _perObjectDataBagOfStuff = {};
+    _lastLodUpdateDelta = EveLODHelper.lowUpdateRate;
     _customMaskBlending = vec4.create();
     _worldTransformLast = mat4.create();
 
@@ -300,7 +305,7 @@ export class EveShip2 extends EveObject
     {
         this.RebuildBounds();
 
-        if (!this.display || this._lod < 1 || this._boundsDirty) return;
+        if (!this.display || !this.isVisible || this._boundsDirty) return;
 
         const intersect = ray.IntersectBox3(this._boundingBox, this._worldTransform);
         if (!intersect) return false;
@@ -315,70 +320,67 @@ export class EveShip2 extends EveObject
             ray.TrailFrom(intersects, at, "mesh");
         }
 
-        if (this._lod > 1)
+        for (let i = 0; i < this.attachments.length; i++)
         {
-            for (let i = 0; i < this.attachments.length; i++)
+            let item = this.attachments[i],
+                itemIntersect;
+
+            if (!item.isVisible || !item.Intersect) continue;
+
+            let type;
+            switch (item.constructor)
             {
-                let item = this.attachments[i],
-                    itemIntersect;
+                case EveHazeSet:
+                    type = "hazeSets";
+                    break;
 
-                if (!item.Intersect) continue;
+                case EveBanner:
+                    type = "banners";
+                    break;
 
-                let type;
-                switch (item.constructor)
-                {
-                    case EveHazeSet:
-                        type = "hazeSets";
-                        break;
+                case EveTurretSet:
+                    type = "turretSets";
+                    break;
 
-                    case EveBanner:
-                        type = "banners";
-                        break;
+                case EveSpotlightSet:
+                    type = "spotlightSets";
+                    break;
 
-                    case EveTurretSet:
-                        type = "turretSets";
-                        break;
+                case EveSpriteSet:
+                    type = "spriteSets";
+                    break;
 
-                    case EveSpotlightSet:
-                        type = "spotlightSets";
-                        break;
+                case EvePlaneSet:
+                    type = "planeSets";
+                    break;
 
-                    case EveSpriteSet:
-                        type = "spriteSets";
-                        break;
+                case EveSpriteLineSet:
+                    type = "spriteLineSets";
+                    break;
 
-                    case EvePlaneSet:
-                        type = "planeSets";
-                        break;
+                case EveCurveLineSet:
+                    type = "lineSets";
+                    break;
 
-                    case EveSpriteLineSet:
-                        type = "spriteLineSets";
-                        break;
+                case EveMeshOverlayEffect:
+                    type = "overlayEffects";
+                    break;
 
-                    case  EveCurveLineSet:
-                        type = "lineSets";
-                        break;
+            }
 
-                    case EveMeshOverlayEffect:
-                        type = "overlayEffects";
-                        break;
+            if (type && this.visible[type] && !ray.GetOption(type, "skip"))
+            {
+                // The visibility key is also the property these live on, so
+                // it doubles as the path segment - and the index within it
+                // is what separates one turret set from another.
+                const at = intersects.length;
+                itemIntersect = item.Intersect(...args);
+                ray.TrailFrom(intersects, at, `${type}[${this[type] ? this[type].indexOf(item) : i}]`);
+            }
 
-                }
-
-                if (type && this.visible[type] && !ray.GetOption(type, "skip"))
-                {
-                    // The visibility key is also the property these live on, so
-                    // it doubles as the path segment - and the index within it
-                    // is what separates one turret set from another.
-                    const at = intersects.length;
-                    itemIntersect = item.Intersect(...args);
-                    ray.TrailFrom(intersects, at, `${type}[${this[type] ? this[type].indexOf(item) : i}]`);
-                }
-
-                if (itemIntersect)
-                {
-                    itemIntersect.root = root;
-                }
+            if (itemIntersect)
+            {
+                itemIntersect.root = root;
             }
         }
 
@@ -528,39 +530,6 @@ export class EveShip2 extends EveObject
 
         // TODO: Get from mesh and handle instanced mesh
         this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
-
-        // Children
-        const { box3_0, sph3_0 } = EveObject.global;
-
-        const unionFromArrayItems = (array = []) =>
-        {
-            for (let i = 0; i < array.length; i++)
-            {
-                let bounds = false;
-                if ("GetBoundingBox" in array[i])
-                {
-                    array[i].GetBoundingBox(box3_0);
-                    bounds = true;
-
-                }
-                else if ("GetBoundingSphere" in array[i])
-                {
-                    array[i].GetBoundingSphere(sph3_0);
-                    box3.fromSph3(box3_0, sph3_0);
-                    bounds = true;
-                }
-
-                if (bounds)
-                {
-                    box3.union(this._boundingBox, this._boundingBox, box3_0);
-                }
-            }
-        };
-
-        unionFromArrayItems(this.attachments);
-
-        if (this.rebuildBoundsFromChildren) unionFromArrayItems(this.effectChildren);
-        if (this.rebuildBoundsFromChildren) unionFromArrayItems(this.children);
 
         sph3.fromBox3(this._boundingSphere, this._boundingBox);
         this._boundsDirty = false;
@@ -933,58 +902,174 @@ export class EveShip2 extends EveObject
 
     /**
      * Updates lod
-     * @param {Tw2Frustum} frustum
+     * @param {EveUpdateContext} updateContext
      */
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        const center = vec3.transformMat4(EveObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
-
-        if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
+        if (!this.display)
         {
-            this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-            if (this._pixelSizeAcross < LodLevelPixels.ZERO)
-            {
-                this._lod = 0;
-            }
-            else if (this._pixelSizeAcross < LodLevelPixels.ONE)
-            {
-                this._lod = 1;
-            }
-            else if (this._pixelSizeAcross < LodLevelPixels.TWO)
-            {
-                this._lod = 2;
-            }
-            else
-            {
-                this._lod = 3;
-            }
+            this._SetLodState(false, this.lodLevel, this.lodLevelWithChildren, false);
+            return;
         }
-        else
+
+        const
+            frustum = updateContext.GetFrustum(),
+            bodySphere = EveObject.global.sph3_0,
+            combinedSphere = EveObject.global.sph3_1,
+            lowThreshold = updateContext.GetLowDetailThreshold(),
+            mediumThreshold = updateContext.GetMediumDetailThreshold(),
+            highThreshold = updateContext.GetHighDetailThreshold();
+
+        bodySphere[0] = this.boundingSphereCenter[0];
+        bodySphere[1] = this.boundingSphereCenter[1];
+        bodySphere[2] = this.boundingSphereCenter[2];
+        bodySphere[3] = this.boundingSphereRadius;
+        sph3.transformMat4(bodySphere, bodySphere, this._worldTransform);
+
+        this.estimatedPixelDiameter = 0;
+        this.estimatedPixelDiameterWithChildren = 0;
+
+        const
+            bodyBoundsReady = bodySphere[3] > 0,
+            preserveUnboundedBody = !!this.mesh && !bodyBoundsReady;
+
+        let meshVisible = preserveUnboundedBody || (
+            bodyBoundsReady && frustum.IsSphereVisible(bodySphere, bodySphere[3])
+        );
+
+        if (meshVisible && bodyBoundsReady)
         {
-            this._pixelSizeAcross = 0;
-            this._lod = 0;
+            this.estimatedPixelDiameter = frustum.GetPixelSizeAcross(bodySphere, bodySphere[3]);
         }
 
         for (let i = 0; i < this.children.length; i++)
         {
-            if (this.children[i].UpdateLod)
-            {
-                this.children[i].UpdateLod(frustum, this._lod);
-            }
+            this.children[i].UpdateLod(updateContext);
         }
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].UpdateLod(frustum, this._lod);
+            this.effectChildren[i].PrepareLod(this._worldTransform);
+        }
+
+        let hasCombinedBounds = bodyBoundsReady;
+        if (hasCombinedBounds)
+        {
+            sph3.copy(combinedSphere, bodySphere);
+        }
+
+        let preserveUnboundedChildren = false;
+        const childSphere = EveObject.global.sph3_2;
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            if (this.children[i].GetWorldBoundingSphere(childSphere))
+            {
+                if (hasCombinedBounds) sph3.union(combinedSphere, combinedSphere, childSphere);
+                else sph3.copy(combinedSphere, childSphere);
+                hasCombinedBounds = true;
+            }
+            else preserveUnboundedChildren = true;
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            if (this.effectChildren[i].GetBoundingSphere(childSphere))
+            {
+                if (hasCombinedBounds) sph3.union(combinedSphere, combinedSphere, childSphere);
+                else sph3.copy(combinedSphere, childSphere);
+                hasCombinedBounds = true;
+            }
+            else preserveUnboundedChildren = true;
+        }
+
+        const inFrustum = hasCombinedBounds && frustum.IsSphereVisible(combinedSphere, combinedSphere[3]);
+        if (inFrustum)
+        {
+            this.estimatedPixelDiameterWithChildren = frustum.GetPixelSizeAcrossEst(combinedSphere, combinedSphere[3]);
+        }
+
+        let visible = preserveUnboundedBody || preserveUnboundedChildren || !hasCombinedBounds || (
+            inFrustum &&
+            this.estimatedPixelDiameterWithChildren >= updateContext.GetVisibilityThreshold()
+        );
+
+        let lodLevel = Tr2Lod.TR2_LOD_LOW;
+        let lodLevelWithChildren = Tr2Lod.TR2_LOD_LOW;
+
+        if (preserveUnboundedBody || !hasCombinedBounds)
+        {
+            lodLevel = Tr2Lod.TR2_LOD_HIGH;
+            lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+        }
+        else if (visible)
+        {
+            if (this.estimatedPixelDiameter > mediumThreshold)
+            {
+                lodLevel = Tr2Lod.TR2_LOD_HIGH;
+            }
+            else if (this.estimatedPixelDiameter > lowThreshold)
+            {
+                lodLevel = Tr2Lod.TR2_LOD_MEDIUM;
+            }
+
+            if (preserveUnboundedChildren)
+            {
+                // An unbounded live child must fail open at full logical detail;
+                // LOW would silently hide children whose lowestLodVisible is
+                // MEDIUM/HIGH before they have a trustworthy bound.
+                lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+            }
+            else if (this.estimatedPixelDiameterWithChildren > mediumThreshold)
+            {
+                lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+            }
+            else if (this.estimatedPixelDiameterWithChildren > lowThreshold)
+            {
+                lodLevelWithChildren = Tr2Lod.TR2_LOD_MEDIUM;
+            }
+        }
+
+        // Carbon's attachment pass promotes both root and hull-mesh visibility
+        // when any independently bounded attachment is visible
+        // (EveSpaceObject2::UpdateVisibility). Resolve those sets before hull
+        // overlays so the result cannot depend on attachment array order.
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            const attachment = this.attachments[i];
+            if (attachment instanceof EveMeshOverlayEffect) continue;
+            attachment.UpdateLod(updateContext);
+            if (!attachment.isVisible) continue;
+            visible = true;
+            meshVisible = true;
+        }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            const attachment = this.attachments[i];
+            if (attachment instanceof EveMeshOverlayEffect)
+            {
+                attachment.UpdateLod(updateContext, meshVisible);
+            }
+        }
+
+        this._pixelSizeAcross = this.estimatedPixelDiameterWithChildren;
+        this._controllerUpdateFrequency = visible && highThreshold > 0
+            ? Math.min(1, this.estimatedPixelDiameter / highThreshold)
+            : 0;
+        this._SetLodState(visible, lodLevel, lodLevelWithChildren, meshVisible);
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].UpdateLod(updateContext, this.lodLevelWithChildren, this._worldTransform);
         }
 
         // The booster set 2 has its own lod: the boosters, the trails and the
         // set's own visibility are three independent gates, and a trail can
         // keep the set on screen after the hull has left it.
-        if (this.boosters && this.boosters.UpdateLod)
+        if (this.boosters)
         {
-            this.boosters.UpdateLod(frustum, this._lod);
+            this.boosters.UpdateLod(updateContext);
         }
     }
 
@@ -993,20 +1078,24 @@ export class EveShip2 extends EveObject
      */
     ResetLod()
     {
-        this._lod = 3;
+        super.ResetLod();
 
         for (let i = 0; i < this.children.length; i++)
         {
-            if (this.children[i].ResetLod)
-            {
-                this.children[i].ResetLod();
-            }
+            this.children[i].ResetLod();
         }
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
             this.effectChildren[i].ResetLod();
         }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            this.attachments[i].ResetLod();
+        }
+
+        if (this.boosters) this.boosters.ResetLod();
     }
 
     /**
@@ -1839,7 +1928,7 @@ export class EveShip2 extends EveObject
      */
     Update(dt)
     {
-        if (this._lod < 1 || !this.display)
+        if (!this.display)
         {
             return;
         }
@@ -1873,6 +1962,11 @@ export class EveShip2 extends EveObject
         // reset without telling anyone.
         let activeTurretCount = 0;
 
+        this._lastLodUpdateDelta += dt;
+        const lodUpdateDue = EveLODHelper.ShouldUpdate(this.lodLevelWithChildren, this._lastLodUpdateDelta);
+        const lodUpdateDelta = lodUpdateDue ? this._lastLodUpdateDelta : 0;
+        if (lodUpdateDue) this._lastLodUpdateDelta = 0;
+
         for (let i = 0; i < this.attachments.length; i++)
         {
             // TODO: Normalize
@@ -1889,7 +1983,14 @@ export class EveShip2 extends EveObject
                 if (this.attachments[i].IsActive()) activeTurretCount++;
             }
 
-            this.attachments[i].Update(dt, this);
+            if (this.attachments[i] instanceof EveMeshOverlayEffect)
+            {
+                if (lodUpdateDue) this.attachments[i].Update(lodUpdateDelta, this);
+            }
+            else
+            {
+                this.attachments[i].Update(dt, this);
+            }
 
             if (this.attachments[i]._boundsDirty)
             {
@@ -1927,9 +2028,17 @@ export class EveShip2 extends EveObject
             }
         }
 
+        if (lodUpdateDue)
+        {
+            for (let i = 0; i < this.curveSets.length; i++)
+            {
+                this.curveSets[i].UpdateDelta(lodUpdateDelta);
+            }
+        }
+
         for (let i = 0; i < this.controllers.length; i++)
         {
-            this.controllers[i].Update(dt);
+            this.controllers[i].Update(dt, this._controllerUpdateFrequency);
         }
 
         if (this.animation)
@@ -1950,7 +2059,7 @@ export class EveShip2 extends EveObject
      */
     GetBatches(mode, accumulator, perObjectData = this._perObjectData)
     {
-        if (!this.display || this._lod < 1) return false;
+        if (!this.display) return false;
         const hasExternalPerObjectData = perObjectData !== this._perObjectData;
         const previousPerObjectData = this._perObjectData;
         if (hasExternalPerObjectData)
@@ -1968,6 +2077,13 @@ export class EveShip2 extends EveObject
             this.boosters.GetBatches(mode, accumulator, this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff));
         }
 
+        if (!this.isVisible)
+        {
+            const hasBatches = accumulator.length !== c;
+            if (hasExternalPerObjectData) this._perObjectData = previousPerObjectData;
+            return hasBatches;
+        }
+
         if (res)
         {
             // TODO: Throw an error
@@ -1978,7 +2094,7 @@ export class EveShip2 extends EveObject
             // TODO: Why are we doing this? Must assume the data is correct
             this.mesh.SetMeshIndex(this.meshIndex);
 
-            if (show.mesh)
+            if (show.mesh && this._isMeshVisible)
             {
                 this.mesh.GetBatches(mode, accumulator, this._perObjectData);
             }
@@ -1987,7 +2103,6 @@ export class EveShip2 extends EveObject
         const showFiringEffects = show.firingEffect !== undefined ? show.firingEffect : show.firingEffects;
         let doFiringEffects = showFiringEffects;
 
-        if (this._lod > 1)
         {
 
             // TODO: normalize GetBatches for all attachments
@@ -2073,11 +2188,11 @@ export class EveShip2 extends EveObject
                 }
             }
 
-            if (res)
+            if (res && this._isMeshVisible)
             {
                 if (show.decals)
                 {
-                    const killMarks = show.killmarks && this._lod > 2 ? this.killCount : 0;
+                    const killMarks = show.killmarks ? this.killCount : 0;
                     for (let i = 0; i < this.decals.length; i++)
                     {
                         this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, killMarks, this.mesh.GetMeshIndex());
@@ -2090,7 +2205,7 @@ export class EveShip2 extends EveObject
         {
             for (let i = 0; i < this.attachments.length; i++)
             {
-                if (this.attachments[i] instanceof EveTurretSet)
+                if (this.attachments[i].isVisible && this.attachments[i] instanceof EveTurretSet)
                 {
                     this.attachments[i].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
                 }
@@ -2472,7 +2587,10 @@ export class EveShip2 extends EveObject
             mesh,
             geometryRes,
             meshIndex,
-            lod: this._lod,
+            isVisible: this.isVisible,
+            meshVisible: this._isMeshVisible,
+            lodLevel: this.lodLevel,
+            lodLevelWithChildren: this.lodLevelWithChildren,
             visible: this.visible,
             boosterGain: this.boosterGain,
             killCount: this.killCount,

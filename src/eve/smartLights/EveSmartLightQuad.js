@@ -41,6 +41,18 @@ import { resolveGroupColor } from "./EveSmartLightBaseGroup";
 export class EveSmartLightQuad extends EveChildTransform
 {
 
+    /** Captures the current frustum for Carbon's per-placement quad cull. */
+    UpdateVisibility(updateContext, _parentTransform, _parentLodLevel)
+    {
+        this._frustum = updateContext.GetFrustum();
+    }
+
+    /** Clears per-placement LOD culling state. */
+    ResetLod()
+    {
+        this._frustum = null;
+    }
+
     /** m_name (std::string) [READWRITE, PERSIST] */
     @meta.string
     name = "";
@@ -410,7 +422,7 @@ export class EveSmartLightQuad extends EveChildTransform
             // undefined, every comparison against -NaN is false, and the test
             // silently passes everything. Accidentally permissive rather than
             // broken, but it was not testing anything.
-            if (frustum?.IntersectsSph3?.(sphere) === false) continue;
+            if (frustum && !frustum.IntersectsSph3(sphere)) continue;
 
             const strength = this._activationStrength;
             vec3.set(color, groupColor[0] * strength, groupColor[1] * strength, groupColor[2] * strength);
@@ -532,6 +544,15 @@ export class EveSmartLightQuad extends EveChildTransform
     }
 
     /**
+     * ccpwgl light-owner traversal contract. Quads emit VFX geometry, not
+     * local lights; this no-op lets the owning set traverse every group
+     * directly while Carbon reaches only registered light owners.
+     */
+    GetLights(_collector, _parentContext, _distribution)
+    {
+    }
+
+    /**
      * Gets render batches.
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -546,8 +567,8 @@ export class EveSmartLightQuad extends EveChildTransform
         // transform and that is only current once UpdateAsyncronous has run.
         // This is also where Carbon builds (AddQuadsToQuadRenderer), so the
         // timing now matches rather than merely working.
-        const placements = distribution?.GetPlacementData?.() || [];
-        const size = Number(distribution?.GetNumberOfPlacements?.() ?? placements.length);
+        const placements = distribution.GetPlacementData();
+        const size = Number(distribution.GetNumberOfPlacements());
         this.BuildQuads(placements, size, this._frustum);
 
         if (!this.IsGood()) return false;

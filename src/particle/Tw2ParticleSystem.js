@@ -107,6 +107,7 @@ export class Tw2ParticleSystem extends meta.Model
     _vertexStride = [ null, null ];
     _constraintsBound = false;
     _worldTransform = mat4.create();
+    _originalMaxParticles = 0;
 
 
     /**
@@ -123,6 +124,27 @@ export class Tw2ParticleSystem extends meta.Model
      */
     Initialize()
     {
+        this.UpdateElementDeclaration();
+        this._originalMaxParticles = this.maxParticleCount;
+    }
+
+    /** Returns the authored particle budget captured at initialization. */
+    GetOriginalMaxParticles()
+    {
+        return this._originalMaxParticles;
+    }
+
+    /**
+     * Rebuilds the simulation buffers for a new logical-LOD particle budget.
+     * As in Carbon, changing the budget clears all live particles.
+     * @param {Number} maxParticleCount
+     */
+    SetMaxParticleCount(maxParticleCount)
+    {
+        maxParticleCount = Math.max(0, Math.trunc(maxParticleCount));
+        if (this.maxParticleCount === maxParticleCount) return;
+
+        this.maxParticleCount = maxParticleCount;
         this.UpdateElementDeclaration();
     }
 

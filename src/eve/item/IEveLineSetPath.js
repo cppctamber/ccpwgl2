@@ -1,6 +1,6 @@
 // Source: E:\carbonengine\trinity\trinity\Eve\SpaceObject\Children\LineSetPaths\IEveLineSetPath.h
 import { meta } from "utils";
-import { mat4, vec3, vec4 } from "math";
+import { mat4, vec3, vec4, sph3 } from "math";
 import { EveChildTransform } from "eve/child/EveChildTransform";
 
 
@@ -214,12 +214,29 @@ export class IEveLineSetPath extends EveChildTransform
     }
 
     /**
-     * Not wired: Carbon culls each path against the frustum and clears
-     * `m_isVisible`, which nothing in ccpwgl drives yet. `isVisible` therefore
-     * stays at its declared default of true and every path draws.
+     * Applies Carbon's per-path transformed-sphere frustum test.
+     * @param {Tw2Frustum} frustum
+     * @param {Number} parentLodLevel
+     * @param {mat4} systemLocation
      */
-    UpdateVisibility()
+    UpdateVisibility(frustum, parentLodLevel, systemLocation)
     {
+        if (!this.display)
+        {
+            this.isVisible = false;
+            return;
+        }
+
+        const sphere = IEveLineSetPath.global.sph3_0;
+        this.GetBoundingSphere(sphere);
+        sph3.transformMat4(sphere, sphere, systemLocation);
+        this.isVisible = frustum.IsSphereVisible(sphere, sphere[3]);
+    }
+
+    /** Restores authored path visibility. */
+    ResetLod()
+    {
+        this.isVisible = true;
     }
 
     /**
@@ -234,7 +251,8 @@ export class IEveLineSetPath extends EveChildTransform
 
     static global = {
         vec3_0: vec3.create(),
-        vec3_1: vec3.create()
+        vec3_1: vec3.create(),
+        sph3_0: sph3.create()
     };
 
     static IDENTITY = mat4.create();

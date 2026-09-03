@@ -164,6 +164,28 @@ export class EveShip extends EveSpaceObject
         }
     }
 
+    /** Applies logical visibility to ship-only attachments. */
+    UpdateLod(updateContext)
+    {
+        super.UpdateLod(updateContext);
+
+        if (this.boosters)
+        {
+            this.boosters.UpdateLod(updateContext);
+            if (this.boosters.isVisible && !this.isVisible)
+            {
+                this._SetLodState(true, this.lodLevel, this.lodLevelWithChildren, this._isMeshVisible);
+            }
+        }
+    }
+
+    /** Restores ship-only attachment visibility. */
+    ResetLod()
+    {
+        super.ResetLod();
+        if (this.boosters) this.boosters.ResetLod();
+    }
+
     /**
      * Gets render batches
      * @param {number} mode
@@ -172,11 +194,9 @@ export class EveShip extends EveSpaceObject
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || !this._lod) return false;
+        if (!this.display) return false;
 
         const c = accumulator.length;
-
-        super.GetBatches(mode, accumulator);
 
         this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
         this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
@@ -186,20 +206,17 @@ export class EveShip extends EveSpaceObject
             this.boosters.GetBatches(mode, accumulator, this._perObjectData);
         }
 
+        if (!this.isVisible) return accumulator.length !== c;
+
+        super.GetBatches(mode, accumulator);
+
         if (this.visible.turretSets)
         {
-            if (this._lod > 1)
+            for (let i = 0; i < this.turretSets.length; ++i)
             {
-                for (let i = 0; i < this.turretSets.length; ++i)
+                if (this.turretSets[i].isVisible)
                 {
                     this.turretSets[i].GetBatches(mode, accumulator, this._perObjectData, this.visible.firingEffects);
-                }
-            }
-            else if (this.visible.firingEffects)
-            {
-                for (let i = 0; i < this.turretSets.length; ++i)
-                {
-                    this.turretSets[i].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
                 }
             }
         }

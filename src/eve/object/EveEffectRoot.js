@@ -3,6 +3,7 @@ import { vec3, quat, mat4, sph3, box3 } from "math";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 @meta.define("EveEffectRoot", true)
@@ -13,7 +14,7 @@ export class EveEffectRoot extends EveObject
     @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.list("EveMeshOverlayEffect")
+    @meta.list("EveChild")
     effectChildren = [];
 
     @meta.float
@@ -62,34 +63,18 @@ export class EveEffectRoot extends EveObject
      */
     OnRebuildBounds()
     {
-        const { box3_0, sph3_0 } = EveObject.global;
-
-        for (let i = 0; i < this.effectChildren.length; i++)
+        if (this.boundingSphereRadius > 0)
         {
-            let bounds;
-            if (this.effectChildren[i].GetBoundingBox)
-            {
-                this.effectChildren[i].GetBoundingBox(box3_0);
-                sph3.fromBox3(sph3_0, box3_0);
-                bounds = true;
-            }
-            else if (this.effectChildren[i].GetBoundingSphere)
-            {
-                this.effectChildren[i].GetBoundingSphere(sph3_0);
-                bounds = true;
-            }
-
-            if (bounds)
-            {
-                sph3.union(this._boundingSphere, this._boundingSphere, sph3_0);
-            }
+            sph3.set(
+                this._boundingSphere,
+                this.boundingSphereCenter[0],
+                this.boundingSphereCenter[1],
+                this.boundingSphereCenter[2],
+                this.boundingSphereRadius
+            );
+            box3.fromSph3(this._boundingBox, this._boundingSphere);
+            this._boundsDirty = false;
         }
-
-        // Union the local bounds data for now...
-        sph3.unionPositionRadius(this._boundingSphere, this._boundingSphere, this.boundingSphereCenter,this.boundingSphereRadius);
-
-        box3.fromSph3(this._boundingBox, this._boundingSphere);
-        this._boundsDirty = false;
     }
 
     /**
@@ -97,31 +82,25 @@ export class EveEffectRoot extends EveObject
      */
     ResetLod()
     {
-        this._lod = 3;
+        super.ResetLod();
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].ResetLod)
-            {
-                this.effectChildren[i].ResetLod();
-            }
+            this.effectChildren[i].ResetLod();
         }
     }
 
     /**
      * Updates lod
-     * @param {Tw2Frustum} frustum
+     * @param {EveUpdateContext} updateContext
      */
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        this._lod = 3;
+        this._SetLodState(true, Tr2Lod.TR2_LOD_HIGH, Tr2Lod.TR2_LOD_HIGH, true);
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].UpdateLod)
-            {
-                this.effectChildren[i].UpdateLod(frustum, this._lod);
-            }
+            this.effectChildren[i].UpdateLod(updateContext, this.lodLevel, this._worldTransform);
         }
     }
 

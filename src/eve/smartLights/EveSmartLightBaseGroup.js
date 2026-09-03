@@ -66,6 +66,16 @@ export function resolveGroupColor(customColor, useFactionColor, factionColor, pa
 export class EveSmartLightBaseGroup extends meta.Model
 {
 
+    /** ccpwgl smart-light traversal contract; base groups own no geometry. */
+    UpdateVisibility(_updateContext, _parentTransform, _parentLodLevel)
+    {
+    }
+
+    /** ccpwgl smart-light traversal contract; base groups retain no cull state. */
+    ResetLod()
+    {
+    }
+
     /** m_selectedColor (int32_t) [READWRITE, PERSIST, NOTIFY, ENUM] */
     @meta.int32
     factionColor = -1;

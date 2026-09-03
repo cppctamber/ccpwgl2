@@ -68,6 +68,7 @@ export class EveBanner extends meta.Model
     _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
     _geometryResource = resMan.GetResource("res:/graphics/generic/unit_plane.gr2");
     _worldTransform = mat4.create();
+    isVisible = true;
 
 
     // --------------------------------- testy mctest face  -------------------------//
@@ -359,6 +360,45 @@ export class EveBanner extends meta.Model
     }
 
     /**
+     * Applies Carbon's banner box and minimum projected-size visibility.
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        const
+            box = EveBanner.global.box3_0,
+            sphere = EveBanner.global.sph3_0;
+
+        if (!this.display || !this.GetWorldBoundingBox(box))
+        {
+            this.isVisible = false;
+            return;
+        }
+
+        const frustum = updateContext.GetFrustum();
+        this.isVisible = frustum.IntersectsBox3(box);
+
+        if (this.isVisible)
+        {
+            sph3.fromBox3(sphere, box);
+            this.isVisible = frustum.GetPixelSizeAcrossEst(sphere, sphere[3]) >
+                updateContext.GetVisibilityThreshold() * 0.5;
+        }
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this.isVisible = true;
+    }
+
+    /** This legacy single-banner adapter owns no dynamic lights. */
+    GetLights(collector, parentContext)
+    {
+
+    }
+
+    /**
      * Gets parent per object data
      * @param {*} parentData
      * @returns {Tw2PerObjectData|null}
@@ -386,7 +426,7 @@ export class EveBanner extends meta.Model
             return false;
         }
 
-        if (!this.display || !this.IsGood()) return false;
+        if (!this.display || !this.isVisible || !this.IsGood()) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (!perObjectData) return false;
 
@@ -422,7 +462,9 @@ export class EveBanner extends meta.Model
      * @type {{mat4_0: mat4}}
      */
     static global = {
-        mat4_0: mat4.create()
+        mat4_0: mat4.create(),
+        box3_0: box3.create(),
+        sph3_0: sph3.create()
     };
 
     /**

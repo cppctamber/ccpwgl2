@@ -2,7 +2,8 @@ import { meta } from "utils";
 import { vec3, mat4, quat, box3, sph3 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
-import { LodLevelPixels } from "constant/ccpwgl";
+import { Tr2Lod } from "constant/ccpwgl";
+import { EveLODHelper } from "../EveLODHelper";
 import { device } from "global/tw2";
 
 
@@ -81,13 +82,11 @@ export class EveTransform extends EveObject
     @meta.boolean
     useDistanceBasedScale = false;
 
-    @meta.notImplemented
     @meta.boolean
-    useLodLevel = false;
+    useLodLevel = true;
 
-    @meta.notImplemented
     @meta.float
-    visibilityThreshold = 0;
+    visibilityThreshold = 2;
 
     @meta.plain
     visible = {
@@ -98,49 +97,125 @@ export class EveTransform extends EveObject
     _parentTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveTransform.perObjectData);
     _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
+    _lastCurveUpdateDelta = EveLODHelper.lowUpdateRate;
+    _lodBoundingSphereScratch = sph3.create();
 
     /**
      * Updates lod
-     * @param {Tw2Frustum}frustum
+     * @param {EveUpdateContext} updateContext
      */
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        this.RebuildBounds();
-
-        const worldSphere = EveObject.global.sph3_0;
-        if (this.GetWorldBoundingSphere(worldSphere))
+        if (!this.display)
         {
-            if (frustum.IsSphereVisible(worldSphere, worldSphere[3]))
-            {
-                this._pixelSizeAcross = frustum.GetPixelSizeAcross(worldSphere, worldSphere[3]);
+            this._SetLodState(false, Tr2Lod.TR2_LOD_LOW, Tr2Lod.TR2_LOD_LOW, false);
+            return;
+        }
 
-                if (this._pixelSizeAcross < LodLevelPixels.ZERO)
-                {
-                    this._lod = 0;
-                }
-                else if (this._pixelSizeAcross < LodLevelPixels.ONE)
-                {
-                    this._lod = 1;
-                }
-                else if (this._pixelSizeAcross < LodLevelPixels.TWO)
-                {
-                    this._lod = 2;
-                }
-                else
-                {
-                    this._lod = 3;
-                }
-            }
-            else
+        const
+            frustum = updateContext.GetFrustum(),
+            worldSphere = EveObject.global.sph3_0;
+
+        let
+            lodLevel = Tr2Lod.TR2_LOD_LOW,
+            meshVisible = !this.mesh;
+
+        this.estimatedPixelDiameter = 0;
+
+        if (this.mesh && this.GetDirectWorldBoundingSphere(worldSphere))
+        {
+            if (this.visibilityThreshold < 0 || frustum.IsSphereVisible(worldSphere, worldSphere[3]))
             {
-                this._pixelSizeAcross = 0;
-                this._lod = 0;
+                this.estimatedPixelDiameter = frustum.GetPixelSizeAcross(worldSphere, worldSphere[3]);
+                meshVisible = this.estimatedPixelDiameter > this.visibilityThreshold;
+
+                if (this.estimatedPixelDiameter >= updateContext.GetMediumDetailThreshold())
+                {
+                    lodLevel = Tr2Lod.TR2_LOD_HIGH;
+                }
+                else if (this.estimatedPixelDiameter >= updateContext.GetLowDetailThreshold())
+                {
+                    lodLevel = Tr2Lod.TR2_LOD_MEDIUM;
+                }
             }
         }
-        // What to do when no bounds?
-        else
+
+        // Carbon forces particle-bearing transforms to high detail because
+        // their authored bounds are not reliable enough for logical LOD.
+        if (this.particleSystems.length)
         {
-            this._lod = 3;
+            lodLevel = Tr2Lod.TR2_LOD_HIGH;
+        }
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            const child = this.children[i];
+            child.UpdateLod(updateContext);
+            lodLevel = EveLODHelper.MergeLOD(lodLevel, child.lodLevel);
+        }
+
+        this._pixelSizeAcross = this.estimatedPixelDiameter;
+        this._SetLodState(meshVisible, lodLevel, lodLevel, meshVisible);
+    }
+
+    /**
+     * Gets the transform's own world-space bounds, excluding children.
+     * Logical LOD merges child results separately, matching Carbon.
+     * @param {sph3} out
+     * @returns {sph3|null}
+     */
+    GetDirectWorldBoundingSphere(out)
+    {
+        if (!box3.bounds.isEmpty(this.overrideBoundsMin, this.overrideBoundsMax))
+        {
+            box3.fromBounds(EveObject.global.box3_0, this.overrideBoundsMin, this.overrideBoundsMax);
+            sph3.fromBox3(out, EveObject.global.box3_0);
+            return sph3.transformMat4(out, out, this._worldTransform);
+        }
+
+        if (this.mesh && this.mesh.GetBoundingSphere(out))
+        {
+            return sph3.transformMat4(out, out, this._worldTransform);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns Carbon's WITH_CHILDREN world sphere for transform hierarchies.
+     * A missing descendant bound returns null so the owning root fails open
+     * until the subtree is ready.
+     * @param {sph3} out
+     * @returns {sph3|null}
+     */
+    GetWorldBoundingSphere(out)
+    {
+        let hasBounds = !!this.GetDirectWorldBoundingSphere(out);
+        const childSphere = this._lodBoundingSphereScratch;
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            const bounds = this.children[i].GetWorldBoundingSphere(childSphere);
+            if (!bounds) return null;
+
+            if (hasBounds) sph3.union(out, out, childSphere);
+            else sph3.copy(out, childSphere);
+            hasBounds = true;
+        }
+
+        return hasBounds ? out : null;
+    }
+
+    /**
+     * Resets logical LOD for this transform tree.
+     */
+    ResetLod()
+    {
+        super.ResetLod();
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            this.children[i].ResetLod();
         }
     }
 
@@ -157,40 +232,11 @@ export class EveTransform extends EveObject
             this._boundsDirty = false;
             return;
         }
-        // Children
-        const { box3_0, sph3_0 } = EveObject.global;
-
-        const unionFromArrayItems = (array = []) =>
+        if (this.mesh && this.mesh.GetBoundingBox(this._boundingBox))
         {
-            for (let i = 0; i < array.length; i++)
-            {
-                let bounds = false;
-                if ("GetBoundingBox" in array[i])
-                {
-                    array[i].GetBoundingBox(box3_0);
-                    bounds = true;
-
-                }
-                else if ("GetBoundingSphere" in array[i])
-                {
-                    array[i].GetBoundingSphere(sph3_0);
-                    box3.fromSph3(box3_0, sph3_0);
-                    bounds = true;
-                }
-
-                if (bounds)
-                {
-                    box3.union(this._boundingBox, this._boundingBox, box3_0);
-                }
-            }
-        };
-
-        unionFromArrayItems(this.children);
-        unionFromArrayItems(this.particleSystems);
-        unionFromArrayItems(this.particleEmitters);
-
-        sph3.fromBox3(this._boundingSphere, this._boundingBox);
-        this._boundsDirty = false;
+            sph3.fromBox3(this._boundingSphere, this._boundingBox);
+            this._boundsDirty = false;
+        }
     }
 
     /**
@@ -236,8 +282,6 @@ export class EveTransform extends EveObject
      */
     Update(dt)
     {
-        //if (this.useLodLevel && this._lod < this.visibilityThreshold) return;
-
         for (let i = 0; i < this.children.length; ++i)
         {
             this.children[i].Update(dt);
@@ -256,9 +300,20 @@ export class EveTransform extends EveObject
             if (this.particleSystems[i]._boundsDirty) this._boundsDirty = true;
         }
 
-        for (let i = 0; i < this.curveSets.length; ++i)
+        if (this.curveSets.length)
         {
-            this.curveSets[i].UpdateDelta(dt);
+            this._lastCurveUpdateDelta += dt;
+
+            if (!this.useLodLevel || EveLODHelper.ShouldUpdate(this.lodLevel, this._lastCurveUpdateDelta))
+            {
+                const curveDelta = this._lastCurveUpdateDelta;
+                this._lastCurveUpdateDelta = 0;
+
+                for (let i = 0; i < this.curveSets.length; ++i)
+                {
+                    this.curveSets[i].UpdateDelta(curveDelta);
+                }
+            }
         }
     }
 
@@ -290,9 +345,7 @@ export class EveTransform extends EveObject
 
         const c = accumulator.length;
 
-        //if (this.useLodLevel && this._lod < this.visibilityThreshold) return;
-
-        if (this.visible.mesh && this.mesh)
+        if (this.visible.mesh && this._isMeshVisible && this.mesh)
         {
             mat4.transpose(this._perObjectData.ffe.Get("World"), this._worldTransform);
             mat4.invert(this._perObjectData.ffe.Get("WorldInverseTranspose"), this._worldTransform);

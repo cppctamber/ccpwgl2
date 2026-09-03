@@ -186,6 +186,9 @@ export class EveObjectSet extends meta.Model
     @meta.list()
     items = [];
 
+    /** CPU visibility result supplied by the scene's logical-LOD pass. */
+    isVisible = true;
+
     _dirty = true;
     _visibleItems = [];
 
@@ -641,6 +644,36 @@ export class EveObjectSet extends meta.Model
         }
 
         mat4.copy(this._parentTransform, parentTransform);
+    }
+
+    /**
+     * Applies Carbon's attachment-set world-box frustum test.
+     * Unready bounds are hidden for this frame and reconsidered on the next
+     * pass, matching Carbon's attachment visibility contract.
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        if (!this.display)
+        {
+            this.isVisible = false;
+            return;
+        }
+
+        const bounds = this.GetWorldBoundingBox(EveObjectSet.global.box3_0);
+        this.isVisible = !!bounds && updateContext.GetFrustum().IntersectsBox3(bounds);
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this.isVisible = true;
+    }
+
+    /** Attachment sets without lights satisfy the owned traversal contract. */
+    GetLights(collector, parentContext)
+    {
+
     }
 
     /**

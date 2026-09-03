@@ -7,6 +7,7 @@ import { Tw2CarbonShadowRenderer } from "core/carbon/Tw2CarbonShadowRenderer";
 import { Tw2GpuParticleRenderer } from "unsupported/particle/Tw2GpuParticleRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
+import { EveUpdateContext } from "./EveUpdateContext";
 import { ComputeAutoNearFar, GetSceneBoundingSphere } from "./EveSceneNearFar";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
 import {
@@ -503,7 +504,7 @@ export class EveSpaceScene extends meta.Model
     _depthContext = null;
     _emptyTexture = null;
     _frustum = new Tw2Frustum();
-    _lodEnabled = false;
+    _updateContext = new EveUpdateContext();
     _perFrameSunDirection = vec3.create();
     _hasPerFrameSunDirection = false;
 
@@ -777,16 +778,6 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
-     * Enables LOD
-     * @param {Boolean} enable
-     */
-    EnableLod(enable)
-    {
-        this._lodEnabled = enable;
-        if (!enable) this.PerChildObject("ResetLod");
-    }
-
-    /**
      * Keeps the scene and it's object's resources alive
      */
     KeepAlive()
@@ -904,6 +895,8 @@ export class EveSpaceScene extends meta.Model
     Update(dt)
     {
 
+        this._updateContext.SetTime(this._updateContext.GetTime() + dt);
+
         if (this.starField)
         {
             this.starField.Update(dt);
@@ -921,9 +914,6 @@ export class EveSpaceScene extends meta.Model
         {
             Tw2GpuParticleRenderer.Get().Update(dt);
         }
-
-        this.UpdateCarbonLights(dt);
-        this.UpdateShLighting();
 
         if (this.postprocess)
         {
@@ -952,7 +942,17 @@ export class EveSpaceScene extends meta.Model
             collector = this._carbonLightCollector;
 
         collector.Reset();
-        this.PerChildObject("GetLights", collector, { dt });
+        const lightOwnerGroups = [
+            [ this.visible.backgroundObjects, this.backgroundObjects ],
+            [ this.visible.objects, this.objects ],
+            [ this.visible.planets, this.planets ]
+        ];
+
+        for (const [ enabled, objects ] of lightOwnerGroups)
+        {
+            if (!enabled) continue;
+            for (let i = 0; i < objects.length; i++) objects[i].GetLights(collector, { dt });
+        }
         this.GetLights(collector, { dt });
 
         // The list's tile-header layout must track the real viewport —
@@ -960,20 +960,10 @@ export class EveSpaceScene extends meta.Model
         // screen size in the per-frame constants.
         collector.GetLightList().SetScreenSize(d.viewportWidth || 16, d.viewportHeight || 16);
 
-        // Built here from the device rather than reusing whatever Render left
-        // behind, so the planes, the view position and the projection scale all
-        // describe the same camera. They describe LAST frame's camera: the tick
-        // is Render -> Update -> PrepareRender, and PrepareRender is what sets
-        // the view and projection. `cameraPosition` below has always come from
-        // the same stale device state, so this is consistent rather than newly
-        // wrong, and one frame of latency on a cull is not visible. Carbon
-        // gathers in its update too.
-        //
-        // The convention matches: Tw2Frustum.IntersectsPositionRadius and the
-        // collector's FrustumRejectsSphere are the same test written twice -
-        // normalized planes, normals inward, outside when the signed distance is
-        // below -radius.
+        // Build from the camera used for this Render call. Carbon's light cull
+        // is an independent current-frame consumer of the frustum.
         this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
+        this._updateContext.SetFrustum(this._frustum);
 
         // fovY from the projection's [1][1] = 1/tan(fovY/2), kept as the
         // fallback for the pixel-size measure the frustum now provides.
@@ -984,7 +974,9 @@ export class EveSpaceScene extends meta.Model
             frustumPlanes: this._frustum.GetPlanes(),
             viewportHeight: d.viewportHeight || 0,
             fovY: 2 * Math.atan(1 / Math.abs(projScaleY)),
-            cameraPosition: d.eyePosition
+            cameraPosition: d.eyePosition,
+            cutoffPixelSize: 7 * this.lodFactor,
+            fadeBandPixels: 5
         });
 
         Tw2CarbonResourceBinder.Get(d).SetLightList(collector.GetLightList());
@@ -1035,12 +1027,8 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
-     * Carbon's `g_eveSpaceSceneLowDetailThreshold` (EveSpaceScene.cpp:81). Below
-     * this apparent pixel diameter an object takes no secondary lighting.
-     *
-     * Deliberately NOT ccpwgl's own `LodLevelPixels` tiers (20/100/250), which do
-     * not agree with Carbon's thresholds and are of uncertain correctness. The
-     * measured quantity is shared; the tiers built on it are not.
+     * Carbon's `g_eveSpaceSceneLowDetailThreshold` (EveSpaceScene.cpp:81).
+     * Below this apparent pixel diameter an object takes no secondary lighting.
      * @type {Number}
      */
     lowDetailThreshold = 100;
@@ -1052,6 +1040,59 @@ export class EveSpaceScene extends meta.Model
      * @type {Number}
      */
     mediumDetailThreshold = 400;
+
+    /** Carbon's root-object visibility threshold in projected pixels. */
+    visibilityThreshold = 5;
+
+    /** Carbon's controller normalization threshold in projected pixels. */
+    highDetailThreshold = 800;
+
+    /** Multiplier applied by child VFX screen-size policies. */
+    lodFactor = 1;
+
+    /**
+     * Refreshes current transforms before logical LOD is calculated.
+     * This is a CPU preparation pass; it does not select geometry or issue
+     * render commands.
+     * @param {Number} dt
+     * @param {Object} show
+     */
+    PrepareLod(dt, show)
+    {
+        const
+            d = device,
+            context = this._updateContext;
+
+        this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
+        context.SetFrustum(this._frustum);
+        context.SetVisibilityThreshold(this.visibilityThreshold);
+        context.SetHighDetailThreshold(this.highDetailThreshold);
+        context.SetMediumDetailThreshold(this.mediumDetailThreshold);
+        context.SetLowDetailThreshold(this.lowDetailThreshold);
+        context.SetLodFactor(this.lodFactor);
+
+        const prepare = objects =>
+        {
+            for (let i = 0; i < objects.length; i++)
+            {
+                const object = objects[i];
+                object.UpdateViewDependentData(this._localTransform, dt);
+                object.UpdateLod(context);
+            }
+        };
+
+        if (show.backgroundObjects) prepare(this.backgroundObjects);
+        if (show.objects) prepare(this.objects);
+        if (show.lineSets) prepare(this.lineSets);
+        if (show.gizmoObjects) prepare(this.gizmoObjects);
+        if (show.planets)
+        {
+            for (let i = 0; i < this.planets.length; i++)
+            {
+                this.planets[i].UpdateViewDependentData(this._localTransform, dt);
+            }
+        }
+    }
 
     /**
      * Carbon passes white here, not the scene's sun colour
@@ -1187,7 +1228,7 @@ export class EveSpaceScene extends meta.Model
      * @param {Number} dt
      * @param {Tw2BatchAccumulator} [accumulator=this._accumulator]
      */
-    RenderPlanets(dt, accumulator = this._accumulator)
+    RenderPlanets(_dt, accumulator = this._accumulator)
     {
         if (!this.planets.length) return;
 
@@ -1204,16 +1245,22 @@ export class EveSpaceScene extends meta.Model
         this.UpdateViewProjectionFrameData();
         device.gl.depthRange(0.9, 1);
 
+        this._frustum.Initialize(
+            device.view,
+            device.projection,
+            device.viewportWidth,
+            device.viewInverse,
+            device.viewProjection
+        );
+        this._updateContext.SetFrustum(this._frustum);
+
         for (let i = 0; i < this.planets.length; ++i)
         {
-            if (this.planets[i].UpdateViewDependentData)
-            {
-                this.planets[i].UpdateViewDependentData(this._localTransform, dt);
-                this.CollectObjectBatches(this.planets[i], device.RM_OPAQUE, accumulator);
-                this.CollectObjectBatches(this.planets[i], device.RM_DECAL, accumulator);
-                this.CollectObjectBatches(this.planets[i], device.RM_TRANSPARENT, accumulator);
-                this.CollectObjectBatches(this.planets[i], device.RM_ADDITIVE, accumulator);
-            }
+            this.planets[i].UpdateLod(this._updateContext);
+            this.CollectObjectBatches(this.planets[i], device.RM_OPAQUE, accumulator);
+            this.CollectObjectBatches(this.planets[i], device.RM_DECAL, accumulator);
+            this.CollectObjectBatches(this.planets[i], device.RM_TRANSPARENT, accumulator);
+            this.CollectObjectBatches(this.planets[i], device.RM_ADDITIVE, accumulator);
         }
 
         accumulator.Render();
@@ -1224,6 +1271,19 @@ export class EveSpaceScene extends meta.Model
         device.SetProjection(tempProj, true);
         this.UpdateViewProjectionFrameData();
         device.gl.depthRange(0, 0.9);
+        this._frustum.Initialize(
+            device.view,
+            device.projection,
+            device.viewportWidth,
+            device.viewInverse,
+            device.viewProjection
+        );
+        this._updateContext.SetFrustum(this._frustum);
+
+        for (let i = 0; i < this.planets.length; i++)
+        {
+            this.planets[i].UpdateZOnlyLod(this._updateContext);
+        }
     }
 
 
@@ -1259,11 +1319,7 @@ export class EveSpaceScene extends meta.Model
             d = device,
             show = this.visible;
 
-        if (this._lodEnabled)
-        {
-            this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
-            this.PerChildObject("UpdateLod", this._frustum);
-        }
+        this.PrepareLod(dt, show);
 
         this._accumulator.Clear();
         const useBatchContext = !!tw2.enableExperimentalBatchContext;
@@ -1271,6 +1327,11 @@ export class EveSpaceScene extends meta.Model
         if (mainAccumulator !== this._accumulator) mainAccumulator.Clear();
 
         this.ApplyPerFrameData();
+
+        // Current transforms and the current camera are now prepared. Resolve
+        // CPU lighting before any immediate background or planet draw.
+        this.UpdateShLighting();
+        this.UpdateCarbonLights(dt);
 
         // Everything from here to EndSceneTarget draws into the HDR target when
         // one is active. The bind has to happen BEFORE the background, not at
@@ -1311,11 +1372,6 @@ export class EveSpaceScene extends meta.Model
         {
             for (let i = 0; i < this.backgroundObjects.length; i++)
             {
-                if (this.backgroundObjects[i].UpdateViewDependentData)
-                {
-                    this.backgroundObjects[i].UpdateViewDependentData(this._localTransform, dt);
-                }
-
                 this.CollectObjectBatches(this.backgroundObjects[i], d.RM_OPAQUE, mainAccumulator);
                 this.CollectObjectBatches(this.backgroundObjects[i], d.RM_DECAL, mainAccumulator);
                 this.CollectObjectBatches(this.backgroundObjects[i], d.RM_TRANSPARENT, mainAccumulator);
@@ -1330,15 +1386,6 @@ export class EveSpaceScene extends meta.Model
 
         if (show.objects)
         {
-
-            for (let i = 0; i < this.objects.length; i++)
-            {
-                if (this.objects[i].UpdateViewDependentData)
-                {
-                    this.objects[i].UpdateViewDependentData(this._localTransform, dt);
-                }
-            }
-
             const objects = this.objectsByDistance;
             for (let i = 0; i < objects.length; ++i)
             {
@@ -1366,7 +1413,6 @@ export class EveSpaceScene extends meta.Model
         {
             for (let i = 0; i < this.lineSets.length; i++)
             {
-                this.lineSets[i].UpdateViewDependentData(this._localTransform, dt);
                 this.CollectObjectBatches(this.lineSets[i], d.RM_TRANSPARENT, mainAccumulator);
                 this.CollectObjectBatches(this.lineSets[i], d.RM_ADDITIVE, mainAccumulator);
             }
@@ -1385,6 +1431,7 @@ export class EveSpaceScene extends meta.Model
             for (let i = 0; i < this.lensflares.length; ++i)
             {
                 this.lensflares[i].PrepareRender(this.sunDirection);
+                this.lensflares[i].UpdateLod(this._updateContext);
                 this.CollectObjectBatches(this.lensflares[i], d.RM_ADDITIVE, mainAccumulator);
             }
         }
@@ -1393,11 +1440,6 @@ export class EveSpaceScene extends meta.Model
         {
             for (let i = 0; i < this.gizmoObjects.length; i++)
             {
-                if (this.gizmoObjects[i].UpdateViewDependentData)
-                {
-                    this.gizmoObjects[i].UpdateViewDependentData(this._localTransform, dt);
-                }
-
                 this.CollectObjectBatches(this.gizmoObjects[i], d.RM_OPAQUE, mainAccumulator);
                 this.CollectObjectBatches(this.gizmoObjects[i], d.RM_DECAL, mainAccumulator);
                 this.CollectObjectBatches(this.gizmoObjects[i], d.RM_TRANSPARENT, mainAccumulator);

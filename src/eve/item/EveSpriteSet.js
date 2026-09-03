@@ -71,10 +71,10 @@ export class EveSpriteSetItem extends EveObjectSetItem
     intensity = 1;
 
     @meta.float
-    maxScale = 0;
+    maxScale = 10;
 
     @meta.float
-    minScale = 0;
+    minScale = 1;
 
     @meta.vector3
     position = vec3.create();
@@ -146,7 +146,10 @@ export class EveSpriteSetItem extends EveObjectSetItem
      */
     GetBoundingSphere(out)
     {
-        sph3.fromPositionRadius(out, this.position, this.minScale * EveSpriteSet.itemBoundsScaleMultiplier);
+        // Carbon culls against the sprite's largest rendered extent. Using
+        // minScale under-sized the set AABB and could hide a still-visible
+        // flare when its center crossed the near plane.
+        sph3.fromPositionRadius(out, this.position, this.maxScale * EveSpriteSet.itemBoundsScaleMultiplier);
         if (this._bone) sph3.transformMat4(out, out, this._bone.offsetTransform);
         return out;
     }

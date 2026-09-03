@@ -2,7 +2,7 @@ import { meta, perArrayChild } from "utils";
 import { box3, vec3, mat4, sph3 } from "math";
 import { Tw2AnimationController, Tw2PerObjectData } from "core";
 import { EveObject } from "../EveObject";
-import { LodLevelPixels } from "constant/ccpwgl";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 @meta.define("EveSpaceObject", true)
@@ -103,7 +103,6 @@ export class EveSpaceObject extends EveObject
         mat4.copy(this._localTransform, m);
     }
 
-    _lod = 3;
     _worldSpriteScale = 1;
     _parentTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
@@ -197,58 +196,149 @@ export class EveSpaceObject extends EveObject
      */
     ResetLod()
     {
-        this._lod = 3;
-    }
-
-    /**
-     * Updates the lod
-     * @param {Tw2Frustum} frustum
-     */
-    UpdateLod(frustum)
-    {
-        const center = vec3.transformMat4(EveObject.global.vec3_0, this.boundingSphereCenter, this.transform);
-
-        if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
-        {
-            this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-            if (this._pixelSizeAcross < LodLevelPixels.ZERO)
-            {
-                this._lod = 0;
-            }
-            else if (this._pixelSizeAcross < LodLevelPixels.ONE)
-            {
-                this._lod = 1;
-            }
-            else if (this._pixelSizeAcross < LodLevelPixels.TWO)
-            {
-                this._lod = 2;
-            }
-            else
-            {
-                this._lod = 3;
-            }
-        }
-        else
-        {
-            this._pixelSizeAcross = 0;
-            this._lod = 0;
-        }
+        super.ResetLod();
 
         for (let i = 0; i < this.children.length; i++)
         {
-            if (this.children[i].UpdateLod)
-            {
-                this.children[i].UpdateLod(frustum, this._lod);
-            }
+            this.children[i].ResetLod();
         }
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].UpdateLod)
+            this.effectChildren[i].ResetLod();
+        }
+
+        for (let i = 0; i < this.spriteSets.length; i++) this.spriteSets[i].ResetLod();
+        for (let i = 0; i < this.spotlightSets.length; i++) this.spotlightSets[i].ResetLod();
+        for (let i = 0; i < this.planeSets.length; i++) this.planeSets[i].ResetLod();
+        for (let i = 0; i < this.lineSets.length; i++) this.lineSets[i].ResetLod();
+        for (let i = 0; i < this.turretSets.length; i++) this.turretSets[i].ResetLod();
+        for (let i = 0; i < this.overlayEffects.length; i++) this.overlayEffects[i].ResetLod();
+    }
+
+    /**
+     * Updates the lod
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        if (!this.display)
+        {
+            this._SetLodState(false, Tr2Lod.TR2_LOD_LOW, Tr2Lod.TR2_LOD_LOW, false);
+            return;
+        }
+
+        const
+            frustum = updateContext.GetFrustum(),
+            sphere = EveObject.global.sph3_0;
+
+        sphere[0] = this.boundingSphereCenter[0];
+        sphere[1] = this.boundingSphereCenter[1];
+        sphere[2] = this.boundingSphereCenter[2];
+        sphere[3] = this.boundingSphereRadius;
+        sph3.transformMat4(sphere, sphere, this._worldTransform);
+
+        this._pixelSizeAcross = 0;
+        let visible = false;
+        let lodLevel = Tr2Lod.TR2_LOD_LOW;
+        const preserveUnboundedBody = !!this.mesh && sphere[3] <= 0;
+
+        if (preserveUnboundedBody)
+        {
+            visible = true;
+            lodLevel = Tr2Lod.TR2_LOD_HIGH;
+        }
+        else if (sphere[3] > 0 && frustum.IsSphereVisible(sphere, sphere[3]))
+        {
+            this._pixelSizeAcross = frustum.GetPixelSizeAcross(sphere, sphere[3]);
+            visible = this._pixelSizeAcross >= updateContext.GetVisibilityThreshold();
+
+            if (visible)
             {
-                this.effectChildren[i].UpdateLod(frustum, this._lod);
+                if (this._pixelSizeAcross > updateContext.GetMediumDetailThreshold())
+                {
+                    lodLevel = Tr2Lod.TR2_LOD_HIGH;
+                }
+                else if (this._pixelSizeAcross > updateContext.GetLowDetailThreshold())
+                {
+                    lodLevel = Tr2Lod.TR2_LOD_MEDIUM;
+                }
             }
+        }
+
+        let meshVisible = visible;
+
+        for (let i = 0; i < this.spriteSets.length; i++)
+        {
+            this.spriteSets[i].UpdateLod(updateContext);
+            if (this.spriteSets[i].isVisible)
+            {
+                visible = true;
+                meshVisible = true;
+            }
+        }
+
+        for (let i = 0; i < this.spotlightSets.length; i++)
+        {
+            this.spotlightSets[i].UpdateLod(updateContext);
+            if (this.spotlightSets[i].isVisible)
+            {
+                visible = true;
+                meshVisible = true;
+            }
+        }
+
+        for (let i = 0; i < this.planeSets.length; i++)
+        {
+            this.planeSets[i].UpdateLod(updateContext);
+            if (this.planeSets[i].isVisible)
+            {
+                visible = true;
+                meshVisible = true;
+            }
+        }
+
+        for (let i = 0; i < this.lineSets.length; i++)
+        {
+            this.lineSets[i].UpdateLod(updateContext);
+            if (this.lineSets[i].isVisible)
+            {
+                visible = true;
+                meshVisible = true;
+            }
+        }
+
+        for (let i = 0; i < this.turretSets.length; i++)
+        {
+            this.turretSets[i].UpdateLod(updateContext);
+            if (this.turretSets[i].isVisible)
+            {
+                visible = true;
+                meshVisible = true;
+            }
+        }
+
+        for (let i = 0; i < this.overlayEffects.length; i++)
+        {
+            this.overlayEffects[i].UpdateLod(updateContext, meshVisible);
+        }
+
+        if (!visible && (this.children.length || this.effectChildren.length))
+        {
+            visible = true;
+            lodLevel = Tr2Lod.TR2_LOD_HIGH;
+        }
+
+        this._SetLodState(visible, lodLevel, lodLevel, meshVisible);
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            this.children[i].UpdateLod(updateContext);
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].UpdateLod(updateContext, lodLevel, this._worldTransform);
         }
     }
 
@@ -487,52 +577,51 @@ export class EveSpaceObject extends EveObject
      */
     Update(dt)
     {
-        if (this._lod > 0)
+        if (!this.display) return;
+
+        for (let i = 0; i < this.spriteSets.length; ++i)
         {
-            for (let i = 0; i < this.spriteSets.length; ++i)
-            {
-                this.spriteSets[i].Update(dt);
-            }
+            this.spriteSets[i].Update(dt);
+        }
 
-            for (let i = 0; i < this.planeSets.length; i++)
-            {
-                this.planeSets[i].Update(dt);
-            }
+        for (let i = 0; i < this.planeSets.length; i++)
+        {
+            this.planeSets[i].Update(dt);
+        }
 
-            for (let i = 0; i < this.spotlightSets.length; i++)
-            {
-                this.spotlightSets[i].Update(dt);
-            }
+        for (let i = 0; i < this.spotlightSets.length; i++)
+        {
+            this.spotlightSets[i].Update(dt);
+        }
 
-            for (let i = 0; i < this.children.length; ++i)
-            {
-                this.children[i].Update(dt);
-            }
+        for (let i = 0; i < this.children.length; ++i)
+        {
+            this.children[i].Update(dt);
+        }
 
-            for (let i = 0; i < this.effectChildren.length; ++i)
-            {
-                this.effectChildren[i].Update(dt, this._worldTransform, this._lod);
-            }
+        for (let i = 0; i < this.effectChildren.length; ++i)
+        {
+            this.effectChildren[i].Update(dt, this._worldTransform, this._perObjectData, this);
+        }
 
-            for (let i = 0; i < this.curveSets.length; ++i)
-            {
-                this.curveSets[i].UpdateDelta(dt);
-            }
+        for (let i = 0; i < this.curveSets.length; ++i)
+        {
+            this.curveSets[i].UpdateDelta(dt);
+        }
 
-            for (let i = 0; i < this.overlayEffects.length; ++i)
-            {
-                this.overlayEffects[i].Update(dt);
-            }
+        for (let i = 0; i < this.overlayEffects.length; ++i)
+        {
+            this.overlayEffects[i].Update(dt);
+        }
 
-            for (let i = 0; i < this.lineSets.length; i++)
-            {
-                this.lineSets[i].Update(dt);
-            }
+        for (let i = 0; i < this.lineSets.length; i++)
+        {
+            this.lineSets[i].Update(dt);
+        }
 
-            if (this.animation)
-            {
-                this.animation.Update(dt);
-            }
+        if (this.animation)
+        {
+            this.animation.Update(dt);
         }
     }
 
@@ -544,69 +633,65 @@ export class EveSpaceObject extends EveObject
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || this._lod < 1) return false;
+        if (!this.display || !this.isVisible) return false;
 
         const
             c = accumulator.length,
             show = this.visible,
             res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
 
-        if (show.mesh && res)
+        if (show.mesh && this._isMeshVisible && res)
         {
             this.mesh.GetBatches(mode, accumulator, this._perObjectData);
         }
 
-        if (this._lod > 1)
+        if (show.spriteSets)
         {
-            if (show.spriteSets)
+            for (let i = 0; i < this.spriteSets.length; i++)
             {
-                for (let i = 0; i < this.spriteSets.length; i++)
+                this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+            }
+        }
+
+        if (show.spotlightSets)
+        {
+            for (let i = 0; i < this.spotlightSets.length; i++)
+            {
+                this.spotlightSets[i].GetBatches(mode, accumulator, this._perObjectData);
+            }
+        }
+
+        if (show.planeSets)
+        {
+            for (let i = 0; i < this.planeSets.length; i++)
+            {
+                this.planeSets[i].GetBatches(mode, accumulator, this._perObjectData);
+            }
+        }
+
+        if (show.lineSets)
+        {
+            for (let i = 0; i < this.lineSets.length; i++)
+            {
+                this.lineSets[i].GetBatches(mode, accumulator);
+            }
+        }
+
+        if (res && this._isMeshVisible)
+        {
+            if (show.decals)
+            {
+                for (let i = 0; i < this.decals.length; i++)
                 {
-                    this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                    this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, show.killmarks ? this.killCount : 0);
                 }
             }
 
-            if (show.spotlightSets)
+            if (show.overlayEffects)
             {
-                for (let i = 0; i < this.spotlightSets.length; i++)
+                for (let i = 0; i < this.overlayEffects.length; i++)
                 {
-                    this.spotlightSets[i].GetBatches(mode, accumulator, this._perObjectData);
-                }
-            }
-
-            if (show.planeSets)
-            {
-                for (let i = 0; i < this.planeSets.length; i++)
-                {
-                    this.planeSets[i].GetBatches(mode, accumulator, this._perObjectData);
-                }
-            }
-
-
-            if (show.lineSets)
-            {
-                for (let i = 0; i < this.lineSets.length; i++)
-                {
-                    this.lineSets[i].GetBatches(mode, accumulator);
-                }
-            }
-
-            if (res)
-            {
-                if (show.decals)
-                {
-                    for (let i = 0; i < this.decals.length; i++)
-                    {
-                        this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, show.killmarks ? this.killCount : 0);
-                    }
-                }
-
-                if (show.overlayEffects)
-                {
-                    for (let i = 0; i < this.overlayEffects.length; i++)
-                    {
-                        this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
-                    }
+                    this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
                 }
             }
         }

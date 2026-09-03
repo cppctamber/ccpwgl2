@@ -1,6 +1,7 @@
 import { meta } from "utils";
-import { mat4, quat, vec3 } from "math";
+import { mat4, quat, sph3, vec3 } from "math";
 import { Tw2PerObjectData } from "core";
+import { Tr2Lod } from "constant/ccpwgl";
 import { EveChild } from "./EveChild";
 import { Tw2GpuParticleRenderer } from "unsupported/particle/Tw2GpuParticleRenderer";
 
@@ -19,16 +20,26 @@ export class EveChildParticleSystem extends EveChild
     @meta.matrix4
     localTransform = mat4.create();
 
-    @meta.notImplemented
     @meta.float
     lodSphereRadius = 0;
+
+    @meta.uint
+    lodClampLow = 5;
+
+    @meta.float
+    lodFactorLow = 0.125;
+
+    @meta.float
+    lodFactorMedium = 0.25;
 
     @meta.struct("Tw2InstancedMesh")
     mesh = null;
 
-    @meta.notImplemented
     @meta.float
     minScreenSize = 0;
+
+    @meta.float
+    currentScreenSize = -1;
 
     @meta.list("Tw2ParticleEmitter")
     particleEmitters = [];
@@ -51,9 +62,11 @@ export class EveChildParticleSystem extends EveChild
     @meta.list()
     transformModifiers = [];
 
-    @meta.notImplemented
     @meta.boolean
     useDynamicLod = false;
+
+    @meta.boolean
+    staticTransform = false;
 
     @meta.boolean
     useSRT = true;
@@ -62,17 +75,103 @@ export class EveChildParticleSystem extends EveChild
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
+    _lodSphere = sph3.create();
+    _isVisible = true;
+    _hasUpdated = false;
+
+
+    /** Refreshes the authored particle LOD sphere in world space. */
+    PrepareLod(parentTransform)
+    {
+        if (parentTransform)
+        {
+            mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+        }
+
+        if (this.lodSphereRadius > 0)
+        {
+            sph3.set(this._lodSphere, 0, 0, 0, this.lodSphereRadius);
+            sph3.transformMat4(this._lodSphere, this._lodSphere, this._worldTransform);
+        }
+    }
+
+    /**
+     * Particle geometry bounds are not available from Tw2InstancedMesh yet.
+     * The authored LOD sphere controls screen-size policy only; it is not a
+     * substitute for Carbon's separate mesh-derived bounding sphere.
+     */
+    GetBoundingSphere(_out)
+    {
+        return null;
+    }
 
 
     /**
      * Updates lod
-     * @param {Tw2Frustum} frustum
-     * @param {Number} parentLod
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
      */
-    UpdateLod(frustum, parentLod)
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
     {
-        this._lod = !frustum.IsSphereVisible(this.translation, this.lodSphereRadius) ? 0 : 3;
-        //this._lod = Math.min(this._lod, parentLod);
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+
+        this.PrepareLod(parentTransform);
+
+        this._isVisible = this.display && this._hasUpdated;
+        this.currentScreenSize = -1;
+
+        // Carbon frustum-tests a separate mesh-derived bounding sphere, which
+        // Tw2InstancedMesh cannot provide yet. Fail open for frustum visibility
+        // and use the authored LOD sphere only for projected-size policy.
+        if (this._isVisible && this.lodSphereRadius > 0)
+        {
+            const frustum = updateContext.GetFrustum();
+            this.currentScreenSize = frustum.GetPixelSizeAcrossEst(this._lodSphere, this._lodSphere[3]);
+            this._isVisible = this.currentScreenSize >= this.minScreenSize * updateContext.GetLodFactor();
+        }
+
+        if (this._isVisible)
+        {
+            for (let i = 0; i < this.particleSystems.length; i++)
+            {
+                this.particleSystems[i].UpdateViewDependentData();
+            }
+        }
+    }
+
+    /** Applies Carbon's dynamic CPU/GPU particle budget for the logical tier. */
+    ChangeLOD(lodLevel)
+    {
+        super.ChangeLOD(lodLevel);
+        if (!this.useDynamicLod) return;
+
+        for (let i = 0; i < this.particleSystems.length; i++)
+        {
+            const
+                system = this.particleSystems[i],
+                original = system.GetOriginalMaxParticles();
+
+            let particleCount = original;
+            if (lodLevel === Tr2Lod.TR2_LOD_LOW)
+            {
+                particleCount = Math.min(this.lodClampLow, Math.trunc(original * this.lodFactorLow));
+            }
+            else if (lodLevel === Tr2Lod.TR2_LOD_MEDIUM)
+            {
+                particleCount = Math.trunc(original * this.lodFactorMedium);
+            }
+
+            system.SetMaxParticleCount(particleCount);
+        }
+    }
+
+    /** Restores the default visible state. */
+    ResetLod()
+    {
+        this.ChangeLOD(Tr2Lod.TR2_LOD_HIGH);
+        this._isVisible = true;
+        this.currentScreenSize = -1;
     }
 
     /**
@@ -92,7 +191,7 @@ export class EveChildParticleSystem extends EveChild
      */
     Intersect(ray, intersects, _worldTransform, cache)
     {
-        if (!this.display || ray.IsMasked(this)) return null;
+        if (!this.display || !this._isVisible || ray.IsMasked(this)) return null;
         if (ray.GetOption("effectChildren", "skip")) return null;
         if (!this.mesh || !this.mesh.Intersect) return null;
 
@@ -198,6 +297,8 @@ export class EveChildParticleSystem extends EveChild
         {
             this.particleSystems[i].Update(dt);
         }
+
+        this._hasUpdated = true;
     }
 
     /**
@@ -208,7 +309,7 @@ export class EveChildParticleSystem extends EveChild
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || !this.mesh) return false;
+        if (!this.display || !this._isVisible || !this.mesh) return false;
         mat4.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
         mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
         return this.mesh.GetBatches(mode, accumulator, this._perObjectData);

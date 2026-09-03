@@ -27,7 +27,7 @@
 // de-instances into corner vertices. `ubershaderinstanced` wants per-instance
 // attributes, so `drawElementsInstanced` is the only shape that feeds it.
 import { meta } from "utils";
-import { mat4, quat, vec3, vec4 } from "math";
+import { mat4, quat, sph3, vec3, vec4 } from "math";
 import { device } from "global/tw2";
 import { Tw2VertexDeclaration } from "core/vertex";
 import { Tw2DirectInstanceData } from "core/Tw2DirectInstanceData";
@@ -61,7 +61,7 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
     /** m_currentScreenSize (float) [READ] - runtime readout, never persisted. */
     @meta.float
-    currentScreenSize = 0;
+    currentScreenSize = -1;
 
     // Flattened EveSmartLightBaseGroup secondary base. Carbon multiple-inherits
     // it publicly here (EveSmartLightMesh.h:12-14) and maps its fields into this
@@ -104,6 +104,14 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
     /** The parent LOD last seen, for whoever implements screen size. */
     _parentLod = 0;
+
+    /** Carbon's distribution-local aggregate sphere. */
+    _boundingSphere = sph3.create();
+
+    /** World-space copy used only by the logical visibility pass. */
+    _worldBoundingSphere = sph3.create();
+
+    _boundsReady = false;
 
     /** Packed instance scratch, grown on demand and reused between frames. */
     _instances = null;
@@ -176,15 +184,9 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
      * EveChildInstanceMeshRenderer.cpp:100-114).
      *
      * Carbon sets `m_isVisible` and, when visible, lets the mesh base compute
-     * `m_currentScreenSize`; when not, it parks the screen size at -1. Both then
-     * gate the geometry rebuild.
-     *
-     * ccpwgl has no equivalent screen-size measurement on this path, so the size
-     * is reported as UNKNOWN rather than guessed. `_UsesScreenSize` below is
-     * what keeps that honest: an unknown size must not be compared against
-     * `minScreenSize`, because a guess of zero would cull every mesh whose asset
-     * authors a threshold, and a guess of Infinity would silently ignore one the
-     * artist meant.
+     * `m_currentScreenSize`; when not, it parks the screen size at -1. ccpwgl
+     * derives a conservative aggregate sphere from the distribution placements
+     * because `Tw2InstancedMesh` deliberately has no CPU bounds contract.
      *
      * @param {Object} [updateContext]
      * @param {mat4} [parentTransform]
@@ -192,32 +194,58 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
      */
     UpdateVisibility(updateContext, parentTransform, parentLod)
     {
-        this._isVisible = !!this.display;
+        this._parentLod = parentLod;
+        this.currentScreenSize = -1;
 
-        if (!this._isVisible)
+        if (!this.display || this._lastEntityCount === 0)
         {
-            this.currentScreenSize = -1;
+            this._isVisible = false;
             return;
         }
 
-        if (parentLod !== undefined && parentLod !== null)
+        // Missing geometry bounds fail open. Tw2InstancedMesh's own bounds
+        // methods still throw, so this class must not call them.
+        if (!this._boundsReady)
         {
-            this._parentLod = parentLod;
+            this._isVisible = parentLod >= this.lowestLodVisible;
+            return;
+        }
+
+        const frustum = updateContext.GetFrustum();
+
+        // Carbon transforms only the centre on this visibility path. ccpwgl
+        // transforms the whole conservative sphere because a scaled layout
+        // parent otherwise shrinks the effective bound and can false-cull its
+        // placements. This remains CPU visibility only; it does not alter the
+        // instance transforms or rendering path.
+        sph3.transformMat4(this._worldBoundingSphere, this._boundingSphere, parentTransform);
+
+        this._isVisible = frustum.IsSphereVisible(
+            this._worldBoundingSphere,
+            this._worldBoundingSphere[3]
+        ) && frustum.GetPixelSizeAcrossEst(
+            this._worldBoundingSphere,
+            this._worldBoundingSphere[3]
+        ) >= updateContext.GetVisibilityThreshold();
+
+        if (this._isVisible)
+        {
+            this.currentScreenSize = frustum.GetPixelSizeAcross(
+                this._worldBoundingSphere,
+                this._worldBoundingSphere[3]
+            ) * updateContext.GetInvLodFactor();
+
+            this._isVisible = parentLod >= this.lowestLodVisible &&
+                this.currentScreenSize >= this.minScreenSize;
         }
     }
 
-    /**
-     * Whether `currentScreenSize` holds a real measurement.
-     *
-     * Nothing sets it yet - see UpdateVisibility - so this is false and the
-     * `minScreenSize` gate is skipped rather than applied to a fabricated
-     * number. When a screen-size measurement arrives, this becomes the single
-     * place that has to change.
-     * @returns {Boolean}
-     */
-    _UsesScreenSize()
+    /** Restores the authored visibility state. */
+    ResetLod()
     {
-        return this.currentScreenSize > 0;
+        super.ResetLod();
+        this._isVisible = true;
+        this.currentScreenSize = -1;
     }
 
     /**
@@ -240,13 +268,21 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
         if (!distribution || !this.display) return;
 
-        const count = Number(distribution.GetNumberOfPlacements?.() ?? 0);
+        const count = Number(distribution.GetNumberOfPlacements());
+        const updateCount = this._lastEntityCount !== count;
         this._lastEntityCount = count;
-        if (!count) return;
+        if (!count)
+        {
+            this.UpdateGeometryResource([], 0, params);
+            sph3.empty(this._boundingSphere);
+            sph3.empty(this._worldBoundingSphere);
+            this._boundsReady = false;
+            return;
+        }
 
         const
             statics = EveSmartLightMesh,
-            placements = distribution.GetPlacementData?.() || [],
+            placements = distribution.GetPlacementData(),
             groupColor = this.GetGroupColor(),
             color = statics._color;
 
@@ -280,7 +316,7 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
             vec3.set(rgb, color[0], color[1], color[2]);
 
-            const center = distribution.GetPlacementDataCenter?.() || statics._position;
+            const center = distribution.GetPlacementDataCenter();
             const strength = params?.activationStrength ?? 1;
 
             for (const attributeModifier of this.attributeModifiers)
@@ -295,7 +331,61 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
         this.SetMeshColorParameter(color);
 
-        this.UpdateGeometryResource(placements, count, params);
+        const alwaysUpdate = distribution.GetHasDynamicMovement() ||
+            this.rotationConstraint !== EveSmartLightMesh.RotationalConstraint.NONE;
+
+        if (updateCount || !this._boundsReady || alwaysUpdate)
+        {
+            this.UpdateGeometryResource(placements, count, params);
+            this.UpdateBoundingSphere(placements, count, distribution);
+        }
+    }
+
+    /**
+     * Rebuilds Carbon's conservative distribution sphere without invoking the
+     * unimplemented Tw2InstancedMesh bounds methods.
+     * @param {Array} placements
+     * @param {Number} count
+     * @param {IEveDistributionMethod} distribution
+     */
+    UpdateBoundingSphere(placements, count, distribution)
+    {
+        const geometry = this.mesh ? this.mesh.geometryResource : null;
+        let baseMeshRadius = 0;
+
+        if (geometry && geometry.IsGood())
+        {
+            const meshData = geometry.meshes[this.mesh.GetMeshIndex()];
+            if (meshData) baseMeshRadius = meshData.boundsSphereRadius;
+        }
+
+        const center = distribution.GetPlacementDataCenter();
+        let longestDistanceSquared = 0;
+        let largestScale = 0;
+
+        for (let i = 0; i < count; i++)
+        {
+            const
+                placement = placements[i],
+                x = placement.initialTranslation[0] + placement.additionalTranslation[0] - center[0],
+                y = placement.initialTranslation[1] + placement.additionalTranslation[1] - center[1],
+                z = placement.initialTranslation[2] + placement.additionalTranslation[2] - center[2],
+                scaleX = placement.initialScale[0] * placement.additionalScale[0],
+                scaleY = placement.initialScale[1] * placement.additionalScale[1],
+                scaleZ = placement.initialScale[2] * placement.additionalScale[2];
+
+            longestDistanceSquared = Math.max(longestDistanceSquared, x * x + y * y + z * z);
+            largestScale = Math.max(largestScale, scaleX, scaleY, scaleZ);
+        }
+
+        sph3.set(
+            this._boundingSphere,
+            center[0],
+            center[1],
+            center[2],
+            Math.sqrt(longestDistanceSquared) + largestScale * baseMeshRadius
+        );
+        this._boundsReady = this._boundingSphere[3] > 0;
     }
 
     /**
@@ -371,9 +461,7 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
         // Carbon's gate (EveChildInstanceMeshRenderer.cpp:229-232): not visible,
         // nothing to place, or too small on screen.
         const count = Math.min(Number(size ?? 0), placements.length);
-        const tooSmall = this._UsesScreenSize() && this.currentScreenSize < this.minScreenSize;
-
-        if (!count || !this.display || this._isVisible === false || tooSmall)
+        if (!count || !this.display)
         {
             data.SetData(null, 0);
             return;
@@ -585,8 +673,8 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.mesh) return false;
-        return !!this.mesh.GetBatches?.(mode, accumulator, perObjectData);
+        if (!this.display || !this._isVisible || !this.mesh) return false;
+        return !!this.mesh.GetBatches(mode, accumulator, perObjectData);
     }
 
     /** Gets object resources. */
@@ -594,6 +682,15 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
     {
         if (this.mesh) this.mesh.GetResources?.(out);
         return out;
+    }
+
+    /**
+     * ccpwgl light-owner traversal contract. Mesh groups emit VFX geometry,
+     * not local lights; this no-op lets the owning set traverse every group
+     * directly while Carbon reaches only registered light owners.
+     */
+    GetLights(_collector, _parentContext, _distribution)
+    {
     }
 
     /**

@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { vec3 } from "math";
+import { EveChild } from "eve/child";
 
 
 /**
@@ -7,7 +8,7 @@ import { vec3 } from "math";
  * transform and forwards mute state, matching Carbon's EveChildAudio.
  */
 @meta.define("EveChildAudio", true)
-export class EveChildAudio
+export class EveChildAudio extends EveChild
 {
     @meta.string
     name = "";
@@ -19,21 +20,6 @@ export class EveChildAudio
     audioEmitter = null;
 
     _muted = null;
-
-    get isEffectChild()
-    {
-        return true;
-    }
-
-    UpdateLod()
-    {
-
-    }
-
-    ResetLod()
-    {
-
-    }
 
     /**
      * Per frame update

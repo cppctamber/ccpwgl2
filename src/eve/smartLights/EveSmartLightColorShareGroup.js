@@ -216,6 +216,25 @@ export class EveSmartLightColorShareGroup extends EveEntity
     }
 
     /**
+     * Emits lights owned by the nested groups while this share group is shown.
+     * Carbon reaches these groups through its component registry; ccpwgl's
+     * scene currently walks light owners, so the equivalent traversal lives at
+     * this ownership boundary.
+     * @param {Tw2CarbonLightCollector} collector
+     * @param {Object} parentContext
+     * @param {IEveDistributionMethod} distribution
+     */
+    GetLights(collector, parentContext, distribution)
+    {
+        if (!this.display) return;
+
+        for (const group of this.lightGroups)
+        {
+            group.GetLights(collector, parentContext, distribution);
+        }
+    }
+
+    /**
      * Updates the shared groups, then the group's own attribute modifiers with
      * full strength (EveSmartLightColorShareGroup.cpp:140-151).
      */
@@ -326,7 +345,16 @@ export class EveSmartLightColorShareGroup extends EveEntity
     {
         for (const group of this.lightGroups)
         {
-            group?.UpdateVisibility?.(updateContext, parentTransform, parentLod);
+            group.UpdateVisibility(updateContext, parentTransform, parentLod);
+        }
+    }
+
+    /** Restores every nested group's default visibility. */
+    ResetLod()
+    {
+        for (const group of this.lightGroups)
+        {
+            group.ResetLod();
         }
     }
 

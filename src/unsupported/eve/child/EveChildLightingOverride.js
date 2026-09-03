@@ -1,27 +1,13 @@
 import { meta } from "utils";
+import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
 @meta.define("EveChildLightingOverride", true)
-export class EveChildLightingOverride
+export class EveChildLightingOverride extends EveChild
 {
     @meta.string
     name = "";
-
-    get isEffectChild()
-    {
-        return true;
-    }
-
-    UpdateLod()
-    {
-
-    }
-
-    ResetLod()
-    {
-
-    }
 
     Update()
     {

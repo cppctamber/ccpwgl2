@@ -1,6 +1,5 @@
 import { meta } from "utils";
 import { quat, vec3, vec4, mat4, sph3 } from "math";
-import { LodLevelPixels } from "constant/ccpwgl";
 
 
 /**
@@ -406,26 +405,17 @@ export class EveBoosterSet2Renderable extends meta.Model
     /**
      * Updates lod
      *
-     * Carbon gates the boosters and the trails on their own pixel size against
-     * booster-specific detail thresholds. ccpwgl has no equivalent of those:
-     * `LodLevelPixels` is a whole-hull scale - 20 pixels for "drawn at all" -
-     * and a booster's bounding sphere is metres where a hull's is hundreds. Run
-     * against those numbers the gate reads a normally framed ship as too small
-     * and switches its boosters off, and `boosterHighLod` (which would need 150)
-     * never becomes true at all.
+     * Carbon gates the booster sphere at the scene's low threshold, chooses the
+     * near effect above 1.5 times the medium threshold, and measures the trail
+     * from its closest control point. The enclosing visibility remains the OR
+     * of booster sphere and trail box, independent of hull visibility.
      *
-     * So the visibility gates follow the owner's lod, which is the vocabulary
-     * ccpwgl's other attachments already use, and the pixel size is kept only
-     * for the near/far effect choice, where being wrong costs detail rather
-     * than the whole draw.
-     *
-     * @param {Tw2Frustum} frustum
-     * @param {Number} [parentLod=3] - the owner's lod level
+     * @param {EveUpdateContext} updateContext
      * @returns {Boolean} isVisible
      */
-    UpdateLod(frustum, parentLod = 3)
+    UpdateLod(updateContext)
     {
-        if (!frustum || !this._boosterSet)
+        if (!updateContext || !this._boosterSet)
         {
             this.isVisible = false;
             this.boostersVisible = false;
@@ -433,17 +423,31 @@ export class EveBoosterSet2Renderable extends meta.Model
             return false;
         }
 
-        this.boostersVisible = parentLod >= 1;
-        this.trailsVisible = parentLod >= 1;
-
         const
+            frustum = updateContext.GetFrustum(),
             sphere = this.GetBoundingSphere(sph3_0),
-            radius = sph3.radius(sphere);
+            radius = sph3.radius(sphere),
+            boosterLod = 2 * frustum.GetPixelSizeAcross(sphere, radius);
 
-        // Only picks between effect and effectFar; a set with no far effect
-        // falls back to the near one either way.
-        this.boosterHighLod = parentLod >= 2 ||
-            2 * frustum.GetPixelSizeAcross(sphere, radius) > LodLevelPixels.ZERO;
+        this.boosterHighLod = boosterLod > updateContext.GetMediumDetailThreshold() * 1.5;
+        this.boostersVisible = boosterLod > updateContext.GetLowDetailThreshold();
+
+        const viewPosition = frustum.GetViewPosition(vec3_view);
+        let closest = this._trailsControlPositions[0];
+        let closestDistanceSquared = Infinity;
+
+        for (let i = 0; i < CONTROL_POINT_COUNT; i++)
+        {
+            const distanceSquared = vec3.squaredDistance(this._trailsControlPositions[i], viewPosition);
+            if (distanceSquared < closestDistanceSquared)
+            {
+                closest = this._trailsControlPositions[i];
+                closestDistanceSquared = distanceSquared;
+            }
+        }
+
+        const trailsLod = 7.5 * frustum.GetPixelSizeAcross(closest, radius);
+        this.trailsVisible = trailsLod > updateContext.GetLowDetailThreshold();
 
         // A booster whose hull is off screen still renders while its trail
         // crosses the view, so the bounds test is an OR and not a refinement.
@@ -452,6 +456,15 @@ export class EveBoosterSet2Renderable extends meta.Model
                 frustum.IntersectsBounds(this._trailsBoundsMin, this._trailsBoundsMax));
 
         return this.isVisible;
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this.isVisible = true;
+        this.trailsVisible = true;
+        this.boostersVisible = true;
+        this.boosterHighLod = true;
     }
 
     /**
@@ -581,4 +594,5 @@ const vec3_0 = vec3.create();
 const vec3_1 = vec3.create();
 const vec3_2 = vec3.create();
 const vec3_parent = vec3.create();
+const vec3_view = vec3.create();
 const sph3_0 = sph3.create();

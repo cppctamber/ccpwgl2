@@ -2,7 +2,7 @@ import { EveChild } from "./EveChild";
 import { meta } from "utils";
 import { SetControllerVariableOn, ReplayControllerVariablesOn } from "../../state/controllerVariables";
 import { PlayCurveSetOn, StopCurveSetOn } from "../../curve/curveSetOwner";
-import { mat4, quat, vec3 } from "math";
+import { mat4, quat, vec3, sph3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
@@ -24,6 +24,8 @@ export class EveChildContainer extends EveChild
 
     @meta.list("Tr2Controller")
     controllers = [];
+
+    _lodBoundingSphereScratch = sph3.create();
 
     // Sticky record of the controller variables set on this container, mirroring
     // Carbon's `m_controllerVariables` (`EveChildContainer.cpp:919-927`).
@@ -323,7 +325,7 @@ export class EveChildContainer extends EveChild
      */
     ResetLod()
     {
-        this._lod = 3;
+        super.ResetLod();
 
         for (let i = 0; i < this.objects.length; i++)
         {
@@ -333,16 +335,79 @@ export class EveChildContainer extends EveChild
 
     /**
      * Updates lod
-     * @param {Tw2Frustum} frustum
-     * @param {Number} parentLod
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
      */
-    UpdateLod(frustum, parentLod)
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
     {
-        this._lod = parentLod;
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+        this.PrepareLod(parentTransform);
 
         for (let i = 0; i < this.objects.length; i++)
         {
-            this.objects[i].UpdateLod(frustum, this._lod);
+            this.objects[i].UpdateLod(updateContext, this.lodLevel, this._worldTransform);
+        }
+    }
+
+    /** Refreshes this container and its descendants for current-frame bounds. */
+    PrepareLod(parentTransform)
+    {
+        if (parentTransform)
+        {
+            if (this._hasBone && this._boneTransform)
+            {
+                mat4.multiply(this._worldTransform, this._boneTransform, this.localTransform);
+                mat4.multiply(this._worldTransform, parentTransform, this._worldTransform);
+            }
+            else
+            {
+                mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+            }
+
+            for (let i = 0; i < this.transformModifiers.length; i++)
+            {
+                const modifier = this.transformModifiers[i];
+                if ("ApplyTransform" in modifier) modifier.ApplyTransform(this._worldTransform);
+            }
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].PrepareLod(this._worldTransform);
+        }
+    }
+
+    /** Returns the union of ready descendant bounds in world space. */
+    GetBoundingSphere(out)
+    {
+        let hasBounds = false;
+        const childSphere = this._lodBoundingSphereScratch;
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            if (!this.objects[i].GetBoundingSphere(childSphere)) return null;
+
+            if (hasBounds) sph3.union(out, out, childSphere);
+            else sph3.copy(out, childSphere);
+            hasBounds = true;
+        }
+
+        return hasBounds ? out : null;
+    }
+
+    /**
+     * Applies a logical LOD transition to this container and every nested
+     * effect child (EveChildContainer.cpp:643-648).
+     * @param {Number} lodLevel
+     */
+    ChangeLOD(lodLevel)
+    {
+        super.ChangeLOD(lodLevel);
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].ChangeLOD(lodLevel);
         }
     }
 
@@ -550,7 +615,10 @@ export class EveChildContainer extends EveChild
 
             for (let i = 0; i < this.controllers.length; i++)
             {
-                this.controllers[i].Update(dt);
+                const frequency = this._parentSpaceObject
+                    ? this._parentSpaceObject._controllerUpdateFrequency
+                    : 0.5;
+                this.controllers[i].Update(dt, frequency);
             }
         }
 

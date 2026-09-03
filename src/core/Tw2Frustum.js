@@ -79,6 +79,12 @@ export class Tw2Frustum
         return out;
     }
 
+    /** Returns the camera position used by this frustum. */
+    GetViewPosition(out)
+    {
+        return out ? vec3.copy(out, this._viewPos) : this._viewPos;
+    }
+
     /**
      * Gets a world-space frustum split by distance from the camera near plane.
      * @param {Array<vec3>} [out=[]]
@@ -191,9 +197,13 @@ export class Tw2Frustum
         for (let i = 0; i < 6; i++)
         {
             const p = this._planes[i];
-            vec3_0[0] = p[0] > 0 ? box[0] : box[3];
-            vec3_0[1] = p[1] > 0 ? box[1] : box[4];
-            vec3_0[2] = p[2] > 0 ? box[2] : box[5];
+            // Carbon TriFrustum::IsBoxVisible tests vmax: the point furthest
+            // along the inward-facing plane normal. Testing vmin instead turns
+            // this into full containment and rejects a box as soon as any part
+            // crosses the near plane, even while most of it remains visible.
+            vec3_0[0] = p[0] > 0 ? box[3] : box[0];
+            vec3_0[1] = p[1] > 0 ? box[4] : box[1];
+            vec3_0[2] = p[2] > 0 ? box[5] : box[2];
             if (pln.distanceToPoint(p, vec3_0) < 0) return false;
         }
 
@@ -236,6 +246,11 @@ export class Tw2Frustum
     {
         const d = vec3.subtract(Tw2Frustum.global.vec3_0, this._viewPos, center);
 
+        if (vec3.squaredLength(d) < radius * radius)
+        {
+            return Tw2Frustum.FLOAT_MAX;
+        }
+
         let depth = vec3.dot(this._viewDir, d),
             epsilon = 1e-5;
 
@@ -244,6 +259,31 @@ export class Tw2Frustum
 
         let ratio = radius / depth;
         return ratio * this._halfWidthProjection * 2;
+    }
+
+    /**
+     * Estimates a sphere's projected pixel diameter using the distance to its
+     * visible tangent. The result grows to float max when the camera enters
+     * the sphere, matching Carbon's GetPixelSizeAccrossEst.
+     * @param {vec3} center
+     * @param {Number} radius
+     * @returns {Number}
+     */
+    GetPixelSizeAcrossEst(center, radius)
+    {
+        if (radius <= 0) return 0;
+
+        const d = vec3.subtract(Tw2Frustum.global.vec3_0, center, this._viewPos);
+        const
+            lengthSquared = vec3.squaredLength(d),
+            radiusSquared = radius * radius;
+
+        if (lengthSquared < radiusSquared)
+        {
+            return Tw2Frustum.FLOAT_MAX;
+        }
+
+        return radius / Math.sqrt(lengthSquared - radiusSquared) * this._halfWidthProjection * 2;
     }
 
     /**
@@ -308,6 +348,9 @@ export class Tw2Frustum
         // In this codebase D3D ortho/projection matrices use a positive z scale or +w perspective term.
         return projection && (projection[10] > 0 || projection[11] > 0) ? 0 : -1;
     }
+
+    /** Carbon's std::numeric_limits<float>::max(). */
+    static FLOAT_MAX = 3.4028234663852886e38;
 
     /**
      * Global and scratch variables

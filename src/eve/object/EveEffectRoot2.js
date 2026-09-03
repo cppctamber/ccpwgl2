@@ -5,6 +5,7 @@ import { EveObject } from "./EveObject";
 import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
 import { SetControllerVariableOn, ReplayControllerVariablesOn } from "../../state/controllerVariables";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 /**
@@ -148,6 +149,9 @@ export class EveEffectRoot2 extends EveObject
     _perObjectData = new GLESPerObjectDataEveSpaceObject();
     _controllersLinked = false;
 
+    /** Defers child ChangeLOD calls until renderable collection, as Carbon does. */
+    _changeLOD = true;
+
     // Carbon's `GetPerObjectStructs` (cpp:520-536) zeroes the struct and sets
     // shipData.y and shipData.w to 1. Held as one reused bag so a frame
     // allocates nothing.
@@ -181,47 +185,25 @@ export class EveEffectRoot2 extends EveObject
     /**
      * Fires when bounds need to be rebuilt.
      *
-     * The AUTHORED sphere is unioned in as well as the children's, because
-     * Carbon's `GetBoundingSphere` (`cpp:344-348`) returns the authored value and
-     * nothing else - an effect root whose children have not loaded still has the
-     * size the artist gave it, and that size is what LOD and the secondary light
-     * radius are scaled by.
+     * Carbon's local `GetBoundingSphere` (`cpp:344-348`) is the authored value
+     * only. Descendant world bounds are aggregated transiently by owners that
+     * request a WITH_CHILDREN sphere; storing them here would transform them a
+     * second time through WglTransform.
      */
     OnRebuildBounds()
     {
-        const { box3_0, sph3_0 } = EveObject.global;
-
-        for (let i = 0; i < this.effectChildren.length; i++)
+        if (this.boundingSphereRadius > 0)
         {
-            const child = this.effectChildren[i];
-            if (!child) continue;
-
-            let bounds;
-
-            if (child.GetBoundingBox)
-            {
-                child.GetBoundingBox(box3_0);
-                sph3.fromBox3(sph3_0, box3_0);
-                bounds = true;
-            }
-            else if (child.GetBoundingSphere)
-            {
-                child.GetBoundingSphere(sph3_0);
-                bounds = true;
-            }
-
-            if (bounds) sph3.union(this._boundingSphere, this._boundingSphere, sph3_0);
+            sph3.set(
+                this._boundingSphere,
+                this.boundingSphereCenter[0],
+                this.boundingSphereCenter[1],
+                this.boundingSphereCenter[2],
+                this.boundingSphereRadius
+            );
+            box3.fromSph3(this._boundingBox, this._boundingSphere);
+            this._boundsDirty = false;
         }
-
-        sph3.unionPositionRadius(
-            this._boundingSphere,
-            this._boundingSphere,
-            this.boundingSphereCenter,
-            this.boundingSphereRadius
-        );
-
-        box3.fromSph3(this._boundingBox, this._boundingSphere);
-        this._boundsDirty = false;
     }
 
     /**
@@ -336,11 +318,7 @@ export class EveEffectRoot2 extends EveObject
         for (let i = 0; i < this.lights.length; i++)
         {
             const light = this.lights[i];
-
-            // Duck checked: `lights` is a public array a consumer fills, and a
-            // plain object pushed into it should be ignored rather than throw in
-            // the middle of a frame.
-            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
+            if (!light) continue;
             if (light.display === false) continue;
 
             light.Update(dt, this._worldTransform, null);
@@ -657,12 +635,12 @@ export class EveEffectRoot2 extends EveObject
      */
     FreezeHighDetailMesh()
     {
-        this._lod = 3;
+        this._SetLodState(true, Tr2Lod.TR2_LOD_HIGH, Tr2Lod.TR2_LOD_HIGH, true);
+        this._changeLOD = false;
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            const child = this.effectChildren[i];
-            if (child && child.ChangeLOD) child.ChangeLOD(this._lod);
+            this.effectChildren[i].ChangeLOD(this.lodLevel);
         }
     }
 
@@ -671,32 +649,76 @@ export class EveEffectRoot2 extends EveObject
      */
     ResetLod()
     {
-        this._lod = 3;
+        super.ResetLod();
+        this._changeLOD = false;
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].ResetLod) this.effectChildren[i].ResetLod();
+            this.effectChildren[i].ResetLod();
         }
     }
 
     /**
      * Updates LOD.
      *
-     * Carbon picks a level from the sphere's PIXEL SIZE against three thresholds
-     * and only when `dynamicLOD` is set (`cpp:277-311`). ccpwgl's frustum has no
-     * pixel-size query, so this stays at full detail and forwards - the same
-     * thing `EveEffectRoot` does, and a gap rather than a decision.
-     *
-     * @param {Tw2Frustum} frustum
+     * @param {EveUpdateContext} updateContext
      */
-    @meta.todo("Select a level from the bounding sphere's pixel size, as Carbon does")
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        this._lod = 3;
+        if (!this.display)
+        {
+            this._SetLodState(false, this.lodLevel, this.lodLevelWithChildren, false);
+            return;
+        }
+
+        const
+            frustum = updateContext.GetFrustum(),
+            previous = this.lodLevel;
+        let lodLevel = Tr2Lod.TR2_LOD_HIGH;
+        let visible = true;
+        this.estimatedPixelDiameter = 0;
+
+        if (this.dynamicLOD)
+        {
+            const sphere = EveObject.global.sph3_0;
+            sphere[0] = this.boundingSphereCenter[0];
+            sphere[1] = this.boundingSphereCenter[1];
+            sphere[2] = this.boundingSphereCenter[2];
+            sphere[3] = this.boundingSphereRadius;
+            sph3.transformMat4(sphere, sphere, this._worldTransform);
+
+            if (sphere[3] > 0)
+            {
+                visible = frustum.IsSphereVisible(sphere, sphere[3]);
+                if (visible)
+                {
+                    this.estimatedPixelDiameter = frustum.GetPixelSizeAcross(sphere, sphere[3]);
+                    visible = this.estimatedPixelDiameter >= updateContext.GetVisibilityThreshold();
+                }
+
+                lodLevel = Tr2Lod.TR2_LOD_LOW;
+                if (visible && this.estimatedPixelDiameter >= updateContext.GetMediumDetailThreshold())
+                {
+                    lodLevel = Tr2Lod.TR2_LOD_HIGH;
+                }
+                else if (visible && this.estimatedPixelDiameter >= updateContext.GetLowDetailThreshold())
+                {
+                    lodLevel = Tr2Lod.TR2_LOD_MEDIUM;
+                }
+            }
+        }
+
+        const highThreshold = updateContext.GetHighDetailThreshold();
+        this._controllerUpdateFrequency = this.dynamicLOD
+            ? (visible && highThreshold > 0 ? Math.min(1, this.estimatedPixelDiameter / highThreshold) : 0)
+            : 0.5;
+
+        this._SetLodState(visible, lodLevel, lodLevel, visible);
+        this._changeLOD = this._changeLOD || previous !== lodLevel;
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].UpdateLod) this.effectChildren[i].UpdateLod(frustum, this._lod);
+            this.effectChildren[i].UpdateLod(updateContext, this.lodLevel, this._worldTransform);
         }
     }
 
@@ -708,11 +730,9 @@ export class EveEffectRoot2 extends EveObject
      * controllers before curve sets before children, because a controller drives
      * a curve set and a curve set drives what a child reads.
      *
-     * Carbon hands its controllers an update FREQUENCY (0..1) derived from LOD,
-     * not a time step. ccpwgl's `Tr2Controller.Update` advances its own clock
-     * from the argument, so passing a frequency would make every state machine
-     * run at the wrong rate - it gets `dt`, like every other controller owner
-     * here.
+     * Controllers receive elapsed `dt` and the separate normalized update
+     * frequency derived from this root's logical LOD. Skipped controller ticks
+     * retain and later consume the accumulated elapsed time.
      *
      * @param {Number} dt - delta time
      */
@@ -726,7 +746,7 @@ export class EveEffectRoot2 extends EveObject
 
             for (let i = 0; i < this.controllers.length; i++)
             {
-                this.controllers[i].Update(dt);
+                this.controllers[i].Update(dt, this._controllerUpdateFrequency);
             }
         }
 
@@ -780,7 +800,7 @@ export class EveEffectRoot2 extends EveObject
         for (let i = 0; i < this.effectChildren.length; i++)
         {
             const child = this.effectChildren[i];
-            if (child && child.UpdateViewDependentData) child.UpdateViewDependentData(this._worldTransform, dt);
+            if (child) child.UpdateViewDependentData(this._worldTransform, dt);
         }
     }
 
@@ -793,6 +813,15 @@ export class EveEffectRoot2 extends EveObject
     GetBatches(mode, accumulator)
     {
         if (!this.display) return false;
+
+        if (this._changeLOD)
+        {
+            this._changeLOD = false;
+            for (let i = 0; i < this.effectChildren.length; i++)
+            {
+                this.effectChildren[i].ChangeLOD(this.lodLevel);
+            }
+        }
 
         const c = accumulator.length;
 

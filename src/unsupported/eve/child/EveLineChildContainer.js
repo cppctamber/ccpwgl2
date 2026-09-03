@@ -67,4 +67,21 @@ export class EveLineChildContainer extends IEveLineSetPath
         return count;
     }
 
+    UpdateVisibility(frustum, parentLodLevel, systemLocation)
+    {
+        super.UpdateVisibility(frustum, parentLodLevel, systemLocation);
+        if (!this.isVisible) return;
+
+        for (let i = 0; i < this.lines.length; i++)
+        {
+            this.lines[i].UpdateVisibility(frustum, parentLodLevel, systemLocation);
+        }
+    }
+
+    ResetLod()
+    {
+        super.ResetLod();
+        for (let i = 0; i < this.lines.length; i++) this.lines[i].ResetLod();
+    }
+
 }

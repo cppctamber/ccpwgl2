@@ -42,6 +42,9 @@ export class EveMeshOverlayEffect extends meta.Model
     @meta.boolean
     update = true;
 
+    /** Overlay visibility follows the mesh it decorates. */
+    isVisible = true;
+
     @meta.plain
     visible = {
         opaqueEffects: true,
@@ -63,6 +66,24 @@ export class EveMeshOverlayEffect extends meta.Model
         }
     }
 
+    /** @param {EveUpdateContext} updateContext @param {Boolean} parentVisible */
+    UpdateLod(updateContext, parentVisible)
+    {
+        this.isVisible = this.display && parentVisible;
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this.isVisible = true;
+    }
+
+    /** Mesh overlays own no independent dynamic lights in ccpwgl. */
+    GetLights(collector, parentContext)
+    {
+
+    }
+
     /**
      * Gets render batches
      * @param {number} mode
@@ -73,7 +94,7 @@ export class EveMeshOverlayEffect extends meta.Model
      */
     GetBatches(mode, accumulator, perObjectData, mesh)
     {
-        if (!this.display || !mesh || !mesh.IsGood()) return false;
+        if (!this.display || !this.isVisible || !mesh || !mesh.IsGood()) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (!perObjectData) return false;
 

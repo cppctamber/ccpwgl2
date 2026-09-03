@@ -3,6 +3,7 @@ import { device, tw2 } from "global";
 import { vec3, vec4, mat4, quat } from "math";
 import { GLESPerObjectDataEveSpaceObject } from "core";
 import { EveEffectRoot2 } from "./EveEffectRoot2";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 /**
@@ -133,7 +134,7 @@ export class EvePlanet extends EveEffectRoot2
     /**
      * NON-CARBON. The SDE item id of the celestial this planet stands for.
      * Carbon has no such field - a planet in the client knows its item from the
-     * session - but ccpwgl is handed one by its consumers (`TnyMoon` passes it
+     * session - but ccpwgl is handed one by its consumers (`TnyPlanet` passes it
      * to `Fetch`) and the old class persisted it, so it is kept.
      */
     @meta.uint
@@ -292,46 +293,62 @@ export class EvePlanet extends EveEffectRoot2
      * low detail and draws nothing. A hidden planet does not choose at all -
      * Carbon returns before touching the level, leaving whatever was last set.
      *
-     * ccpwgl's `_lod` is a number where 3 is full detail and 0 is none, which
-     * the existing `!this._lod` guards read as "invisible".
-     *
-     * @returns {Number} the chosen lod
+     * @returns {Number} the chosen logical LOD
      */
     UpdateLOD()
     {
-        if (!this.display) return this._lod;
+        if (!this.display) return this.lodLevel;
 
-        this.SetLod(this.estimatedPixelDiameter > this.minScreenSize ? 3 : 0);
-        return this._lod;
+        this.SetLod(this.estimatedPixelDiameter > this.minScreenSize
+            ? Tr2Lod.TR2_LOD_HIGH
+            : Tr2Lod.TR2_LOD_LOW);
+        return this.lodLevel;
     }
 
     /**
      * Carbon `SetLod` (`cpp:292-305`) - the level, then every effect child, then
      * the z-only model.
-     * @param {Number} lod
+     * @param {Number} lodLevel
      */
-    SetLod(lod)
+    SetLod(lodLevel)
     {
-        this._lod = lod;
+        const visible = lodLevel === Tr2Lod.TR2_LOD_HIGH;
+
+        this._SetLodState(visible, lodLevel, lodLevel, visible);
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            const child = this.effectChildren[i];
-            if (child && child.ChangeLOD) child.ChangeLOD(lod);
+            this.effectChildren[i].ChangeLOD(lodLevel);
         }
 
-        if (this.zOnlyModel && this.zOnlyModel.ChangeLOD) this.zOnlyModel.ChangeLOD(lod);
+        if (this.zOnlyModel) this.zOnlyModel.ChangeLOD(lodLevel);
     }
 
     /**
      * The scene drives LOD from apparent size rather than from the frustum, so
-     * the frustum argument is accepted and unused. Overrides the base, which
+     * the update context is accepted and unused. Overrides the base, which
      * pins full detail.
-     * @param {Tw2Frustum} [frustum]
+     * @param {EveUpdateContext} [updateContext]
      */
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
         this.UpdateLOD();
+        this._controllerUpdateFrequency = 0.5;
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].UpdateLod(updateContext, this.lodLevel, this._scaledTransform);
+        }
+
+    }
+
+    /** Updates the ordinary-world depth proxy under the restored scene frustum. */
+    UpdateZOnlyLod(updateContext)
+    {
+        if (this.zOnlyModel)
+        {
+            this.zOnlyModel.UpdateLod(updateContext, this.lodLevel, this._planetTransform);
+        }
     }
 
     /**
@@ -339,7 +356,14 @@ export class EvePlanet extends EveEffectRoot2
      */
     ResetLod()
     {
-        this.SetLod(3);
+        this.SetLod(Tr2Lod.TR2_LOD_HIGH);
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].ResetLod();
+        }
+
+        if (this.zOnlyModel) this.zOnlyModel.ResetLod();
     }
 
     /**
@@ -445,7 +469,7 @@ export class EvePlanet extends EveEffectRoot2
      */
     Intersect(ray, intersects)
     {
-        if (!this.display || this._lod < 1 || ray.IsMasked(this)) return null;
+        if (!this.display || this.lodLevel !== Tr2Lod.TR2_LOD_HIGH || ray.IsMasked(this)) return null;
         if (this.radius <= 0) return null;
 
         this.RebuildBounds();
@@ -625,14 +649,14 @@ export class EvePlanet extends EveEffectRoot2
         for (let i = 0; i < this.effectChildren.length; i++)
         {
             const child = this.effectChildren[i];
-            if (child && child.UpdateViewDependentData) child.UpdateViewDependentData(this._scaledTransform, dt);
+            if (child) child.UpdateViewDependentData(this._scaledTransform, dt);
         }
 
         // The z-only model stays in ORDINARY world space - it is drawn in the
         // main pass under the scene's normal projection, so a scaled transform
         // would put its depth somewhere unrelated to the geometry it is meant
         // to occlude. Carbon does the same (`cpp:60-64`, `cpp:134-140`).
-        if (this.zOnlyModel && this.zOnlyModel.UpdateViewDependentData)
+        if (this.zOnlyModel)
         {
             this.zOnlyModel.UpdateViewDependentData(this._planetTransform, dt);
         }
@@ -659,9 +683,8 @@ export class EvePlanet extends EveEffectRoot2
      * Per frame update.
      *
      * Carbon `UpdatePlanetSyncronous` (`cpp:68-110`) - curve sets, controllers,
-     * observers, then the children. Note it updates its controllers at a FIXED
-     * rate of 0.5 rather than from LOD; ccpwgl's controllers advance their own
-     * clock from the argument, so they get `dt`, as everywhere else here.
+     * observers, then the children. Its controllers receive elapsed `dt` plus
+     * Carbon's fixed normalized update frequency of 0.5.
      *
      * @param {Number} dt
      */
@@ -680,7 +703,7 @@ export class EvePlanet extends EveEffectRoot2
 
             for (let i = 0; i < this.controllers.length; i++)
             {
-                this.controllers[i].Update(dt);
+                this.controllers[i].Update(dt, this._controllerUpdateFrequency);
             }
         }
 
@@ -695,7 +718,7 @@ export class EvePlanet extends EveEffectRoot2
             if (child) child.Update(dt, this._scaledTransform, this._perObjectData, this);
         }
 
-        if (this.zOnlyModel && this.zOnlyModel.Update)
+        if (this.zOnlyModel)
         {
             this.zOnlyModel.Update(dt, this._planetTransform, this._perObjectData, this);
         }
@@ -720,7 +743,7 @@ export class EvePlanet extends EveEffectRoot2
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || this._lod < 3) return false;
+        if (!this.display || this.lodLevel !== Tr2Lod.TR2_LOD_HIGH) return false;
         if (this.estimatedPixelDiameter <= this.minScreenSize) return false;
 
         const c = accumulator.length;
@@ -728,7 +751,7 @@ export class EvePlanet extends EveEffectRoot2
         for (let i = 0; i < this.effectChildren.length; i++)
         {
             const child = this.effectChildren[i];
-            if (child && child.GetBatches) child.GetBatches(mode, accumulator, this._perObjectData);
+            if (child) child.GetBatches(mode, accumulator, this._perObjectData);
         }
 
         return accumulator.length !== c;
@@ -748,8 +771,7 @@ export class EvePlanet extends EveEffectRoot2
      */
     GetZOnlyBatches(mode, accumulator)
     {
-        if (!this.display || this._lod < 3 || !this.zOnlyModel) return false;
-        if (!this.zOnlyModel.GetBatches) return false;
+        if (!this.display || this.lodLevel !== Tr2Lod.TR2_LOD_HIGH || !this.zOnlyModel) return false;
 
         const c = accumulator.length;
         this.zOnlyModel.GetBatches(mode, accumulator, this._perObjectData);

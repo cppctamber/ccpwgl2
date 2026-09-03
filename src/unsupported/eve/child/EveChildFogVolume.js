@@ -1,10 +1,11 @@
 import { meta } from "utils";
 import { vec3 } from "math";
+import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
 @meta.define("EveChildFogVolume", true)
-export class EveChildFogVolume
+export class EveChildFogVolume extends EveChild
 {
     @meta.string
     name = "";
@@ -17,21 +18,6 @@ export class EveChildFogVolume
 
     @meta.list()
     volumes = [];
-
-    get isEffectChild()
-    {
-        return true;
-    }
-
-    UpdateLod()
-    {
-
-    }
-
-    ResetLod()
-    {
-
-    }
 
     Update()
     {

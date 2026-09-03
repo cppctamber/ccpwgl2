@@ -1312,6 +1312,23 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Updates turret-set bounds and the independently visible firing effect.
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        super.UpdateLod(updateContext);
+        if (this.firingEffect) this.firingEffect.UpdateLod(updateContext);
+    }
+
+    /** Restores turret and firing-effect visibility. */
+    ResetLod()
+    {
+        super.ResetLod();
+        if (this.firingEffect) this.firingEffect.ResetLod();
+    }
+
+    /**
      * Rebuilds the turret set
      * Todo: Move all rebuild methods here
      * @param {Object} [opt]

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device } from "global";
-import { vec3, mat4 } from "math";
+import { vec3, mat4, box3 } from "math";
 import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from "core";
 
 
@@ -224,6 +224,34 @@ export class EveStretch2 extends meta.Model
     SetIsInFrustum(visible)
     {
         this._isInFrustum = !!visible;
+    }
+
+    /**
+     * Applies Carbon's oriented bounding-box frustum test.
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        if (!this._visible || this._intensity <= 0)
+        {
+            this._isInFrustum = false;
+            return;
+        }
+
+        const
+            box = EveStretch2.global.box3_0,
+            length = vec3.distance(this._source, this._destination),
+            radius = this.boundingRadius;
+
+        box3.fromBounds(box, [ -radius, -radius, -radius ], [ radius, radius, length + radius ]);
+        box3.transformMat4(box, box, this._sourceTransform);
+        this._isInFrustum = updateContext.GetFrustum().IntersectsBox3(box);
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this._isInFrustum = true;
     }
 
     /**
@@ -639,13 +667,13 @@ export class EveStretch2 extends meta.Model
         const bones = parentContext.bones || null;
         const parentBrightness = parentContext.parentBrightness !== undefined ? parentContext.parentBrightness : 1;
 
-        if (this.sourceLight && typeof this.sourceLight.Update === "function" && typeof this.sourceLight.GetCarbonLightData === "function")
+        if (this.sourceLight)
         {
             this.sourceLight.Update(dt, this._sourceTransform, bones);
             collector.Collect([ this.sourceLight.GetCarbonLightData({ parentBrightness, parentScale: 1 }) ]);
         }
 
-        if (this.destinationLight && typeof this.destinationLight.Update === "function" && typeof this.destinationLight.GetCarbonLightData === "function")
+        if (this.destinationLight)
         {
             this.destinationLight.Update(dt, this._destinationTransform, bones);
             collector.Collect([ this.destinationLight.GetCarbonLightData({ parentBrightness, parentScale: this._currentDestinationScale }) ]);
@@ -711,6 +739,7 @@ export class EveStretch2 extends meta.Model
         if (!EveStretch2.global)
         {
             EveStretch2.global = {
+                box3_0: box3.create(),
                 vec3_0: vec3.create(),
                 vec3_1: vec3.create(),
                 vec3_2: vec3.create(),

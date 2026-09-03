@@ -1,11 +1,13 @@
 /* eslint no-unused-vars:0 */
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
+import { Tr2Lod } from "constant/ccpwgl";
 
 export class EveChild extends meta.Model
 {
 
-    _lod = 3;
+    /** Carbon logical LOD inherited from the owning root. */
+    lodLevel = Tr2Lod.TR2_LOD_HIGH;
 
     @meta.boolean 
     updateOnDisplay = false;
@@ -54,12 +56,32 @@ export class EveChild extends meta.Model
 
     /**
      * Updates LOD
-     * @param {Tw2Frustum} frustum
-     * @param {Number} parentLod
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
      */
-    UpdateLod(frustum, parentLod)
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
     {
-        this._lod = parentLod;
+        this.lodLevel = parentLodLevel;
+    }
+
+    /**
+     * Prepares current-frame transforms needed by bounds aggregation before
+     * the owning root has selected its final logical LOD.
+     * @param {mat4} parentTransform
+     */
+    PrepareLod(parentTransform)
+    {
+
+    }
+
+    /**
+     * Applies Carbon's logical LOD.
+     * @param {Number} lodLevel
+     */
+    ChangeLOD(lodLevel)
+    {
+        this.lodLevel = lodLevel;
     }
 
     /**
@@ -67,7 +89,7 @@ export class EveChild extends meta.Model
      */
     ResetLod()
     {
-        this._lod = 3;
+        this.lodLevel = Tr2Lod.TR2_LOD_HIGH;
     }
 
     /**
@@ -82,6 +104,12 @@ export class EveChild extends meta.Model
 
     }
 
+    /** Owned no-op view-dependent update contract for direct root traversal. */
+    UpdateViewDependentData(parentTransform, dt)
+    {
+
+    }
+
     /**
      * Gets object resources
      * @param {Array} [out=[]]
@@ -91,6 +119,41 @@ export class EveChild extends meta.Model
     GetResources(out = [])
     {
         return out;
+    }
+
+    /**
+     * Effect children without authored bounds participate as unbounded nodes.
+     * Concrete renderable children override this owned contract.
+     * @param {sph3} out
+     * @returns {null}
+     */
+    GetBoundingSphere(out)
+    {
+        return null;
+    }
+
+    /** Owned no-light contract for direct scene traversal. */
+    GetLights(collector, parentContext)
+    {
+
+    }
+
+    /** Carbon's optional procedural-child variable contract. */
+    SetProceduralContainerVariable(name, value)
+    {
+
+    }
+
+    /** Carbon's optional all-curve-set owner contract. */
+    PlayAllCurveSets()
+    {
+        return false;
+    }
+
+    /** Carbon's optional all-curve-set owner contract. */
+    StopAllCurveSets()
+    {
+        return false;
     }
 
     /**

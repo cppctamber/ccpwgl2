@@ -23,10 +23,8 @@
 //     ported distribution methods and light groups keep their Carbon names and
 //     do not have to be rewritten.
 //
-// The `updateContext` the distribution methods want is a duck with a single
-// method - a repo-wide grep of `src/eve/distribution/**` and
-// `src/eve/smartLights/**` finds `updateContext.GetDeltaT` and nothing else -
-// so a scratch bag is cheaper and clearer than porting EveUpdateContext.
+// Distribution updates only consume delta time; logical visibility receives
+// the real EveUpdateContext threaded by EveSpaceScene.
 import { meta } from "utils";
 import { mat4 } from "math";
 import { tw2 } from "global/tw2";
@@ -63,37 +61,41 @@ export class EveChildSmartLightSet extends EveChild
      * not survive the call either (IEveSpaceObjectChild.h), so nothing may hold
      * a reference to it.
      */
-    _updateContext = { GetDeltaT: () => this._dt };
+    _distributionUpdateContext = { GetDeltaT: () => this._dt };
     _updateParams = null;
     _dt = 0;
 
     /**
-     * Captures the frustum on the way past and forwards LOD.
+     * Forwards Carbon's frame context and logical parent LOD to every group.
      *
      * Carbon culls per placement inside `AddQuadsToQuadRenderer`, which runs at
      * render time with a frustum in hand. ccpwgl builds geometry during update
      * and has no frustum there, so the one place a frustum passes through is
      * captured here and handed to the groups when they build.
      *
-     * @param {Tw2Frustum} frustum
-     * @param {Number} parentLod
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
      */
-    UpdateLod(frustum, parentLod)
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
     {
-        super.UpdateLod(frustum, parentLod);
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+        if (parentTransform) mat4.copy(this._worldTransform, parentTransform);
 
         for (let i = 0; i < this.lightGroups.length; i++)
         {
-            const group = this.lightGroups[i];
-            if (!group) continue;
+            this.lightGroups[i].UpdateVisibility(updateContext, this._worldTransform, this.lodLevel);
+        }
+    }
 
-            if ("_frustum" in group) group._frustum = frustum;
+    /** Restores authored group visibility. */
+    ResetLod()
+    {
+        super.ResetLod();
 
-            // Carbon's IEveSmartLightGroup::UpdateVisibility, whose ccpwgl
-            // equivalent moment is this one. Optional because the interface
-            // default is empty (IEveSmartLightGroup.h:19) - only the mesh
-            // overrides it, and a group that does not is not a gap.
-            group.UpdateVisibility?.(this._updateContext, this._worldTransform, parentLod);
+        for (let i = 0; i < this.lightGroups.length; i++)
+        {
+            this.lightGroups[i].ResetLod();
         }
     }
 
@@ -209,7 +211,7 @@ export class EveChildSmartLightSet extends EveChild
             : 1;
         params.isVisible = true;
 
-        const context = this._updateContext;
+        const context = this._distributionUpdateContext;
 
         this.distribution.UpdateSyncronous?.(context, params);
 
@@ -297,11 +299,10 @@ export class EveChildSmartLightSet extends EveChild
     /**
      * Collects the lights every group emits.
      *
-     * The groups that emit actual light (EveSmartLightPointLight,
-     * EveSmartLightSpotLight) still speak Carbon's `GetLights(lightManager)`
-     * contract rather than ccpwgl's collector, so this forwards and lets a
-     * group opt in. The emitter bridge is the SECOND piece of work, after the
-     * geometry - see the note at the top of src/index.js.
+     * Point and spot groups emit through the collector's Carbon-shaped
+     * `AddLight` method. Mesh and quad groups implement the same ccpwgl
+     * traversal contract as explicit no-ops, so every owned group is called
+     * directly and a missing implementation fails at its contract boundary.
      *
      * @param {Tw2CarbonLightCollector} collector
      * @param {Object} [parentContext]
@@ -312,7 +313,7 @@ export class EveChildSmartLightSet extends EveChild
 
         for (let i = 0; i < this.lightGroups.length; i++)
         {
-            this.lightGroups[i]?.GetLights?.(collector, parentContext, this.distribution);
+            this.lightGroups[i].GetLights(collector, parentContext, this.distribution);
         }
     }
 

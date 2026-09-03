@@ -1,6 +1,6 @@
 import { meta } from "utils";
-import { vec3, quat, mat4 } from "math";
-import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2RawData } from "core";
+import { box3, vec3, quat, mat4, sph3 } from "math";
+import { GLESPerObjectDataEveSpaceObject, Tw2InstancedMesh, Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
 
 
@@ -23,9 +23,8 @@ export class EveChildMesh extends EveChild
     @meta.matrix4
     localTransform = mat4.create();
 
-    @meta.notImplemented
     @meta.uint
-    lowestLodVisible = 2;
+    lowestLodVisible = 0;
 
     @meta.struct([ "Tw2Mesh", "Tw2InstancedMesh" ])
     mesh = null;
@@ -50,9 +49,14 @@ export class EveChildMesh extends EveChild
     @meta.struct("Tr2GrannyAnimation")
     animationUpdater = null;
 
-    @meta.notImplemented
     @meta.float
     minScreenSize = 0;
+
+    @meta.float
+    currentScreenSize = -1;
+
+    @meta.float
+    currentInstanceScreenSize = -1;
 
     @meta.notImplemented
     @meta.uint
@@ -99,6 +103,114 @@ export class EveChildMesh extends EveChild
     _perObjectData = null;
     _perObjectDataBagOfStuff = {};
     _usesFfe = false;
+    _worldBoundingBox = box3.create();
+    _worldBoundingSphere = sph3.create();
+    _boundsReady = false;
+    _isVisible = true;
+    _hasUpdated = false;
+
+    /** Refreshes current world bounds without applying a logical tier. */
+    PrepareLod(parentTransform)
+    {
+        if (!parentTransform) return;
+
+        if (this._hasBone && this._boneTransform)
+        {
+            mat4.multiply(this._worldTransform, this._boneTransform, this.localTransform);
+            mat4.multiply(this._worldTransform, parentTransform, this._worldTransform);
+        }
+        else
+        {
+            mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+        }
+
+        for (let i = 0; i < this.transformModifiers.length; i++)
+        {
+            const modifier = this.transformModifiers[i];
+            if ("ApplyTransform" in modifier) modifier.ApplyTransform(this._worldTransform);
+        }
+
+        if (this._boundsReady)
+        {
+            const localBounds = EveChildMesh.global.box3_0;
+            if (this.mesh.GetBoundingBox(localBounds))
+            {
+                box3.transformMat4(this._worldBoundingBox, localBounds, this._worldTransform);
+                sph3.fromBox3(this._worldBoundingSphere, this._worldBoundingBox);
+            }
+        }
+    }
+
+    /**
+     * Applies Carbon's logical child-mesh visibility without selecting a
+     * geometry LOD. Instanced meshes fail open until their bounds contract is
+     * implemented; calling their current GetBoundingBox would throw.
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
+     */
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
+    {
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+        this.currentScreenSize = -1;
+        this.currentInstanceScreenSize = -1;
+
+        if (!this.display || !this.mesh || !this._hasUpdated)
+        {
+            this._isVisible = false;
+            return;
+        }
+
+        if (parentTransform)
+        {
+            this.PrepareLod(parentTransform);
+        }
+
+        if (!this._boundsReady)
+        {
+            this._isVisible = this.lodLevel >= this.lowestLodVisible;
+            return;
+        }
+
+        const frustum = updateContext.GetFrustum();
+        this.currentScreenSize = frustum.GetPixelSizeAcross(
+            this._worldBoundingSphere,
+            this._worldBoundingSphere[3]
+        ) * updateContext.GetInvLodFactor();
+
+        this._isVisible = frustum.IntersectsBox3(this._worldBoundingBox) &&
+            this.lodLevel >= this.lowestLodVisible &&
+            this.currentScreenSize >= this.minScreenSize;
+    }
+
+    /** Restores the default visible state. */
+    ResetLod()
+    {
+        super.ResetLod();
+        this._isVisible = true;
+        this.currentScreenSize = -1;
+        this.currentInstanceScreenSize = -1;
+    }
+
+    /**
+     * Gets the current world-space mesh box.
+     * @param {box3} out
+     * @returns {box3|null} out when bounds are ready
+     */
+    GetBoundingBox(out)
+    {
+        return this._boundsReady ? box3.copy(out, this._worldBoundingBox) : null;
+    }
+
+    /**
+     * Gets the current world-space mesh sphere.
+     * @param {sph3} out
+     * @returns {sph3|null} out when bounds are ready
+     */
+    GetBoundingSphere(out)
+    {
+        return this._boundsReady ? sph3.copy(out, this._worldBoundingSphere) : null;
+    }
 
 
     /**
@@ -119,14 +231,8 @@ export class EveChildMesh extends EveChild
      */
     Intersect(ray, intersects, _worldTransform, cache)
     {
-        if (!this.display || ray.IsMasked(this)) return null;
+        if (!this.display || !this._isVisible || ray.IsMasked(this)) return null;
         if (ray.GetOption("effectChildren", "skip")) return null;
-
-        // NOT gated on lod. A hit test agreeing with what is drawn is the right
-        // idea, but lod is not implemented properly yet - so a wrong `_lod`
-        // would make a visible child silently unpickable, and that reads as an
-        // intersection bug rather than as the lod system being unfinished. Add
-        // the gate deliberately when lod lands.
 
         const target = this.mesh;
         if (!target || !target.Intersect) return null;
@@ -242,6 +348,19 @@ export class EveChildMesh extends EveChild
                 modifier.ApplyTransform(this._worldTransform);
             }
         }
+
+        this._boundsReady = false;
+        if (this.mesh && !(this.mesh instanceof Tw2InstancedMesh))
+        {
+            const localBounds = EveChildMesh.global.box3_0;
+            if (this.mesh.GetBoundingBox(localBounds))
+            {
+                box3.transformMat4(this._worldBoundingBox, localBounds, this._worldTransform);
+                sph3.fromBox3(this._worldBoundingSphere, this._worldBoundingBox);
+                this._boundsReady = true;
+            }
+        }
+        this._hasUpdated = true;
     }
 
     /**
@@ -295,7 +414,7 @@ export class EveChildMesh extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.mesh || this._lod < this.lowestLodVisible) return false;
+        if (!this.display || !this._isVisible || !this.mesh) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (!perObjectData) return false;
 
@@ -520,5 +639,9 @@ export class EveChildMesh extends EveChild
 
         return out;
     }
+
+    static global = {
+        box3_0: box3.create()
+    };
 
 }

@@ -1007,7 +1007,7 @@ export class EveCurveLineSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this._vb) return false;
+        if (!this.display || !this.isVisible || !this._vb) return false;
 
         let effect;
         switch (mode)

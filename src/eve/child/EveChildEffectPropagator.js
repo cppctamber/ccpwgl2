@@ -3,6 +3,7 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 import { EveChildContainer } from "./EveChildContainer";
 import { EveChildInstanceContainer } from "./EveChildInstanceContainer";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 /**
@@ -686,6 +687,26 @@ export class EveChildEffectPropagator extends EveChildContainer
     SetControllerVariable(name, value)
     {
         if (this.effect && this.effect.SetControllerVariable) this.effect.SetControllerVariable(name, value);
+    }
+
+    /**
+     * Carbon replaces the container fan-out and forwards visibility only to
+     * the spawned effect.
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} parentTransform
+     */
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
+    {
+        this.lodLevel = parentLodLevel;
+        if (this.effect) this.effect.UpdateLod(updateContext, parentLodLevel, parentTransform);
+    }
+
+    /** Restores the propagated effect's LOD state. */
+    ResetLod()
+    {
+        this.lodLevel = Tr2Lod.TR2_LOD_HIGH;
+        if (this.effect) this.effect.ResetLod();
     }
 
     /**

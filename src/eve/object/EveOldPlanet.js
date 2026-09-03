@@ -40,6 +40,7 @@ import { Tw2Effect, Tw2PerObjectData, Tw2RenderTarget, Tw2Resource } from "core"
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
 import { EveShip2 } from "eve";
+import { Tr2Lod } from "constant/ccpwgl";
 
 // TODO: Add "OnValueChanged" handler
 // TODO: Handle height map resolution size
@@ -107,7 +108,7 @@ export class EveOldPlanet extends EveObject
      */
     Intersect(ray, intersects)
     {
-        if (!this.display || this._lod < 1 || ray.IsMasked(this)) return;
+        if (!this.display || !this.isVisible || ray.IsMasked(this)) return;
 
         this.RebuildBounds();
         const intersect = ray.IntersectSph3(this._boundingSphere, this._worldTransform);
@@ -196,13 +197,18 @@ export class EveOldPlanet extends EveObject
     }
 
     /**
-     * Updates LOD
-     * TODO: Implement LOD
-     * @param {Tw2Frustum}frustum
+     * Preserves the old planet's authored full-detail behavior using the
+     * shared logical LOD state.
+     * @param {EveUpdateContext} updateContext
      */
-    UpdateLod(frustum)
+    UpdateLod(updateContext)
     {
-        this._lod = 3; //!frustum.IsSphereVisible(this.translation, this.radius) ? 0 : 3;
+        this._SetLodState(
+            this.display,
+            Tr2Lod.TR2_LOD_HIGH,
+            Tr2Lod.TR2_LOD_HIGH,
+            this.display
+        );
     }
 
     /**
@@ -278,7 +284,7 @@ export class EveOldPlanet extends EveObject
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || !this._lod || !this._planet) return false;
+        if (!this.display || !this.isVisible || !this._planet) return false;
 
         const c = accumulator.length;
 
@@ -300,7 +306,7 @@ export class EveOldPlanet extends EveObject
      */
     GetZOnlyBatches(mode, accumulator)
     {
-        if (!this.display || !this._lod || !this.zOnlyModel) return false;
+        if (!this.display || !this.isVisible || !this.zOnlyModel) return false;
         return this.zOnlyModel.GetBatches(mode, accumulator);
     }
 

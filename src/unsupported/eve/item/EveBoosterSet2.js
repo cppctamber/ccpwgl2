@@ -532,16 +532,15 @@ export class EveBoosterSet2 extends EveObjectSet
 
     /**
      * Updates lod
-     * @param {Tw2Frustum} frustum
-     * @param {Number} [parentLod] - the owner's lod level, which gates the
-     * boosters and trails; see EveBoosterSet2Renderable.UpdateLod for why the
-     * pixel-size thresholds are not used for that
+     * @param {EveUpdateContext} updateContext
      */
-    UpdateLod(frustum, parentLod)
+    UpdateLod(updateContext)
     {
+        this.isVisible = false;
         for (let i = 0; i < this._renderables.length; i++)
         {
-            this._renderables[i].UpdateLod(frustum, parentLod);
+            this._renderables[i].UpdateLod(updateContext);
+            this.isVisible = this.isVisible || this._renderables[i].isVisible;
         }
 
         this._glowsVisible = false;
@@ -556,6 +555,18 @@ export class EveBoosterSet2 extends EveObjectSet
                 this._glowsVisible = true;
                 break;
             }
+        }
+    }
+
+    /** Restores authored visibility. */
+    ResetLod()
+    {
+        this.isVisible = true;
+        this._glowsVisible = true;
+
+        for (let i = 0; i < this._renderables.length; i++)
+        {
+            this._renderables[i].ResetLod();
         }
     }
 
@@ -815,12 +826,14 @@ export class EveBoosterSet2 extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || mode !== device.RM_ADDITIVE || !this.IsGood()) return false;
+        if (!this.display || !this.isVisible || mode !== device.RM_ADDITIVE || !this.IsGood()) return false;
         if (!this._instanceCount || !this._vertexBuffer) return false;
 
         const
             c = accumulator.length,
             renderable = this.GetRenderable(0);
+
+        if (!renderable.isVisible) return false;
 
         if (renderable.boostersVisible)
         {

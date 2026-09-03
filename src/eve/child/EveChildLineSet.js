@@ -1,7 +1,7 @@
 // Source: E:\carbonengine\trinity\trinity\Eve\SpaceObject\Children\EveChildLineSet.cpp
 import { meta } from "utils";
 import { EveChild } from "./EveChild";
-import { mat4, vec3, vec4, quat } from "math";
+import { mat4, sph3, vec3, vec4, quat } from "math";
 import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
 
 
@@ -66,7 +66,6 @@ export class EveChildLineSet extends EveChild
     @meta.struct("Tw2Mesh", "Tr2Mesh")
     mesh = null;
 
-    @meta.notImplemented
     @meta.float
     minScreenSize = -1;
 
@@ -98,6 +97,9 @@ export class EveChildLineSet extends EveChild
     staticTransform = false;
 
     _worldTransform = mat4.create();
+
+    /** Aggregate sphere in line-set local space. */
+    _boundingSphere = sph3.fromPositionRadius(sph3.create(), vec3.create(), 1);
 
     /** Set whenever the points or the colours need re-adding to the line set. */
     _updateLineSet = true;
@@ -178,8 +180,117 @@ export class EveChildLineSet extends EveChild
         for (let i = 0; i < this.lines.length; i++)
         {
             const path = this.lines[i];
-            if (path && path.GeneratePoints) path.GeneratePoints(this._worldTransform);
+            if (!path) continue;
+            path.GeneratePoints(this._worldTransform);
+            path.CalculateBoundingSphere();
         }
+
+        this.RebuildBoundingSphere();
+    }
+
+    /**
+     * Builds Carbon's inexpensive enclosing sphere from the path spheres.
+     * @returns {sph3} the live local sphere
+     */
+    RebuildBoundingSphere()
+    {
+        if (!this.lines.length) return this._boundingSphere;
+
+        const
+            sphere = EveChildLineSet.global.sph3_0,
+            center = EveChildLineSet.global.vec3_0;
+
+        vec3.set(center, 0, 0, 0);
+        let biggestRadius = 0;
+
+        for (let i = 0; i < this.lines.length; i++)
+        {
+            this.lines[i].GetBoundingSphere(sphere);
+            center[0] += sphere[0];
+            center[1] += sphere[1];
+            center[2] += sphere[2];
+            biggestRadius = Math.max(biggestRadius, sphere[3]);
+        }
+
+        vec3.scale(center, center, 1 / this.lines.length);
+        let distanceSquared = 0;
+
+        for (let i = 0; i < this.lines.length; i++)
+        {
+            this.lines[i].GetBoundingSphere(sphere);
+            distanceSquared = Math.max(distanceSquared, vec3.squaredDistance(center, sphere));
+        }
+
+        return sph3.set(
+            this._boundingSphere,
+            center[0],
+            center[1],
+            center[2],
+            Math.sqrt(distanceSquared) + biggestRadius
+        );
+    }
+
+    /**
+     * Applies Carbon's line-set frustum and minimum-size policy.
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
+     */
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
+    {
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+        if (!this.display) return;
+
+        this.PrepareLod(parentTransform);
+
+        const
+            frustum = updateContext.GetFrustum(),
+            worldSphere = EveChildLineSet.global.sph3_1;
+
+        sph3.transformMat4(worldSphere, this._boundingSphere, this._worldTransform);
+        this.isVisible = frustum.IsSphereVisible(worldSphere, worldSphere[3]);
+
+        if (this.isVisible)
+        {
+            // Carbon bug CE-01: cull the transformed sphere, but measure the
+            // untransformed member sphere (EveChildLineSet.cpp:207-212).
+            this.currentScreenSize = frustum.GetPixelSizeAcross(this._boundingSphere, this._boundingSphere[3]);
+            this.isVisible = this.currentScreenSize >= this.minScreenSize;
+        }
+
+        for (let i = 0; i < this.lines.length; i++)
+        {
+            this.lines[i].UpdateVisibility(frustum, this.lodLevel, this._worldTransform);
+        }
+    }
+
+    /** Refreshes the line system's current world transform for bounds queries. */
+    PrepareLod(parentTransform)
+    {
+        if (parentTransform) mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+    }
+
+    /** Restores the default visible state. */
+    ResetLod()
+    {
+        super.ResetLod();
+        this.isVisible = true;
+        this.currentScreenSize = 1;
+
+        for (let i = 0; i < this.lines.length; i++)
+        {
+            this.lines[i].ResetLod();
+        }
+    }
+
+    /**
+     * Gets the aggregate line-set sphere in world space.
+     * @param {sph3} out
+     * @returns {sph3} out
+     */
+    GetBoundingSphere(out)
+    {
+        return sph3.transformMat4(out, this._boundingSphere, this._worldTransform);
     }
 
     /**
@@ -302,14 +413,8 @@ export class EveChildLineSet extends EveChild
      */
     Intersect(ray, intersects, _worldTransform, cache)
     {
-        if (!this.display || ray.IsMasked(this)) return null;
+        if (!this.display || !this.isVisible || ray.IsMasked(this)) return null;
         if (ray.GetOption("lineSets", "skip")) return null;
-
-        // NOT gated on lod. A hit test agreeing with what is drawn is the right
-        // idea, but lod is not implemented properly yet - so a wrong `_lod`
-        // would make a visible child silently unpickable, and that reads as an
-        // intersection bug rather than as the lod system being unfinished. Add
-        // the gate deliberately when lod lands.
 
         const target = this.mesh;
         if (!target || !target.Intersect) return null;
@@ -377,7 +482,10 @@ export class EveChildLineSet extends EveChild
 
     static global = {
         vec4_0: vec4.create(),
-        vec4_1: vec4.create()
+        vec4_1: vec4.create(),
+        vec3_0: vec3.create(),
+        sph3_0: sph3.create(),
+        sph3_1: sph3.create()
     };
 
     /**

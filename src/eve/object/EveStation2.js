@@ -30,9 +30,6 @@ import { EveShip2 } from "eve/object/EveShip2";
 export class EveStation2 extends EveShip2
 {
 
-    @meta.list("Tw2CurveSet")
-    curveSets = [];
-
     @meta.list("Tr2PointLight")
     lights = [];
 

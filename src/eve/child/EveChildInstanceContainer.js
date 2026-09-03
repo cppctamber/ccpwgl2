@@ -3,7 +3,7 @@ import { meta } from "utils";
 import { tw2 } from "global";
 import { EveChild } from "./EveChild";
 import { EveChildContainer } from "./EveChildContainer";
-import { mat4, quat, vec3 } from "math";
+import { mat4, quat, vec3, sph3 } from "math";
 
 
 /**
@@ -119,6 +119,7 @@ export class EveChildInstanceContainer extends EveChild
     controllerVariables = new Map();
 
     _worldTransform = mat4.create();
+    _lodBoundingSphereScratch = sph3.create();
 
     /** Instances need (re)building. Carbon's `m_reset`, and it starts true. */
     _reset = true;
@@ -392,17 +393,19 @@ export class EveChildInstanceContainer extends EveChild
     }
 
     /**
-     * @param {Tw2Frustum} frustum
-     * @param {Number} parentLod
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
      */
-    UpdateLod(frustum, parentLod)
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
     {
-        this._lod = parentLod;
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+        this.PrepareLod(parentTransform);
 
         const instances = this.GetInstances();
         for (let i = 0; i < instances.length; i++)
         {
-            if (instances[i] && instances[i].UpdateLod) instances[i].UpdateLod(frustum, this._lod);
+            instances[i].UpdateLod(updateContext, this.lodLevel, this._worldTransform);
         }
     }
 
@@ -411,12 +414,56 @@ export class EveChildInstanceContainer extends EveChild
      */
     ResetLod()
     {
-        this._lod = 3;
+        super.ResetLod();
 
         const instances = this.GetInstances();
         for (let i = 0; i < instances.length; i++)
         {
-            if (instances[i] && instances[i].ResetLod) instances[i].ResetLod();
+            instances[i].ResetLod();
+        }
+    }
+
+    /** Refreshes every placed instance for current-frame bounds queries. */
+    PrepareLod(parentTransform)
+    {
+        if (parentTransform) mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+
+        const instances = this.GetInstances();
+        for (let i = 0; i < instances.length; i++)
+        {
+            instances[i].PrepareLod(this._worldTransform);
+        }
+    }
+
+    /** Returns the union of ready instance bounds in world space. */
+    GetBoundingSphere(out)
+    {
+        let hasBounds = false;
+        const
+            instances = this.GetInstances(),
+            childSphere = this._lodBoundingSphereScratch;
+
+        for (let i = 0; i < instances.length; i++)
+        {
+            if (!instances[i].GetBoundingSphere(childSphere)) return null;
+
+            if (hasBounds) sph3.union(out, out, childSphere);
+            else sph3.copy(out, childSphere);
+            hasBounds = true;
+        }
+
+        return hasBounds ? out : null;
+    }
+
+    /** Applies a logical LOD transition to every placed instance. */
+    ChangeLOD(lodLevel)
+    {
+        super.ChangeLOD(lodLevel);
+
+        const instances = this.GetInstances();
+        for (let i = 0; i < instances.length; i++)
+        {
+            instances[i].ChangeLOD(lodLevel);
         }
     }
 
@@ -455,7 +502,7 @@ export class EveChildInstanceContainer extends EveChild
         for (let i = 0; i < instances.length; i++)
         {
             const instance = instances[i];
-            if (instance && instance.Update) instance.Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
+            if (instance) instance.Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
         }
     }
 
@@ -539,7 +586,7 @@ export class EveChildInstanceContainer extends EveChild
         for (let i = 0; i < instances.length; i++)
         {
             const instance = instances[i];
-            if (instance && instance.GetBatches) instance.GetBatches(mode, accumulator, perObjectData);
+            if (instance) instance.GetBatches(mode, accumulator, perObjectData);
         }
 
         return accumulator.length !== count;
@@ -555,8 +602,7 @@ export class EveChildInstanceContainer extends EveChild
         const instances = this.GetInstances();
         for (let i = 0; i < instances.length; i++)
         {
-            const instance = instances[i];
-            if (instance && instance.GetLights) instance.GetLights(collector, parentContext);
+            instances[i].GetLights(collector, parentContext);
         }
     }
 

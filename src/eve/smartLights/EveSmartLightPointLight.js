@@ -28,6 +28,16 @@ import {
 @meta.define("EveSmartLightPointLight", true)
 export class EveSmartLightPointLight extends EveEntity
 {
+
+    /** Point and spot lights use their independent pixel cutoff, not parent LOD. */
+    UpdateVisibility(_updateContext, _parentTransform, _parentLodLevel)
+    {
+    }
+
+    /** Point and spot lights retain no parent-LOD visibility state. */
+    ResetLod()
+    {
+    }
     /** m_lightGroupData.flags (uint16_t) [READWRITE, PERSIST] */
     @meta.uint
     flags = 1;
@@ -292,24 +302,9 @@ export class EveSmartLightPointLight extends EveEntity
      * to the renderer backend; Trinity submits the typed CPU record per
      * placement.
      *
-     * TODO(port): this transcribes runtime-trinity's GetLights(lightManager)
-     * contract verbatim - one lightManager.AddLight(record) call per
-     * placement, with a record shaped like Carbon's PerLightData (position,
-     * direction, color, radius, innerRadius, flags, outerAngle, innerAngle,
-     * lightType, lightData, lightProfile, owner). ccpwgl's actual light sink
-     * is `Tw2CarbonLightCollector` (src/core/carbon/Tw2CarbonLightCollector.js),
-     * which instead exposes `Collect(lightRows)` taking an ARRAY of rows
-     * shaped `{position:[x,y,z], radius, color:[r,g,b], flags, params:[4]}`
-     * (see `Tr2PointLight#GetCarbonLightData`,
-     * src/core/lighting/Tr2PointLight.js), and the established caller shape
-     * for a light-owning child is `GetLights(collector, parentContext)`
-     * (see `EveChildContainer.GetLights`, src/eve/child/EveChildContainer.js)
-     * - not `GetLights(lightManager)` with an `AddLight` push per light. The
-     * two contracts do not line up (different method signature, different
-     * per-light row shape, no `direction`/`innerAngle`/`outerAngle`/
-     * `lightProfile`/`owner` fields on the collector's row), and no mapping
-     * between them is invented here - reconcile before wiring this class into
-     * a container's `GetLights`.
+     * `Tw2CarbonLightCollector.AddLight` is the ccpwgl adapter for Carbon's
+     * by-value light-manager call. It copies the reused record before the next
+     * placement overwrites it and preserves the extended point/spot fields.
      */
     GetLights(lightManager)
     {
@@ -394,7 +389,7 @@ export class EveSmartLightPointLight extends EveEntity
             record.lightProfile = this.lightProfile;
             record.owner = this;
 
-            lightManager?.AddLight?.(record);
+            lightManager.AddLight(record);
         }
     }
 

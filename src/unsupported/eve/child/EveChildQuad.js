@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { mat4, quat, vec2, vec3, vec4 } from "math";
+import { mat4, quat, sph3, vec2, vec3, vec4 } from "math";
 import { EveChild } from "eve/child";
 import { device, resMan } from "global/tw2";
 import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from "core";
@@ -21,6 +21,9 @@ export class EveChildQuad extends EveChild
 
     @meta.color
     color = vec4.create();
+
+    @meta.float
+    currentScreenSize = -1;
 
     @meta.struct()
     effect = null;
@@ -50,6 +53,9 @@ export class EveChildQuad extends EveChild
     _perObjectData = Tw2PerObjectData.from(EveChildQuad.perObjectData);
     _vertices = null;
     _parentTransform = mat4.create();
+    _worldTransform = mat4.create();
+    _isVisible = true;
+    _hasUpdated = false;
 
     // Last values written into the instance buffer, so a colour or brightness
     // change can mark it dirty the same way a transform change does. NaN forces
@@ -119,6 +125,66 @@ export class EveChildQuad extends EveChild
     }
 
     /**
+     * Gets Carbon's transformed unit-quad bound.
+     * @param {sph3} out
+     * @returns {sph3} out
+     */
+    GetBoundingSphere(out)
+    {
+        sph3.set(out, 0, 0, 0, Math.SQRT2);
+        return sph3.transformMat4(out, out, this._worldTransform);
+    }
+
+    /**
+     * Applies Carbon's independent quad screen-size visibility.
+     * @param {EveUpdateContext} updateContext
+     * @param {Number} parentLodLevel
+     * @param {mat4} [parentTransform]
+     */
+    UpdateLod(updateContext, parentLodLevel, parentTransform)
+    {
+        super.UpdateLod(updateContext, parentLodLevel, parentTransform);
+        this.PrepareLod(parentTransform);
+
+        if (!this._hasUpdated || !this.display)
+        {
+            this._isVisible = false;
+            this.currentScreenSize = -1;
+            return;
+        }
+
+        const
+            frustum = updateContext.GetFrustum(),
+            sphere = EveChildQuad.global.sph3_0;
+
+        this.GetBoundingSphere(sphere);
+        if (frustum.IsSphereVisible(sphere, sphere[3]))
+        {
+            this.currentScreenSize = frustum.GetPixelSizeAcross(sphere, sphere[3]);
+            this._isVisible = this.currentScreenSize >= this.minScreenSize * updateContext.GetLodFactor();
+        }
+        else
+        {
+            this._isVisible = false;
+            this.currentScreenSize = -1;
+        }
+    }
+
+    /** Refreshes the quad's current world transform for bounds queries. */
+    PrepareLod(parentTransform)
+    {
+        if (parentTransform) mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+    }
+
+    /** Restores the default visible state. */
+    ResetLod()
+    {
+        super.ResetLod();
+        this._isVisible = true;
+        this.currentScreenSize = -1;
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt
      * @param {mat4} parentTransform
@@ -143,6 +209,9 @@ export class EveChildQuad extends EveChild
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
             this._dirty = true;
         }
+
+        mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+        this._hasUpdated = true;
 
         // Colour and brightness live in the same instance buffer as the
         // transforms, so a change to either has to rebuild it. Without this the
@@ -266,7 +335,7 @@ export class EveChildQuad extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.IsGood() || mode !== device.RM_ADDITIVE) return false;
+        if (!this.display || !this._isVisible || !this.IsGood() || mode !== device.RM_ADDITIVE) return false;
         const batch = new Tw2ForwardingRenderBatch();
         batch.geometryProvider = this;
         // Without this `Tw2ForwardingRenderBatch.HasTechnique` is always false,
@@ -326,6 +395,10 @@ export class EveChildQuad extends EveChild
     static perObjectData = {
         vs: [],
         ps: []
+    };
+
+    static global = {
+        sph3_0: sph3.create()
     };
 
     static vertexDeclarations = [
