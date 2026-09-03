@@ -29,6 +29,8 @@ import { meta } from "utils";
  * @typedef {Object} TnyDnaResolution
  * @property {String} dna    - a sof dna string
  * @property {String} [name] - a display name for the resolved type
+ *
+ * @see TnySkinDnaResolution for the extra fields a skinID adds
  */
 
 /**
@@ -49,6 +51,54 @@ import { meta } from "utils";
  * @property {String} [name]      - the design's name
  * @property {String} [blendMode] - a Carbon permutation blend mode name
  * @property {Object} [pattern]   - a skinrSofPattern document, hydrated by the provider
+ */
+
+/**
+ * What `ResolveDna` and `ResolveSkinDna` add when a skinID was supplied.
+ *
+ * @typedef {TnyDnaResolution} TnySkinDnaResolution
+ * @property {Number} skinID
+ * @property {Number} skinMaterialID
+ * @property {Number} materialSetID
+ */
+
+/**
+ * What `GetSkin` has to answer, of the fields this library reads.
+ *
+ * A service may return anything else alongside; only these are consumed.
+ *
+ * @typedef {Object} TnySkin
+ * @property {Number} skinMaterialID - looked up through `GetSkinMaterial`
+ * @property {String} internalName   - becomes the skin's dna name
+ */
+
+/**
+ * What `GetSkinMaterial` has to answer, of the fields this library reads.
+ *
+ * @typedef {Object} TnySkinMaterial
+ * @property {Number} materialSetID - looked up through `GetSkinMaterialSet`
+ */
+
+/**
+ * What `GetSkinMaterialSet` has to answer.
+ *
+ * These are the parts a skin's dna is built FROM, so every one of them ends up
+ * in the dna string: the four mesh materials, the pattern and its two
+ * materials, an optional faction override, and an optional res path insert.
+ * A missing field is normalised to "none" rather than dropped, so partial
+ * answers change the dna rather than failing.
+ *
+ * @typedef {Object} TnySkinMaterialSet
+ * @property {String} [description]      - falls back to the skin's display name
+ * @property {String} [material1]
+ * @property {String} [material2]
+ * @property {String} [material3]
+ * @property {String} [material4]
+ * @property {String} [sofPatternName]
+ * @property {String} [patternMaterial1]
+ * @property {String} [patternMaterial2]
+ * @property {String} [sofFactionName]   - overrides the faction in the base dna
+ * @property {String} [resPathInsert]
  */
 
 /**
@@ -463,16 +513,28 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("esi", "GetResPathFromTypeID", ...args);
     }
 
+    /**
+     * @param {Number} skinID
+     * @returns {Promise<TnySkin>}
+     */
     GetSkin(...args)
     {
         return this.RequestFrom("skin", "GetSkin", ...args);
     }
 
+    /**
+     * @param {Number} skinMaterialID
+     * @returns {Promise<TnySkinMaterial>}
+     */
     GetSkinMaterial(...args)
     {
         return this.RequestFrom("skin", "GetSkinMaterial", ...args);
     }
 
+    /**
+     * @param {Number} materialSetID
+     * @returns {Promise<TnySkinMaterialSet>}
+     */
     GetSkinMaterialSet(...args)
     {
         return this.RequestFrom("skin", "GetSkinMaterialSet", ...args);
@@ -493,6 +555,10 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("skin", "GetSkinr", ...args);
     }
 
+    /**
+     * @param {Object} skin - a SKINR skin payload
+     * @returns {Promise<Object>} a skinrSofPattern document
+     */
     GetSkinrPattern(...args)
     {
         return this.RequestFrom("skinr", "GetSkinrPattern", ...args);
@@ -527,11 +593,20 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("skin", "SearchName", ...args);
     }
 
+    /**
+     * @param {Number} typeID
+     * @returns {Promise<TnyDnaResolution>}
+     */
     ResolveTypeDna(...args)
     {
         return this.RequestFrom("skin", "ResolveTypeDna", ...args);
     }
 
+    /**
+     * @param {Number} typeID
+     * @param {Number} skinID
+     * @returns {Promise<TnySkinDnaResolution>}
+     */
     ResolveSkinDna(...args)
     {
         return this.RequestFrom("skin", "ResolveSkinDna", ...args);
