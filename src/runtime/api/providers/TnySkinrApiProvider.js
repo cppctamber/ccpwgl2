@@ -39,7 +39,7 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     designUrl = null;
 
     /**
-     * tools-core endpoint that generates a SOF pattern from a SKINR payload.
+     * Service endpoint that generates a SOF pattern from a SKINR payload.
      * @type {String|null}
      */
     patternUrl = null;
@@ -64,8 +64,8 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     }
 
     /**
-     * Points this provider at a tools-core service, the same way the skin and
-     * character providers do.
+     * Points this provider at a service, the same way the skin and character
+     * providers do.
      * @param {Object} bootstrap
      * @param {Object} [options]
      * @returns {TnySkinrApiProvider}
@@ -120,7 +120,7 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     /**
      * Hydrates a generated SOF pattern payload into real SOF classes.
      *
-     * The payload is already final-form: tools-core resolved the cosmetic-slot
+     * The payload is already final-form: the service resolved the cosmetic-slot
      * to material-layer conversion, the projection types and the blend mode
      * before serializing it. Nothing here translates anything, because the
      * model classes translate nothing either - they expect the answers.
@@ -185,7 +185,7 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     /**
      * Fetches the generated DNA and SOF pattern for a SKINR skin payload.
      *
-     * The translation lives in tools-core, next to the SKINR library that
+     * The translation belongs to the service, next to the SKINR library that
      * drives it - the cosmetic slot names, the components, the factionID slot
      * conversion and the typeID to factionID join are all its data. Doing it
      * here meant four round trips and a second copy of rules that could not be
@@ -199,7 +199,7 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
         if (!this.patternUrl)
         {
             throw new Error(
-                "SKINR pattern generation needs a tools-core pattern url; "
+                "SKINR pattern generation needs a pattern url; "
                 + "construct TnySkinrApiProvider with { patternUrl }"
             );
         }
@@ -236,7 +236,7 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
         //
         // This used to GET `${patternUrl}/${id}`, which the service answers by
         // asking ESI for /cosmetics/skinr/{id}. That endpoint serves BAKED
-        // designs only, so every design held in tools-core's own SKINR database
+        // designs only, so every design held in the service's own SKINR database
         // came back 404 - "SKINR pattern generation failed (404): ESI ... failed
         // (404)" - which reads like a generation failure rather than a lookup
         // against the wrong store.

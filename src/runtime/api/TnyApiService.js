@@ -1,6 +1,83 @@
 import { meta } from "utils";
 
 
+/**
+ * The api service is what answers "what does this id refer to".
+ *
+ * ccpwgl draws from graphics facts - sof dna and resource paths. Ids are not
+ * graphics facts, so anything that starts from one has to be resolved first,
+ * and that resolution is not the library's job. This service is the seam:
+ * supply one that answers the shapes below and every id form works; supply
+ * nothing and dna and resource paths still work on their own.
+ *
+ * No particular server is assumed. The shipped providers speak an ESI-shaped
+ * and an SDE-shaped api because that is what exists, but a consumer is free to
+ * answer these from a database, a static json file, or a fixture.
+ *
+ * The contract in full, including the provider slots and the fields a service
+ * may answer in more than one shape, is `docs/contracts/tny-api-service.md` in
+ * the organisation docs. The typedefs here cover what the RUNTIME itself
+ * consumes, which is the subset that has to be right for `scene.Fetch` to work.
+ */
+
+/**
+ * What `ResolveDna` gives back for a typeID.
+ *
+ * Consumed by `TnySpaceObject.resolve`, which uses `name` only when the caller
+ * did not supply one.
+ *
+ * @typedef {Object} TnyDnaResolution
+ * @property {String} dna    - a sof dna string
+ * @property {String} [name] - a display name for the resolved type
+ */
+
+/**
+ * What `GenerateSkinrDna` and `GenerateSkinrDnaFromId` give back.
+ *
+ * `pattern` MUST arrive with the design rather than be fetched afterwards: sof
+ * resolves pattern names while building, so a pattern registered late draws as
+ * an unpatterned hull, which reads as the skin failing rather than as a
+ * missing registration.
+ *
+ * `blendMode` cannot ride along in the dna, because Carbon compiles it in as a
+ * permutation. Left out, a design falls back to overlay on the dx11 path while
+ * gles2 - which reads it from a constant buffer - looks right, and the two
+ * profiles disagree over one design.
+ *
+ * @typedef {Object} TnySkinrDesign
+ * @property {String} dna         - a sof dna string
+ * @property {String} [name]      - the design's name
+ * @property {String} [blendMode] - a Carbon permutation blend mode name
+ * @property {Object} [pattern]   - a skinrSofPattern document, hydrated by the provider
+ */
+
+/**
+ * What `GetGraphic` gives back for a graphicID.
+ *
+ * @typedef {Object} TnyGraphic
+ * @property {String} graphicFile - a resource path, `.red` or `.black`
+ */
+
+/**
+ * What `GetPlanet` and `GetMoon` give back for a celestial id.
+ *
+ * Every field may sit either at the top level or under `attributes`, and in
+ * either camelCase or snake_case - the runtime reads both, because an
+ * ESI-shaped answer and an SDE-shaped answer disagree about which. See
+ * `GetAttribute` in `TnyPlanet.js`.
+ *
+ * The three graphic fields are graphicIDs, not paths: they are resolved
+ * through `GetGraphic` to reach a `graphicFile`.
+ *
+ * @typedef {Object} TnyCelestial
+ * @property {Number} [radius]                     - metres
+ * @property {String} [name]
+ * @property {Number} [shaderPreset|shader_preset] - graphicID of the surface shader
+ * @property {Number} [heightMap1|height_map_1]    - graphicID
+ * @property {Number} [heightMap2|height_map_2]    - graphicID
+ */
+
+
 @meta.define("TnyApiService")
 export class TnyApiService extends meta.Model
 {
@@ -357,11 +434,25 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("esi", "GetMarketGroup", ...args);
     }
 
+    /**
+     * @param {Number} graphicID
+     * @returns {Promise<TnyGraphic>}
+     */
     GetGraphic(...args)
     {
         return this.RequestFrom("esi", "GetGraphic", ...args);
     }
 
+    /**
+     * Resolves a graphicID to either sof dna or a resource path.
+     *
+     * The graphicIDs that answer with a PATH are the non-sof family - scenes,
+     * suns, planets, moons, lensflares - which is why `TnySpaceObject.resolve`
+     * has to test what came back rather than assume dna.
+     *
+     * @param {Number} graphicID
+     * @returns {Promise<String>} sof dna, or a resource path
+     */
     GetResPathFromGraphicID(...args)
     {
         return this.RequestFrom("esi", "GetResPathFromGraphicID", ...args);
@@ -407,11 +498,20 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("skinr", "GetSkinrPattern", ...args);
     }
 
+    /**
+     * @param {Object} skin - a SKINR skin payload
+     * @returns {Promise<TnySkinrDesign>}
+     */
     GenerateSkinrDna(...args)
     {
         return this.RequestFrom("skinr", "GenerateDna", ...args);
     }
 
+    /**
+     * The method `TnySpaceObject.resolve` calls for a SKINR uuid.
+     * @param {String} skinrID - a SKINR design uuid
+     * @returns {Promise<TnySkinrDesign>}
+     */
     GenerateSkinrDnaFromId(...args)
     {
         return this.RequestFrom("skinr", "GenerateDnaFromId", ...args);
@@ -437,11 +537,22 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("skin", "ResolveSkinDna", ...args);
     }
 
+    /**
+     * @param {Object} options
+     * @param {Number} options.typeID
+     * @param {Number} [options.skinID]
+     * @returns {Promise<TnyDnaResolution>}
+     */
     ResolveDna(...args)
     {
         return this.RequestFrom("skin", "ResolveDna", ...args);
     }
 
+    /**
+     * @param {Number} moonID
+     * @param {Object} [params]
+     * @returns {Promise<TnyCelestial>}
+     */
     async GetMoon(moonID, params)
     {
         const esi = await this.RequestFrom("esi", "GetMoon", moonID, params);
@@ -452,6 +563,11 @@ export class TnyApiService extends meta.Model
         return esi;
     }
 
+    /**
+     * @param {Number} planetID
+     * @param {Object} [params]
+     * @returns {Promise<TnyCelestial>}
+     */
     async GetPlanet(planetID, params)
     {
         const esi = await this.RequestFrom("esi", "GetPlanet", planetID, params);

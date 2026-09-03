@@ -59,7 +59,7 @@ export class TnySkinApiProvider extends TnyGeneratedLibraryProvider
         if (!bootstrap || !bootstrap.host || !Number.isSafeInteger(port)
             || port < 1 || port > 65535)
         {
-            throw new TypeError("Invalid tools-core service bootstrap");
+            throw new TypeError("Invalid service bootstrap");
         }
 
         const host = String(bootstrap.host).includes(":")

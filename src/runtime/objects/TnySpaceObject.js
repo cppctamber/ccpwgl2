@@ -406,7 +406,10 @@ export class TnySpaceObject extends WglTransform
 
         if (skinrUUID)
         {
-            const design = await getApiService().GenerateDnaFromId(skinrUUID);
+            // GenerateSkinrDnaFromId, not GenerateDnaFromId. The facade has
+            // never had the latter, so this threw for every SKINR id until
+            // 2026-09-03; nothing had exercised the path.
+            const design = await getApiService().GenerateSkinrDnaFromId(skinrUUID);
             dna = design.dna;
             blendMode = design.blendMode;
             if (!values.name && design.name) values.name = design.name;
