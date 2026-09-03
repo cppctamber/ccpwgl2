@@ -7,7 +7,6 @@ import {
     TnyToolsApiProvider
 } from "./api";
 import { TnyCameraTest } from "./cameras";
-import { tnyCharacterConstructors } from "./character";
 import { TnyRotationGizmo, TnyScalingGizmo, TnyTransformGizmo, TnyTranslationGizmo } from "./gizmo";
 import {
     TnyLensflare, TnyMobile, TnyPlanet, TnyShip, TnySpaceObject, TnyStationary, TnyStrategicCruiser, TnySwarm
@@ -34,9 +33,7 @@ export const tnyConstructors = {
     TnySwarm,
     // Cameras
     TnyCameraTest,
-    // Scenes — the character scene arrives with tnyCharacterConstructors
     TnyScene,
-    ...tnyCharacterConstructors,
     // Debug
     TnyRotationGizmo,
     TnyScalingGizmo,
