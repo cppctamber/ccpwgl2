@@ -1,6 +1,7 @@
 export * from "./quaddepthv5";
 export * from "./quaddetailv5";
 export * from "./quadglassv5";
+export * from "./quadglassinstancedv5";
 export * from "./quadheatv5";
 export * from "./quadheatdetailv5";
 export * from "./quadinstancedv5";

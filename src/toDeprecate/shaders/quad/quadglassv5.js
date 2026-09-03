@@ -10,7 +10,7 @@ import { quadExtendedPickingGlassV5, skinnedQuadExtendedPickingGlassV5 } from ".
 import { quadnormalv5, skinnedQuadNormalV5 } from "./quadnormalv5";
 
 
-const shared = {
+export const quadGlassV5Shared = {
     vs: vs.quadV5_PosTexTanTexL01,
     ps: {
         constants: [
@@ -337,15 +337,15 @@ export const quadGlassV5 = {
         Utility: quadUtilityGlassV5.techniques.Main,
         Main: [
             {
-                vs: shared.vs,
-                ps: shared.ps,
+                vs: quadGlassV5Shared.vs,
+                ps: quadGlassV5Shared.ps,
                 states: {
                     [RS_CULLMODE]: 3
                 }
             },
             {
-                vs: shared.vs,
-                ps: shared.ps,
+                vs: quadGlassV5Shared.vs,
+                ps: quadGlassV5Shared.ps,
                 states: {
                     [RS_CULLMODE]: 2
                 }
@@ -371,14 +371,14 @@ export const skinnedQuadGlassV5 = {
         Main: [
             {
                 vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
-                ps: shared.ps,
+                ps: quadGlassV5Shared.ps,
                 states: {
                     [RS_CULLMODE]: 3
                 }
             },
             {
                 vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
-                ps: shared.ps,
+                ps: quadGlassV5Shared.ps,
                 states: {
                     [RS_CULLMODE]: 2
                 }
