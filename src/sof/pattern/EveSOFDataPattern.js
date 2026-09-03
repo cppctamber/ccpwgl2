@@ -28,28 +28,27 @@ export class EveSOFDataPattern extends meta.Model
     sof6 = false;
 
     /**
-     * The pattern's own blend mode, overriding whatever its layers carry.
+     * The pattern's own blend mode.
      *
-     * -1 means UNSET, and only -1 will do. It cannot default to "overlay",
-     * because "overlay" is a real value: `EveCustomMask.GetBlendMode` maps both
-     * "overlay" and "normal" to `NONE`. A pattern that always carries a mode
-     * always wins, so `GetPatternBlendMode` would never reach the layers below
-     * it. -1 keeps "nobody said" separate from "explicitly none", and the
-     * overlay default stays where it belongs, at the END of that chain.
+     * Defaults to the overlay permutation because that IS the default blend
+     * mode, rather than to a sentinel meaning "unset". Nothing is lost by
+     * saying so: `GetPatternBlendMode` skips any value resolving to `NONE`,
+     * and overlay resolves to exactly that, so an unchanged default falls
+     * through to the layers on its own.
      *
      * Accepts either vocabulary - a `CustomMaskBlendMode` number, a bare name,
-     * or a `BLEND_MODE_` permutation - because `GetBlendMode` resolves all
-     * three. -1 is not a mode, so it falls through on its own.
+     * or a `BLEND_MODE_` permutation - since `EveCustomMask.GetBlendMode`
+     * resolves all three.
      *
      * This exists so a consumer can carry a design-level blend mode without the
      * sof builder having to know what the consumer is. `GetPatternBlendMode`
      * used to read a `pattern.skinr` sidecar for this, which meant EveSOF knew
      * what SKINR was.
      *
-     * @type {Number|String}
+     * @type {String|Number}
      */
     @meta.unknown
-    blendMode = -1;
+    blendMode = "BLEND_MODE_OVERLAY";
 
 
     /**
