@@ -14,12 +14,21 @@ export class TnyGeneratedLibraryProvider
         if (options.cache) this.cache = options.cache;
     }
 
+    /**
+     * Empties the cached libraries.
+     * @returns {TnyGeneratedLibraryProvider}
+     */
     ClearCache()
     {
         this.cache.clear();
         return this;
     }
 
+    /**
+     * @param {String} url
+     * @returns {Promise<Object>} the generated library
+     * @throws {Error} when no url is given, or the url answers with nothing
+     */
     GetLibrary(url)
     {
         const key = String(url || "");
@@ -41,6 +50,10 @@ export class TnyGeneratedLibraryProvider
         return this.cache.get(key);
     }
 
+    /**
+     * @param {String} url
+     * @returns {Promise<Object>}
+     */
     async FetchLibrary(url)
     {
         const fetcher = this.fetcher || resMan.FetchRaw.bind(resMan);
@@ -89,6 +102,11 @@ export class TnyGeneratedLibraryProvider
         return new Response(stream).json();
     }
 
+    /**
+     * @param {String} url
+     * @param {Function} [fetcher]
+     * @returns {Promise<*>}
+     */
     FetchJSON(url, fetcher = this.fetcher)
     {
         fetcher = fetcher || resMan.FetchRaw.bind(resMan);

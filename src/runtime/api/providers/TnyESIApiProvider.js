@@ -23,6 +23,16 @@ export const TnyESIRoute = {
 };
 
 
+/**
+ * Rewrites ESI's snake_case keys as camelCase, recursively.
+ *
+ * `_id` becomes `ID` rather than `Id`, so `planet_id` reads as `planetID` and
+ * matches how the rest of the library spells it. A consumer of a non-ESI
+ * service cannot assume this happened - see `TnyCelestial`.
+ *
+ * @param {*} value
+ * @returns {*}
+ */
 function normalizeEsiObject(value)
 {
     if (Array.isArray(value)) return value.map(normalizeEsiObject);
@@ -43,6 +53,48 @@ function normalizeEsiObject(value)
     }
     return out;
 }
+
+/**
+ * A type's graphic record.
+ *
+ * `sofDna` wins over `graphicFile` wherever both are read: a hull answers with
+ * dna, and the non-sof family (scenes, suns, planets, moons, lensflares)
+ * answers with a path instead. Either is a valid answer.
+ *
+ * @typedef {Object} TnyGraphic
+ * @property {String} [sofDna]      - sof dna, for anything sof builds
+ * @property {String} [graphicFile] - a resource path, for anything it does not
+ */
+
+/**
+ * What `ResolveTypeDna` builds for a typeID.
+ *
+ * @typedef {Object} TnyDnaResolution
+ * @property {String} dna       - a sof dna string
+ * @property {Number} typeID
+ * @property {Number} graphicID
+ * @property {?Number} skinID   - always null here; the skin provider fills it
+ * @property {?String} name     - the type's name
+ */
+
+/**
+ * A celestial record, as ESI answers it.
+ *
+ * Keys arrive camelCased by `normalizeEsiObject`, so `shader_preset` reads as
+ * `shaderPreset`. A non-ESI service may not normalise, which is why
+ * `TnyPlanet` looks up both spellings, and `attributes` as well as the top
+ * level.
+ *
+ * The three graphic fields are graphicIDs, not paths. They resolve through
+ * `GetGraphic` to reach a `graphicFile`.
+ *
+ * @typedef {Object} TnyCelestial
+ * @property {Number} [radius]       - metres
+ * @property {String} [name]
+ * @property {Number} [shaderPreset] - graphicID of the surface shader
+ * @property {Number} [heightMap1]   - graphicID
+ * @property {Number} [heightMap2]   - graphicID
+ */
 
 @meta.define("TnyESIApiProvider")
 export class TnyESIApiProvider
@@ -65,12 +117,25 @@ export class TnyESIApiProvider
         if (options.cache) this.cache = options.cache;
     }
 
+    /**
+     * Empties the response cache. Cached promises are keyed by url, so this
+     * also drops any request still in flight.
+     * @returns {TnyESIApiProvider}
+     */
     ClearCache()
     {
         this.cache.clear();
         return this;
     }
 
+    /**
+     * Builds a route url, lower-cased, with `language` and `datasource`
+     * applied and every parameter sorted, so the same request always produces
+     * the same cache key.
+     * @param {String} endpoint
+     * @param {Object} [params]
+     * @returns {String}
+     */
     BuildUrl(endpoint, params)
     {
         params = Object.assign({ language: this.language, datasource: this.datasource }, params);
@@ -91,6 +156,12 @@ export class TnyESIApiProvider
         return url.toLowerCase();
     }
 
+    /**
+     * Fetches json, caching the PROMISE rather than the result, so concurrent
+     * callers share one request instead of racing.
+     * @param {String} url
+     * @returns {Promise<*>}
+     */
     FetchJSON(url)
     {
         if (!this.cache.has(url))
@@ -102,11 +173,23 @@ export class TnyESIApiProvider
         return this.cache.get(url);
     }
 
+    /**
+     * @param {String} route - a `TnyESIRoute` value
+     * @param {Object} [params]
+     * @returns {Promise<*>} the route's own shape, NOT normalised
+     */
     GetRoute(route, params)
     {
         return this.FetchJSON(this.BuildUrl(route, params));
     }
 
+    /**
+     * @param {String} route - a `TnyESIRoute` value
+     * @param {Number|String} id
+     * @param {Object} [params]
+     * @param {String} [path] - a sub-resource, e.g. "portrait"
+     * @returns {Promise<*>} the route's own shape, NOT normalised
+     */
     GetRouteID(route, id, params, path)
     {
         let endpoint = `${route}/${id}`;
@@ -120,11 +203,27 @@ export class TnyESIApiProvider
         return this.GetRoute(endpoint, params);
     }
 
+    /**
+     * As `GetRouteID`, with the keys camelCased. Anything a consumer reads by
+     * name should come through here.
+     * @param {String} route
+     * @param {Number|String} id
+     * @param {Object} [params]
+     * @param {String} [path]
+     * @returns {Promise<*>}
+     */
     async GetRouteIDNormalized(route, id, params, path)
     {
         return normalizeEsiObject(await this.GetRouteID(route, id, params, path));
     }
 
+    /**
+     * One record when given an id, the whole collection when not.
+     * @param {String} route
+     * @param {Number|String} [id]
+     * @param {Object} [params]
+     * @returns {Promise<*|Array>}
+     */
     GetCollection(route, id, params)
     {
         if (id !== undefined && id !== null)
@@ -135,61 +234,122 @@ export class TnyESIApiProvider
         return this.GetRoute(route, params);
     }
 
+    /**
+     * @param {Number} characterID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetCharacter(characterID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.CHARACTERS, characterID, params);
     }
 
+    /**
+     * @param {Number} characterID
+     * @param {Object} [params]
+     * @returns {Promise<Object>} portrait urls by size
+     */
     GetCharacterPortraits(characterID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.CHARACTERS, characterID, params, "portrait");
     }
 
+    /**
+     * @param {Number} corporationID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetCorporation(corporationID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.CORPORATIONS, corporationID, params);
     }
 
+    /**
+     * @param {Number} corporationID
+     * @param {Object} [params]
+     * @returns {Promise<Object>} logo urls by size
+     */
     GetCorporationLogos(corporationID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.CORPORATIONS, corporationID, params, "icons");
     }
 
+    /**
+     * @param {Number} allianceID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetAlliance(allianceID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.ALLIANCES, allianceID, params);
     }
 
+    /**
+     * @param {Number} allianceID
+     * @param {Object} [params]
+     * @returns {Promise<Object>} logo urls by size
+     */
     GetAllianceLogos(allianceID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.ALLIANCES, allianceID, params, "icons");
     }
 
+    /**
+     * @param {Number} typeID
+     * @param {Object} [params]
+     * @returns {Promise<Object>} carries `graphicID` and `name`
+     */
     GetType(typeID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.TYPES, typeID, params);
     }
 
+    /**
+     * @param {Number} categoryID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetCategory(categoryID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.CATEGORIES, categoryID, params);
     }
 
+    /**
+     * @param {Number} groupID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetGroup(groupID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.GROUPS, groupID, params);
     }
 
+    /**
+     * @param {Number} marketGroupID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetMarketGroup(marketGroupID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.MARKET_GROUPS, marketGroupID, params);
     }
 
+    /**
+     * @param {Number} graphicID
+     * @param {Object} [params]
+     * @returns {Promise<TnyGraphic>}
+     */
     GetGraphic(graphicID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.GRAPHICS, graphicID, params);
     }
 
+    /**
+     * Either dna or a path, whichever the graphic carries, `sofDna` first.
+     * @param {Number} graphicID
+     * @param {Object} [params]
+     * @returns {Promise<String>} empty when the graphic carries neither
+     */
     async GetResPathFromGraphicID(graphicID, params)
     {
         if (!graphicID) throw new Error("Graphic ID not found");
@@ -198,6 +358,11 @@ export class TnyESIApiProvider
         return graphic.sofDna || graphic.graphicFile || "";
     }
 
+    /**
+     * @param {Number} typeID
+     * @param {Object} [params]
+     * @returns {Promise<String>} dna or a path, via the type's graphicID
+     */
     async GetResPathFromTypeID(typeID, params)
     {
         const type = await this.GetType(typeID, params),
@@ -205,6 +370,12 @@ export class TnyESIApiProvider
         return this.GetResPathFromGraphicID(graphicID, params);
     }
 
+    /**
+     * @param {Number} typeID
+     * @param {Object} [params]
+     * @returns {Promise<TnyDnaResolution>}
+     * @throws {ReferenceError} when the graphic has neither dna nor a file
+     */
     async ResolveTypeDna(typeID, params)
     {
         const type = await this.GetType(typeID, params),
@@ -226,16 +397,31 @@ export class TnyESIApiProvider
         };
     }
 
+    /**
+     * @param {Number} moonID
+     * @param {Object} [params]
+     * @returns {Promise<TnyCelestial>}
+     */
     GetMoon(moonID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.MOONS, moonID, params);
     }
 
+    /**
+     * @param {Number} planetID
+     * @param {Object} [params]
+     * @returns {Promise<TnyCelestial>}
+     */
     GetPlanet(planetID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.PLANETS, planetID, params);
     }
 
+    /**
+     * @param {Number} systemID
+     * @param {Object} [params]
+     * @returns {Promise<Object>}
+     */
     GetSystem(systemID, params)
     {
         return this.GetRouteIDNormalized(TnyESIRoute.SYSTEMS, systemID, params);

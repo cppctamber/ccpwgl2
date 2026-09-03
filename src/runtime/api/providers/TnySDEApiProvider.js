@@ -19,18 +19,31 @@ export class TnySDEApiProvider
         if (options.cache) this.cache = options.cache;
     }
 
+    /**
+     * Empties the response cache.
+     * @returns {TnySDEApiProvider}
+     */
     ClearCache()
     {
         this.cache.clear();
         return this;
     }
 
+    /**
+     * The provider consulted for type-level answers this one does not hold.
+     * @param {Object} provider
+     * @returns {TnySDEApiProvider}
+     */
     SetTypeProvider(provider)
     {
         this.typeProvider = provider || null;
         return this;
     }
 
+    /**
+     * @param {String} path
+     * @returns {String}
+     */
     BuildPath(path)
     {
         if (!path)
@@ -41,11 +54,22 @@ export class TnySDEApiProvider
         return `${this.root}/${path}`;
     }
 
+    /**
+     * @param {String} path
+     * @returns {String}
+     */
     BuildUrl(path)
     {
         return resMan.BuildUrl(this.BuildPath(path));
     }
 
+    /**
+     * Fetches json, answering `fallback` rather than throwing when the record
+     * is absent. Static data is patchy by nature, so a miss is ordinary.
+     * @param {String} path
+     * @param {*} [fallback]
+     * @returns {Promise<*>}
+     */
     FetchJSON(path, fallback)
     {
         const url = this.BuildUrl(path);
@@ -66,41 +90,74 @@ export class TnySDEApiProvider
         return this.cache.get(url);
     }
 
+    /**
+     * @param {Number} skinID
+     * @returns {Promise<TnySkin>}
+     */
     GetSkin(skinID)
     {
         return this.FetchJSON(`skins/${skinID}`);
     }
 
+    /**
+     * @param {Number} skinMaterialID
+     * @returns {Promise<TnySkinMaterial>}
+     */
     GetSkinMaterial(skinMaterialID)
     {
         return this.FetchJSON(`skinMaterials/${skinMaterialID}`);
     }
 
+    /**
+     * @param {Number} materialSetID
+     * @returns {Promise<TnySkinMaterialSet>}
+     */
     GetSkinMaterialSet(materialSetID)
     {
         return this.FetchJSON(`skinMaterialSets/${materialSetID}`);
     }
 
+    /**
+     * @param {Number} skinMaterialID
+     * @returns {Promise<Array<Number>>}
+     */
     GetSkinMaterialTypeIDs(skinMaterialID)
     {
         return this.FetchJSON(`skinMaterialsToTypes/${skinMaterialID}`, []);
     }
 
+    /**
+     * @param {Number} typeID
+     * @returns {Promise<Array<Number>>}
+     */
     GetTypeIDSkinIDs(typeID)
     {
         return this.FetchJSON(`typesToSkins/${typeID}`, []);
     }
 
+    /**
+     * @param {Number} moonID
+     * @returns {Promise<TnyCelestial>} SDE spelling, which may be snake_case
+     */
     GetMoon(moonID)
     {
         return this.FetchJSON(`moons/${moonID}`, {});
     }
 
+    /**
+     * @param {Number} planetID
+     * @returns {Promise<TnyCelestial>} SDE spelling, which may be snake_case
+     */
     GetPlanet(planetID)
     {
         return this.FetchJSON(`planets/${planetID}`, {});
     }
 
+    /**
+     * Walks skin to material to material set in one call.
+     * @param {Number} skinID
+     * @returns {Promise<TnySkinMaterialSet>}
+     */
     async GetSkinMaterialSetFromSkinID(skinID)
     {
         const skin = await this.GetSkin(skinID),
@@ -111,6 +168,11 @@ export class TnySDEApiProvider
         return this.GetSkinMaterialSet(materialSetID);
     }
 
+    /**
+     * @param {Number} typeID
+     * @param {Number} skinID
+     * @returns {Promise<String>} the skinned dna
+     */
     async GetResPathFromTypeIDAndSkinID(typeID, skinID)
     {
         const skin = await this.GetSkin(skinID),
@@ -120,6 +182,13 @@ export class TnySDEApiProvider
         return this.GetResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID, internalName);
     }
 
+    /**
+     * As above, entering from the material rather than the skin.
+     * @param {Number} typeID
+     * @param {Number} skinMaterialID
+     * @param {String} [name]
+     * @returns {Promise<String>} the skinned dna
+     */
     async GetResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID, name)
     {
         const dna = await this.GetTypeResPath(typeID),
@@ -130,6 +199,10 @@ export class TnySDEApiProvider
         return this.constructor.BuildSkinDNA(dna, set, name);
     }
 
+    /**
+     * @param {Number} typeID
+     * @returns {Promise<String>} the type's unskinned dna or path
+     */
     GetTypeResPath(typeID)
     {
         if (this.typeProvider && this.typeProvider.GetResPathFromTypeID)
@@ -140,6 +213,18 @@ export class TnySDEApiProvider
         throw new Error("TnySDEApiProvider requires a typeProvider with GetResPathFromTypeID(...)");
     }
 
+    /**
+     * Rewrites a base dna with a material set applied.
+     *
+     * Every absent field of the set becomes "none" rather than being dropped,
+     * so a partial set produces a different dna instead of an error.
+     *
+     * @param {String} dna - the base dna
+     * @param {TnySkinMaterialSet} set
+     * @param {String} [name]
+     * @returns {Object} { name, dna }
+     * @throws {Error} when the base dna has fewer than three parts
+     */
     static BuildSkinDNA(dna, set, name)
     {
         const description = this.GetFirst(set, "description") || "";
@@ -213,6 +298,13 @@ export class TnySDEApiProvider
         return { name, dna: sof.toLowerCase() };
     }
 
+    /**
+     * The first of several spellings a record actually carries, so camelCase
+     * and snake_case answers both read.
+     * @param {Object} item
+     * @param {...String} names
+     * @returns {*} null when none are present
+     */
     static GetFirst(item, ...names)
     {
         for (let i = 0; i < names.length; i++)

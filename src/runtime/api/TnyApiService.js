@@ -14,9 +14,10 @@ import { meta } from "utils";
  * and an SDE-shaped api because that is what exists, but a consumer is free to
  * answer these from a database, a static json file, or a fixture.
  *
- * The shapes it has to answer are the typedefs in `index.js`, next to the
- * providers that consume them. The contract in full, including the provider
- * slots and the fields a service may answer in more than one shape, is
+ * The shapes it has to answer are documented as typedefs on the provider that
+ * owns each one: graphics, types and celestials on `TnyESIApiProvider`, skins
+ * and material sets on `TnySkinApiProvider`, and the SKINR payloads plus the
+ * translation a service owes on `TnySkinrApiProvider`. The contract in full is
  * `docs/contracts/tny-api-service.md` in the organisation docs.
  */
 
