@@ -99,8 +99,8 @@ export class TnyScene extends meta.Model
      */
     SetWrapped(wrapped)
     {
-        // Space only. The interior scene is TnyCharacterScene's to own, and a
-        // wrapper that accepts both ends up speaking for neither.
+        // Space only. Interior scenes own their character-placeable lifecycle;
+        // the standalone character demo supplies its own scene wrapper.
         if (wrapped && !(wrapped instanceof EveSpaceScene))
         {
             throw new TypeError("TnyScene requires an EveSpaceScene");
