@@ -143,6 +143,7 @@ export const config = {
         // indexed resource retains that name with the packedts suffix.
         "*": path => path
             .toLowerCase()
+            .replace(/^r:\//, "res:/")
             .replace(
                 "/dx9/model/instance/industrialarray/containers/",
                 "/dx9/model/instance/containers/"
@@ -399,6 +400,12 @@ export const config = {
 
         "api": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/`,
         "res": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/resources/`,
+
+        // Compatibility alias for the truncated `r:/` prefix still produced
+        // by some legacy object paths. Authored Black SOF texture fields are
+        // correctly typed and hydrate as `res:/`; both schemes intentionally
+        // resolve through the same tools-core resource root.
+        "r": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/resources/`,
 
         // The audio route family root. "res" must remain the standard eve
         // resource path; "aud" can target a tools-core audio endpoint root.
@@ -688,4 +695,3 @@ export const config = {
         "EveSceneMieEnvironmentMap": "dynamic:/colorcube/0,0,0,0"
     }
 };
-
