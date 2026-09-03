@@ -101,6 +101,10 @@ export const config = {
     // Enables experimental Carbon-shaped render batch context
     enableExperimentalBatchContext: false,
 
+    // Enables Carbon-style LOD cadence throttling for state controllers.
+    // Set false to update every active controller on every frame.
+    enableControllerLodThrottling: true,
+
     // Sets the default render batch sorter
     renderBatchSorter: tw2BatchSorter,
 

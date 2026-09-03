@@ -196,6 +196,14 @@ export class Tw2Library extends Tw2EventEmitter
     enableExperimentalBatchContext = false;
 
     /**
+     * Enables Carbon-style LOD throttling for state controllers.
+     * Disable this to update every active controller on every frame while
+     * preserving logical LOD visibility decisions.
+     * @type {boolean}
+     */
+    enableControllerLodThrottling = true;
+
+    /**
      * Custom resource handler
      * @type {Function}
      * @private
@@ -651,6 +659,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {Boolean} opt.debug
      * @param {Boolean} opt.enableExperimentalShadows
      * @param {Boolean} opt.enableExperimentalBatchContext
+     * @param {Boolean} opt.enableControllerLodThrottling
      * @param {Function} opt.resourceHandler
      * @param {Object} opt.black
      * @param {Boolean|Object} opt.capabilities
@@ -675,6 +684,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.forceUberDepthOff !== undefined) this.forceUberDepthOff = !!opt.forceUberDepthOff;
         if (opt.localLightBrightness !== undefined) this.localLightBrightness = Number(opt.localLightBrightness);
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
+        if (opt.enableControllerLodThrottling !== undefined) this.enableControllerLodThrottling = !!opt.enableControllerLodThrottling;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
         if (opt.dnaHandler) this.SetDnaHandler(opt.dnaHandler);

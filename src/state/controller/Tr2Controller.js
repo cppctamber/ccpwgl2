@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { device } from "global";
+import { device, tw2 } from "global";
 
 
 @meta.define("Tr2Controller", true)
@@ -245,7 +245,7 @@ export class Tr2Controller extends meta.Model
 
         this._accumulatedUpdateDelta += dt;
 
-        if (normalizedUpdateFrequency !== null && this.updateThrottle)
+        if (normalizedUpdateFrequency !== null && this.updateThrottle && tw2.enableControllerLodThrottling)
         {
             const currentTime = Number.isFinite(device.currentTime)
                 ? device.currentTime
