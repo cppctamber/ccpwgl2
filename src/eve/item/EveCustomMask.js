@@ -216,7 +216,12 @@ export class EveCustomMask extends WglTransform
         const key = value
             .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
             .replace(/[\s-]+/g, "_")
-            .toUpperCase();
+            .toUpperCase()
+            // The permutation spelling resolves here too. `EveShip2
+            // .GetBlendModeValue` has always stripped this prefix and this did
+            // not, so the same word meant NESTED to a ship and NONE to a mask -
+            // silently, since NONE is a valid mode. One vocabulary, two answers.
+            .replace(/^BLEND_MODE_/, "");
 
         // "normal" and "overlay" are ccpwgl spellings of no blending.
         if (key === "NORMAL" || key === "OVERLAY") return CustomMaskBlendMode.NONE;

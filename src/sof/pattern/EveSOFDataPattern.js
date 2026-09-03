@@ -27,6 +27,30 @@ export class EveSOFDataPattern extends meta.Model
     @meta.boolean
     sof6 = false;
 
+    /**
+     * The pattern's own blend mode, overriding whatever its layers carry.
+     *
+     * -1 means UNSET, and only -1 will do. It cannot default to "overlay",
+     * because "overlay" is a real value: `EveCustomMask.GetBlendMode` maps both
+     * "overlay" and "normal" to `NONE`. A pattern that always carries a mode
+     * always wins, so `GetPatternBlendMode` would never reach the layers below
+     * it. -1 keeps "nobody said" separate from "explicitly none", and the
+     * overlay default stays where it belongs, at the END of that chain.
+     *
+     * Accepts either vocabulary - a `CustomMaskBlendMode` number, a bare name,
+     * or a `BLEND_MODE_` permutation - because `GetBlendMode` resolves all
+     * three. -1 is not a mode, so it falls through on its own.
+     *
+     * This exists so a consumer can carry a design-level blend mode without the
+     * sof builder having to know what the consumer is. `GetPatternBlendMode`
+     * used to read a `pattern.skinr` sidecar for this, which meant EveSOF knew
+     * what SKINR was.
+     *
+     * @type {Number|String}
+     */
+    @meta.unknown
+    blendMode = -1;
+
 
     /**
      * Checks if a pattern projection exists

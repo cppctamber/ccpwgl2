@@ -3,7 +3,6 @@ import { vec3, vec4, mat4, quat, num } from "math";
 
 import {
     meta,
-    isDNA,
     isArray,
     get,
     findElementByPropertyValue,
@@ -17,8 +16,7 @@ import {
     Tw2Mesh,
     Tw2MeshArea,
     Tw2InstancedMesh,
-    Tw2GeometryRes,
-    Tw2GeometryMesh,
+    Tw2DirectInstanceData,
     Tw2VertexDeclaration,
 } from "core";
 
@@ -37,6 +35,7 @@ import {
 } from "eve";
 
 import { EveStation2 } from "../eve/object/EveStation2";
+import { ReflectionMode } from "../eve/EveComponentTypes";
 import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
@@ -45,7 +44,10 @@ import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
 import { EveSOFDataPointLightAttachment } from "sof/shared/EveSOFDataPointLightAttachment";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
+import { EveSOFDataHullLocatorSet } from "sof/hull/EveSOFDataHullLocatorSet";
+import { EveSOFDataHullLocatorSetGroup } from "sof/hull/EveSOFDataHullLocatorSetGroup";
 import { EveSOFDataHullPlaneSet } from "sof/hull/EveSOFDataHullPlaneSet";
+import { planSofLayouts } from "sof/layout/planSofLayouts";
 
 
 @meta.define("EveSOFData", true)
@@ -837,6 +839,36 @@ export class EveSOFData extends meta.Model
     }
 
     /**
+     * Gets a layout
+     * @param {String} name
+     * @returns {EveSOFDataLayout|null}
+     */
+    GetLayout(name)
+    {
+        return findElementByPropertyValue(this.layout, "name", name, ErrSOFLayoutNotFound);
+    }
+
+    /**
+     * Gets layout names
+     * @param {Object|Array} [out={}]
+     * @returns {Object|Array} out
+     */
+    GetLayoutNames(out)
+    {
+        return EveSOFData.GetNames(this.layout, out);
+    }
+
+    /**
+     * Checks if a layout exists
+     * @param {String} name
+     * @returns {boolean}
+     */
+    HasLayout(name)
+    {
+        return !!findElementByPropertyValue(this.layout, "name", name);
+    }
+
+    /**
      * Gets a shader's path
      * @param {String} path
      * @param {Boolean} [isAnimated]
@@ -859,36 +891,16 @@ export class EveSOFData extends meta.Model
      */
     ParseDNA(dna)
     {
-        if (!isDNA(dna))
-        {
-            throw new ErrSOFDNAFormatInvalid({ dna });
-        }
+        const { dna: normalizedDna, parts, commands } = this.constructor.ParseDNACommands(dna);
+        const hulls = parts[0].split(";").map(name => this.GetHull(name));
 
-        dna = dna.toLowerCase();
-
-        const
-            parts = dna.split(":"),
-            commands = {};
-
-        for (let i = 3; i < parts.length; ++i)
-        {
-            try
-            {
-                const subParts = parts[i].split("?");
-                commands[subParts[0].toUpperCase()] = subParts[1].split(";");
-            }
-            catch (err)
-            {
-                throw new ErrSOFDNAFormatInvalid({ dna });
-            }
-        }
-
-        let hull = this.GetHull(parts[0]),
+        let hull = hulls[0],
             faction = this.GetFaction(parts[1]),
             race = this.GetRace(parts[2]),
             area = {},
             resPathInsert,
-            pattern = null;
+            pattern = null,
+            layouts = [];
 
         const m = commands["MESH"] || commands["MATERIAL"];
         if (m)
@@ -948,6 +960,12 @@ export class EveSOFData extends meta.Model
             ? commands["RESPATHINSERT"][0]
             : undefined;
 
+        const layoutNames = commands["LAYOUT"];
+        if (layoutNames)
+        {
+            layouts = layoutNames.map(name => this.GetLayout(name));
+        }
+
         // Validate the res path insert
         if (resPathInsert !== undefined && resPathInsert !== null
             && !this.IsValidHullResPathInsert(hull, resPathInsert))
@@ -959,7 +977,66 @@ export class EveSOFData extends meta.Model
             //resPathInsert = "none";
         }
 
-        return { hull, faction, race, area, resPathInsert, pattern, dna };
+        return {
+            hull,
+            hulls,
+            faction,
+            race,
+            area,
+            resPathInsert,
+            pattern,
+            layouts,
+            dna: normalizedDna
+        };
+    }
+
+    /**
+     * Parses and validates the common SOF DNA command envelope.
+     * Command names are case-insensitive and the final repeated command wins,
+     * matching the historical ccpwgl parser.
+     * @param {String} dna
+     * @returns {{dna: String, parts: Array<String>, commands: Object<String, Array<String>>}}
+     */
+    static ParseDNACommands(dna)
+    {
+        if (!isString(dna)) throw new ErrSOFDNAFormatInvalid({ dna });
+
+        const normalizedDna = dna.toLowerCase();
+        const parts = normalizedDna.split(":");
+        const hullNames = parts[0] ? parts[0].split(";") : [];
+
+        if (parts.length < 3
+            || !hullNames.length
+            || hullNames.some(name => !name)
+            || !parts[1]
+            || !parts[2])
+        {
+            throw new ErrSOFDNAFormatInvalid({ dna });
+        }
+
+        const commands = {};
+        for (let i = 3; i < parts.length; ++i)
+        {
+            const subParts = parts[i].split("?");
+            if (subParts.length !== 2 || !subParts[0])
+            {
+                throw new ErrSOFDNAFormatInvalid({ dna });
+            }
+            commands[subParts[0].toUpperCase()] = subParts[1].split(";");
+        }
+
+        return { dna: normalizedDna, parts, commands };
+    }
+
+    /**
+     * Plans every layout selected by a DNA without creating render objects.
+     * @param {String} dna
+     * @param {Object} [options]
+     * @returns {Object}
+     */
+    PlanLayoutFromDNA(dna, options)
+    {
+        return planSofLayouts(this, this.ParseDNA(dna), options);
     }
 
     /**
@@ -970,19 +1047,20 @@ export class EveSOFData extends meta.Model
      */
     StringifyDNA(options)
     {
-        let { hull, faction, race, area, resPathInsert, pattern } = options;
+        let { hull, hulls, faction, race, area, resPathInsert, pattern, layouts } = options;
 
-
-        if (isObject(hull)) hull = hull.name;
+        hulls = hulls || hull;
+        if (!isArray(hulls)) hulls = [ hulls ];
+        hulls = hulls.map(value => isObject(value) ? value.name : value);
         if (isObject(faction)) faction = faction.name;
         if (isObject(race)) race = race.name;
         if (isObject(pattern)) pattern = pattern.name;
-        if (!hull || !faction || !race)
+        if (!hulls.length || hulls.some(value => !value) || !faction || !race)
         {
             throw new ReferenceError("Invalid dna object");
         }
 
-        let str = `${hull}:${faction}:${race}`;
+        let str = `${hulls.join(";")}:${faction}:${race}`;
 
         if (resPathInsert) str += `:respathinsert?${resPathInsert}`;
 
@@ -1011,6 +1089,13 @@ export class EveSOFData extends meta.Model
                 const patternString = `;${area.patternMaterial1 || "none"};${area.patternMaterial2 || "none"}`.toLowerCase();
                 if (patternString !== ";none;none") str += patternString;
             }
+        }
+
+        if (layouts)
+        {
+            if (!isArray(layouts)) layouts = [ layouts ];
+            const names = layouts.map(value => isObject(value) ? value.name : value);
+            if (names.length) str += `:layout?${names.join(";")}`;
         }
 
         return str.toLowerCase();
@@ -1146,6 +1231,10 @@ export class EveSOFData extends meta.Model
 
     /**
      * Builds an object from dna
+     *
+     * Multi-hull DNA uses Carbon's combined geometry, bounds and locator-set
+     * composition. The other setup stages still consume the primary hull, so
+     * secondary-hull attachments and effects remain outside this implementation.
      * @param {EveSOFData } data
      * @param {*} obj
      * @param {object} sof
@@ -1179,6 +1268,7 @@ export class EveSOFData extends meta.Model
         this.SetupLights(...args);
         this.SetupObservers(...args);
         await this.SetupControllers(...args);
+        await this.SetupLayout(...args);
 
         // Triglavian balls used to be added here for any hull whose name starts
         // "tg", because the authored data did not carry them. It does now, so
@@ -1193,6 +1283,852 @@ export class EveSOFData extends meta.Model
         //   if (cfg) obj.effectChildren.push(EveSOFData.createTriglavianBall(...));
 
         return obj;
+    }
+
+    /**
+     * Builds the base-mesh and authored child-effect portion of selected
+     * modular SOF layouts.
+     * Shared placements deliberately use ordinary instancing until the shared
+     * renderer exists. Sprite, spotlight and plane attachments are
+     * offset-expanded onto the existing top-level attachment owner for
+     * instanced placements and static ordinary placements. Skinned ordinary
+     * child attachments and decals still require child-owner lifecycle support.
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} options
+     * @returns {Promise<Object>} detached placement plan
+     */
+    static async SetupLayout(data, obj, sof, options)
+    {
+        const layoutOptions = { ...(options.layout || {}) };
+        if (layoutOptions.shaderModel === undefined && layoutOptions.graphicsQuality === undefined)
+        {
+            layoutOptions.shaderModel = this.GetLayoutShaderModel(tw2.device.shaderModel);
+        }
+        const plan = planSofLayouts(data, sof, layoutOptions);
+        const children = obj.effectChildren;
+        this.ReleaseLayoutLocatorSets(obj);
+        this.ReleaseLayoutAttachments(obj);
+
+        for (let index = children.length - 1; index >= 0; index--)
+        {
+            if (!children[index]._isSofLayoutRoot) continue;
+            this.ReleaseLayoutRoot(children[index]);
+            children.splice(index, 1);
+        }
+
+        if (!plan.placements.length) return plan;
+
+        const root = new EveChildContainer();
+        root.name = "SOF layouts";
+        root._isSofLayoutRoot = true;
+        root._sofLayoutPlan = plan;
+
+        const batches = new Map();
+        for (const placement of plan.placements)
+        {
+            if (!batches.has(placement.batchKey)) batches.set(placement.batchKey, []);
+            batches.get(placement.batchKey).push(placement);
+        }
+
+        plan.emission = {
+            planned: {
+                placements: plan.placements.length,
+                batches: batches.size,
+                baseMeshes: 0,
+                authoredInstancedMeshes: 0,
+                authoredInstanceRows: 0
+            },
+            emitted: {
+                placements: 0,
+                batches: 0,
+                baseMeshes: 0,
+                authoredInstancedMeshes: 0,
+                authoredInstanceRows: 0
+            },
+            skipped: {
+                placements: 0,
+                batches: 0,
+                baseMeshes: 0,
+                authoredInstancedMeshes: 0,
+                authoredInstanceRows: 0
+            },
+            skippedBatches: []
+        };
+
+        try
+        {
+            for (const placements of batches.values())
+            {
+                const selection = data.ParseDNA(placements[0].dna);
+                const plannedBaseMeshes = placements[0].isInstanced ? 1 : placements.length;
+                let plannedAuthoredMeshes = 0;
+                let plannedAuthoredRows = 0;
+                for (const source of selection.hull.instancedMeshes || [])
+                {
+                    if (!source.instances.length) continue;
+                    plannedAuthoredMeshes++;
+                    plannedAuthoredRows += source.instances.length * placements.length;
+                }
+
+                plan.emission.planned.baseMeshes += plannedBaseMeshes;
+                plan.emission.planned.authoredInstancedMeshes += plannedAuthoredMeshes;
+                plan.emission.planned.authoredInstanceRows += plannedAuthoredRows;
+
+                const built = await this.BuildLayoutPlacementMeshes(data, placements, selection, options);
+                if (!built.meshes.length)
+                {
+                    plan.emission.skipped.placements += placements.length;
+                    plan.emission.skipped.batches++;
+                    plan.emission.skipped.baseMeshes += plannedBaseMeshes;
+                    plan.emission.skippedBatches.push({
+                        batchKey: placements[0].batchKey,
+                        dna: placements[0].dna,
+                        placements: placements.length,
+                        reason: built.error ? built.error.message : "no geometry emitted"
+                    });
+                }
+                else
+                {
+                    for (const mesh of built.meshes) root.objects.push(mesh);
+
+                    plan.emission.emitted.placements += placements.length;
+                    plan.emission.emitted.batches++;
+                    plan.emission.emitted.baseMeshes += built.meshes.length;
+                    plan.emission.skipped.baseMeshes += plannedBaseMeshes - built.meshes.length;
+                }
+
+                this.SetupLayoutLocatorSets(obj, placements, selection);
+                await this.BuildLayoutPlacementContents(data, obj, placements, selection, options, root);
+                if (this.CanFlattenLayoutAttachments(placements, selection))
+                {
+                    this.BuildLayoutAttachments(data, obj, placements, selection, options);
+                }
+
+                const authored = this.BuildLayoutInstancedMeshes(
+                    data,
+                    selection,
+                    options,
+                    placements.map(value => value.transform)
+                );
+                if (authored.container) root.objects.push(authored.container);
+                plan.emission.emitted.authoredInstancedMeshes += authored.meshes;
+                plan.emission.emitted.authoredInstanceRows += authored.rows;
+                plan.emission.skipped.authoredInstancedMeshes += plannedAuthoredMeshes - authored.meshes;
+                plan.emission.skipped.authoredInstanceRows += plannedAuthoredRows - authored.rows;
+
+                for (const placement of placements)
+                {
+                    this.ExtendLayoutBounds(obj, selection, placement);
+                }
+            }
+
+            root.Initialize();
+            children.push(root);
+        }
+        catch (err)
+        {
+            this.ReleaseLayoutRoot(root);
+            this.ReleaseLayoutLocatorSets(obj);
+            this.ReleaseLayoutAttachments(obj);
+            throw err;
+        }
+        return plan;
+    }
+
+    /**
+     * Converts ccpwgl's shader suffix to Carbon's layout setting ordinal.
+     * @param {String|Number} shaderModel
+     * @returns {Number}
+     */
+    static GetLayoutShaderModel(shaderModel)
+    {
+        switch (String(shaderModel).toLowerCase())
+        {
+            case "3":
+            case "lo":
+            case "low":
+                return 3;
+
+            case "5":
+            case "depth":
+            case "high":
+                return 5;
+
+            case "4":
+            case "hi":
+            case "medium":
+            default:
+                return 4;
+        }
+    }
+
+    /**
+     * Builds the base mesh objects for one planned layout batch. Authored
+     * extension assets are optional to the parent layout: Carbon skips an
+     * invalid extension DNA, and its asynchronous geometry load does not reject
+     * construction of every sibling. ccpwgl resolves geometry while building,
+     * so contain that equivalent failure at the batch boundary.
+     * @param {EveSOFData} data
+     * @param {Array<Object>} placements
+     * @param {Object} sof
+     * @param {Object} options
+     * @returns {Promise<{meshes: Array<EveChildMesh>, error: Error|null}>}
+     */
+    static async BuildLayoutPlacementMeshes(data, placements, sof, options)
+    {
+        try
+        {
+            if (placements[0].isInstanced)
+            {
+                return {
+                    meshes: [ await this.BuildLayoutInstancedMesh(data, placements, sof, options) ],
+                    error: null
+                };
+            }
+
+            return {
+                meshes: await Promise.all(placements.map(placement =>
+                    this.BuildLayoutChildMesh(data, placement, sof, options))),
+                error: null
+            };
+        }
+        catch (err)
+        {
+            tw2.Warning({
+                type: "Space Object Factory",
+                message: `Could not build layout extension ${placements[0].dna}: ${err.message}`
+            });
+            return { meshes: [], error: err };
+        }
+    }
+
+    /**
+     * Emits a placed extension's locator sets onto the parent object. Carbon
+     * owns non-instanced sets on the child mesh and offset-expands instanced
+     * sets onto the parent; ccpwgl's public locator-set owner is the parent, so
+     * unique placement-qualified names retain that scoping without changing a
+     * child render path.
+     * @param {EveShip2|EveStation2} obj
+     * @param {Array<Object>} placements
+     * @param {Object} sof
+     * @returns {Number} emitted locator-set count
+     */
+    static SetupLayoutLocatorSets(obj, placements, sof)
+    {
+        let count = 0;
+        const hulls = sof.hulls || [ sof.hull ];
+        const hullOffsets = this.GetSelectionHullOffsets(sof);
+
+        for (const placement of placements)
+        {
+            for (let hullIndex = 0; hullIndex < hulls.length; hullIndex++)
+            {
+                for (const [ name, srcItems ] of this.GetHullLocatorSets(hulls[hullIndex]))
+                {
+                    const set = new EveLocatorSets();
+                    set.name = `${placement.key}:${name}`;
+                    set._isSofLayoutLocatorSet = true;
+                    set._sofLayoutSourceName = name;
+                    set._sofLayoutPlacementKey = placement.key;
+
+                    for (const srcItem of srcItems)
+                    {
+                        set.locators.push(EveLocatorSetItem.from(this.GetLayoutLocatorValues(
+                            srcItem,
+                            placement.transform,
+                            hullOffsets[hullIndex]
+                        )));
+                    }
+
+                    obj.locatorSets.push(set);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Composes one hull-local locator with its selected-hull and layout offsets.
+     * @param {Object} locator
+     * @param {mat4} placementTransform
+     * @param {vec3} hullOffset
+     * @returns {{boneIndex: Number, position: vec3, rotation: quat, scaling: vec3}}
+     */
+    static GetLayoutLocatorValues(locator, placementTransform, hullOffset)
+    {
+        const position = vec3.add(vec3.create(), locator.position, hullOffset);
+        const local = mat4.fromRotationTranslationScale(
+            mat4.create(),
+            locator.rotation,
+            position,
+            locator.scaling
+        );
+        const world = mat4.multiply(mat4.create(), placementTransform, local);
+        return {
+            boneIndex: locator.boneIndex,
+            position: mat4.getTranslation(vec3.create(), world),
+            rotation: mat4.getRotation(quat.create(), world),
+            scaling: mat4.getScaling(vec3.create(), world)
+        };
+    }
+
+    /** Removes locator sets owned by a previous generated layout. */
+    static ReleaseLayoutLocatorSets(obj)
+    {
+        for (let index = obj.locatorSets.length - 1; index >= 0; index--)
+        {
+            if (obj.locatorSets[index]._isSofLayoutLocatorSet) obj.locatorSets.splice(index, 1);
+        }
+    }
+
+    /**
+     * Builds the attachment families that CCPWGL's top-level object owner can
+     * already update and render. Carbon expands instanced-placement offsets
+     * into these items and attaches the resulting sets to the layout container;
+     * CCPWGL's child container has no attachment lifecycle, so the equivalent
+     * generated sets live on the root owner with their transforms pre-applied.
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Array<Object>} placements
+     * @param {Object} sof
+     * @param {Object} options
+     * @returns {Number} emitted attachment-set count
+     */
+    static BuildLayoutAttachments(data, obj, placements, sof, options)
+    {
+        const emitted = new Map();
+
+        for (const placement of placements)
+        {
+            const owner = { attachments: [] };
+            this.SetupSpriteSets(data, owner, sof, options);
+            this.SetupSpotlightSets(data, owner, sof, options);
+            this.SetupPlaneSets(data, owner, sof, options);
+
+            for (const set of owner.attachments)
+            {
+                const sourceName = set.name;
+                this.TransformLayoutAttachment(set, placement.transform);
+                const type = set instanceof EveSpriteSet
+                    ? "sprite"
+                    : set instanceof EveSpotlightSet ? "spotlight" : "plane";
+                const key = `${type}:${sourceName}`;
+
+                if (emitted.has(key))
+                {
+                    const target = emitted.get(key);
+                    const items = set.items;
+                    set.items = [];
+                    for (const item of items) target.AddItem(item, { skipEvents: true, skipUpdate: true });
+
+                    if (set instanceof EvePlaneSet)
+                    {
+                        target.lights.push(...set.lights);
+                        set.lights = [];
+                    }
+                    target._sofLayoutPlacementKeys.push(placement.key);
+                    set.Unload();
+                    set.Destroy();
+                }
+                else
+                {
+                    set.name = `${placements[0].batchKey}:${sourceName}`;
+                    set._isSofLayoutAttachment = true;
+                    set._sofLayoutPlacementKeys = [ placement.key ];
+                    set._sofLayoutSourceName = sourceName;
+                    emitted.set(key, set);
+                }
+            }
+        }
+
+        for (const set of emitted.values())
+        {
+            set.UpdateValues();
+            obj.attachments.push(set);
+        }
+        return emitted.size;
+    }
+
+    /**
+     * Checks whether a placement batch's attachments can be pre-transformed
+     * onto the top-level owner. Carbon normally leaves ordinary attachments on
+     * their child mesh, but the result is equivalent for a static child. A
+     * skinned ordinary child still needs its own attachment lifecycle so its
+     * items can follow that child's bones.
+     * @param {Array<Object>} placements
+     * @param {Object} sof
+     * @returns {Boolean}
+     */
+    static CanFlattenLayoutAttachments(placements, sof)
+    {
+        return placements[0].isInstanced || !sof.hull.isSkinned;
+    }
+
+    /**
+     * Pre-applies one placement transform to a generated attachment set.
+     * These sets are unskinned after expansion; retaining a source bone index
+     * on the top-level owner would incorrectly bind it to the parent hull.
+     * @param {EveSpriteSet|EveSpotlightSet|EvePlaneSet} set
+     * @param {mat4} placementTransform
+     */
+    static TransformLayoutAttachment(set, placementTransform)
+    {
+        const local = mat4.create();
+        const transformed = mat4.create();
+
+        set.skinned = false;
+        for (const item of set.items)
+        {
+            item.boneIndex = -1;
+
+            if (set instanceof EveSpriteSet)
+            {
+                vec3.transformMat4(item.position, item.position, placementTransform);
+            }
+            else if (set instanceof EveSpotlightSet)
+            {
+                mat4.multiply(item.transform, placementTransform, item.transform);
+            }
+            else if (set instanceof EvePlaneSet)
+            {
+                mat4.fromRotationTranslation(local, item.rotation, item.position);
+                mat4.multiply(transformed, placementTransform, local);
+                mat4.getTranslation(item.position, transformed);
+                mat4.getRotation(item.rotation, transformed);
+            }
+            item.UpdateValues();
+        }
+
+        if (set instanceof EvePlaneSet)
+        {
+            for (const light of set.lights)
+            {
+                const lightData = light.lightData;
+                lightData.boneIndex = -1;
+                mat4.fromRotationTranslation(local, lightData.rotation, lightData.position);
+                mat4.multiply(transformed, placementTransform, local);
+                mat4.getTranslation(lightData.position, transformed);
+                mat4.getRotation(lightData.rotation, transformed);
+            }
+        }
+    }
+
+    /** Releases attachment sets generated by the previous layout build. */
+    static ReleaseLayoutAttachments(obj)
+    {
+        let count = 0;
+        for (let index = obj.attachments.length - 1; index >= 0; index--)
+        {
+            const set = obj.attachments[index];
+            if (!set._isSofLayoutAttachment) continue;
+            set.Unload();
+            set.Destroy();
+            obj.attachments.splice(index, 1);
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * Builds authored child effects and controllers for one layout placement
+     * batch. Each occurrence owns a transform container so child-local state
+     * remains relative to the placement matrix.
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Array<Object>} placements
+     * @param {Object} sof
+     * @param {Object} options
+     * @param {EveChildContainer} root
+     * @returns {Promise<Number>} number of populated placement containers
+     */
+    static async BuildLayoutPlacementContents(data, obj, placements, sof, options, root)
+    {
+        let count = 0;
+        for (const placement of placements)
+        {
+            const container = new EveChildContainer();
+            container.name = placement.name || sof.hull.name;
+            container.useSRT = false;
+            mat4.copy(container.localTransform, placement.transform);
+
+            const childCount = await this.SetupChildren(
+                data,
+                obj,
+                sof,
+                options,
+                placement.buildFlags,
+                container.objects,
+                false
+            );
+            const controllerCount = await this.SetupControllers(
+                data,
+                container,
+                sof,
+                options,
+                placement.buildFlags
+            );
+            const audioCount = this.SetupAudio(data, container, sof, options, true).length;
+            if (!childCount && !controllerCount && !audioCount) continue;
+
+            container._isSofLayoutPlacement = true;
+            container.Initialize();
+            root.objects.push(container);
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * Releases runtime objects owned exclusively by one generated layout root.
+     * Geometry resources are shared through the resource manager; only direct
+     * instance buffers and linked controllers belong to this generated tree.
+     * @param {EveChildContainer} root
+     */
+    static ReleaseLayoutRoot(root)
+    {
+        const pending = [ root ];
+        while (pending.length)
+        {
+            const container = pending.pop();
+            for (const controller of container.controllers) controller.Unlink();
+            for (const emitter of container.audioEmitters) tw2.audMan.ReleaseEmitter(emitter);
+            container.audioEmitters = [];
+
+            for (const child of container.objects)
+            {
+                if (child._sofLayoutInstanceData)
+                {
+                    child._sofLayoutInstanceData.Unload();
+                    if (child.mesh
+                        && child.mesh.instanceGeometryResource === child._sofLayoutInstanceData)
+                    {
+                        child.mesh.instanceGeometryResource = null;
+                    }
+                    child._sofLayoutInstanceData = null;
+                }
+                if (child instanceof EveChildContainer) pending.push(child);
+            }
+        }
+    }
+
+    /**
+     * Builds one non-instanced modular hull base mesh.
+     * @param {EveSOFData} data
+     * @param {Object} placement
+     * @param {Object} sof
+     * @param {Object} options
+     * @returns {Promise<EveChildMesh>}
+     */
+    static async BuildLayoutChildMesh(data, placement, sof, options)
+    {
+        const child = new EveChildMesh();
+        child.name = placement.name || sof.hull.name;
+        child.customMasks = [];
+        child.useSRT = false;
+        mat4.copy(child.localTransform, placement.transform);
+        this.SetupLayoutMeshPolicy(data, child, sof);
+
+        this.SetupCustomMasks(data, child, sof, options);
+        await this.SetupMesh(data, child, sof, options);
+        return child;
+    }
+
+    /**
+     * Builds one ordinary instanced modular hull base mesh batch.
+     * @param {EveSOFData} data
+     * @param {Array<Object>} placements
+     * @param {Object} selected
+     * @param {Object} options
+     * @returns {Promise<EveChildMesh>}
+     */
+    static async BuildLayoutInstancedMesh(data, placements, selected, options)
+    {
+        const sof = {
+            ...selected,
+            hull: { ...selected.hull, isSkinned: false }
+        };
+        const child = new EveChildMesh();
+        child.name = placements[0].name || selected.hull.name;
+        child.customMasks = [];
+        child.useSRT = false;
+        child.mesh = new Tw2InstancedMesh();
+        this.SetupLayoutMeshPolicy(data, child, sof);
+
+        this.SetupCustomMasks(data, child, sof, options);
+        await this.SetupMesh(data, child, sof, options);
+
+        const instanceData = new Tw2DirectInstanceData();
+        child.mesh.instanceGeometryResource = instanceData;
+        child._sofLayoutInstanceData = instanceData;
+
+        try
+        {
+            instanceData.SetLayout(Tw2VertexDeclaration.from(this.LayoutInstanceDeclarations));
+            instanceData.SetData(this.PackLayoutInstances(placements), placements.length);
+            child.mesh.instanceMeshIndex = 0;
+
+            for (const areaType of EveChildMesh.MESH_AREA_TYPES)
+            {
+                const areas = child.mesh[areaType];
+                if (!areas) continue;
+                for (const area of areas)
+                {
+                    this.ConfigureLayoutInstancedEffect(area.effect);
+                }
+            }
+        }
+        catch (err)
+        {
+            instanceData.Unload();
+            child.mesh.instanceGeometryResource = null;
+            child._sofLayoutInstanceData = null;
+            throw err;
+        }
+
+        return child;
+    }
+
+    /**
+     * Selects the GLES2 shader that actually consumes a layout instance stream.
+     * DX11/WebGL2 effects expose SOIA as a permutation; the legacy GLES2
+     * effects do not, so their ordinary quad shaders must be replaced by
+     * explicit instanced definitions.
+     * @param {Tw2Effect} effect
+     * @param {String} [effectProfile=tw2.device.effectProfile]
+     * @returns {String|null} replacement path, when one was required
+     */
+    static ConfigureLayoutInstancedEffect(effect, effectProfile = tw2.device.effectProfile)
+    {
+        effect.SetOption({
+            SPACE_OBJECT_INSTANCED_ATTACHMENT: "SOIA_ENABLED"
+        });
+
+        const replacement = this.GetLayoutInstancedEffectPath(effect.effectFilePath, effectProfile);
+        if (replacement) effect.SetValue(replacement);
+        return replacement;
+    }
+
+    /**
+     * Maps an ordinary GLES2 quad effect to its instance-stream equivalent.
+     * @param {String} path
+     * @param {String} effectProfile
+     * @returns {String|null}
+     */
+    static GetLayoutInstancedEffectPath(path, effectProfile)
+    {
+        if (effectProfile !== "effect.gles2" || !isString(path)) return null;
+
+        const match = path.toLowerCase().match(/\/(quadglassv5|quadv5)\.(?:fx|sm_(?:json|hi|lo|depth))$/);
+        if (!match) return null;
+
+        const shader = match[1] === "quadglassv5"
+            ? "quadglassinstancedv5"
+            : "quadinstancedv5";
+
+        return `res:/graphics/effect.gles2/managed/space/spaceobject/v5/quad/${shader}.fx`;
+    }
+
+    /**
+     * Packs current/previous instance transforms and bone indices.
+     * @param {Array<Object>} placements
+     * @returns {Float32Array}
+     */
+    static PackLayoutInstances(placements)
+    {
+        const result = new Float32Array(placements.length * this.LayoutInstanceFloats);
+        for (let index = 0; index < placements.length; index++)
+        {
+            const m = placements[index].transform;
+            const offset = index * this.LayoutInstanceFloats;
+
+            result[offset] = m[0]; result[offset + 1] = m[4]; result[offset + 2] = m[8]; result[offset + 3] = m[12];
+            result[offset + 4] = m[1]; result[offset + 5] = m[5]; result[offset + 6] = m[9]; result[offset + 7] = m[13];
+            result[offset + 8] = m[2]; result[offset + 9] = m[6]; result[offset + 10] = m[10]; result[offset + 11] = m[14];
+
+            result[offset + 12] = m[0]; result[offset + 13] = m[4]; result[offset + 14] = m[8]; result[offset + 15] = m[12];
+            result[offset + 16] = m[1]; result[offset + 17] = m[5]; result[offset + 18] = m[9]; result[offset + 19] = m[13];
+            result[offset + 20] = m[2]; result[offset + 21] = m[6]; result[offset + 22] = m[10]; result[offset + 23] = m[14];
+
+            result[offset + 24] = placements[index].locator.boneIndex;
+        }
+        return result;
+    }
+
+    /**
+     * Packs authored hull instance rows into the same SOIA stream used by
+     * modular layout instances.
+     * @param {Array<Object>} instances
+     * @param {Array<mat4>} [requestedOffsets]
+     * @returns {Float32Array}
+     */
+    static PackInstancedMeshInstances(instances, requestedOffsets)
+    {
+        const offsets = requestedOffsets && requestedOffsets.length
+            ? requestedOffsets
+            : [ mat4.create() ];
+        const result = new Float32Array(
+            instances.length * offsets.length * this.LayoutInstanceFloats
+        );
+        const local = mat4.create();
+        const transform = mat4.create();
+        const rotation = quat.create();
+        const scaling = vec3.create();
+        const translation = vec3.create();
+        let resultIndex = 0;
+
+        for (const placement of offsets)
+        {
+            for (const instance of instances)
+            {
+                const data = instance.data;
+                quat.set(rotation, data[0], data[1], data[2], data[3]);
+                vec3.set(scaling, data[4], data[5], data[6]);
+                vec3.set(translation, data[7], data[8], data[9]);
+                mat4.fromRotationTranslationScale(local, rotation, translation, scaling);
+
+                // Carbon (row-vector): local * placement - local applies first
+                // (EveSOF.cpp, SetupInstancedMeshes).
+                mat4.multiply(transform, placement, local);
+
+                const offset = resultIndex * this.LayoutInstanceFloats;
+                result[offset] = transform[0]; result[offset + 1] = transform[4]; result[offset + 2] = transform[8]; result[offset + 3] = transform[12];
+                result[offset + 4] = transform[1]; result[offset + 5] = transform[5]; result[offset + 6] = transform[9]; result[offset + 7] = transform[13];
+                result[offset + 8] = transform[2]; result[offset + 9] = transform[6]; result[offset + 10] = transform[10]; result[offset + 11] = transform[14];
+
+                result.set(result.subarray(offset, offset + 12), offset + 12);
+                result[offset + 24] = Number.isFinite(data[10]) ? data[10] : 0;
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Extends the root bounds for one emitted layout occurrence.
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} placement
+     */
+    static ExtendLayoutBounds(obj, sof, placement)
+    {
+        const transform = placement.transform;
+        const sourceSphere = this.GetSelectionBoundingSphere(sof);
+        let transformedSphere = null;
+
+        if (sourceSphere[3] >= 0)
+        {
+            const scale = Math.max(
+                Math.hypot(transform[0], transform[1], transform[2]),
+                Math.hypot(transform[4], transform[5], transform[6]),
+                Math.hypot(transform[8], transform[9], transform[10])
+            );
+            transformedSphere = vec4.fromValues(0, 0, 0, sourceSphere[3] * scale);
+            vec3.transformMat4(transformedSphere, sourceSphere, transform);
+        }
+
+        if (placement.extendsBoundingSphere && transformedSphere)
+        {
+            this.IncludeLayoutSphere(
+                obj.boundingSphereCenter,
+                obj,
+                transformedSphere,
+                transformedSphere[3]
+            );
+        }
+
+        if (placement.extendsShieldEllipsoid)
+        {
+            const hull = sof.hull;
+            const childCenter = hull.shapeEllipsoidCenter;
+            const childRadius = hull.shapeEllipsoidRadius;
+            const hasRoot = obj.shapeEllipsoidRadius[0] > 0
+                || obj.shapeEllipsoidRadius[1] > 0
+                || obj.shapeEllipsoidRadius[2] > 0;
+            const minimum = hasRoot
+                ? vec3.subtract([], obj.shapeEllipsoidCenter, obj.shapeEllipsoidRadius)
+                : [ Infinity, Infinity, Infinity ];
+            const maximum = hasRoot
+                ? vec3.add([], obj.shapeEllipsoidCenter, obj.shapeEllipsoidRadius)
+                : [ -Infinity, -Infinity, -Infinity ];
+            let hasChildBounds = false;
+            if (childRadius[0] < 0 || childRadius[1] < 0 || childRadius[2] < 0)
+            {
+                if (transformedSphere)
+                {
+                    const radius = [ transformedSphere[3], transformedSphere[3], transformedSphere[3] ];
+                    vec3.min(minimum, minimum, vec3.subtract([], transformedSphere, radius));
+                    vec3.max(maximum, maximum, vec3.add([], transformedSphere, radius));
+                    hasChildBounds = true;
+                }
+            }
+            else
+            {
+                const corner = vec3.create();
+                for (let x = -1; x <= 1; x += 2)
+                {
+                    for (let y = -1; y <= 1; y += 2)
+                    {
+                        for (let z = -1; z <= 1; z += 2)
+                        {
+                            vec3.set(
+                                corner,
+                                childCenter[0] + childRadius[0] * x,
+                                childCenter[1] + childRadius[1] * y,
+                                childCenter[2] + childRadius[2] * z
+                            );
+                            vec3.transformMat4(corner, corner, transform);
+                            vec3.min(minimum, minimum, corner);
+                            vec3.max(maximum, maximum, corner);
+                            hasChildBounds = true;
+                        }
+                    }
+                }
+            }
+
+            if (!hasChildBounds) return;
+            vec3.add(obj.shapeEllipsoidCenter, minimum, maximum);
+            vec3.scale(obj.shapeEllipsoidCenter, obj.shapeEllipsoidCenter, 0.5);
+            vec3.subtract(obj.shapeEllipsoidRadius, maximum, minimum);
+            vec3.scale(obj.shapeEllipsoidRadius, obj.shapeEllipsoidRadius, 0.5);
+        }
+    }
+
+    /**
+     * Includes a sphere in the root's current bounding sphere.
+     * @param {vec3} rootCenter
+     * @param {EveStation2|EveShip2} obj
+     * @param {vec3} childCenter
+     * @param {Number} childRadius
+     */
+    static IncludeLayoutSphere(rootCenter, obj, childCenter, childRadius)
+    {
+        const rootRadius = obj.boundingSphereRadius;
+        if (rootRadius <= 0)
+        {
+            vec3.copy(rootCenter, childCenter);
+            obj.boundingSphereRadius = childRadius;
+            return;
+        }
+
+        const distance = vec3.distance(rootCenter, childCenter);
+        if (distance + childRadius <= rootRadius) return;
+        if (distance + rootRadius <= childRadius)
+        {
+            vec3.copy(rootCenter, childCenter);
+            obj.boundingSphereRadius = childRadius;
+            return;
+        }
+
+        const radius = (distance + rootRadius + childRadius) * 0.5;
+        if (distance > 0)
+        {
+            vec3.lerp(rootCenter, rootCenter, childCenter, (radius - rootRadius) / distance);
+        }
+        obj.boundingSphereRadius = radius;
     }
 
     /**
@@ -1286,11 +2222,15 @@ export class EveSOFData extends meta.Model
      */
     static GetPatternBlendMode(pattern = {})
     {
+        // The pattern's own mode first, then its layers, most specific last.
+        //
+        // This used to read a `pattern.skinr` sidecar ahead of each layer,
+        // which meant the sof builder knew what SKINR was. It does not, and
+        // should not: a consumer with a design-level blend mode sets
+        // `pattern.blendMode` and the builder never learns where it came from.
         const values = [
-            pattern.skinr && pattern.skinr.blendMode,
-            pattern.skinr && pattern.skinr.blendModes && pattern.skinr.blendModes.layer2,
+            pattern.blendMode,
             pattern.layer2 && pattern.layer2.blendMode,
-            pattern.skinr && pattern.skinr.blendModes && pattern.skinr.blendModes.layer1,
             pattern.layer1 && pattern.layer1.blendMode
         ];
 
@@ -1347,6 +2287,191 @@ export class EveSOFData extends meta.Model
     }
 
     /**
+     * Resolves Carbon's combined geometry path for a selected hull chain.
+     * @param {Object} sof
+     * @returns {String}
+     */
+    static GetSelectionGeometryResPath(sof)
+    {
+        const hulls = sof.hulls || [ sof.hull ];
+        if (hulls.length === 1) return hulls[0].geometryResFilePath || "";
+
+        let result = hulls[0].geometryResFilePath || "";
+        const variantNumber = hulls.map(hull => hull.name.slice(-1)).join("");
+        const nameParts = hulls[0].name.split("_");
+        const variant = nameParts[nameParts.length - 1];
+        if (variant)
+        {
+            result = result.replace(`${variant}.gr2`, `${variantNumber}.gr2`);
+            result = result.replace(`${variant}/`, "all/");
+        }
+        return result;
+    }
+
+    /**
+     * Derives Carbon's low-detail geometry fallback path.
+     * @param {String} path
+     * @returns {String|null}
+     */
+    static GetLowDetailGeometryResPath(path)
+    {
+        const dot = path.lastIndexOf(".");
+        if (dot === -1 || path.slice(0, dot).toLowerCase().endsWith("_lowdetail")) return null;
+        return `${path.slice(0, dot)}_lowdetail${path.slice(dot)}`;
+    }
+
+    /**
+     * Applies Carbon's render policy to one generated extension base mesh.
+     * @param {EveSOFData} data
+     * @param {EveChildMesh} child
+     * @param {Object} sof
+     */
+    static SetupLayoutMeshPolicy(data, child, sof)
+    {
+        const category = sof.hull.category || "";
+        const categories = data.generic && data.generic.hullCategoriesData || [];
+        const categoryData = categories.find(value => value.name === category);
+
+        child.castShadow = sof.hull.castShadow === true;
+        child.lowestLodVisible = 0;
+        child.minScreenSize = this.MIN_MESH_SCREEN_SIZE;
+
+        if (categoryData)
+        {
+            child.reflectionMode = categoryData.reflectionMode;
+        }
+        else if (category === "hangar" || category === "hangar4k")
+        {
+            child.reflectionMode = ReflectionMode.REFLECT_LOW_MEDIUM_HIGH;
+        }
+        else if (category.includes("station")
+            || category.includes("structure")
+            || category === "jumpgate")
+        {
+            child.reflectionMode = ReflectionMode.REFLECT_MEDIUM_AND_HIGH;
+        }
+        else
+        {
+            child.reflectionMode = ReflectionMode.REFLECT_NEVER;
+        }
+    }
+
+    /**
+     * Flattens one hull's polymorphic locator-set tree by authored set name.
+     * Unknown entries violate the owned SOF schema contract and throw.
+     * @param {EveSOFDataHull} hull
+     * @param {Map<String, Array>} [out]
+     * @returns {Map<String, Array>}
+     */
+    static GetHullLocatorSets(hull, out = new Map())
+    {
+        const flatten = entries =>
+        {
+            for (const entry of entries)
+            {
+                if (entry instanceof EveSOFDataHullLocatorSet)
+                {
+                    if (!out.has(entry.name)) out.set(entry.name, []);
+                    const locators = out.get(entry.name);
+                    for (const locator of entry.locators) locators.push(locator);
+                }
+                else if (entry instanceof EveSOFDataHullLocatorSetGroup)
+                {
+                    flatten(entry.locatorSets);
+                }
+                else
+                {
+                    throw new TypeError("Invalid SOF hull locator-set entry");
+                }
+            }
+        };
+
+        flatten(hull.locatorSets);
+        return out;
+    }
+
+    /**
+     * Returns the cumulative next-subsystem translation for every selected hull.
+     * @param {Object} sof
+     * @returns {Array<vec3>}
+     */
+    static GetSelectionHullOffsets(sof)
+    {
+        const hulls = sof.hulls || [ sof.hull ];
+        const result = [];
+        const offset = vec3.create();
+
+        for (const hull of hulls)
+        {
+            result.push(vec3.clone(offset));
+            const next = this.GetHullLocatorSets(hull).get("next_subsystem");
+            if (next && next.length) vec3.add(offset, offset, next[0].position);
+        }
+        return result;
+    }
+
+    /**
+     * Returns one sphere enclosing the selected hull chain before placement.
+     * @param {Object} sof
+     * @returns {vec4}
+     */
+    static GetSelectionBoundingSphere(sof)
+    {
+        const hulls = sof.hulls || [ sof.hull ];
+        const offsets = this.GetSelectionHullOffsets(sof);
+        const state = {
+            boundingSphereCenter: vec3.create(),
+            boundingSphereRadius: -1
+        };
+
+        for (let index = 0; index < hulls.length; index++)
+        {
+            const sphere = hulls[index].boundingSphere;
+            if (sphere[3] < 0) continue;
+            const center = vec3.add([], sphere, offsets[index]);
+            this.IncludeLayoutSphere(
+                state.boundingSphereCenter,
+                state,
+                center,
+                sphere[3]
+            );
+        }
+
+        return vec4.fromValues(
+            state.boundingSphereCenter[0],
+            state.boundingSphereCenter[1],
+            state.boundingSphereCenter[2],
+            state.boundingSphereRadius
+        );
+    }
+
+    /**
+     * Returns each selected hull's mesh-area offset in Carbon's combined geometry.
+     * @param {Object} sof
+     * @returns {Array<Number>}
+     */
+    static GetSelectionMeshIndexOffsets(sof)
+    {
+        const hulls = sof.hulls || [ sof.hull ];
+        const result = [];
+        let offset = 0;
+        const areaNames = [
+            "opaqueAreas",
+            "decalAreas",
+            "transparentAreas",
+            "additiveAreas",
+            "distortionAreas"
+        ];
+
+        for (const hull of hulls)
+        {
+            result.push(offset);
+            for (const name of areaNames) offset += hull[name].length;
+        }
+        return result;
+    }
+
+    /**
      *
      * TODO: Generate missing bounds
      * @param {EveSOFData} data
@@ -1358,7 +2483,7 @@ export class EveSOFData extends meta.Model
     {
         try
         {
-            const bounds = get(sof.hull, "boundingSphere", [ 0, 0, 0, 0 ]);
+            const bounds = this.GetSelectionBoundingSphere(sof);
             obj.boundingSphereRadius = bounds[3];
             vec3.copy(obj.boundingSphereCenter, bounds);
 
@@ -1409,16 +2534,34 @@ export class EveSOFData extends meta.Model
     {
         const
             mesh = obj.mesh = obj.mesh || new Tw2Mesh(),
-            { hull } = sof;
+            hulls = sof.hulls || [ sof.hull ],
+            meshIndexOffsets = this.GetSelectionMeshIndexOffsets(sof);
 
         // Testing: Allow rewiring res path inserts
         // const sofHullActualRace = sof.hull.description.split("/")[1];
         //sof.resPathInsert = sof.faction.GetRewiredRespathInsert(sofHullActualRace, sof.resPathInsert);
 
         // Load the ship's geometry
-        let resPath = get(sof.hull, "geometryResFilePath", "");
+        let resPath = this.GetSelectionGeometryResPath(sof);
         if (!resPath) throw new TypeError("Hull has no geometry");
-        await mesh.FetchGeometryResPath(resPath);
+        try
+        {
+            await mesh.FetchGeometryResPath(resPath);
+        }
+        catch (err)
+        {
+            // Carbon's Tr2Mesh derives and loads *_lowdetail when the authored
+            // geometry path is not locally available. Some current SOF hulls
+            // rely on that contract and publish only the low-detail GR2.
+            const lowDetailPath = this.GetLowDetailGeometryResPath(resPath);
+            if (!lowDetailPath) throw err;
+            await mesh.FetchGeometryResPath(lowDetailPath);
+            tw2.Warning({
+                type: "Space Object Factory",
+                message: `Using low-detail geometry for missing resource ${resPath}`
+            });
+            resPath = lowDetailPath;
+        }
 
         const areaNames = [
                 "opaqueAreas",
@@ -1428,38 +2571,42 @@ export class EveSOFData extends meta.Model
                 "distortionAreas",
                 "transparentAreas"
             ],
-            insertPaths = [];
+            resolvedInsertMaps = [];
 
-        for (let i = 0; i < areaNames.length; i++)
+        for (const hull of hulls)
         {
-            const areasName = areaNames[i];
-            if (opaqueAreasOnly && areasName !== "opaqueAreas") continue;
-
-            const hullAreas = get(hull, areasName, []);
-            for (let n = 0; n < hullAreas.length; n++)
+            const insertPaths = [];
+            for (let i = 0; i < areaNames.length; i++)
             {
-                const hullArea = hullAreas[n],
-                    effect = data.generic.GetShaderConfig(hullArea.shader || "", sof.hull.isSkinned);
+                const areasName = areaNames[i];
+                if (opaqueAreasOnly && areasName !== "opaqueAreas") continue;
 
-                hullArea.Assign(effect);
-                for (const key in effect.textures)
+                for (const hullArea of hull[areasName])
                 {
-                    if (effect.textures.hasOwnProperty(key)) insertPaths.push(effect.textures[key]);
+                    const effect = data.generic.GetShaderConfig(hullArea.shader || "", sof.hull.isSkinned);
+                    hullArea.Assign(effect);
+                    for (const key in effect.textures)
+                    {
+                        if (Object.prototype.hasOwnProperty.call(effect.textures, key))
+                        {
+                            insertPaths.push(effect.textures[key]);
+                        }
+                    }
                 }
             }
-        }
 
-        const uniqueInsertPaths = [ ...new Set(insertPaths) ],
-            resolvedInsertPaths = await data.ResolveResPathInserts(
-                sof.hull,
+            const uniqueInsertPaths = [ ...new Set(insertPaths) ];
+            const resolvedInsertPaths = await data.ResolveResPathInserts(
+                hull,
                 sof.faction,
                 uniqueInsertPaths,
                 sof.resPathInsert
-            ),
-            resolvedInsertMap = new Map(uniqueInsertPaths.map((path, index) => [
+            );
+            resolvedInsertMaps.push(new Map(uniqueInsertPaths.map((path, index) => [
                 path.toLowerCase(),
                 resolvedInsertPaths[index]
-            ]));
+            ])));
+        }
 
         let cachedParameters = {};
 
@@ -1473,222 +2620,230 @@ export class EveSOFData extends meta.Model
 
             const toRemove = Array.from(obj.mesh[areasName]);
 
-            get(hull, areasName, []).forEach(hullArea =>
+            for (let hullIndex = 0; hullIndex < hulls.length; hullIndex++)
             {
-                let { name = "", index = 0, count = 1, shader = "", areaType = -1 } = hullArea;
+                const hull = hulls[hullIndex];
+                const resolvedInsertMap = resolvedInsertMaps[hullIndex];
 
-                // Check if already exists
-                let area = obj.mesh.FindMeshAreaByTypeAndIndex(areasName, index);
-                if (area)
+                hull[areasName].forEach(hullArea =>
                 {
-                    toRemove.splice(toRemove.indexOf(area, 1));
-                }
-                else
-                {
-                    area = new Tw2MeshArea();
-                    area.name = name;
-                    area.index = index;
-                    area.count = count;
-                    mesh[areasName].push(area);
+                    let { name = "", index = 0, count = 1, shader = "", areaType = -1 } = hullArea;
+                    index += meshIndexOffsets[hullIndex];
 
-                    // Keep track of area type
-                    area.areaType = areaType;
-                    area.colorType = -1;
-                }
-
-                const eff = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
-                eff.autoParameter = true;
-
-                // Get hull Area values
-                hullArea.Assign(eff);
-
-                // Area parameters
-                const areaData = sof.faction.AssignAreaType(areaType);
-
-                // Temporarily keep track of the hull area nane
-                area._sofMeta = area._sofMeta || {};
-                area._sofMeta.areaData = Object.assign({}, areaData);
-                this.assignMaterialNamesIfUsable(area._sofMeta.areaData, sof.area);
-
-                // Get custom values
-                Object.assign(areaData, sof.area);
-
-                data.AssignMaterialParameters(areaData, eff.parameters);
-
-                // Handle res path inserts
-                for (const key in eff.textures)
-                {
-                    if (eff.textures.hasOwnProperty(key))
+                    // Check if already exists
+                    let area = obj.mesh.FindMeshAreaByTypeAndIndex(areasName, index);
+                    if (area)
                     {
-                        eff.textures[key] = resolvedInsertMap.get(eff.textures[key].toLowerCase())
-                            || eff.textures[key];
-                    }
-                }
-
-                // Handle heat colour
-                if (data.generic.HasShaderUsage(shader, "GeneralHeatGlowColor") && sof.race.booster && sof.race.booster.glowColor)
-                {
-                    eff.parameters.GeneralHeatGlowColor = vec4.multiply(
-                        [ 1, 1, 1, 1 ],
-                        sof.race.booster.glowColor,
-                        options.multiplier.generalHeatGlowColor
-                    );
-                }
-
-                // Area lights colour
-                if (data.generic.HasShaderUsage(shader, "GeneralGlowColor"))
-                {
-                    const glowColor = [ 1, 1, 1, 1 ];
-
-                    // Custom override to get wrecks looking correct in webgl
-                    // todo: Update the shaders so that this isn't required
-                    if (shader.toLowerCase().includes("wreck"))
-                    {
-                        const {
-                            fallbackGeneralGlowColor = [ 4, 1.0140079259872437, 0, 1 ],
-                            minMapScaleUV = 8, // Default
-                            minGlowIntensity,
-                            maxGlowFlicker,
-                            minSharpness,
-                            minSharpnessDecalAreas,
-                            maxGlowFlickerDecalAreas
-                        } = options.wreckArea;
-
-                        // Use fire color if it exists
-                        // TODO: Replace this with SOF6 controls
-                        if (sof.faction.HasColorType(11))
-                        {
-                            sof.faction.GetColorType(11, glowColor);
-                            area.colorType = 11;
-                        }
-                        else
-                        {
-                            vec4.copy(glowColor, fallbackGeneralGlowColor);
-                        }
-
-                        const { WreckFactors = [ 0, 0, 0, 0 ] } = eff.parameters;
-
-                        WreckFactors[0] = Math.min(minMapScaleUV, WreckFactors[0]);
-
-                        if (minSharpness !== undefined)
-                        {
-                            WreckFactors[1] = Math.max(minSharpness, WreckFactors[1]);
-                        }
-
-                        if (minGlowIntensity !== undefined)
-                        {
-                            WreckFactors[2] = Math.max(minGlowIntensity, WreckFactors[2]);
-                        }
-
-                        if (maxGlowFlicker !== undefined)
-                        {
-                            WreckFactors[3] = Math.min(maxGlowFlicker, WreckFactors[3]);
-                        }
-
-                        if (areasName === "decalAreas")
-                        {
-                            if (minSharpnessDecalAreas !== undefined)
-                            {
-                                WreckFactors[1] = Math.max(minSharpnessDecalAreas, WreckFactors[1]);
-                            }
-                            if (maxGlowFlickerDecalAreas !== undefined)
-                            {
-                                WreckFactors[3] = Math.min(maxGlowFlickerDecalAreas, WreckFactors[3]);
-                            }
-                        }
-
-                        eff.parameters.WreckFactors = WreckFactors;
-
+                        const removeIndex = toRemove.indexOf(area);
+                        if (removeIndex !== -1) toRemove.splice(removeIndex, 1);
                     }
                     else
                     {
-                        area.colorType = sof.faction.HasColorType(areaData.colorType) ? areaData.colorType : 0;
-                        sof.faction.GetColorType(area.colorType, glowColor);
+                        area = new Tw2MeshArea();
+                        mesh[areasName].push(area);
+
+                        // Keep track of area type
+                        area.colorType = -1;
                     }
 
-                    vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
-                    eff.parameters.GeneralGlowColor = glowColor;
-                }
+                    area.name = name;
+                    area.index = index;
+                    area.count = count;
+                    area.areaType = areaType;
 
-                // Ensure we have an effect
-                if (!area.effect)
-                {
-                    area.effect = new Tw2Effect();
-                    area.effect.name = area.name + "_effect";
-                }
+                    const eff = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
+                    eff.autoParameter = true;
 
-                // Handle distortion
-                // Todo: Update shaders so this isn't required
-                if (eff.parameters.MAX_DISTORTION_OFFSET || areasName === "distortionAreas")
-                {
-                    const value = eff.parameters.MAX_DISTORTION_OFFSET || [ 128, 0, 0, 0 ];
-                    value[0] *= options.multiplier.maxDistortionOffset;
-                    eff.parameters.MAX_DISTORTION_OFFSET = value;
-                }
+                    // Get hull Area values
+                    hullArea.Assign(eff);
 
-                // Update effect
-                area.effect.SetValues(eff, { controller: this });
+                    // Area parameters
+                    const areaData = sof.faction.AssignAreaType(areaType);
 
-                //  Update from custom masks
-                for (let i = 0; i < obj.customMasks.length; i++)
-                {
-                    EveCustomMask.ApplyMaterials(area.effect, obj.customMasks[i], i);
-                }
+                    // Temporarily keep track of the hull area nane
+                    area._sofMeta = area._sofMeta || {};
+                    area._sofMeta.areaData = Object.assign({}, areaData);
+                    this.assignMaterialNamesIfUsable(area._sofMeta.areaData, sof.area);
 
-                // Add white ambient occlusion texture if an AO map doesn't exist and is required
-                const params = area.effect.GetTextures();
-                if (params.AoMap)
-                {
-                    area.effect.SetTextures({ AoMap: params.AoMap || "res:/graphics/shared_texture/global/white.dds" });
-                }
+                    // Get custom values
+                    Object.assign(areaData, sof.area);
 
-                // Handle Environments who's values are multiplied by 10
-                if (area.effect.effectFilePath.toLowerCase().includes("quadenvironmentv5"))
-                {
-                    const { DetailData } = area.effect.parameters;
-                    if (DetailData)
+                    data.AssignMaterialParameters(areaData, eff.parameters);
+
+                    // Handle res path inserts
+                    for (const key in eff.textures)
                     {
-                        DetailData.x *= 0.1;
-                        DetailData.y *= 0.1;
-                    }
-                }
-
-
-                // Reuse parameters that are the same
-                if (options.simplifyParameters)
-                {
-                    let updated = false;
-                    for (const name in area.effect.parameters)
-                    {
-                        if (area.effect.parameters.hasOwnProperty(name))
+                        if (Object.prototype.hasOwnProperty.call(eff.textures, key))
                         {
-                            if (!cachedParameters[areaType])
-                            {
-                                cachedParameters[areaType] = {};
-                            }
-
-                            if (!cachedParameters[areaType][name])
-                            {
-                                cachedParameters[areaType][name] = area.effect.parameters[name];
-                            }
-                            else if (cachedParameters[areaType][name].EqualsValue(area.effect.parameters[name].GetValue()))
-                            {
-                                area.effect.parameters[name] = cachedParameters[areaType][name];
-                                updated = true;
-                            }
+                            eff.textures[key] = resolvedInsertMap.get(eff.textures[key].toLowerCase())
+                                || eff.textures[key];
                         }
                     }
 
-                    // Testing: Rewire if required
-                    // sof.faction.RewireEffectMaterials(sofHullActualRace, area.effect);
-
-                    if (updated)
+                    // Handle heat colour
+                    if (data.generic.HasShaderUsage(shader, "GeneralHeatGlowColor") && sof.race.booster && sof.race.booster.glowColor)
                     {
-                        area.effect.BindParameters();
+                        eff.parameters.GeneralHeatGlowColor = vec4.multiply(
+                            [ 1, 1, 1, 1 ],
+                            sof.race.booster.glowColor,
+                            options.multiplier.generalHeatGlowColor
+                        );
                     }
-                }
 
-            });
+                    // Area lights colour
+                    if (data.generic.HasShaderUsage(shader, "GeneralGlowColor"))
+                    {
+                        const glowColor = [ 1, 1, 1, 1 ];
+
+                        // Custom override to get wrecks looking correct in webgl
+                        // todo: Update the shaders so that this isn't required
+                        if (shader.toLowerCase().includes("wreck"))
+                        {
+                            const {
+                                fallbackGeneralGlowColor = [ 4, 1.0140079259872437, 0, 1 ],
+                                minMapScaleUV = 8, // Default
+                                minGlowIntensity,
+                                maxGlowFlicker,
+                                minSharpness,
+                                minSharpnessDecalAreas,
+                                maxGlowFlickerDecalAreas
+                            } = options.wreckArea;
+
+                            // Use fire color if it exists
+                            // TODO: Replace this with SOF6 controls
+                            if (sof.faction.HasColorType(11))
+                            {
+                                sof.faction.GetColorType(11, glowColor);
+                                area.colorType = 11;
+                            }
+                            else
+                            {
+                                vec4.copy(glowColor, fallbackGeneralGlowColor);
+                            }
+
+                            const { WreckFactors = [ 0, 0, 0, 0 ] } = eff.parameters;
+
+                            WreckFactors[0] = Math.min(minMapScaleUV, WreckFactors[0]);
+
+                            if (minSharpness !== undefined)
+                            {
+                                WreckFactors[1] = Math.max(minSharpness, WreckFactors[1]);
+                            }
+
+                            if (minGlowIntensity !== undefined)
+                            {
+                                WreckFactors[2] = Math.max(minGlowIntensity, WreckFactors[2]);
+                            }
+
+                            if (maxGlowFlicker !== undefined)
+                            {
+                                WreckFactors[3] = Math.min(maxGlowFlicker, WreckFactors[3]);
+                            }
+
+                            if (areasName === "decalAreas")
+                            {
+                                if (minSharpnessDecalAreas !== undefined)
+                                {
+                                    WreckFactors[1] = Math.max(minSharpnessDecalAreas, WreckFactors[1]);
+                                }
+                                if (maxGlowFlickerDecalAreas !== undefined)
+                                {
+                                    WreckFactors[3] = Math.min(maxGlowFlickerDecalAreas, WreckFactors[3]);
+                                }
+                            }
+
+                            eff.parameters.WreckFactors = WreckFactors;
+
+                        }
+                        else
+                        {
+                            area.colorType = sof.faction.HasColorType(areaData.colorType) ? areaData.colorType : 0;
+                            sof.faction.GetColorType(area.colorType, glowColor);
+                        }
+
+                        vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
+                        eff.parameters.GeneralGlowColor = glowColor;
+                    }
+
+                    // Ensure we have an effect
+                    if (!area.effect)
+                    {
+                        area.effect = new Tw2Effect();
+                        area.effect.name = area.name + "_effect";
+                    }
+
+                    // Handle distortion
+                    // Todo: Update shaders so this isn't required
+                    if (eff.parameters.MAX_DISTORTION_OFFSET || areasName === "distortionAreas")
+                    {
+                        const value = eff.parameters.MAX_DISTORTION_OFFSET || [ 128, 0, 0, 0 ];
+                        value[0] *= options.multiplier.maxDistortionOffset;
+                        eff.parameters.MAX_DISTORTION_OFFSET = value;
+                    }
+
+                    // Update effect
+                    area.effect.SetValues(eff, { controller: this });
+
+                    //  Update from custom masks
+                    for (let i = 0; i < obj.customMasks.length; i++)
+                    {
+                        EveCustomMask.ApplyMaterials(area.effect, obj.customMasks[i], i);
+                    }
+
+                    // Add white ambient occlusion texture if an AO map doesn't exist and is required
+                    const params = area.effect.GetTextures();
+                    if (params.AoMap)
+                    {
+                        area.effect.SetTextures({ AoMap: params.AoMap || "res:/graphics/shared_texture/global/white.dds" });
+                    }
+
+                    // Handle Environments who's values are multiplied by 10
+                    if (area.effect.effectFilePath.toLowerCase().includes("quadenvironmentv5"))
+                    {
+                        const { DetailData } = area.effect.parameters;
+                        if (DetailData)
+                        {
+                            DetailData.x *= 0.1;
+                            DetailData.y *= 0.1;
+                        }
+                    }
+
+
+                    // Reuse parameters that are the same
+                    if (options.simplifyParameters)
+                    {
+                        let updated = false;
+                        for (const name in area.effect.parameters)
+                        {
+                            if (Object.prototype.hasOwnProperty.call(area.effect.parameters, name))
+                            {
+                                if (!cachedParameters[areaType])
+                                {
+                                    cachedParameters[areaType] = {};
+                                }
+
+                                if (!cachedParameters[areaType][name])
+                                {
+                                    cachedParameters[areaType][name] = area.effect.parameters[name];
+                                }
+                                else if (cachedParameters[areaType][name].EqualsValue(area.effect.parameters[name].GetValue()))
+                                {
+                                    area.effect.parameters[name] = cachedParameters[areaType][name];
+                                    updated = true;
+                                }
+                            }
+                        }
+
+                        // Testing: Rewire if required
+                        // sof.faction.RewireEffectMaterials(sofHullActualRace, area.effect);
+
+                        if (updated)
+                        {
+                            area.effect.BindParameters();
+                        }
+                    }
+                });
+            }
 
             toRemove.forEach(area =>
             {
@@ -2243,10 +3398,18 @@ export class EveSOFData extends meta.Model
 
             // Temporary
             set.effect = set.effect || new Tw2Effect();
+            const atlasAspectRatio = srcSet.atlasAspectRatio;
             set.effect.SetValues({
                 effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
                 autoParameter: true,
-                parameters: { PlaneData: [ 0, srcSet.atlasSize || 1, 0, 0 ] },
+                parameters: {
+                    PlaneData: [
+                        srcSet.usage === EveSOFDataHullPlaneSet.Usage.HAZE ? 1 : 0,
+                        srcSet.atlasSize,
+                        Math.floor(atlasAspectRatio[0]),
+                        Math.floor(atlasAspectRatio[1])
+                    ]
+                },
                 textures: {
                     Layer1Map: srcSet.layer1MapResPath,
                     Layer2Map: srcSet.layer2MapResPath,
@@ -2818,152 +3981,119 @@ export class EveSOFData extends meta.Model
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        //console.log("Creating instanced meshes");
-        // TODO: Update if there are any changes
-        if (obj.mesh && obj.mesh.constructor === Tw2InstancedMesh)
-        {
-            //return;
-        }
+        const result = this.BuildLayoutInstancedMeshes(data, sof, options);
+        if (result.container) obj.effectChildren.push(result.container);
+        return result;
+    }
 
-        if (!sof.hull.instancedMeshes || !sof.hull.instancedMeshes.length)
-        {
-            //console.log("No instanced meshes found...");
-            return;
-        }
+    /**
+     * Builds hull-authored instanced meshes at one or more parent offsets.
+     * Carbon propagates these after each layout placement's base geometry;
+     * keeping them under the generated layout root gives ccpwgl the same
+     * transforms without introducing a second render path.
+     * @param {EveSOFData} data
+     * @param {Object} sof
+     * @param {Object} options
+     * @param {Array<mat4>} [requestedOffsets]
+     * @returns {{container: EveChildContainer|null, meshes: Number, rows: Number}}
+     */
+    static BuildLayoutInstancedMeshes(data, sof, options, requestedOffsets)
+    {
+        const sources = sof.hull.instancedMeshes || [];
+        const result = { container: null, meshes: 0, rows: 0 };
+        if (!sources.length) return result;
 
-        const
-            { gl } = tw2,
-            { hull } = sof,
-            { instancedMeshes = [] } = hull;
-
-        const
-            m = mat4.create(),
-            q = quat.create(),
-            p = vec3.create(),
-            s = vec3.create(),
-            v = vec3.create();
-
+        const offsets = requestedOffsets && requestedOffsets.length
+            ? requestedOffsets
+            : [ mat4.create() ];
         const container = new EveChildContainer();
         container.name = "Instanced meshes";
-        obj.effectChildren.push(container);
+        result.container = container;
 
-        //console.dir(container);
-
-        for (let h = 0; h < instancedMeshes.length; h++)
+        for (const source of sources)
         {
-            const
-                him = instancedMeshes[h],
-                mesh = new Tw2InstancedMesh(),
-                iMesh = new Tw2GeometryMesh();
+            if (!source.instances.length) continue;
 
-            iMesh.declaration = Tw2VertexDeclaration.from([
-                { usage: "TEXCOORD", usageIndex: 8, elements: 4, attr: "attr3" },
-                { usage: "TEXCOORD", usageIndex: 9, elements: 4, attr: "attr4" },
-                { usage: "TEXCOORD", usageIndex: 10, elements: 4, attr: "attr5" },
-            ]);
-
-            iMesh.declaration.stride = 12 * 4;
-            iMesh.name = him.name;
-
-            const vertices = [];
-            for (let i = 0; i < him.instances.length; i++)
+            let instanceData = null;
+            try
             {
-                const { data } = him.instances[i];
+                const mesh = new Tw2InstancedMesh();
+                instanceData = new Tw2DirectInstanceData();
+                instanceData.SetLayout(Tw2VertexDeclaration.from(this.LayoutInstanceDeclarations));
+                instanceData.SetData(
+                    this.PackInstancedMeshInstances(source.instances, offsets),
+                    source.instances.length * offsets.length
+                );
 
-                q[0] = data[0];
-                q[1] = data[1];
-                q[2] = data[2];
-                q[3] = data[3];
-                s[0] = data[4];
-                s[1] = data[5];
-                s[2] = data[6];
-                p[0] = data[7];
-                p[1] = data[8];
-                p[2] = data[9];
-                mat4.fromRotationTranslationScale(m, q, p, s);
-                mat4.transpose(m, m);
+                mesh.geometryResPath = source.geometryResPath;
+                mesh.instanceGeometryResource = instanceData;
+                mesh.instanceMeshIndex = 0;
+                mesh.Initialize();
 
-                vertices.push(m[0]);
-                vertices.push(m[1]);
-                vertices.push(m[2]);
-                vertices.push(m[3]);
-                vertices.push(m[4]);
-                vertices.push(m[5]);
-                vertices.push(m[6]);
-                vertices.push(m[7]);
-                vertices.push(m[8]);
-                vertices.push(m[9]);
-                vertices.push(m[10]);
-                vertices.push(m[11]);
-            }
+                const child = new EveChildMesh();
+                child.name = source.name;
+                child.useSpaceObjectData = true;
+                child.useSRT = true;
+                this.SetupLayoutMeshPolicy(data, child, sof);
+                child.lowestLodVisible = source.lowestLodVisible;
+                child.mesh = mesh;
+                child._sofLayoutInstanceData = instanceData;
 
-            iMesh.bufferData = new Float32Array(vertices);
-            iMesh.bufferLength = iMesh.bufferData.length;
-            iMesh.buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, iMesh.buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, iMesh.bufferData, gl.STATIC_DRAW);
-            // Do not retain in memory unless asked to
-            if (!tw2.systemMirror) iMesh.bufferData = null;
+                const area = new Tw2MeshArea();
+                area.name = "instance";
+                area.index = 0;
+                area.count = 1;
+                child.mesh.opaqueAreas.push(area);
 
-            // Setup resource to hold results
-            const res = new Tw2GeometryRes();
-            res.meshes[0] = iMesh;
-            res.OnPrepared();
+                const config = data.generic.GetShaderConfig(source.shader, sof.hull.isSkinned);
+                const effect = area.effect = new Tw2Effect();
+                effect.name = area.name + "_effect";
+                effect.effectFilePath = config.effectFilePath;
+                effect.autoParameter = true;
+                config.textures = source.AssignTextures(config.textures);
 
-            // Complete mesh
-            mesh.geometryResPath = him.geometryResPath;
-            mesh.instanceGeometryResource = res;
-            mesh.Initialize();
+                const areaData = sof.faction.AssignAreaType(0, {});
+                Object.assign(areaData, sof.area);
+                data.AssignMaterialParameters(areaData, config.parameters);
 
-            // Setup child
-            const child = new EveChildMesh();
-            child.useSpaceObjectData = true;
-            child.useSRT = true;
-            child.mesh = mesh;
-
-            // Setup mesh area
-            const area = new Tw2MeshArea();
-            area.name = "instance";
-            area.index = 0;
-            area.count = 1;
-            child.mesh.opaqueAreas.push(area);
-
-            // Setup effect
-            const config = data.generic.GetShaderConfig(him.shader, sof.hull.isSkinned);
-
-            const effect = area.effect = new Tw2Effect();
-            effect.name = area.name + "_effect";
-            effect.effectFilePath = config.effectFilePath;
-            effect.autoParameter = true;
-
-            // Get textures
-            config.textures = him.AssignTextures(config.textures);
-
-            // Area parameters
-            const areaData = sof.faction.AssignAreaType(0, {});
-
-            // Get custom materials
-            Object.assign(areaData, sof.area);
-            data.AssignMaterialParameters(areaData, config.parameters);
-
-            // Area lights colour
-            const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
-            if (glowColor)
-            {
+                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1);
                 sof.faction.GetColorType(areaData.colorType, glowColor);
                 vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
-                config.parameters.GeneralGlowColor = glowColor; //temp
+                config.parameters.GeneralGlowColor = glowColor;
+
+                effect.SetParameters(config.parameters);
+                effect.SetTextures(config.textures);
+                effect.SetOverrides(config.overrides);
+                this.ConfigureLayoutInstancedEffect(effect);
+                effect.Initialize();
+
+                if (source.displayModifier === 5)
+                {
+                    container.objects.push(child);
+                }
+                else
+                {
+                    const quality = new EveChildContainer();
+                    quality.name = "Shader Quality Controlled Instanced Mesh";
+                    quality.displayFilter = source.displayModifier;
+                    quality.objects.push(child);
+                    container.objects.push(quality);
+                }
+
+                result.meshes++;
+                result.rows += source.instances.length * offsets.length;
             }
-
-            // Update effect
-            effect.SetParameters(config.parameters);
-            effect.SetTextures(config.textures);
-            effect.SetOverrides(config.overrides);
-            effect.Initialize();
-
-            // Add to container
-            container.objects.push(child);
+            catch (err)
+            {
+                if (instanceData) instanceData.Unload();
+                tw2.Warning({
+                    type: "Space Object Factory",
+                    message: `Could not build authored instanced mesh ${source.name}: ${err.message}`
+                });
+            }
         }
+
+        return result;
     }
 
     /**
@@ -2975,56 +4105,34 @@ export class EveSOFData extends meta.Model
      */
     static SetupLocatorSets(data, obj, sof, options)
     {
-        const { hull } = sof;
-
-        // A hull's `locatorSets` list is polymorphic: an entry is either an
-        // EveSOFDataHullLocatorSet, which carries `locators` directly, or an
-        // EveSOFDataHullLocatorSetGroup, which carries a nested list of either.
-        // Carbon flattens the tree recursively and MERGES BY NAME
-        // (EveSOFDataMgr::LoadLocatorData, cpp:1188-1218 - `hd.locatorSets[name]
-        // .push_back`), so one named set can be assembled from several groups.
-        //
-        // This used to skip groups entirely with a "not supported yet" log, and
-        // that is why smart lights drew nothing: every set they place against -
-        // primaryspotlight_01, primaryflare_01, dockinglights_01 - is authored
-        // inside a group, so the hull answered `GetLocatorsForSet` with null and
-        // no placement was ever generated. A hull with only flat sets (damage,
-        // steam, contrails) looked perfectly healthy throughout.
         const byName = new Map();
+        const hulls = sof.hulls || [ sof.hull ];
+        const offsets = this.GetSelectionHullOffsets(sof);
 
-        (function flatten(entries)
+        for (let hullIndex = 0; hullIndex < hulls.length; hullIndex++)
         {
-            for (const srcSet of entries)
+            for (const [ name, srcItems ] of this.GetHullLocatorSets(hulls[hullIndex]))
             {
-                if (!srcSet) continue;
-
-                // The group case: recurse. Groups nest, so this is not one deep.
-                if (!("locators" in srcSet))
-                {
-                    if (Array.isArray(srcSet.locatorSets)) flatten(srcSet.locatorSets);
-                    continue;
-                }
-
-                let set = byName.get(srcSet.name);
+                let set = byName.get(name);
                 if (!set)
                 {
                     set = new EveLocatorSets();
-                    set.name = srcSet.name;
-                    byName.set(srcSet.name, set);
+                    set.name = name;
+                    byName.set(name, set);
                     obj.locatorSets.push(set);
                 }
 
-                for (const srcItem of srcSet.locators)
+                for (const srcItem of srcItems)
                 {
                     const locator = new EveLocatorSetItem();
                     locator.boneIndex = srcItem.boneIndex;
                     vec3.copy(locator.scaling, srcItem.scaling);
-                    vec3.copy(locator.position, srcItem.position);
+                    vec3.add(locator.position, srcItem.position, offsets[hullIndex]);
                     quat.copy(locator.rotation, srcItem.rotation);
                     set.locators.push(locator);
                 }
             }
-        })(hull.locatorSets);
+        }
     }
 
     /**
@@ -3135,8 +4243,9 @@ export class EveSOFData extends meta.Model
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
+     * @param {Boolean} [authoredOnly=false] excludes the standalone fallback emitter
      */
-    static SetupAudio(data, obj, sof, options)
+    static SetupAudio(data, obj, sof, options, authoredOnly = false)
     {
         const { soundEmitters = [], audioPosition } = sof.hull;
 
@@ -3146,24 +4255,18 @@ export class EveSOFData extends meta.Model
         // that never appears is not.
         if (!tw2.audMan || !tw2.audMan.library)
         {
-            obj.audioEmitters = obj.audioEmitters || [];
             return obj.audioEmitters;
         }
 
-        if (obj.audioEmitters)
+        for (let i = 0; i < obj.audioEmitters.length; i++)
         {
-            for (let i = 0; i < obj.audioEmitters.length; i++)
-            {
-                tw2.audMan.ReleaseEmitter(obj.audioEmitters[i]);
-            }
+            tw2.audMan.ReleaseEmitter(obj.audioEmitters[i]);
         }
         obj.audioEmitters = [];
 
-        const canTrack = typeof obj.GetWorldTransform === "function";
-
         // Hulls without authored sound emitters still get a single ship
         // emitter at the hull's audio position, matching the game client.
-        const sources = soundEmitters.length ? soundEmitters : [ {
+        const sources = soundEmitters.length ? soundEmitters : authoredOnly ? [] : [ {
             name: "ship",
             prefix: "",
             position: audioPosition || [ 0, 0, 0 ],
@@ -3186,7 +4289,7 @@ export class EveSOFData extends meta.Model
             }
 
             const emitter = tw2.audMan.CreateEmitter(values);
-            if (canTrack) tw2.audMan.TrackEmitter(emitter, obj, source.position);
+            tw2.audMan.TrackEmitter(emitter, obj, source.position);
             obj.audioEmitters.push(emitter);
         }
 
@@ -3215,19 +4318,12 @@ export class EveSOFData extends meta.Model
 
 
     /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    /**
      * Whether a hull child or child set item is built for the given build filter.
      *
      * Carbon gates every one of these on `(buildFilter & buildFlags) == 0`
-     * (`EveSOF.cpp:1765`, `:1936`, `:2019`). ccpwgl only ever builds standalone
-     * objects, so `buildFlags` defaults to STANDALONE; the other two values exist
-     * for layout placements, which nothing walks yet.
+     * (`EveSOF.cpp:1765`, `:1936`, `:2019`). Standalone hull construction remains
+     * the default; layout plans carry the two placement flags for the placement
+     * lifecycle to consume when that lifecycle is implemented.
      *
      * @param {{ buildFilter: Number }} child
      * @param {Number} [buildFlags=EveSOFData.BuildFilter.STANDALONE]
@@ -3279,8 +4375,33 @@ export class EveSOFData extends meta.Model
         });
     }
 
-    static async SetupChildren(data, obj, sof, options)
+    /**
+     * Builds SOF-authored child effects into an explicit owned destination.
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} options
+     * @param {Number} [buildFlags=EveSOFData.BuildFilter.STANDALONE]
+     * @param {Array} [destination=obj.effectChildren]
+     * @param {Boolean} [replaceOwned=true]
+     */
+    static async SetupChildren(
+        data,
+        obj,
+        sof,
+        options,
+        buildFlags = EveSOFData.BuildFilter.STANDALONE,
+        destination = obj.effectChildren,
+        replaceOwned = true
+    )
     {
+        if (replaceOwned)
+        {
+            for (let i = destination.length - 1; i >= 0; i--)
+            {
+                if (destination[i]._isSofHullChild) destination.splice(i, 1);
+            }
+        }
 
         if (!data.enableChildren)
         {
@@ -3288,13 +4409,8 @@ export class EveSOFData extends meta.Model
                 name: "Space object factory",
                 message: "Child objects disabled"
             });
-            return;
+            return 0;
         }
-
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Child objects partially implemented"
-        });
 
         let effects;
 
@@ -3303,22 +4419,21 @@ export class EveSOFData extends meta.Model
             effects = sof.hull.childSets
                 .filter(x => sof.faction.HasVisibilityGroup(x.visibilityGroup))
                 .flatMap(x => x.items)
-                .filter(x => EveSOFData.PassesBuildFilter(x));
+                .filter(x => EveSOFData.PassesBuildFilter(x, buildFlags));
         }
         else
         {
-            effects = EveSOFData.FilterHullChildren(sof.hull.children, sof.faction.children);
+            effects = EveSOFData.FilterHullChildren(sof.hull.children, sof.faction.children, buildFlags);
         }
 
-        // Remove all children except temp trig spheres
-        for (let i = 0; i < obj.effectChildren.length; i++)
-        {
-            if (obj.effectChildren[i].name !== "TempTrigSphereContainer")
-            {
-                obj.effectChildren.splice(i, 1);
-                i--;
-            }
-        }
+        if (!effects.length) return 0;
+
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Child objects partially implemented"
+        });
+
+        const initialLength = destination.length;
 
         for (let i = 0; i < effects.length; i++)
         {
@@ -3329,9 +4444,11 @@ export class EveSOFData extends meta.Model
                 quat.copy(effect.rotation, effects[i].rotation);
                 vec3.copy(effect.translation, effects[i].translation);
                 vec3.copy(effect.scaling, effects[i].scaling);
+                effect.lowestLodVisible = effects[i].lowestLodVisible;
                 effect.UpdateValues();
 
-                obj.effectChildren.push(effect);
+                effect._isSofHullChild = true;
+                destination.push(effect);
 
                 if (typeof effect.SetInheritProperties === "function")
                 {
@@ -3346,6 +4463,8 @@ export class EveSOFData extends meta.Model
                 });
             }
         }
+
+        return destination.length - initialLength;
 
 
         /*
@@ -3446,23 +4565,22 @@ export class EveSOFData extends meta.Model
      * @param {Object} sof
      * @param {Object} [options={}]
      */
-    static async SetupControllers(data, obj, sof, options)
+    static async SetupControllers(
+        data,
+        obj,
+        sof,
+        options,
+        buildFlags = EveSOFData.BuildFilter.STANDALONE
+    )
     {
         const { controllers = [] } = sof.hull;
-        if (!controllers.length) return;
+        if (!controllers.length) return 0;
 
-        if (!obj.AddController)
-        {
-            tw2.Debug({
-                name: "Space object factory",
-                message: "Object does not support animation controllers"
-            });
-            return;
-        }
+        const initialLength = obj.controllers.length;
 
         for (let i = 0; i < controllers.length; i++)
         {
-            if (!EveSOFData.PassesBuildFilter(controllers[i])) continue;
+            if (!EveSOFData.PassesBuildFilter(controllers[i], buildFlags)) continue;
 
             try
             {
@@ -3477,6 +4595,7 @@ export class EveSOFData extends meta.Model
                 });
             }
         }
+        return obj.controllers.length - initialLength;
     }
 
     /**
@@ -3665,9 +4784,10 @@ export class EveSOFData extends meta.Model
 
     /**
      * Which build a hull child, child set item or controller belongs to.
-     * `EveSOFDataHullBuildFilter` (`EveSOFData.h:1149-1156`). Only STANDALONE is
-     * reachable today; the placement filters are selected by a layout walk
-     * (`EveSOF.cpp:3475`) that ccpwgl does not have yet.
+     * `EveSOFDataHullBuildFilter` (`EveSOFData.h:1149-1156`). Layout planning
+     * records the placement filters selected by Carbon's layout walk
+     * (`EveSOF.cpp:3475`); layout child effects and controllers consume those
+     * flags through their placement containers.
      * @type {Object<String:Number>}
      */
     static BuildFilter = {
@@ -3676,6 +4796,23 @@ export class EveSOFData extends meta.Model
         INSTANCED_PLACEMENT: 1 << 2,
         DEFAULT: 0xffffffff
     };
+
+    /** Carbon's minimum pixel size for generated modular hull meshes. */
+    static MIN_MESH_SCREEN_SIZE = 2.5;
+
+    /** Instance stream used by modular hull base meshes. */
+    static LayoutInstanceDeclarations = [
+        { usage: "TEXCOORD", usageIndex: 8, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 9, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 10, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 11, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 12, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 13, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 14, elements: 4 }
+    ];
+
+    /** Floats per modular layout instance. */
+    static LayoutInstanceFloats = 28;
 }
 
 
@@ -3731,6 +4868,17 @@ export class ErrSOFPatternNotFound extends Tw2Error
     constructor(data)
     {
         super(data, "SOF Pattern not found (%name%)");
+    }
+}
+
+/**
+ * Fires when a sof layout is not found
+ */
+export class ErrSOFLayoutNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "SOF Layout not found (%name%)");
     }
 }
 
