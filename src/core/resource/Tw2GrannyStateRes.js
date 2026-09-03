@@ -24,8 +24,8 @@ import { Tw2Resource } from "./Tw2Resource";
  * @property {Array} animationSets Animation sets carrying GR2 references.
  * @property {Array<String>} gsfReferences Resolved, deduplicated GR2 paths.
  */
-@meta.define("Tr2GrannyStateRes", true)
-export class Tr2GrannyStateRes extends Tw2Resource
+@meta.define("Tw2GrannyStateRes", true)
+export class Tw2GrannyStateRes extends Tw2Resource
 {
 
     #animationLoadError = null;
@@ -51,7 +51,7 @@ export class Tr2GrannyStateRes extends Tw2Resource
     {
         if (String(extension).toLowerCase() !== GsfReader.extension)
         {
-            throw new TypeError(`Tr2GrannyStateRes cannot load ${JSON.stringify(extension)}`);
+            throw new TypeError(`Tw2GrannyStateRes cannot load ${JSON.stringify(extension)}`);
         }
         this._requestResponseType = GsfReader.requestResponseType;
         return false;
@@ -68,11 +68,11 @@ export class Tr2GrannyStateRes extends Tw2Resource
         GsfReader.Prepare(data, this);
         if (!this.gsf?.stateMachine || !this.stateMachine)
         {
-            throw new TypeError("Tr2GrannyStateRes expected a GSF stateMachine");
+            throw new TypeError("Tw2GrannyStateRes expected a GSF stateMachine");
         }
         if (!Array.isArray(this.animationSets))
         {
-            throw new TypeError("Tr2GrannyStateRes expected animationSets to be an array");
+            throw new TypeError("Tw2GrannyStateRes expected animationSets to be an array");
         }
 
         this.gsfReferences = this.GetGStateAnimFileRefPaths();
@@ -84,7 +84,7 @@ export class Tr2GrannyStateRes extends Tw2Resource
      * Loads projected or raw GSF input through the normal resource preparation path.
      *
      * @param {ArrayBuffer|Uint8Array|Object} data GSF bytes or projected data.
-     * @returns {Tr2GrannyStateRes} This resource.
+     * @returns {Tw2GrannyStateRes} This resource.
      */
     DoLoad(data)
     {
@@ -159,7 +159,7 @@ export class Tr2GrannyStateRes extends Tw2Resource
         {
             for (const reference of (set?.sourceFileReferences || []))
             {
-                const path = Tr2GrannyStateRes.ResolveAnimPath(reference, this.path);
+                const path = Tw2GrannyStateRes.ResolveAnimPath(reference, this.path);
                 if (!path || seen.has(path)) continue;
                 seen.add(path);
                 result.push(path);
@@ -173,7 +173,7 @@ export class Tr2GrannyStateRes extends Tw2Resource
      *
      * @param {String} path Resolved GR2 path.
      * @param {*} resource Loaded GR2 resource.
-     * @returns {Tr2GrannyStateRes} This resource.
+     * @returns {Tw2GrannyStateRes} This resource.
      */
     SetAnimationResource(path, resource)
     {
@@ -206,7 +206,7 @@ export class Tr2GrannyStateRes extends Tw2Resource
     /**
      * Waits for every automatically requested animation resource.
      *
-     * @returns {Promise<Tr2GrannyStateRes>} This resource after all clips arrive.
+     * @returns {Promise<Tw2GrannyStateRes>} This resource after all clips arrive.
      */
     async WaitForAnimationResources()
     {
@@ -224,7 +224,7 @@ export class Tr2GrannyStateRes extends Tw2Resource
             const resource = await resMan.FetchResource(path);
             if (!resource)
             {
-                throw new Error(`Tr2GrannyStateRes could not load ${path}`);
+                throw new Error(`Tw2GrannyStateRes could not load ${path}`);
             }
             if (generation === this.#loadGeneration)
             {

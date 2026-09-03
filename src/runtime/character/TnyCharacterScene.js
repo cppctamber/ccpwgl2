@@ -1,10 +1,10 @@
 import { tw2 } from "global";
 import { meta } from "utils";
-import { Tr2InteriorScene } from "interior/scene/Tr2InteriorScene";
+import { Tw2InteriorScene } from "interior/scene/Tw2InteriorScene";
 
 
 /**
- * Runtime-character view of a Tr2InteriorScene.
+ * Runtime-character view of a Tw2InteriorScene.
  *
  * Characters and ordinary interior geometry remain separate runtime lists for
  * callers, but both are rendered by the wrapped scene's `dynamics` list.
@@ -21,7 +21,7 @@ export class TnyCharacterScene extends meta.Model
 
     lights = [];
 
-    constructor(wrapped = new Tr2InteriorScene(), values)
+    constructor(wrapped = new Tw2InteriorScene(), values)
     {
         super();
         if (values) this.SetValues(values);
@@ -36,9 +36,9 @@ export class TnyCharacterScene extends meta.Model
     /** Sets the interior scene that owns update, lighting, and batches. */
     SetWrapped(wrapped)
     {
-        if (!(wrapped instanceof Tr2InteriorScene))
+        if (!(wrapped instanceof Tw2InteriorScene))
         {
-            throw new TypeError("TnyCharacterScene requires a Tr2InteriorScene");
+            throw new TypeError("TnyCharacterScene requires a Tw2InteriorScene");
         }
 
         this.wrapped = wrapped;

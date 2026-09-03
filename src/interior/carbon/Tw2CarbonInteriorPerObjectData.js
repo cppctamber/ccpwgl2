@@ -243,7 +243,7 @@ export class Tw2CarbonInteriorPerObjectAdapter
         out.set(source.subarray(0, Math.min(out.length, source.length)));
         // Interior b1: ViewInverseTranspose 0-3, SunData.DirWorld 4,
         // Fog.color 5, ViewProjectionMat 6-9, ViewMat 10-13, ProjectionMat
-        // 14-17 (Tr2InteriorScene.perFrameData.vs). The two clip matrices carry
+        // 14-17 (Tw2InteriorScene.perFrameData.vs). The two clip matrices carry
         // the camera's GL depth range and a translated shader applies the
         // emitter's `2z - w` fixup on top, so they convert here for exactly
         // the reason the space packer converts regs 4 and 12.

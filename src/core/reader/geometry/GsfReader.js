@@ -7,7 +7,7 @@ import { CjsGr2Format } from "@carbonenginejs/runtime-resource/formats/gr2";
  * GSF shares the same Granny container as `.gr2`, but the payload is a
  * reflected state graph rather than render geometry. This reader projects the
  * authored state data onto the resource selected for the `.gsf` extension;
- * `Tr2GrannyStateRes` owns that contract while a legacy host may still select
+ * `Tw2GrannyStateRes` owns that contract while a legacy host may still select
  * `Tw2GeometryRes` until it updates its extension store.
  */
 export class GsfReader
@@ -16,7 +16,7 @@ export class GsfReader
     /**
      * Prepares a GSF payload on a geometry resource.
      * @param {ArrayBuffer|Uint8Array|Object} data
-     * @param {Tr2GrannyStateRes|Tw2GeometryRes} res
+     * @param {Tw2GrannyStateRes|Tw2GeometryRes} res
      */
     static Prepare(data, res)
     {

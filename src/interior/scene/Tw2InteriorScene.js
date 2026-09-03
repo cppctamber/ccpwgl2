@@ -6,8 +6,8 @@ import { Tr2InteriorLightSet } from "../lighting/Tr2InteriorLightSet";
 import { Tr2InteriorLightSource } from "../lighting/Tr2InteriorLightSource";
 
 
-@meta.define("Tr2InteriorScene", true)
-export class Tr2InteriorScene extends meta.Model
+@meta.define("Tw2InteriorScene", true)
+export class Tw2InteriorScene extends meta.Model
 {
 
     @meta.path
@@ -16,7 +16,7 @@ export class Tr2InteriorScene extends meta.Model
     @meta.boolean
     display = true;
 
-    @meta.list([ "Tr2IntSkinnedObject", "Tr2InteriorPlaceable" ])
+    @meta.list([ "Tw2IntSkinnedObject", "Tr2InteriorPlaceable" ])
     dynamics = [];
 
     @meta.list("Tr2InteriorLightSource")
@@ -58,8 +58,8 @@ export class Tr2InteriorScene extends meta.Model
     @meta.uint
     shadowSize = 1024;
 
-    _perFrameVS = Tw2RawData.from(Tr2InteriorScene.perFrameData.vs);
-    _perFramePS = Tw2RawData.from(Tr2InteriorScene.perFrameData.ps);
+    _perFrameVS = Tw2RawData.from(Tw2InteriorScene.perFrameData.vs);
+    _perFramePS = Tw2RawData.from(Tw2InteriorScene.perFrameData.ps);
     _lightSet = new Tr2InteriorLightSet();
     _selectedLights = [];
     _defaultLights = null;
@@ -193,7 +193,7 @@ export class Tr2InteriorScene extends meta.Model
      * Updates view dependent data
      * @param {mat4} [parentTransform]
      */
-    UpdateViewDependentData(parentTransform = Tr2InteriorScene.global.identity)
+    UpdateViewDependentData(parentTransform = Tw2InteriorScene.global.identity)
     {
         this.ApplyPerFrameData();
         this.ApplyInteriorLights();
@@ -246,14 +246,14 @@ export class Tr2InteriorScene extends meta.Model
      * Applies compact Carbon/legacy GLES interior per-frame data.
      * These layouts intentionally differ from EveSpaceScene's space-object
      * per-frame buffers; old managed/interior shaders read cb1/cb2 in this order.
-     * @returns {Tr2InteriorScene}
+     * @returns {Tw2InteriorScene}
      */
     ApplyPerFrameData()
     {
         device.UpdateViewProjection();
 
         const
-            g = Tr2InteriorScene.global,
+            g = Tw2InteriorScene.global,
             vs = this._perFrameVS,
             ps = this._perFramePS,
             sunDir = this.GetPerFrameSunDirection(g.vec4_0),
@@ -365,7 +365,7 @@ export class Tr2InteriorScene extends meta.Model
     {
         if (!this._defaultLights)
         {
-            this._defaultLights = Tr2InteriorScene.CreateDefaultLights();
+            this._defaultLights = Tw2InteriorScene.CreateDefaultLights();
         }
         return this._defaultLights;
     }
@@ -403,13 +403,13 @@ export class Tr2InteriorScene extends meta.Model
     /**
      * Applies default interior per-frame data for unsupported bootstrap paths
      * where interior objects are hosted by a regular EveSpaceScene.
-     * @returns {Tr2InteriorScene}
+     * @returns {Tw2InteriorScene}
      */
     static ApplyFallbackPerFrameData()
     {
         if (!this.fallbackScene)
         {
-            this.fallbackScene = new Tr2InteriorScene();
+            this.fallbackScene = new Tw2InteriorScene();
         }
         this.fallbackScene.ApplyPerFrameData();
         return this.fallbackScene;

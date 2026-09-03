@@ -729,11 +729,11 @@ export class TnyGlesCharacterAdapter
 
     _CreateObject(sex)
     {
-        const Tr2IntSkinnedObject = RequireClass(tw2, "Tr2IntSkinnedObject");
+        const Tw2IntSkinnedObject = RequireClass(tw2, "Tw2IntSkinnedObject");
         const Tr2SkinnedModel = RequireClass(tw2, "Tr2SkinnedModel");
         const Tw2Mesh = RequireClass(tw2, "Tw2Mesh");
         const TnySpaceObject = RequireRuntimeClass(this._client, tw2, "TnySpaceObject");
-        const backend = new Tr2IntSkinnedObject();
+        const backend = new Tw2IntSkinnedObject();
 
         backend.name = `${sex} character foundation proof`;
         backend.display = false;

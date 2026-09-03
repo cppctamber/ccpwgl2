@@ -17,8 +17,8 @@ import {
 } from "./Tr2InteriorAdditiveAnimation";
 
 
-@meta.define("Tr2InteriorAnimationController")
-export class Tr2InteriorAnimationController extends Tw2AnimationController
+@meta.define("Tw2InteriorAnimationController")
+export class Tw2InteriorAnimationController extends Tw2AnimationController
 {
 
     @meta.struct("Tr2InteriorBoneOffset")
@@ -230,7 +230,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
             into = this.ResolveReferenceClip(intoSource),
             delta = this.ResolveReferenceClip(deltaSource);
 
-        if (into && into !== Tr2InteriorAnimationController.IDENTITY_REFERENCE && into !== Tr2InteriorAnimationController.CURRENT_POSE)
+        if (into && into !== Tw2InteriorAnimationController.IDENTITY_REFERENCE && into !== Tw2InteriorAnimationController.CURRENT_POSE)
         {
             const intoClip = into.clip || into;
             if (intoClip.name)
@@ -258,7 +258,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
             additiveMask: maskSource,
             amount: amount !== undefined ? amount : 1,
             base: baseSource !== undefined ? baseSource : "Identity",
-            into: intoSource !== undefined ? intoSource : Tr2InteriorAnimationController.CURRENT_POSE,
+            into: intoSource !== undefined ? intoSource : Tw2InteriorAnimationController.CURRENT_POSE,
             layerName,
             mask: layerName
         });
@@ -323,13 +323,13 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
     ResolveReferenceClip(source)
     {
         if (source === undefined || source === null || source === "") return null;
-        if (source === Tr2InteriorAnimationController.CURRENT_POSE || source === "CurrentPose")
+        if (source === Tw2InteriorAnimationController.CURRENT_POSE || source === "CurrentPose")
         {
-            return Tr2InteriorAnimationController.CURRENT_POSE;
+            return Tw2InteriorAnimationController.CURRENT_POSE;
         }
-        if (source === Tr2InteriorAnimationController.IDENTITY_REFERENCE || source === "Identity")
+        if (source === Tw2InteriorAnimationController.IDENTITY_REFERENCE || source === "Identity")
         {
-            return Tr2InteriorAnimationController.IDENTITY_REFERENCE;
+            return Tw2InteriorAnimationController.IDENTITY_REFERENCE;
         }
         if (typeof source !== "string") return source;
 
@@ -338,8 +338,8 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
         while (typeof current === "string" && !seen.has(current))
         {
             seen.add(current);
-            if (current === "Identity") return Tr2InteriorAnimationController.IDENTITY_REFERENCE;
-            if (current === "CurrentPose") return Tr2InteriorAnimationController.CURRENT_POSE;
+            if (current === "Identity") return Tw2InteriorAnimationController.IDENTITY_REFERENCE;
+            if (current === "CurrentPose") return Tw2InteriorAnimationController.CURRENT_POSE;
             if (!Object.prototype.hasOwnProperty.call(this.referenceClips, current))
             {
                 return this.GetAnimation(current);
@@ -526,7 +526,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
     {
         if (!this.update || !this.models) return;
 
-        const g = Tr2InteriorAnimationController.global;
+        const g = Tw2InteriorAnimationController.global;
         let changed = false;
 
         const animations = this.animations
@@ -546,7 +546,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
                 layerAmount = Number.isFinite(animation._interiorAmount) ? animation._interiorAmount : 1,
                 mask = this.ResolveMask(animation._interiorMaskSource),
                 reference = animation._interiorUseRestReference
-                    ? Tr2InteriorAnimationController.REST_REFERENCE
+                    ? Tw2InteriorAnimationController.REST_REFERENCE
                     : this.ResolveReferenceClip(animation._interiorReferenceSource);
 
             if (animationWeight === 0 || layerAmount === 0) continue;
@@ -563,13 +563,13 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
                         bone = track.bone,
                         boneIndex = bone._skeletonIndex,
                         maskWeight = animation._interiorMaskSpecified
-                            ? Tr2InteriorAnimationController.GetMaskWeight(mask, bone, boneIndex)
+                            ? Tw2InteriorAnimationController.GetMaskWeight(mask, bone, boneIndex)
                             : 1,
                         amount = animationWeight * layerAmount * maskWeight;
 
                     if (amount === 0) continue;
 
-                    Tr2InteriorAnimationController.SampleTrack(
+                    Tw2InteriorAnimationController.SampleTrack(
                         animation,
                         track,
                         g.position_1,
@@ -577,7 +577,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
                         g.mat3_1,
                         animation.animationRes.duration
                     );
-                    Tr2InteriorAnimationController.SampleReferencePose(
+                    Tw2InteriorAnimationController.SampleReferencePose(
                         reference,
                         animation,
                         track,
@@ -614,9 +614,9 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
             const bones = this.models[i].bones;
             for (let j = 0; j < bones.length; j++)
             {
-                Tr2InteriorAnimationController.ComposeBoneLocalTransform(bones[j]);
+                Tw2InteriorAnimationController.ComposeBoneLocalTransform(bones[j]);
             }
-            Tr2InteriorAnimationController.RebuildModelBonePalettes(this.models[i]);
+            Tw2InteriorAnimationController.RebuildModelBonePalettes(this.models[i]);
         }
     }
 
@@ -639,7 +639,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
 
             if (changed)
             {
-                Tr2InteriorAnimationController.RebuildModelBonePalettes(model);
+                Tw2InteriorAnimationController.RebuildModelBonePalettes(model);
             }
         }
     }
@@ -683,9 +683,9 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
                 }
                 if (bw <= 0) continue;
 
-                Tr2InteriorAnimationController.SampleTrack(animation, track, position, orientation, scale, res.duration);
+                Tw2InteriorAnimationController.SampleTrack(animation, track, position, orientation, scale, res.duration);
 
-                Tr2InteriorAnimationController.BlendAnimationPose(bone, position, orientation, scale, bw);
+                Tw2InteriorAnimationController.BlendAnimationPose(bone, position, orientation, scale, bw);
             }
         }
     }
@@ -703,7 +703,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
     {
         if (track.trackRes.position)
         {
-            Tr2InteriorAnimationController.SampleCurve(
+            Tw2InteriorAnimationController.SampleCurve(
                 track.trackRes.position,
                 animation.time,
                 position,
@@ -718,7 +718,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
 
         if (track.trackRes.orientation)
         {
-            Tr2InteriorAnimationController.SampleCurve(
+            Tw2InteriorAnimationController.SampleCurve(
                 track.trackRes.orientation,
                 animation.time,
                 orientation,
@@ -735,7 +735,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
 
         if (track.trackRes.scaleShear)
         {
-            Tr2InteriorAnimationController.SampleCurve(
+            Tw2InteriorAnimationController.SampleCurve(
                 track.trackRes.scaleShear,
                 animation.time,
                 scale,
@@ -766,30 +766,30 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
     /** Samples the Base side of an additive operation for one bone. */
     static SampleReferencePose(reference, deltaAnimation, deltaTrack, bone, position, orientation, scale)
     {
-        if (reference === Tr2InteriorAnimationController.IDENTITY_REFERENCE)
+        if (reference === Tw2InteriorAnimationController.IDENTITY_REFERENCE)
         {
-            Tr2InteriorAnimationController.SetIdentityPose(position, orientation, scale);
+            Tw2InteriorAnimationController.SetIdentityPose(position, orientation, scale);
             return;
         }
-        if (reference === Tr2InteriorAnimationController.CURRENT_POSE)
+        if (reference === Tw2InteriorAnimationController.CURRENT_POSE)
         {
-            Tr2InteriorAnimationController.CopyBonePose(bone, position, orientation, scale);
+            Tw2InteriorAnimationController.CopyBonePose(bone, position, orientation, scale);
             return;
         }
-        if (reference === Tr2InteriorAnimationController.REST_REFERENCE)
+        if (reference === Tw2InteriorAnimationController.REST_REFERENCE)
         {
-            Tr2InteriorAnimationController.CopyRestPose(bone, position, orientation, scale);
+            Tw2InteriorAnimationController.CopyRestPose(bone, position, orientation, scale);
             return;
         }
 
         const
             descriptor = reference && reference.clip ? reference : null,
             clip = descriptor ? descriptor.clip : reference,
-            track = Tr2InteriorAnimationController.FindReferenceTrack(clip, deltaTrack, bone);
+            track = Tw2InteriorAnimationController.FindReferenceTrack(clip, deltaTrack, bone);
 
         if (!track)
         {
-            Tr2InteriorAnimationController.CopyRestPose(bone, position, orientation, scale);
+            Tw2InteriorAnimationController.CopyRestPose(bone, position, orientation, scale);
             return;
         }
 
@@ -807,7 +807,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
                     ? !!clip.cycle
                     : !!deltaAnimation.cycle;
 
-        Tr2InteriorAnimationController.SampleTrack(
+        Tw2InteriorAnimationController.SampleTrack(
             { time, cycle },
             track,
             position,
@@ -875,7 +875,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
 
     static ComposeBoneLocalTransform(bone)
     {
-        const rotation = mat4.fromQuat(Tr2InteriorAnimationController.global.mat4_0, bone._blendRotation);
+        const rotation = mat4.fromQuat(Tw2InteriorAnimationController.global.mat4_0, bone._blendRotation);
         mat4.fromMat3(bone.localTransform, bone._blendScaleShear);
         mat4.multiply(bone.localTransform, bone.localTransform, rotation);
         bone.localTransform[12] = bone._blendPosition[0];
@@ -940,7 +940,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
      * Adds animations without the base controller's duplicate-index bug.
      * Kept local to the interior controller so shared animation behaviour is
      * unchanged while late character resources can safely attach track groups.
-     * @param {Tr2InteriorAnimationController} controller
+     * @param {Tw2InteriorAnimationController} controller
      * @param {*} resource
      */
     static AddAnimationsFromRes(controller, resource)
@@ -1001,7 +1001,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
     /**
      * Rebuilds cached animation data and binds mesh-only character parts to the
      * first skeleton resource owned by the controller.
-     * @param {Tr2InteriorAnimationController} controller
+     * @param {Tw2InteriorAnimationController} controller
      * @param {*} resource
      */
     static DoRebuildCachedData(controller, resource)

@@ -7,7 +7,7 @@ import { vec3, vec4 } from "math";
  *
  * Source: carbonengine trinity/trinity/Interior/Tr2InteriorLightSource.h/.cpp/_Blue.cpp.
  * A point/spot light for interior (ship-interior) scenes, managed by
- * `Tr2InteriorLightSet` at the `Tr2InteriorScene` level (an entirely
+ * `Tr2InteriorLightSet` at the `Tw2InteriorScene` level (an entirely
  * separate light-collection path from Tr2LightManager/space-scene lights -
  * see the survey report's LIGHT COLLECTION section).
  *

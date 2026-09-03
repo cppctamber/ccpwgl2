@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { box3, mat4, sph3 } from "math";
 import { WglTransform } from "core";
 import { GLESPerObjectDataInterior } from "../Tr2InteriorPerObjectData";
-import { Tr2InteriorScene } from "./Tr2InteriorScene";
+import { Tw2InteriorScene } from "./Tw2InteriorScene";
 
 
 @meta.define("Tr2InteriorPlaceable", true)
@@ -134,7 +134,7 @@ export class Tr2InteriorPlaceable extends WglTransform
     }
 
     /**
-     * Applies interior frame constants when hosted outside Tr2InteriorScene.
+     * Applies interior frame constants when hosted outside Tw2InteriorScene.
      */
     ApplyInteriorPerFrameData()
     {
@@ -145,7 +145,7 @@ export class Tr2InteriorPlaceable extends WglTransform
         }
         else
         {
-            scene = Tr2InteriorScene.ApplyFallbackPerFrameData();
+            scene = Tw2InteriorScene.ApplyFallbackPerFrameData();
         }
         this._interiorFrameScene = scene;
         return scene;

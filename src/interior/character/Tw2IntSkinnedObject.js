@@ -2,11 +2,11 @@ import { meta, perArrayChild } from "utils";
 import { box3, mat4, sph3, vec3 } from "math";
 import { WglTransform } from "core";
 import { GLESPerObjectDataInterior } from "../Tr2InteriorPerObjectData";
-import { Tr2InteriorAnimationController } from "./Tr2InteriorAnimationController";
-import { Tr2InteriorScene } from "../scene/Tr2InteriorScene";
+import { Tw2InteriorAnimationController } from "./Tw2InteriorAnimationController";
+import { Tw2InteriorScene } from "../scene/Tw2InteriorScene";
 
-@meta.define("Tr2IntSkinnedObject", true)
-export class Tr2IntSkinnedObject extends WglTransform
+@meta.define("Tw2IntSkinnedObject", true)
+export class Tw2IntSkinnedObject extends WglTransform
 {
 
     @meta.boolean
@@ -15,8 +15,8 @@ export class Tr2IntSkinnedObject extends WglTransform
     @meta.float
     depthOffset = 0;
 
-    @meta.struct("Tr2InteriorAnimationController")
-    animation = new Tr2InteriorAnimationController();
+    @meta.struct("Tw2InteriorAnimationController")
+    animation = new Tw2InteriorAnimationController();
 
     @meta.struct("Tr2SkinnedModel")
     visualModel = null;
@@ -301,7 +301,7 @@ export class Tr2IntSkinnedObject extends WglTransform
     }
 
     /**
-     * Applies interior frame constants when hosted outside Tr2InteriorScene.
+     * Applies interior frame constants when hosted outside Tw2InteriorScene.
      */
     ApplyInteriorPerFrameData()
     {
@@ -312,7 +312,7 @@ export class Tr2IntSkinnedObject extends WglTransform
         }
         else
         {
-            scene = Tr2InteriorScene.ApplyFallbackPerFrameData();
+            scene = Tw2InteriorScene.ApplyFallbackPerFrameData();
         }
         this._interiorFrameScene = scene;
         return scene;

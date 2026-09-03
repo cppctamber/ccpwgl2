@@ -1,4 +1,4 @@
 export * from "./Tr2InteriorPlaceable";
-export * from "./Tr2InteriorScene";
+export * from "./Tw2InteriorScene";
 export * from "./WodPlaceableRes";
 

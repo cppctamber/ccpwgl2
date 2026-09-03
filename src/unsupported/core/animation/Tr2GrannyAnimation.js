@@ -10,7 +10,7 @@ import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
  * mesh, a station's, anything Carbon hands an `ITr2AnimationUpdater`. It is
  * declared so those containers can be READ; nothing here plays an animation.
  *
- * ## Why it is not `Tr2InteriorAnimationController`
+ * ## Why it is not `Tw2InteriorAnimationController`
  *
  * That class claimed this ccp name and is not this class. It is the character
  * editor's animation controller — additive blend modes, layer weights, additive
@@ -21,7 +21,7 @@ import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
  * So a ship reading `animationUpdater` was constructing the character editor's
  * controller: the wrong type, missing three of the four properties the wire
  * actually carries. The interior controller keeps its own name, which is what
- * `Tr2IntSkinnedObject` already references it by.
+ * `Tw2IntSkinnedObject` already references it by.
  *
  * ## What is here
  *
