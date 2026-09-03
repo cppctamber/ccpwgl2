@@ -75,8 +75,15 @@ export class EveSOFDataPattern extends meta.Model
             throw new ErrSOFProjectionNotFound({ pattern: this.name, projection: hullName });
         }
 
+        // blendMode is carried deliberately. This rebuild is what the setups
+        // actually see - `sof.pattern` IS this object - so anything left out
+        // here is invisible to `GetPatternBlendMode` no matter what the pattern
+        // holds. That is what happened to the `skinr` sidecar it replaced: set
+        // on the pattern, dropped here, never read, and every mask silently
+        // fell back to overlay.
         return {
             name: this.name,
+            blendMode: this.blendMode,
             layer1: this.layer1,
             layer2: this.layer2,
             transformLayer1: this.projections[index].transformLayer1,
