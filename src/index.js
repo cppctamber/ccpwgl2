@@ -2,30 +2,16 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import "reflect-metadata";
 
-// SMART LIGHTS: geometry works, emitters do not.
+// SMART LIGHTS: geometry and primary point/spot emission work.
 //
 // `src/eve/smartLights/**`, `src/eve/distribution/**` and `src/eve/lights/**`
 // are ported, exported from `src/eve/index.js` and registered. As of
 // 2026-08-22 `EveChildSmartLightSet` hydrates for real - it used to discard
 // `distribution` and `lightGroups` through `skippedObject`, so a hull carrying
-// smart lights parsed cleanly and built nothing - and `EveSmartLightQuad`
-// renders, de-instanced onto its own buffer the way `EveChildQuad` already
-// does. What is still missing, in the order it has to be solved:
-//
-//  1. `EveSmartLightMesh` has never been ported, here or upstream. Carbon's
-//     extends `EveChildInstanceMeshRenderer`, so it needs that base first.
-//  2. `EveSmartLightPointLight.GetLights` was transcribed faithfully from
-//     runtime-trinity and still speaks Carbon's contract - it pushes a
-//     `Tr2LightManager::PerLightData` record through `lightManager.AddLight`.
-//     ccpwgl's sink is `Tw2CarbonLightCollector.Collect(rows)`, reached as
-//     `GetLights(collector, parentContext)`, with a different row shape. That
-//     bridge is what makes a smart light actually EMIT light, and it is
-//     deliberately second - operator direction is geometry first.
-//  3. Nothing calls `RegisterSecondaryLightSource`, so placements exist but no
-//     object offers itself as a bounce source.
-//
-// See NOTES-shlighting-2026-08-17.md and
-// AGENT-HANDOVER-smart-lights-2026-08-22.md.
+// smart lights parsed cleanly and built nothing. `EveSmartLightQuad` now
+// de-instances onto its own buffer, `EveSmartLightMesh` uses the instanced mesh
+// path, and point/spot groups feed `Tw2CarbonLightCollector`. Secondary bounce
+// registration remains outside this implemented primary-light path.
 import { config } from "./config";
 import { tw2 } from "./global";
 import * as runtime from "./runtime";
@@ -34,6 +20,7 @@ import { pickingShaders } from "./picking";
 import { Tw2GpuParticleShaders } from "./unsupported/particle/shaders";
 
 tw2.runtime = runtime;
+
 tw2.Register(config);
 tw2.Register({ shaders: deprecatedShaders });
 

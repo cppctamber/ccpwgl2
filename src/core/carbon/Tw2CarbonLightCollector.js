@@ -115,10 +115,9 @@ class Tw2CarbonLightCollector
      *
      * This method existing is also what connects the two light contracts in
      * this codebase. The smart-light classes were ported against Carbon's
-     * `GetLights(lightManager)` + `AddLight` shape and called
-     * `lightManager?.AddLight?.(record)` - optional chaining on the METHOD, so
-     * against a collector that had no AddLight, every smart light silently went
-     * nowhere and nothing reported it.
+     * `GetLights(lightManager)` + `AddLight` shape. Producers now call this
+     * owned contract directly, so a missing adapter fails at the boundary
+     * instead of silently dropping every smart light.
      *
      * @param {Object} light - a PerLightData-shaped record; see Collect
      * @returns {Object|null} the stored copy, or null if there was nothing to store

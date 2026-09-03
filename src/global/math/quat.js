@@ -63,3 +63,28 @@ quat.fromUnitVectors = function(out, from, to)
     }
     return quat.normalize(out, out);
 };
+
+/**
+ * Creates a Carbon yaw/pitch/roll quaternion.
+ * @param {quat} out
+ * @param {Number} yaw
+ * @param {Number} pitch
+ * @param {Number} roll
+ * @returns {quat}
+ */
+quat.fromYawPitchRoll = function(out, yaw, pitch, roll)
+{
+    const
+        sinYaw = Math.sin(yaw / 2),
+        cosYaw = Math.cos(yaw / 2),
+        sinPitch = Math.sin(pitch / 2),
+        cosPitch = Math.cos(pitch / 2),
+        sinRoll = Math.sin(roll / 2),
+        cosRoll = Math.cos(roll / 2);
+
+    out[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
+    out[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
+    out[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
+    out[3] = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
+    return out;
+};

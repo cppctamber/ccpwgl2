@@ -1,6 +1,10 @@
 import { tw2 } from "global";
-import { isDNA, isString } from "utils";
+import { isString } from "utils";
 import { EveSOFData } from "./EveSOFData";
+import {
+    EveSOFDataHullExtensionBucket,
+    EveSOFDataHullExtensionPlacementGroup
+} from "./layout";
 
 
 /**
@@ -113,18 +117,143 @@ export class EveSOFDataHandler
     {
         const names = this.constructor.ParseDnaNames(dna);
 
-        const [ , faction, race ] = await Promise.all([
-            this.FetchHull(names.hull),
+        const [ faction, race, ...hulls ] = await Promise.all([
             this.FetchFaction(names.faction),
-            this.FetchRace(names.race)
+            this.FetchRace(names.race),
+            ...names.hulls.map(name => this.FetchHull(name))
         ]);
 
-        // Components referenced by the fetched components themselves
-        const materials = new Set(names.materials);
-        const patterns = new Set(names.patterns);
+        await this._EnsureDependencies(names.materials, names.patterns, faction, race);
+
+        const visited = new Set();
+        await Promise.all(names.layouts.map(name => this._EnsureLayout(name, {
+            faction: names.faction,
+            race: names.race,
+            hulls
+        }, visited)));
+
+        return this.data;
+    }
+
+    /**
+     * Ensures the dependency closure for a lazily loaded layout.
+     * The inherited faction/race are part of the key because the same layout
+     * can be reached through different parent descriptors in one request.
+     * @param {String} layoutName
+     * @param {{faction: String, race: String, hulls: Array<Object>}} context
+     * @param {Set<String>} visited
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _EnsureLayout(layoutName, context, visited)
+    {
+        const name = this.constructor.NormalizeDnaName(layoutName);
+        if (!name) throw new TypeError("Invalid sof layout name");
+
+        const hullKey = context.hulls.map(hull => hull.name.toLowerCase()).join(";");
+        const key = `${name}:${hullKey}:${context.faction}:${context.race}`;
+        if (visited.has(key)) return;
+        visited.add(key);
+
+        const layout = await this.FetchLayout(name);
+        const visitedObjects = new Set();
+        const locatorNames = new Set();
+        for (const hull of context.hulls)
+        {
+            for (const locatorName of EveSOFData.GetHullLocatorSets(hull).keys())
+            {
+                locatorNames.add(locatorName);
+            }
+        }
+
+        const visit = async (placement) =>
+        {
+            if (visitedObjects.has(placement)) return;
+            visitedObjects.add(placement);
+
+            if (placement instanceof EveSOFDataHullExtensionPlacementGroup
+                || placement instanceof EveSOFDataHullExtensionBucket)
+            {
+                await Promise.all(placement.placements.map(visit));
+                return;
+            }
+
+            // Planning checks the current hull's managed locator sets before it
+            // resolves an extension descriptor. Matching that order keeps lazy
+            // loading lazy: Deathless authors hundreds of library placements
+            // that are not reachable from mdeha03 and need no dependencies.
+            if (!locatorNames.has(placement.locatorSetName)) return;
+
+            const descriptor = placement.descriptor;
+            const hulls = String(descriptor.hull || "")
+                .split(";")
+                .map(this.constructor.NormalizeDnaName)
+                .filter(Boolean);
+            if (!hulls.length)
+            {
+                throw new TypeError(`Invalid hull descriptor in sof layout ${name}`);
+            }
+
+            const factionName = this.constructor.NormalizeDnaName(descriptor.faction) || context.faction;
+            const raceName = this.constructor.NormalizeDnaName(descriptor.race) || context.race;
+            const [ faction, race, ...extensionHulls ] = await Promise.all([
+                this.FetchFaction(factionName),
+                this.FetchRace(raceName),
+                ...hulls.map(hullName => this.FetchHull(hullName).catch((err) =>
+                {
+                    // Layout extensions are optional authored placements. Carbon
+                    // validates their DNA at emission time and skips an invalid
+                    // extension instead of rejecting the complete parent object.
+                    // Preserve that boundary here: the detached planner already
+                    // records invalid-extension-dna when ParseDNA cannot resolve
+                    // the hull, but it cannot do so if lazy prefetch rejects first.
+                    tw2.Warning({
+                        type: "Space Object Factory",
+                        message: `Could not fetch layout hull ${hullName}: ${err.message}`
+                    });
+                }))
+            ]);
+
+            const materials = [
+                descriptor.material1,
+                descriptor.material2,
+                descriptor.material3,
+                descriptor.material4
+            ].map(this.constructor.NormalizeDnaName).filter(Boolean);
+            const pattern = this.constructor.NormalizeDnaName(descriptor.pattern);
+            await this._EnsureDependencies(materials, pattern ? [ pattern ] : [], faction, race);
+
+            const nestedLayout = this.constructor.NormalizeDnaName(descriptor.layout);
+            if (nestedLayout)
+            {
+                await this._EnsureLayout(nestedLayout, {
+                    faction: factionName,
+                    race: raceName,
+                    hulls: extensionHulls.filter(Boolean)
+                }, visited);
+            }
+        };
+
+        await Promise.all(layout.placements.map(visit));
+    }
+
+    /**
+     * Ensures explicitly named and faction/race-derived material and pattern
+     * dependencies without making a missing optional cosmetic fatal.
+     * @param {Array<String>} materialNames
+     * @param {Array<String>} patternNames
+     * @param {*} faction
+     * @param {*} race
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _EnsureDependencies(materialNames, patternNames, faction, race)
+    {
+        const materials = new Set(materialNames);
+        const patterns = new Set(patternNames);
         this.constructor.CollectMaterialNames(faction, materials);
         this.constructor.CollectMaterialNames(race, materials);
-        if (faction && faction.defaultPatternName) patterns.add(faction.defaultPatternName);
+        if (faction.defaultPatternName) patterns.add(faction.defaultPatternName.toLowerCase());
 
         await Promise.all([
             ...Array.from(materials, (name) => this.FetchMaterial(name).catch((err) =>
@@ -136,8 +265,6 @@ export class EveSOFDataHandler
                 tw2.Warning({ type: "Space Object Factory", message: `Could not fetch sof pattern ${name}: ${err.message}` });
             }))
         ]);
-
-        return this.data;
     }
 
     /**
@@ -220,6 +347,11 @@ export class EveSOFDataHandler
     {
         await this.EnsureBoot();
 
+        if (!isString(nameOrPath) || !nameOrPath)
+        {
+            throw new TypeError(`Invalid sof ${section} name`);
+        }
+
         const isPath = nameOrPath.includes("/");
         const name = (isPath ? nameOrPath.split("/").pop().replace(/\.black$/i, "") : nameOrPath).toLowerCase();
 
@@ -247,19 +379,13 @@ export class EveSOFDataHandler
      * Extracts component names from a dna string without needing any sof
      * data present (mirrors EveSOFData.ParseDNA's format).
      * @param {String} dna
-     * @returns {{ hull: String, faction: String, race: String, materials: Array<String>, patterns: Array<String>, resPathInsert: String|null }}
+     * @returns {{ hull: String, hulls: Array<String>, faction: String, race: String, materials: Array<String>, patterns: Array<String>, layouts: Array<String>, resPathInsert: String|null }}
      */
     static ParseDnaNames(dna)
     {
-        if (!isDNA(dna)) throw new TypeError(`Invalid dna: ${dna}`);
-        const parts = dna.toLowerCase().split(":");
-
-        const commands = {};
-        for (let i = 3; i < parts.length; ++i)
-        {
-            const subParts = parts[i].split("?");
-            if (subParts[1] !== undefined) commands[subParts[0].toUpperCase()] = subParts[1].split(";");
-        }
+        const { parts, commands } = EveSOFData.ParseDNACommands(dna);
+        const unique = values => [ ...new Set(values.map(this.NormalizeDnaName).filter(Boolean)) ];
+        const hulls = unique(parts[0].split(";"));
 
         const materials = [];
         const m = commands["MESH"] || commands["MATERIAL"];
@@ -274,13 +400,26 @@ export class EveSOFDataHandler
         }
 
         return {
-            hull: parts[0],
+            hull: hulls[0],
+            hulls,
             faction: parts[1],
             race: parts[2],
-            materials,
-            patterns,
+            materials: unique(materials),
+            patterns: unique(patterns),
+            layouts: unique(commands["LAYOUT"] || []),
             resPathInsert: commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : null
         };
+    }
+
+    /**
+     * Normalizes an optional DNA component name.
+     * @param {*} value
+     * @returns {String}
+     */
+    static NormalizeDnaName(value)
+    {
+        value = isString(value) ? value.toLowerCase() : "";
+        return value && value !== "none" ? value : "";
     }
 
     /**

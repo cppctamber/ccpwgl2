@@ -9,3 +9,4 @@ export * from "./EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings"
 export * from "./EveSOFDataHullExtensionPlacementDistributionRandomChance";
 export * from "./EveSOFDataHullExtensionPlacementDistributionParentMatch";
 export * from "./EveSOFDataHullExtensionPlacementDistributionPlacement";
+export * from "./planSofLayouts";

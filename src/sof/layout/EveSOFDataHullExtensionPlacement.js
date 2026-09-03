@@ -1,5 +1,7 @@
 import { meta } from "utils";
 import { vec3 } from "math";
+import { EveSOFDNADescriptor } from "../shared/EveSOFDNADescriptor";
+import { EveSOFDataHullExtensionPlacementDistributionPlacement } from "./EveSOFDataHullExtensionPlacementDistributionPlacement";
 
 
 @meta.define("EveSOFDataHullExtensionPlacement", true)
@@ -34,10 +36,10 @@ export class EveSOFDataHullExtensionPlacement extends meta.Model
     isShared = false;
 
     @meta.struct("EveSOFDNADescriptor")
-    descriptor = null;
+    descriptor = new EveSOFDNADescriptor();
 
     @meta.struct("EveSOFDataHullExtensionPlacementDistributionPlacement")
-    distribution = null;
+    distribution = new EveSOFDataHullExtensionPlacementDistributionPlacement();
 
     @meta.list() // "EveSOFDataHulLExtensionPlacementDistribution"
     distributionConditions = [];

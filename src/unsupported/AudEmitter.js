@@ -16,6 +16,9 @@ export class AudEmitter extends meta.Model
     @meta.string
     name = "";
 
+    @meta.string
+    eventPrefix = "";
+
     @meta.boolean
     normalizeAttenuationScaling = true;
 
@@ -36,7 +39,7 @@ export class AudEmitter extends meta.Model
         if (!this._backing)
         {
             const backing = new CjsAudEmitter();
-            backing.Initialize(this.name);
+            backing.Initialize(this.name, this.eventPrefix);
             backing.normalizeAttenuationScaling = !!this.normalizeAttenuationScaling;
             if (this.maxNormalizedScalingFactor !== undefined)
             {
@@ -97,7 +100,8 @@ export class AudEmitter extends meta.Model
      */
     SetPrefix(prefix)
     {
-        return this.GetBackingEmitter().SetPrefix(prefix);
+        this.eventPrefix = String(prefix || "");
+        return this.GetBackingEmitter().SetPrefix(this.eventPrefix);
     }
 
     /**

@@ -25,6 +25,17 @@ export class EveChildContainer extends EveChild
     @meta.list("Tr2Controller")
     controllers = [];
 
+    /** Runtime-audio emitters owned by this transformed child container. */
+    audioEmitters = [];
+
+    /**
+     * Object whose Granny updater is controlled by this container's controllers.
+     * Runtime-only: Carbon exposes this as a read-only interface reference rather
+     * than persisted child-container data.
+     * @type {?EveChildMesh}
+     */
+    animationOwner = null;
+
     _lodBoundingSphereScratch = sph3.create();
 
     // Sticky record of the controller variables set on this container, mirroring
@@ -123,15 +134,61 @@ export class EveChildContainer extends EveChild
         for (let i = 0; i < this.controllers.length; i++)
         {
             const controller = this.controllers[i];
-            if (!controller) continue;
-            const linked = controller.IsLinked ? controller.IsLinked() : false;
-            if (!linked && controller.Initialize)
-            {
-                controller.Initialize(this);
-            }
+            if (!controller.IsLinked()) controller.Initialize(this);
         }
         this._controllersLinked = true;
         this.ReplayControllerVariables();
+    }
+
+    /**
+     * Adds and initializes a controller owned by this container.
+     * @param {Tr2Controller|Tr2ControllerReference} controller
+     */
+    AddController(controller)
+    {
+        if (this.controllers.includes(controller)) return;
+        this.controllers.push(controller);
+        controller.Initialize(this);
+        this._controllersLinked = true;
+        this.ReplayControllerVariables();
+    }
+
+    /**
+     * Sets the object whose animation controller is addressed by this container.
+     * @param {?EveChildMesh} animationOwner
+     */
+    SetAnimationOwner(animationOwner)
+    {
+        this.animationOwner = animationOwner;
+    }
+
+    /**
+     * Gets the animation controller owned by the assigned child mesh.
+     * @returns {Tr2GrannyAnimation|null}
+     */
+    GetAnimationController()
+    {
+        return this.animationOwner ? this.animationOwner.GetAnimationController() : null;
+    }
+
+    /**
+     * Copies this container's current local-to-world transform.
+     * @param {mat4} [out]
+     * @returns {mat4}
+     */
+    GetLocalToWorldTransform(out = mat4.create())
+    {
+        return mat4.copy(out, this._worldTransform);
+    }
+
+    /**
+     * ccpwgl transform-owner alias used by runtime services such as audio.
+     * @param {mat4} [out]
+     * @returns {mat4}
+     */
+    GetWorldTransform(out = mat4.create())
+    {
+        return this.GetLocalToWorldTransform(out);
     }
 
     /**
@@ -288,6 +345,56 @@ export class EveChildContainer extends EveChild
     StopCurveSet(name)
     {
         return StopCurveSetOn(this, name, [ this.objects ]);
+    }
+
+    /** Plays every owned curve set and recurses into child objects. */
+    PlayAllCurveSets()
+    {
+        if (this.display === false) return false;
+
+        let played = false;
+
+        for (let i = 0; i < this.curveSets.length; i++)
+        {
+            this.curveSets[i].ResetTimeRange();
+            this.curveSets[i].Play();
+            played = true;
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            if (this.objects[i].PlayAllCurveSets()) played = true;
+        }
+
+        return played;
+    }
+
+    /** Stops every owned curve set and recurses into child objects. */
+    StopAllCurveSets()
+    {
+        let stopped = false;
+
+        for (let i = 0; i < this.curveSets.length; i++)
+        {
+            this.curveSets[i].Stop();
+            stopped = true;
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            if (this.objects[i].StopAllCurveSets()) stopped = true;
+        }
+
+        return stopped;
+    }
+
+    /** Forwards a procedural-container variable through this child tree. */
+    SetProceduralContainerVariable(name, value)
+    {
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].SetProceduralContainerVariable(name, value);
+        }
     }
 
     /**
@@ -682,7 +789,7 @@ export class EveChildContainer extends EveChild
         for (let i = 0; i < this.lights.length; i++)
         {
             const light = this.lights[i];
-            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
+            if (!light) continue;
 
             light.Update(dt, this._worldTransform, bones);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
@@ -691,7 +798,7 @@ export class EveChildContainer extends EveChild
         for (let i = 0; i < this.objects.length; i++)
         {
             const child = this.objects[i];
-            if (child && typeof child.GetLights === "function") child.GetLights(collector, parentContext);
+            if (child) child.GetLights(collector, parentContext);
         }
     }
 

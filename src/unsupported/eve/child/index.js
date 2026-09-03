@@ -1,4 +1,5 @@
 export * from "./modifier";
+export * from "./behaviors";
 export * from "./EveChildAudio";
 export * from "./EveChildBehaviorSystem";
 export * from "./EveChildBulletStorm";

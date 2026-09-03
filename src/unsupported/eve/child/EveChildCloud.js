@@ -12,13 +12,13 @@ export class EveChildCloud extends EveChild
     name = "";
 
     @meta.float
-    cellScreenSize = 0;
+    cellScreenSize = 0.3;
 
     @meta.struct("Tw2Effect")
     effect = null;
 
     @meta.uint
-    preTesselationLevel = 0;
+    preTesselationLevel = 32;
 
     @meta.quaternion
     rotation = quat.create();
@@ -27,7 +27,7 @@ export class EveChildCloud extends EveChild
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.float
-    sortingModifier = 0;
+    sortingModifier = 1;
 
     @meta.vector3
     translation = vec3.create();

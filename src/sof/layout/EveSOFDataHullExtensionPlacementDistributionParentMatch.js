@@ -1,8 +1,12 @@
 import { meta } from "utils";
+import { EveSOFDNADescriptor } from "../shared/EveSOFDNADescriptor";
 
 @meta.define("EveSOFDataHullExtensionPlacementDistributionParentMatch", true)
 export class EveSOFDataHullExtensionPlacementDistributionParentMatch extends meta.Model
 {
+
+    @meta.string
+    name = "";
 
     @meta.boolean
     matchHull = true;
@@ -10,7 +14,7 @@ export class EveSOFDataHullExtensionPlacementDistributionParentMatch extends met
     @meta.boolean
     matchFaction = true;
 
-    @meta.struct()
-    parentDescriptor = null;
+    @meta.struct("EveSOFDNADescriptor")
+    parentDescriptor = new EveSOFDNADescriptor();
 
 }

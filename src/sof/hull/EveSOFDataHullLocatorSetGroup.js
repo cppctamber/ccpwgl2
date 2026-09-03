@@ -8,7 +8,7 @@ export class EveSOFDataHullLocatorSetGroup extends meta.Model
     @meta.string
     name = "";
 
-    @meta.list("EveSOFDataHullLocatorSet")
+    @meta.list()
     locatorSets = [];
 
 }

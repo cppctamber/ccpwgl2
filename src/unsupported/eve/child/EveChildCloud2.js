@@ -20,8 +20,11 @@ export class EveChildCloud2 extends EveChild
     @meta.float
     minScreenSize = 0;
 
+    @meta.uint
+    noiseTextureSize = 32;
+
     @meta.vector3
-    scaling = vec3.create();
+    scaling = vec3.fromValues(1, 1, 1);
 
     @meta.vector3
     translation = vec3.create();
@@ -34,5 +37,20 @@ export class EveChildCloud2 extends EveChild
 
     @meta.int32
     reflectionMode = 3;
+
+    @meta.uint
+    minVisibleQuality = 0;
+
+    @meta.boolean
+    display = true;
+
+    @meta.boolean
+    castShadows = true;
+
+    @meta.boolean
+    receiveShadows = true;
+
+    @meta.float
+    sortingModifier = 1;
 
 }

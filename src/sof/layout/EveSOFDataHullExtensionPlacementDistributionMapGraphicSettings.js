@@ -8,8 +8,7 @@ export class EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings exte
     @meta.string
     name = "";
 
-    @meta.notImplemented
     @meta.int32
-    displayFilter = -1;
+    displayFilter = 5;
 
 }

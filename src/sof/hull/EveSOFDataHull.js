@@ -95,7 +95,7 @@ export class EveSOFDataHull extends meta.Model
     @meta.list("EveSOFDataHullLightSet")
     lightSets = [];
 
-    @meta.list("EveSOFDataHullLocatorSet")
+    @meta.list()
     locatorSets = [];
 
     @meta.list("EveSOFDataHullLocator")

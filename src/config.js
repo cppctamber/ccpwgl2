@@ -8,7 +8,7 @@ import * as state from "./state";
 import * as unsupported from "./unsupported";
 import { PT } from "constant/type";
 import * as MT from "global/meta/types";
-import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
+import { DeviceTextureQuality, DeviceShaderQuality, DeviceEffectProfile } from "constant/ccpwgl";
 import { vec4, mat4 } from "math";
 import { tw2BatchSorter } from "core/batch";
 import { device } from "global/tw2";
@@ -44,7 +44,14 @@ const FX_TIER_PINS = [
     // dx11 has it. The 404 was not harmless: the failed fetch unloaded the
     // resource, the unload notification drove EveTurretSet's PREPARED path,
     // and that threw on an animation the unload had already taken away.
-    { match: "/specialfx/fx3dv5.fx", dir: "/effect.dx11/" }
+    { match: "/specialfx/fx3dv5.fx", dir: "/effect.dx11/" },
+    // Deathless hangar volumes use three effects that are published at every
+    // dx11 tier but do not exist in the gles2 tree. Keep the selection narrow:
+    // their authored paths still choose the session quality tier after the
+    // profile substitution.
+    { match: "/specialfx/volumetric/basiccloud.fx", dir: "/effect.dx11/" },
+    { match: "/specialfx/volumetric/basiccloudreflectionproxy.fx", dir: "/effect.dx11/" },
+    { match: "/spaceobject/v5/fxdirectionalv5.fx", dir: "/effect.dx11/" }
 ];
 
 // Default resource serving (the local tools-core service, not provided with
@@ -124,9 +131,26 @@ export const config = {
     // The paths in the black files must be changed
     black: {
 
-        // Normalize casing in .black-authored paths. No prefix rewrite is
-        // needed - everything uses "res:/" directly and "cdn:/" is retired.
-        "*": path => path.toLowerCase(),
+        // Normalize casing and known stale path variants found in legacy
+        // Black-authored resources. Current AIR hangars still author the
+        // container set beneath industrialarray even though those GR2s moved
+        // to the shared instance/containers directory. The Deathless hangar's
+        // Angel automabob likewise names a pre-packed geometry filename; the
+        // indexed resource retains that name with the packedts suffix.
+        "*": path => path
+            .toLowerCase()
+            .replace(
+                "/dx9/model/instance/industrialarray/containers/",
+                "/dx9/model/instance/containers/"
+            )
+            .replace(
+                "/dx9/model/instance/industrialarray/containerpillar_",
+                "/dx9/model/instance/containers/containerpillar_"
+            )
+            .replace(
+                "/dx9/model/hangar/shared/automabob/angde1/angde1_t1_lowdetail.gr2",
+                "/dx9/model/hangar/shared/automabob/angde1/angde1_t1_lowdetail_packedts.gr2"
+            ),
 
         // Pin individual effects to a quality tier, a profile directory, or both.
         //
@@ -168,6 +192,14 @@ export const config = {
         // DDS is the authored source. TextureFormatDDS uploads its compressed
         // payload when supported and decodes the same bytes to RGBA otherwise.
         "dds": path => path,
+
+        // Legacy Black documents can still name TGA textures even though the
+        // resource tree now supplies the equivalent DDS payloads.
+        "tga": path => path.replace(/\.tga$/i, ".dds"),
+
+        // Known malformed legacy variant: the comma is part of the stored
+        // value and therefore also part of the parsed extension.
+        "tga,": path => path.replace(/\.tga,$/i, ".dds"),
 
         // PNG has no cubemap header, so authored _cube names select the
         // legacy six-face ".cube" image strip. Native DDS cubemaps are
@@ -247,7 +279,7 @@ export const config = {
         // Selects the protected compiled-effect namespace
         // ("effect.dx11" routes hull shaders through the Carbon path,
         // "effect.gles2" the legacy/manual path)
-        "effectProfile": "effect.gles2",
+        "effectProfile": DeviceEffectProfile.GLES2,
 
         // Enables antialiasing (can affect performance)
         "antialiasing": true,

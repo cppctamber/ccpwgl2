@@ -26,7 +26,7 @@ export class EveSOFDataTransform extends meta.Model
      */
     GetTransform(out)
     {
-        return mat4.fromRotationTranslationScale(out, this.rotation, this.translation, this.scaling);
+        return mat4.fromRotationTranslationScale(out, this.rotation, this.position, this.scaling);
     }
 
 }

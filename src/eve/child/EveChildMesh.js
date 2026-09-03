@@ -2,6 +2,7 @@ import { meta } from "utils";
 import { box3, vec3, quat, mat4, sph3 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2InstancedMesh, Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
+import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
 
 @meta.define("EveChildMesh", true)
@@ -20,6 +21,18 @@ export class EveChildMesh extends EveChild
     @meta.list()
     lights = [];
 
+    @meta.list("EveObjectSet")
+    attachments = [];
+
+    @meta.list("EveSpaceObjectDecal")
+    decals = [];
+
+    @meta.list("EveMeshOverlayEffect")
+    overlayEffects = [];
+
+    @meta.boolean
+    inheritOverlayEffects = true;
+
     @meta.matrix4
     localTransform = mat4.create();
 
@@ -32,7 +45,7 @@ export class EveChildMesh extends EveChild
     /**
      * Granny animation exposure — Carbon's `Tr2GrannyAnimationPtr
      * m_animationUpdater` (`EveChildMesh.h:231`, mapped at
-     * `EveChildMesh_Blue.cpp:34-38`), which `Tr2InteriorAnimationController`
+     * `EveChildMesh_Blue.cpp:34-38`), which `Tw2InteriorAnimationController`
      * already answers to.
      *
      * Declared so the container can be READ. Without it the reader refuses the
@@ -71,6 +84,9 @@ export class EveChildMesh extends EveChild
     @meta.notImplemented
     @meta.float
     sortValueOffset = 0;
+
+    @meta.float
+    sortValueScale = 1;
 
     @meta.notImplemented
     @meta.boolean
@@ -638,6 +654,29 @@ export class EveChildMesh extends EveChild
         out.inverseWorldTransformTranspose = null;
 
         return out;
+    }
+
+    /**
+     * Collects lights owned by this child mesh. Light visibility remains
+     * independent of mesh visibility and is resolved by the collector.
+     * @param {Tw2CarbonLightCollector} collector
+     * @param {Object} [parentContext]
+     */
+    GetLights(collector, parentContext = {})
+    {
+        const
+            dt = parentContext.dt || 0,
+            bones = parentContext.bones || null,
+            parentBrightness = parentContext.parentBrightness !== undefined ? parentContext.parentBrightness : 1,
+            parentScale = GetAverageAxisScale(this._worldTransform);
+
+        for (let i = 0; i < this.lights.length; i++)
+        {
+            const light = this.lights[i];
+            if (!light) continue;
+            light.Update(dt, this._worldTransform, bones);
+            collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
+        }
     }
 
     static global = {

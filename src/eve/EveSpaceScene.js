@@ -28,6 +28,13 @@ import {
 } from "constant";
 
 
+// Carbon EveSpaceScene::PopulatePerFramePSData writes these exact slice
+// distances every frame (EveSpaceScene.cpp:3196-3199). The translated quad
+// family divides by them before sampling EveSceneFogVolumeMap, so leaving the
+// declared register at zero makes the otherwise-neutral fog path produce NaNs.
+const VOLUMETRIC_SLICES = new Float32Array([ 1000, 10000, 100000, 1000000 ]);
+
+
 @meta.define("EveSpaceScene", true)
 export class EveSpaceScene extends meta.Model
 {
@@ -2447,11 +2454,7 @@ export class EveSpaceScene extends meta.Model
         for (let i = 0; i < this.lights.length; i++)
         {
             const light = this.lights[i];
-
-            // Duck checked rather than assumed: `lights` is a public array a
-            // consumer fills, and a plain object pushed into it should be ignored
-            // rather than throw in the middle of a frame.
-            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
+            if (!light) continue;
 
             if (light.display === false) continue;
 
@@ -2997,6 +3000,7 @@ export class EveSpaceScene extends meta.Model
             this.upscalingAmount,
             this.contrast
         ]);
+        ps.Set("VolumetricSlices", VOLUMETRIC_SLICES);
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);

@@ -9,7 +9,7 @@ export class EveSOFDataHullExtensionPlacementDistributionPlacement extends meta.
     @meta.string
     name = "";
 
-    @meta.uint
+    @meta.int32
     cap = 0;
 
     @meta.float
@@ -49,7 +49,7 @@ export class EveSOFDataHullExtensionPlacementDistributionPlacement extends meta.
     randomRotationMaxSteps = vec3.create();
 
     @meta.quaternion
-    randomRotationStepSizeYPR = quat.create();
+    randomRotationStepSizeYPR = quat.fromValues(0.008802, 0.0086497, 0.0086497, 0.9998864);
 
     @meta.boolean
     uniformScale = true;

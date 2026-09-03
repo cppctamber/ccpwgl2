@@ -25,6 +25,9 @@ export class EveShip2 extends EveObject
     @meta.list("EveObjectSet")
     attachments = [];
 
+    /** Runtime-audio emitters owned by this space object. */
+    audioEmitters = [];
+
     @meta.list("Tw2CurveSet")
     curveSets = [];
 
@@ -2176,14 +2179,7 @@ export class EveShip2 extends EveObject
                         break;
 
                     default:
-                        if (item.GetBatches)
-                        {
-                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
-                        }
-                        else
-                        {
-                            console.log("Attachment not supported");
-                        }
+                        item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
                         break;
                 }
             }

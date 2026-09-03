@@ -17,7 +17,7 @@ export class EveSOFDataHullExtensionPlacementGroup extends meta.Model
     @meta.list()
     distributionConditions = [];
 
-    @meta.list("EveSOFDataHullExtensionPlacement")
+    @meta.list()
     placements = [];
 
 }

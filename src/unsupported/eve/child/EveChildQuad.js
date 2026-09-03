@@ -17,13 +17,19 @@ export class EveChildQuad extends EveChild
     name = "";
 
     @meta.float
-    brightness = 0;
+    brightness = 1;
 
     @meta.color
-    color = vec4.create();
+    color = vec4.fromValues(1, 1, 1, 1);
+
+    @meta.float
+    viewRotation = 0;
 
     @meta.float
     currentScreenSize = -1;
+
+    @meta.boolean
+    editMode = false;
 
     @meta.struct()
     effect = null;
@@ -32,7 +38,7 @@ export class EveChildQuad extends EveChild
     localTransform = mat4.create();
 
     @meta.boolean
-    staticTransform = true;
+    staticTransform = false;
 
     @meta.float
     minScreenSize = 0;
