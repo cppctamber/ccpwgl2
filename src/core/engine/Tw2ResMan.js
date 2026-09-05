@@ -1,3 +1,4 @@
+import { Tr2LightProfileRes } from "../resource/Tr2LightProfileRes";
 import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2ResManMainThreadLoader } from "./Tw2ResManMainThreadLoader";
 import { Tw2ResManWorkerLoader } from "./Tw2ResManWorkerLoader";
@@ -145,6 +146,8 @@ export class Tw2ResMan extends Tw2EventEmitter
         this._mainThreadLoader = new Tw2ResManMainThreadLoader(this);
         this._workerLoader = new Tw2ResManWorkerLoader(this);
         this._loader = this._mainThreadLoader;
+
+        this.RegisterResourceConstructor("lightprofile", Tr2LightProfileRes);
 
         // Built in, as Carbon registers its own from a static constructor.
         //

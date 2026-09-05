@@ -351,7 +351,7 @@ export class Tw2EffectRes extends Tw2Resource
                 const built = CjsWebglFormat.buildEffect(bytes, {
                     source: this.path,
                     localLights: "packed-texture",
-                    emitterOptions: { depthRange: Tw2EffectRes.DEPTH_RANGE }
+                    emitterOptions: { depthRange: Tw2EffectRes.DEPTH_RANGE, packedLightProfiles: true }
                 });
                 container = built.bytes;
                 permutationGraph = built.permutationGraph;

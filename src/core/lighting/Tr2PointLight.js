@@ -1,41 +1,22 @@
+// Carbon Lights/Tr2PointLight.h/.cpp and Tr2PointLight_Blue.cpp.
+// Authored fields remain flat; Tr2Light owns shared emitter behaviour.
 import { meta } from "utils";
-import { mat4, vec3, vec4, quat } from "math";
+import { Tr2Light } from "../../eve/lights/Tr2Light";
+import { vec3, vec4, quat } from "math";
 import { device } from "global";
 import { Tw2RenderBatch } from "core/batch";
-import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
-
-/**
- * Shared scratch for the light-direction composition below. Module scope
- * rather than per-class because these run per light per frame and the values
- * never outlive the call.
- */
-const Tr2LightDirectionScratch = {
-    rotation: mat4.create(),
-    lightRotation: mat4.create()
-};
-
-
+import { PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
 export class EvePointLightBatch extends Tw2RenderBatch
 {
 
     light = null;
 
-    /**
-     * Commits the light for rendering
-     * @param {String} [technique] - technique name
-     * @returns {Boolean} true if rendered
-     */
     Commit(technique)
     {
         return this.light.Render(technique);
     }
 
-    /**
-     * Checks if the render batch supports a technique
-     * @param {String} technique
-     * @returns {boolean}
-     */
     HasTechnique(technique)
     {
         return this.light && this.light._effect && this.light._effect.HasTechnique(technique);
@@ -43,22 +24,10 @@ export class EvePointLightBatch extends Tw2RenderBatch
 
 }
 
-
-/**
- * Tr2PointLight
- *
- * Source: carbonengine trinity/trinity/Lights/Tr2PointLight.h/.cpp (thin
- * subclass, m_type = POINT_LIGHT), sharing its persisted property set with
- * the abstract base `Tr2Light` (trinity/trinity/Lights/Tr2Light.h, struct
- * `LightData`) via `Tr2PointLight_Blue.cpp`'s ExposeToBlue(). ccpwgl has no
- * shared Tr2Light base class file, so (matching the pre-existing style of
- * this folder) the full LightData-derived property set is declared flatly
- * on each of Tr2PointLight/Tr2SpotLight/Tr2TexturedPointLight/Tr2FactionLight.
- */
-@meta.notImplemented
 @meta.define("Tr2PointLight", true)
-export class Tr2PointLight extends meta.Model
+export class Tr2PointLight extends Tr2Light
 {
+    type = 1;
 
     @meta.string
     name = "";
@@ -69,52 +38,20 @@ export class Tr2PointLight extends meta.Model
     @meta.float
     brightness = 1;
 
-    // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25), persisted as an
-    // int32: the generated schema gives `castsShadows` beType LONG with wire
-    // type `enum`, which is a NUMBER on the wire.
-    //
-    // It was `@meta.enums(...)`, and that is the wrong reader. `PT_ENUM` in the
-    // black reader reads a STRING and parses `"A=1,B=2"` - it decodes an enum
-    // DEFINITION, not an enum value - so it consumed a length prefix plus that
-    // many bytes and left the stream mid-object. Everything after desynchronised,
-    // and the failure surfaced far away as
-    // `Unknown property "EveChildContainer" for "Tr2SpotLight"` while reading
-    // res:/dx9/model/ship/ore/capital/orecs1/effects/orecs1_t1_goldrush_fx.black,
-    // which is the reader landing on the next object's type tag and looking it up
-    // as a property name.
-    //
-    // The values stay in the JSDoc rather than in a decorator, because what the
-    // number MEANS is documentation and what it IS is four bytes. runtime-trinity
-    // declares the same field `@type.int @type.enum("PerLightShadowSetting")`,
-    // which is the same split.
-    //
-    // Shadow settings are not consumed by the Carbon tile path yet.
-    @meta.notImplemented
     @meta.int32
     castsShadows = PerLightShadowSetting.DISABLED;
 
     @meta.color
-    color = vec4.create();
+    color = vec4.fromValues(0, 0, 0, 1);
 
-    // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
-    // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
-    // format-black schema. Gates which passes a light affects - not consumed
-    // by the Carbon tile path yet.
-    @meta.notImplemented
     @meta.ushort
     flags = LIGHT_FLAG_DEFAULT;
 
     @meta.float
     innerRadius = 0;
 
-    @meta.notImplemented
     @meta.boolean
     isVolumetric = false;
-
-    @meta.notImplemented
-    @meta.desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ).")
-    @meta.struct()
-    lightProfile = null;
 
     @meta.path
     lightProfilePath = "";
@@ -125,8 +62,6 @@ export class Tr2PointLight extends meta.Model
     @meta.float
     noiseFrequency = 1;
 
-    // uint32 (Tr2Light.h; carbonenginejs num.uint32), confirmed canonical by
-    // the format-black schema. Consumed by GetComposedBrightness's noise sum.
     @meta.uint
     noiseOctaves = 1;
 
@@ -139,28 +74,10 @@ export class Tr2PointLight extends meta.Model
     @meta.quaternion
     rotation = quat.create();
 
-    /**
-     * Light effect
-     * @type {Tw2Effect}
-     * @private
-     */
     _effect = null;
 
-    _worldPosition = vec3.create();
-    _worldDirection = vec3.create();
     _indexBuffer = null;
 
-    /**
-     * Seconds elapsed since construction, used as the noise time base
-     * (Carbon: `BeOS->GetCurrentFrameTime() - m_startTime`, Tr2Light.cpp:45)
-     * @private
-     */
-    _elapsed = 0;
-
-    /**
-     * Unloads the light's buffers
-     * @param {Boolean} skipEvent
-     */
     Unload(skipEvent)
     {
         if (this._indexBuffer)
@@ -175,157 +92,6 @@ export class Tr2PointLight extends meta.Model
     Rebuild()
     {
 
-    }
-
-    /**
-     * Per-frame update
-     *
-     * Reproduces the transform half of `Tr2Light::AddLight`
-     * (carbonengine trinity/trinity/Lights/Tr2Light.cpp:119-149): the light's
-     * local position is transformed by its bone matrix (if `boneIndex` is
-     * valid and `bones` are supplied) composed with `parentMatrix`, then
-     * accumulates elapsed time for noise-modulated brightness.
-     * @param {Number} dt
-     * @param {mat4} parentMatrix
-     * @param {Float4x3[]|mat4[]} [bones] optional bone matrices, indexed by `boneIndex`
-     */
-    Update(dt, parentMatrix, bones)
-    {
-        this._elapsed += dt || 0;
-
-        let worldMatrix = parentMatrix;
-        if (bones && this.boneIndex >= 0 && this.boneIndex < bones.length)
-        {
-            worldMatrix = mat4.multiply(mat4.create(), bones[this.boneIndex], parentMatrix);
-        }
-
-        vec3.transformMat4(this._worldPosition, this.position, worldMatrix);
-
-        // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
-        // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
-        // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
-        // w=0 basis application, which is the negated third basis row.
-        const rot = Tr2LightDirectionScratch.rotation;
-        const lightRotation = Tr2LightDirectionScratch.lightRotation;
-        mat4.fromQuat(rot, this.rotation);
-        mat4.multiply(lightRotation, worldMatrix, rot);
-        vec3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
-        vec3.normalize(this._worldDirection, this._worldDirection);
-
-        if (this._dirty) this.Rebuild();
-    }
-
-    /**
-     * Composes this light's current brightness (parent multiplier * noise modulation)
-     *
-     * Reproduces `LightData::AsPerPointLightData`'s brightness composition
-     * (carbonengine trinity/trinity/Lights/Tr2Light.cpp:42-47).
-     * @param {Number} [parentBrightness=1] Carbon: `LightFeatures.parentBrightness` (owner's brightness multiplier / activation strength)
-     * @returns {Number}
-     */
-    GetComposedBrightness(parentBrightness = 1)
-    {
-        return ComposeNoiseBrightness(
-            this.brightness, parentBrightness,
-            this.noiseAmplitude, this.noiseFrequency, this.noiseOctaves,
-            this._elapsed
-        );
-    }
-
-    /**
-     * Gets the light profile's texture array index, or 0 if none is bound
-     *
-     * Reproduces `features.profileIndex = m_lightProfile ? m_lightProfile->GetTextureIndex() + 1 : 0;`
-     * (carbonengine trinity/trinity/Lights/Tr2Light.cpp:137). ccpwgl has no
-     * Tr2LightProfileRes class yet (see `lightProfile` property above), so
-     * this will always return 0 until one exists.
-     * @returns {Number}
-     */
-    GetLightProfileIndex()
-    {
-        return this.lightProfile && typeof this.lightProfile.GetTextureIndex === "function"
-            ? this.lightProfile.GetTextureIndex() + 1
-            : 0;
-    }
-
-    /**
-     * Gets this light's simple {position, radius, color} triple
-     *
-     * Reproduces `Tr2Light::GetLight` (carbonengine trinity/trinity/Lights/Tr2Light.cpp:152-163),
-     * used by Tr2ShLightingManager as a "primary light" secondary-lighting
-     * source. Carbon uses the current absolute frame time for its noise
-     * sample here (not elapsed-since-start, unlike `AddLight`'s path) - we
-     * approximate that with the same `_elapsed` accumulator used everywhere
-     * else in this port, since ccpwgl has no equivalent global frame clock
-     * threaded through to this layer yet.
-     * @returns {{position: vec3, radius: Number, color: vec4}}
-     */
-    GetLight()
-    {
-        const brightness = this.GetComposedBrightness(1);
-        return {
-            position: vec3.clone(this._worldPosition),
-            radius: this.radius,
-            color: vec4.fromValues(
-                this.color[0] * brightness,
-                this.color[1] * brightness,
-                this.color[2] * brightness,
-                this.color[3]
-            )
-        };
-    }
-
-    /**
-     * Produces the fields for a Tw2CarbonLightList Buffer B entry
-     * (see src/core/carbon/Tw2CarbonLightList.js `SetLights`/`_writeLight`).
-     *
-     * Position/radius/color reproduce `LightData::AsPerPointLightData`
-     * (carbonengine trinity/trinity/Lights/Tr2Light.cpp:37-69): world
-     * position, radius*parentScale, color.rgb*composedBrightness.
-     *
-     * TODO(flags/params): Tw2CarbonLightList's flags/params were reverse
-     * engineered from shipped DX11 bytecode and only bit 0x10000 (enabled)
-     * is confirmed (see Tw2CarbonLightMath.js `Carbon_FLAG_AFFECTS_SURFACES` doc). Carbon's
-     * own PerLightData additionally packs shadow-casting/volumetric flag
-     * bits and a light-profile index into `flags` (Tr2LightManager.h:100-105,
-     * Tr2Light.cpp:52,64,66) and packs innerRadius/direction/angles into
-     * separate PerLightData fields that Tw2CarbonLightList's 4-float `params`
-     * has no confirmed layout for. Until the Carbon tile shader's actual
-     * flags/params usage is reverse engineered further, this only sets the
-     * enabled bit and passes `innerRadius` through as `params[0]`.
-     * @param {Object} [options]
-     * @param {Number} [options.parentBrightness=1]
-     * @param {Number} [options.parentScale=1]
-     * @returns {{position: Number[], radius: Number, color: Number[], flags: Number, params: Number[]}}
-     */
-    GetCarbonLightData(options = {})
-    {
-        const parentBrightness = options.parentBrightness !== undefined ? options.parentBrightness : 1;
-        const parentScale = options.parentScale !== undefined ? options.parentScale : 1;
-
-        const brightness = this.GetComposedBrightness(parentBrightness);
-        const radius = this.radius * parentScale;
-        const enabled = radius > 0 && brightness > 0;
-
-        return {
-            position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
-            radius,
-            color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
-            flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
-
-            // Named rather than left in `params`, which the light list reads only
-            // as a fallback now.
-            innerRadius: this.innerRadius * parentScale,
-
-            // Carbon computes an axis for a POINT light too (Tr2Light.cpp:56) -
-            // it is what a light profile is oriented by. 1/tan(45deg) = 1.
-            direction: [ this._worldDirection[0], this._worldDirection[1], this._worldDirection[2] ],
-            projectionPlaneDistance: 1,
-            outerAngle: 0,
-            innerAngle: 0,
-
-            params: [ this.innerRadius * parentScale, 0, 0, 0 ]
-        };
     }
 
     GetBatches(mode, accumulator, perObjectData)

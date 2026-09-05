@@ -494,6 +494,7 @@ export class TextureFormatTarga
         const tga = new Targa();
         tga.load(new Uint8Array(arrayBuffer));
         const { width, height, bytes } = tga.getRGBA8();
+        res.SetAverageColorFromPixels(bytes, width, height);
 
         const isWebGL2 = device.glVersion > 1;
 

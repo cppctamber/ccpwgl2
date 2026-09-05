@@ -106,7 +106,7 @@ const DIRECTION_SCRATCH = vec3.create();
 export function AsPerPointLightData(record, lightData, transform, features, shadowQuality)
 {
     // cpp:42 - composed brightness (noise flicker: see the adaptation note)
-    const composedBrightness = (lightData.brightness ?? 0) * features.parentBrightness;
+    const composedBrightness = features.composedBrightness ?? ((lightData.brightness ?? 0) * features.parentBrightness);
 
     // cpp:48 - color.rgb * composedBrightness
     const color = lightData.color;

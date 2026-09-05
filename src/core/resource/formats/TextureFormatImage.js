@@ -72,6 +72,7 @@ export const TextureFormatImage =
             // 2D
             if (!res._isCube || res._extension !== "cube")
             {
+                res.SetAverageColorFromImage(data);
                 res._target = gl.TEXTURE_2D;
                 res._width = data.width;
                 res._height = data.height;

@@ -94,6 +94,8 @@ class Tw2CarbonLightList
      */
     constructor(options = {})
     {
+        this.lightProfiles = [];
+        this.profileRevision = 0;
         this.maxLights = options.maxLights || Tw2CarbonLightList.DEFAULT_MAX_LIGHTS;
         this.textureWidth = options.textureWidth || Tw2CarbonLightList.DEFAULT_TEXTURE_WIDTH;
 
@@ -270,6 +272,20 @@ class Tw2CarbonLightList
      */
     SetLights(lights)
     {
+        const profiles = [];
+        for (const light of lights)
+        {
+            const profile = light.lightProfile;
+            if (profile && profile.IsGood()) profiles[profile.GetTextureIndex()] = profile.samples;
+        }
+        const previous = this.lightProfiles || [];
+        if (profiles.length !== previous.length || profiles.some((samples, index) => samples !== previous[index])
+            || previous.some((samples, index) => samples !== profiles[index]))
+        {
+            this.lightProfiles = profiles;
+            this.profileRevision = (this.profileRevision || 0) + 1;
+        }
+
         if (!Array.isArray(lights))
         {
             throw new Error("Tw2CarbonLightList.SetLights: lights must be an array");

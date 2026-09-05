@@ -1,11 +1,6 @@
 // Ported from CarbonEngine (MIT, (c) 2026 CCP Games) - https://github.com/carbonengine/trinity
 //   trinity/trinity/Eve/SpaceObject/Children/SmartLightSets/EveSmartLightSpotLight.h
 import { meta } from "utils";
-// TODO(port): ccpwgl has no shared Tr2Light base (see the doc comment on
-// src/core/lighting/Tr2PointLight.js - "ccpwgl has no shared Tr2Light base
-// class file"). Kept as the faithful import path for the SPOT_LIGHT type
-// constant; unresolved until a shared Tr2Light module (or equivalent enum)
-// is ported.
 import { Tr2Light } from "../lights/Tr2Light.js";
 import { EveSmartLightPointLight } from "./EveSmartLightPointLight.js";
 

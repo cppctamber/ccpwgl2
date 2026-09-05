@@ -69,6 +69,7 @@
     "test:geometry-readiness": "node scripts/test-geometry-readiness.js",
     "test:frustum-plane-convention": "node scripts/test-frustum-plane-convention.js",
     "test:per-frame-ps-registers": "node scripts/test-per-frame-ps-registers.js",
+    "test:light-emitters": "node scripts/test-light-emitters.mjs",
     "test:scene-lights": "node scripts/test-scene-lights.js",
     "test:locator-structure-list": "node scripts/test-locator-structure-list.js",
     "test:billboard-z-locked": "node scripts/test-billboard-z-locked.js",

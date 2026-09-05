@@ -62,6 +62,7 @@ class Tw2CarbonResourceBinder
         this._texB = { texture: null, width: 0, height: 0 };
         this._texPacked = { texture: null, width: 0, height: 0 };
         this._packedLightStaging = null;
+        this._profileRevision = -1;
 
         // Post-fx buffer textures by register index
         this._bufferTextureSources = {};
@@ -417,13 +418,26 @@ class Tw2CarbonResourceBinder
         const infoA = list.GetBufferATextureInfo();
         const infoB = list.GetBufferBTextureInfo();
         const width = entry.width || infoA.width || Tw2CarbonResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH;
+        if (width !== infoA.width || width !== infoB.width || (width & (width - 1)) !== 0)
+        {
+            throw new Error("Packed lights require one power-of-two width for shader addressing and both buffers");
+        }
         const dataTexelBase = entry.dataTexelBase || Tw2CarbonResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE;
         const dataRowBase = Math.floor(dataTexelBase / width);
-        const height = Math.max(infoA.height, Math.ceil((dataTexelBase + infoB.texelCount) / width));
+        // Packed profile ABI: 2048 binary16 values (11 mips + padding),
+        // 256 RGBA32UI texels per layer, after the reserved light-record area.
+        const profiles = list.lightProfiles || [];
+        const profileBase = 196608;
+        if (profiles.length && dataTexelBase + infoB.texelCount > profileBase)
+        {
+            throw new Error("Packed light records overlap the profile region");
+        }
+        const profileEnd = profiles.length ? profileBase + profiles.length * 256 : 0;
+        const height = Math.max(infoA.height, Math.ceil(Math.max(dataTexelBase + infoB.texelCount, profileEnd) / width));
         const rowElements = width * 4;
         const totalElements = rowElements * height;
 
-        const fullUpload = !this._packedLightStaging || this._packedLightStaging.length !== totalElements
+        const fullUpload = this._profileRevision !== list.profileRevision || !this._packedLightStaging || this._packedLightStaging.length !== totalElements
             || !this._texPacked.texture || this._texPacked.width !== width || this._texPacked.height !== height;
 
         if (!this._packedLightStaging || this._packedLightStaging.length !== totalElements)
@@ -437,6 +451,15 @@ class Tw2CarbonResourceBinder
             staging.fill(0);
             staging.set(list.GetBufferA(), 0);
             staging.set(list.GetBufferBUint(), dataTexelBase * 4);
+            profiles.forEach((samples, index) =>
+            {
+                if (!samples) return;
+                const base = (profileBase + index * 256) * 4;
+                for (let i = 0; i < 1024; i++) staging[base + i] = samples[i * 2] | (samples[i * 2 + 1] << 16);
+                // The unused final half-word marks an uploaded slot; holes stay zero.
+                staging[base + 1023] = (staging[base + 1023] & 0xffff) | 0x3c000000;
+            });
+            this._profileRevision = list.profileRevision;
             this._UploadUintTexture(this._texPacked, staging, { width, height }, { y0: 0, y1: height - 1 });
             if (this._texPacked.uploaded)
             {

@@ -19,6 +19,62 @@ export class Tw2TextureRes extends Tw2Resource
 {
     texture = null;
 
+    _averageColor = new Float32Array(4);
+    _averageVideoTime = -1;
+
+    GetAverageColor()
+    {
+        this.KeepAlive();
+        const video = this._runtime?.type === "video" ? this._runtime.el : null;
+        if (video && video.readyState >= 2 && video.currentTime !== this._averageVideoTime)
+        {
+            this.SetAverageColorFromImage(video);
+            this._averageVideoTime = video.currentTime;
+        }
+        return this._averageColor;
+    }
+
+    SetAverageColor(color)
+    {
+        this._averageColor.set(color);
+    }
+
+    SetAverageColorFromImage(image)
+    {
+        const width = image.videoWidth || image.width, height = image.videoHeight || image.height;
+        if (!width || !height) return;
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        context.drawImage(image, 0, 0);
+        this.SetAverageColorFromPixels(context.getImageData(0, 0, width, height).data, width, height);
+    }
+
+    /** Carbon HostBitmap::GetAverageColor grid, on decoded RGBA pixels. */
+    SetAverageColorFromPixels(pixels, width, height)
+    {
+        const xStep = Math.max(1, Math.floor(Math.sqrt(width)));
+        const yStep = Math.max(1, Math.floor(Math.sqrt(height)));
+        const nx = Math.round(width / xStep), ny = Math.round(height / yStep);
+        const ox = Math.floor((width % xStep) / 2) || Math.floor(xStep / 2);
+        const oy = Math.floor((height % yStep) / 2) || Math.floor(yStep / 2);
+        const out = this._averageColor;
+        out.fill(0);
+        for (let y = 0; y < ny; y++)
+        {
+            for (let x = 0; x < nx; x++)
+            {
+                const px = x * xStep + ox, py = y * yStep + oy;
+                if (px >= width || py >= height) continue;
+                const offset = (py * width + px) * 4;
+                for (let c = 0; c < 4; c++) out[c] += pixels[offset + c];
+            }
+        }
+        const scale = 1 / (nx * ny * (pixels instanceof Float32Array ? 1 : 255));
+        for (let c = 0; c < 4; c++) out[c] *= scale;
+    }
+
     /**
      * Runtime texture source state, such as HTML canvas/video handlers
      * @type {Object|null}
@@ -115,6 +171,9 @@ export class Tw2TextureRes extends Tw2Resource
         const gl = device.gl;
 
         this.DeleteGL();
+
+        this._averageColor.fill(0);
+        this._averageVideoTime = -1;
 
         // Reset per-prepare
         this._isVolumeAtlas = false;

@@ -439,6 +439,7 @@ export const config = {
         "webp": core.Tw2TextureRes,
         "avif": core.Tw2TextureRes,
         "dds": core.Tw2TextureRes,
+        "ies": core.Tr2LightProfileRes,
         "cube": core.Tw2TextureRes,
         "qube": core.Tw2TextureRes,
         "tga" : core.Tw2TextureRes,

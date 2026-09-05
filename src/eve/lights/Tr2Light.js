@@ -1,17 +1,11 @@
 // Source: E:\carbonengine\trinity\trinity\Lights\Tr2Light.h
 // Source: E:\carbonengine\trinity\trinity\Lights\Tr2Light.cpp
 import { meta } from "utils";
+import { Tr2LightProfileRes } from "../../core/resource/Tr2LightProfileRes";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { mat4, vec3 } from "math";
-import { createCjsLightDataView, setCjsLightDataOwnerValues } from "./CjsLightData";
-import { PerLightShadowSetting } from "../../core/lighting/Tw2CarbonLightMath";
-// TODO(port): lightConversion.js (AreLightFlagsValid, AsPerPointLightData,
-// AsPerSpotLightData, CreateLightRecord, MatrixCopyFrom3x4) does not exist in
-// ccpwgl and is out of scope for this port - it was not one of the five files
-// requested. Kept as the faithful import path from runtime-trinity; the
-// methods that use it (AddLight, GetLight, SetBoneMatrix) are unresolved
-// until it is ported. Nothing currently in ccpwgl calls them: the ported
-// smart-light classes (EveSmartLightPointLight/SpotLight) only read the
-// POINT_LIGHT/SPOT_LIGHT static constants below.
+import { CjsLightData, createCjsLightDataView, setCjsLightDataOwnerValues } from "./CjsLightData";
+import { ComposeNoiseBrightness, PerLightShadowSetting } from "../../core/lighting/Tw2CarbonLightMath";
 import {
     AreLightFlagsValid,
     AsPerPointLightData,
@@ -36,7 +30,11 @@ const TR2_LIGHT_TYPE = Object.freeze({
 @meta.define("Tr2Light", true)
 export class Tr2Light extends meta.Model
 {
-    static LightDataFields = [];
+    // Tr2Light.h declares both paths as std::wstring; their table differs
+    // from the narrow name/property table in .black files.
+    static blackReaders = { lightProfilePath: wstring, texturePath: wstring };
+
+    static LightDataFields = CjsLightData.Fields;
 
     static LightType = TR2_LIGHT_TYPE;
 
@@ -60,7 +58,7 @@ export class Tr2Light extends meta.Model
     @meta.matrix4
     boneTransform = mat4.create();
 
-    @meta.struct("Tr2LightProfileRes")
+    // Resolved runtime handle (Carbon exposes this read-only, not persisted).
     lightProfile = null;
 
     @meta.string
@@ -74,6 +72,86 @@ export class Tr2Light extends meta.Model
     // the real storage; this keeps Carbon's GetLightData() reference surface
     // and the runtime-sof separate-node hydration shape working.
     _lightDataView = null;
+    _worldTransform = mat4.create();
+    _worldPosition = vec3.create();
+    _worldDirection = vec3.create();
+    _elapsed = 0;
+    _resolvedProfilePath = "";
+
+    OnValueChanged()
+    {
+        if (this.lightProfilePath !== this._resolvedProfilePath)
+        {
+            this._resolvedProfilePath = this.lightProfilePath;
+            this.lightProfile = Tr2LightProfileRes.Resolve(this.lightProfilePath);
+        }
+    }
+
+    OnModified()
+    {
+        this.OnValueChanged();
+    }
+
+    GetResources(out = [])
+    {
+        for (const resource of [ this.lightProfile, this.texture ])
+        {
+            if (resource && !out.includes(resource)) out.push(resource);
+        }
+        return out;
+    }
+
+    GetLightProfileIndex()
+    {
+        return this.lightProfile ? this.lightProfile.GetTextureIndex() + 1 : 0;
+    }
+
+    Update(dt = 0, parentMatrix = mat4.create(), bones = null)
+    {
+        this._elapsed += dt;
+        if (bones && typeof bones[0] === "number")
+        {
+            this.SetBoneMatrix(bones, bones.length / 12);
+        }
+        else if (bones && this.boneIndex >= 0 && this.boneIndex < bones.length)
+        {
+            const bone = bones[this.boneIndex];
+            if (bone.length === 12) MatrixCopyFrom3x4(this.boneTransform, bone, 0);
+            else mat4.copy(this.boneTransform, bone);
+        }
+        // Carbon bone * parent (row vectors): reverse operands for gl-matrix.
+        mat4.multiply(this._worldTransform, parentMatrix, this.boneTransform);
+        vec3.transformMat4(this._worldPosition, this.position, this._worldTransform);
+        mat4.fromQuat(Tr2Light._rotationScratch, this.rotation);
+        mat4.multiply(Tr2Light._rotationScratch, this._worldTransform, Tr2Light._rotationScratch);
+        const rotation = Tr2Light._rotationScratch;
+        vec3.set(this._worldDirection, -rotation[8], -rotation[9], -rotation[10]);
+        vec3.normalize(this._worldDirection, this._worldDirection);
+    }
+
+    GetComposedBrightness(parentBrightness = 1)
+    {
+        return ComposeNoiseBrightness(this.brightness, parentBrightness * this.brightnessMultiplier,
+            this.noiseAmplitude, this.noiseFrequency, this.noiseOctaves, this._elapsed);
+    }
+
+    GetCarbonLightData(options = {})
+    {
+        const record = CreateLightRecord();
+        const features = {
+            parentBrightness: 1,
+            composedBrightness: this.GetComposedBrightness(options.parentBrightness ?? 1),
+            parentScale: options.parentScale ?? 1
+        };
+        const spot = this.isSpotlight ?? (this.type === 2);
+        const convert = spot ? AsPerSpotLightData : AsPerPointLightData;
+        convert(record, this.lightData, this._worldTransform, features, options.shadowQuality ?? 0);
+        record.flags |= this.GetLightProfileIndex() << 4;
+        record.lightProfile = this.lightProfile;
+        if (!AreLightFlagsValid(this.flags)) record.flags = 0;
+        record.lightType = spot ? 2 : 1;
+        return record;
+    }
 
     /**
      * Compat LightData view over the concrete light's flattened fields, built on
@@ -156,84 +234,36 @@ export class Tr2Light extends meta.Model
         }
     }
 
-    /** Carbon Tr2Light::AddLight (Tr2Light.cpp:119-149): dynamic update hook,
-     * the ONLY entity-side flag validity check in the light family
-     * (AreLightFlagsValid, cpp:126-129), the bone refresh, then
-     * lightTransform = boneTransform * transform - Carbon row-vector, bone
-     * first, so the gl-matrix operands SWAP (cpp:132) - and the point/spot
-     * conversion submitted to the duck manager. QUIRKS: UNDEFINED_LIGHT
-     * submits NOTHING (a deserialized base light is silently inert); Carbon's
-     * profileIndex here is GetTextureIndex() + 1 while the packed sets use no
-     * +1 - moot in JS (the profile rides the record by reference) but
-     * recorded. The record is scratch; the manager must copy.
-     *
-     * The profile-index flag packing and half-float narrowing are
-     * renderer-backend concerns (record carries the profile by reference);
-     * the Perlin brightness flicker awaits the frame-clock seam (see
-     * lightConversion.js).
-     */
+    /** Submits the same converted emitter record used by scene collection. */
     AddLight(lightManager, transform, scale, bones = null, boneCount = 0)
     {
-        if (this.isDynamic)
+        if (!AreLightFlagsValid(this.flags) || this.type === Tr2Light.UNDEFINED_LIGHT) return;
+        if (bones && typeof bones[0] === "number" && boneCount > 0)
         {
-            this.Update?.();
+            this.SetBoneMatrix(bones, boneCount);
+            bones = null;
         }
-        if (!AreLightFlagsValid(this.lightData.flags ?? 0))
-        {
-            return;
-        }
-
-        this.SetBoneMatrix(bones, boneCount);
-        // Carbon (row-vector): m_boneTransform * transform - bone first.
-        mat4.multiply(Tr2Light._lightTransformScratch, transform, this.boneTransform);
-
-        const features = Tr2Light._featuresScratch;
-        features.parentBrightness = this.brightnessMultiplier;
-        features.parentScale = scale;
-
-        const record = Tr2Light._lightRecord;
-        if (this.type === Tr2Light.POINT_LIGHT)
-        {
-            AsPerPointLightData(record, this.lightData, Tr2Light._lightTransformScratch, features,
-                lightManager?.GetCurrentSpaceSceneShadowQuality?.() ?? 0);
-        }
-        else if (this.type === Tr2Light.SPOT_LIGHT)
-        {
-            AsPerSpotLightData(record, this.lightData, Tr2Light._lightTransformScratch, features,
-                lightManager?.GetCurrentSpaceSceneShadowQuality?.() ?? 0);
-        }
-        else
-        {
-            return;
-        }
-        record.lightType = this.type;
+        this.Update(0, transform, bones);
+        const record = this.GetCarbonLightData({
+            parentScale: scale,
+            shadowQuality: lightManager?.GetCurrentSpaceSceneShadowQuality?.() ?? 0
+        });
         record.lightData = this.lightData;
-        record.lightProfile = this.lightProfile;
         record.owner = this;
         lightManager?.AddLight?.(record);
     }
 
-    /** Carbon Tr2Light::GetLight (Tr2Light.cpp:152-163): position and radius
-     * straight from the light data, color = authored rgb * brightness. Carbon's
-     * three reference out-params become one out record (JS out-params go last
-     * and are returned). The color is the rgb triple - the alpha channel is
-     * unused by every Carbon consumer of this method (EveChildCloud2's light
-     * block takes GetXYZ).
-     *
-     * The Perlin noise flicker (cpp:157-161) reads the global frame clock
-     * (BeOS GetCurrentFrameTime) - an engine seam; the base brightness is
-     * used until it lands.
-     */
+    /** World-space light triple used by ccpwgl's SH lighting manager. */
     GetLight(out = { position: vec3.create(), radius: 0, color: vec3.create() })
     {
         const lightData = this.lightData;
-        const position = lightData.position;
+        const position = this._worldPosition;
         if (position)
         {
             vec3.copy(out.position, position);
         }
         out.radius = lightData.radius ?? 0;
-        const brightness = lightData.brightness ?? 0;
+        const brightness = this.GetComposedBrightness();
         const color = lightData.color;
         out.color[0] = (color?.[0] ?? 0) * brightness;
         out.color[1] = (color?.[1] ?? 0) * brightness;
@@ -241,13 +271,10 @@ export class Tr2Light extends meta.Model
         return out;
     }
 
-    /**
-     * Reports the light ready; resolving the light profile is left to the
-     * resource/runtime adapter, so this always succeeds.
-     */
+    /** Resolves authored resource paths through the shared resource manager. */
     Initialize()
     {
-        // Light-profile resolution is supplied by the resource/runtime adapter.
+        this.OnValueChanged();
         return true;
     }
 
@@ -260,10 +287,9 @@ export class Tr2Light extends meta.Model
 
     static PerLightShadowSetting = PerLightShadowSetting;
 
-    static _lightTransformScratch = mat4.create();
+    static _rotationScratch = mat4.create();
 
-    static _featuresScratch = { parentBrightness: 1, parentScale: 1 };
 
-    static _lightRecord = CreateLightRecord();
+
 
 }

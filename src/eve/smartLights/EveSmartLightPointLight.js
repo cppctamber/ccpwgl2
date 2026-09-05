@@ -2,23 +2,13 @@
 //   trinity/trinity/Eve/SpaceObject/Children/SmartLightSets/EveSmartLightPointLight.h
 // Hand-maintained from Carbon source, promoted out of generated intake.
 import { meta } from "utils";
+import { Tr2LightProfileRes } from "core/resource/Tr2LightProfileRes";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { mat4, quat, vec3, vec4 } from "math";
-// TODO(port): EveEntity does not exist yet in ccpwgl (src/eve/EveEntity.js).
-// Kept as the faithful base class from runtime-trinity - it supplies the
-// registry surface this class calls (GetComponentRegistry), which is
-// unresolved until EveEntity is ported.
 import { EveEntity } from "../EveEntity.js";
 import { resolveGroupColor } from "./EveSmartLightBaseGroup.js";
-// TODO(port): ccpwgl has no shared Tr2Light base (see the doc comment on
-// src/core/lighting/Tr2PointLight.js - "ccpwgl has no shared Tr2Light base
-// class file"). Kept as the faithful import path for the POINT_LIGHT/
-// SPOT_LIGHT type constants; unresolved until a shared Tr2Light module (or
-// equivalent enum) is ported.
 import { Tr2Light } from "../lights/Tr2Light.js";
-// TODO(port): EveComponentTypes.js does not exist yet in ccpwgl.
 import { EveComponentType } from "../EveComponentTypes.js";
-// TODO(port): CjsLightData.js (the flattened light-data compat view +
-// SetValues helpers) does not exist yet in ccpwgl.
 import {
     createCjsLightDataView,
     setCjsLightDataOwnerValues
@@ -55,7 +45,6 @@ export class EveSmartLightPointLight extends EveEntity
     radius = 0;
 
     /** m_lightProfile (Tr2LightProfileResPtr) [READ] */
-    @meta.struct("Tr2LightProfileRes")
     lightProfile = null;
 
     /** m_name (std::string) [READWRITE, PERSIST] */
@@ -229,34 +218,35 @@ export class EveSmartLightPointLight extends EveEntity
         }
     }
 
-    /**
-     * Carbon resolves the light profile through BeResMan
-     * (EveSmartLightPointLight.cpp:18-27); profile resolution belongs to the
-     * resource adapter in ccpwgl.
-     */
+    static blackReaders = { lightProfilePath: wstring };
+
     Initialize()
     {
-        this._lastAppliedProfilePath = this.lightProfilePath;
+        this.OnValueChanged();
         return true;
     }
 
-    /**
-     * A lightProfilePath edit re-resolves the profile
-     * (EveSmartLightPointLight.cpp:29-41); the stale reference is dropped so the
-     * resource adapter re-resolves it.
-     *
-     * The settle hook receives no changed-property list, and profile
-     * resolution belongs to the resource adapter; a detected path edit only
-     * invalidates the cached reference.
-     */
-    OnModified(_options = {})
+    OnValueChanged()
     {
+        super.OnValueChanged?.();
         if (this.lightProfilePath !== this._lastAppliedProfilePath)
         {
             this._lastAppliedProfilePath = this.lightProfilePath;
-            this.lightProfile = null;
+            this.lightProfile = Tr2LightProfileRes.Resolve(this.lightProfilePath);
         }
+    }
+
+    OnModified()
+    {
+        this.OnValueChanged();
         return true;
+    }
+
+    GetResources(out = [])
+    {
+        super.GetResources?.(out);
+        if (this.lightProfile && !out.includes(this.lightProfile)) out.push(this.lightProfile);
+        return out;
     }
 
     /**
@@ -313,6 +303,7 @@ export class EveSmartLightPointLight extends EveEntity
             return;
         }
 
+        const profileIndex = this.lightProfile ? this.lightProfile.GetTextureIndex() + 1 : 0;
         const placements = this._distribution.GetPlacementData?.() ?? [];
         const size = Number(this._distribution.GetNumberOfPlacements?.() ?? placements.length);
         const statics = EveSmartLightPointLight;
@@ -340,7 +331,7 @@ export class EveSmartLightPointLight extends EveEntity
 
             record.radius = this.radius * scaling * perLightScaling;
             record.innerRadius = this.innerRadius * scaling * perLightScaling;
-            record.flags = this.flags;
+            record.flags = this.flags | (profileIndex << 4);
 
             // Carbon (row-vector): initialRotation * additionalRotation - initialRotation first.
             quat.multiply(rotation, placement.additionalRotation, placement.initialRotation);

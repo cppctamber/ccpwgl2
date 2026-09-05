@@ -220,6 +220,7 @@ export class Tw2ColorTextureRes extends Tw2TextureRes
         // The path carries floats; GL takes bytes.
         const bytes = this.color.map(v => Math.max(0, Math.min(255, Math.round(v * 255))));
 
+        this.SetAverageColor(bytes.map(value => value / 255));
         this.Attach(Tw2ColorTextureRes.CreateTexture(gl, bytes, dimension, this.depth), this.path);
 
         // Attach clears the metadata, so the target is pinned after it rather

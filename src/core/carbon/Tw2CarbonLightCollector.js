@@ -136,6 +136,7 @@ class Tw2CarbonLightCollector
             radius: light.radius || 0,
             innerRadius: light.innerRadius,
             flags: light.flags || 0,
+            lightProfile: light.lightProfile,
             direction: direction ? [ direction[0], direction[1], direction[2] ] : undefined,
             projectionPlaneDistance: light.projectionPlaneDistance,
             outerAngle: light.outerAngle,
@@ -290,6 +291,7 @@ class Tw2CarbonLightCollector
                     radius,
                     color: [ r, g, b ],
                     flags,
+                    lightProfile: row.lightProfile,
 
                     // INNER RADIUS, which is where the falloff comes from - it is the
                     // distance the light is at full strength before it begins to fall

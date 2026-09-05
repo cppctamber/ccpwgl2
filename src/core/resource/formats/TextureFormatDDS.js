@@ -217,6 +217,15 @@ export const TextureFormatDDS =
             });
         }
 
+        // Carbon averages the last authored mip, never the base-level pixels.
+        if (texture.dimension === "2d" && texture.arraySize === 1)
+        {
+            const mip = texture.subresources[texture.subresources.length - 1];
+            const surface = this.CreateSurfaceDDS(arrayBuffer, texture, mip);
+            const rgba = CjsDdsFormat.read(surface, { emit: "rgba" });
+            res.SetAverageColorFromPixels(rgba.data, mip.width, mip.height);
+        }
+
         // Volume upload still uses the legacy 3D adapter. All 2D/cube DDS
         // parsing, validation and subresource layout comes from runtime-resource.
         if (texture.dimension === "3d")
