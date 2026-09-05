@@ -43,6 +43,14 @@ export class IEveLineSetPath extends EveChildTransform
 
     _regeneratePoints = true;
 
+    /** Curve bindings notify UpdateValues, which dispatches this hook. */
+    OnValueChanged()
+    {
+        // Animated endpoints, completeness and segment counts must invalidate
+        // the samples too; OnModified alone only catches direct notifications.
+        this._regeneratePoints = true;
+    }
+
     /**
      * How many segments this path resolves to.
      *
