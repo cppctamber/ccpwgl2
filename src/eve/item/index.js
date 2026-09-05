@@ -13,3 +13,4 @@ export * from "./EveTurretSet";
 export * from "./IEveLineSetPath";
 export * from "./EveBezierCurve";
 export * from "./EveCircle";
+export * from "./EveLineChildContainer";

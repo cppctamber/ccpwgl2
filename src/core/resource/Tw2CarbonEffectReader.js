@@ -242,7 +242,12 @@ export class Tw2CarbonShaderFactory
      * render states. See the note in {@link _createPass}.
      * @type {Array<String>}
      */
-    static RENDER_STATE_PATHS = [ "/decals/", "/space/planet/" ];
+    static RENDER_STATE_PATHS = [
+        "/decals/",
+        "/space/planet/",
+        "/space/specialfx/lines3d.",
+        "/space/specialfx/lines3dpicking."
+    ];
 
     _createPass(group, path)
     {
@@ -268,6 +273,11 @@ export class Tw2CarbonShaderFactory
         // DepthMap nothing publishes, so honouring their states put them
         // through the hull. Widen this list as each family's states are shown
         // to be honourable, and delete it once they all are.
+        //
+        // Lines3D and Lines3DPicking declare only CULL_NONE at every tier.
+        // Their screen-space ribbons can face the winding culled by the
+        // transparent batch defaults; discarding this state hides the lines.
+        // Neither pass requires a depth texture or changes the depth states.
         //
         // `/space/planet/` was added once the planet family's states were read
         // out of the compiled containers and found to be ordinary blend and

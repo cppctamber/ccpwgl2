@@ -989,10 +989,11 @@ export class EveCurveLineSet extends EveObjectSet
             }
         }
 
-        //if (this._vb) device.gl.deleteBuffer(this._vb);
-        this._vb = device.gl.createBuffer();
+        // Child line sets rebuild as visibility and bound colours change each
+        // frame. Keep the buffer identity instead of leaking the previous one.
+        if (!this._vb) this._vb = device.gl.createBuffer();
         device.gl.bindBuffer(device.gl.ARRAY_BUFFER, this._vb);
-        device.gl.bufferData(device.gl.ARRAY_BUFFER, data, device.gl.STATIC_DRAW);
+        device.gl.bufferData(device.gl.ARRAY_BUFFER, data, device.gl.DYNAMIC_DRAW);
         device.gl.bindBuffer(device.gl.ARRAY_BUFFER, null);
 
         super.Rebuild(opt);
@@ -1007,7 +1008,7 @@ export class EveCurveLineSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.isVisible || !this._vb) return false;
+        if (!this.display || !this.isVisible || !this._vb || !this._vbSize) return false;
 
         let effect;
         switch (mode)

@@ -3,29 +3,16 @@ import { meta } from "utils";
 import { EveChild } from "./EveChild";
 import { mat4, sph3, vec3, vec4, quat } from "math";
 import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
+import { device } from "global/tw2";
+import { GLESPerObjectDataEveSpaceObject } from "core/data/Tr2PerObjectData";
+import { Tw2InstancedMeshBatch } from "core/batch/Tw2InstancedMeshBatch";
+import { Tw2VertexDeclaration } from "core/vertex/Tw2VertexDeclaration";
 
 
 /**
- * An effect child that draws lines along a set of authored shapes.
- *
- * It does NOT implement line rendering. Carbon's `EveChildLineSet` owns an
- * `EveCurveLineSet` (`EveChildLineSet.h:113`) and every line it draws is added to
- * that set; the class itself is a transform, a colour/brightness/scroll
- * modulation, and a list of `IEveLineSetPath` shapes that turn parameters into
- * points. ccpwgl's `EveCurveLineSet` is a full implementation already, so the
- * work here is the wiring:
- *
- *     GenerateManagedPoints:  each path -> GeneratePoints(worldTransform)
- *     InitializeLineSet:      clear the set, each path -> AddLinesToSet(...), rebuild
- *
- * `renderType` is Carbon's `lineSetType` enum: OBJECT_RENDER 0, LINE_RENDER 1,
- * BOTH 2. Only the line half is implemented. The object half instances `mesh` at
- * every generated point through a per-instance transform buffer
- * (`EveChildLineSet::UpdateBuffer`, `IEveLineSetPath::UpdateBuffer`) - real GPU
- * instancing, the same mechanism `EveChildInstanceMeshRenderer` needs, and NOT
- * what `EveChildInstanceContainer` does despite the name (that one copies whole
- * child objects). A `renderType` that asks for objects draws whatever lines it
- * also asks for and nothing else, rather than failing.
+ * Authored paths rendered as lines, animated mesh instances, or both.
+ * The instance stream holds three float4 rows of each transposed local matrix;
+ * the child world transform is supplied separately through per-object data.
  */
 @meta.define("EveChildLineSet", true)
 @meta.stage(2)
@@ -62,7 +49,6 @@ export class EveChildLineSet extends EveChild
     @meta.struct("EveCurveLineSet")
     lineSet = null;
 
-    @meta.notImplemented
     @meta.struct("Tw2Mesh", "Tr2Mesh")
     mesh = null;
 
@@ -97,6 +83,20 @@ export class EveChildLineSet extends EveChild
     staticTransform = false;
 
     _worldTransform = mat4.create();
+
+    _worldTransformLast = mat4.create();
+
+    _instanceData = new Float32Array(0);
+
+    _instanceCount = 0;
+
+    _instanceBuffer = null;
+
+    _instanceDeclaration = null;
+
+    _instanceDataDirty = true;
+
+    _perObjectData = null;
 
     /** Aggregate sphere in line-set local space. */
     _boundingSphere = sph3.fromPositionRadius(sph3.create(), vec3.create(), 1);
@@ -177,12 +177,15 @@ export class EveChildLineSet extends EveChild
      */
     GenerateManagedPoints()
     {
+        const geometry = this.mesh && this.mesh.geometryResource;
+        const meshData = geometry && geometry.IsGood() && geometry.meshes[this.mesh.meshIndex];
+        const meshSize = this.renderType !== EveChildLineSet.RenderType.LINE_RENDER && meshData ? meshData.boundsSphereRadius : 0;
         for (let i = 0; i < this.lines.length; i++)
         {
             const path = this.lines[i];
             if (!path) continue;
             path.GeneratePoints(this._worldTransform);
-            path.CalculateBoundingSphere();
+            path.CalculateBoundingSphere(meshSize);
         }
 
         this.RebuildBoundingSphere();
@@ -267,6 +270,10 @@ export class EveChildLineSet extends EveChild
     /** Refreshes the line system's current world transform for bounds queries. */
     PrepareLod(parentTransform)
     {
+        if (this.useSRT && !this.staticTransform)
+        {
+            mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+        }
         if (parentTransform) mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
     }
 
@@ -308,7 +315,8 @@ export class EveChildLineSet extends EveChild
      */
     InitializeLineSet()
     {
-        if (!this.lineSet || !this.lines.length) return false;
+        if (!this.lineSet) return false;
+        this.lineSet.additive = this.additiveBatches;
 
         const
             g = EveChildLineSet.global,
@@ -320,7 +328,7 @@ export class EveChildLineSet extends EveChild
         for (let i = 0; i < this.lines.length; i++)
         {
             const path = this.lines[i];
-            if (path && path.AddLinesToSet) path.AddLinesToSet(this.lineSet, color, animColor, this.scrollSpeed);
+            if (path) path.AddLinesToSet(this.lineSet, color, animColor, this.scrollSpeed);
         }
 
         // A line set built here rather than read from the file has never been
@@ -335,26 +343,7 @@ export class EveChildLineSet extends EveChild
         return true;
     }
 
-    /**
-     * Per frame update.
-     *
-     * Carbon splits this across `UpdateSyncronous` (advance the paths, rebuild
-     * the set) and `UpdateAsyncronous` (compose the transform), and rebuilds the
-     * set EVERY frame for a line-rendering child (cpp:288-291). This rebuilds
-     * only when a path reports that it regenerated, or when something set
-     * `_updateLineSet`.
-     *
-     * That divergence is deliberate. Carbon submits into a dynamic vertex buffer;
-     * ccpwgl's `EveObjectSet.Rebuild` re-creates its buffers, so doing it per
-     * frame would cost far more here than it does there, for an identical result
-     * whenever nothing moved. A scrolling line animates through the line item's
-     * own animation parameters, not through a rebuild, so a static path with
-     * `scrollSpeed` still scrolls.
-     *
-     * @param {Number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} [perObjectData]
-     */
+    /** Advances paths and refreshes visible lines and mesh instances. */
     Update(dt, parentTransform, perObjectData)
     {
         // Carbon composes the local transform from the SRT triple each frame unless
@@ -365,6 +354,8 @@ export class EveChildLineSet extends EveChild
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
 
+        mat4.copy(this._worldTransformLast, this._worldTransform);
+        // Carbon (row-vector): local * parent, local first.
         mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
         this._hasUpdated = true;
 
@@ -373,7 +364,7 @@ export class EveChildLineSet extends EveChild
         for (let i = 0; i < this.lines.length; i++)
         {
             const path = this.lines[i];
-            if (path && path.Update && path.Update(dt)) regenerated = true;
+            if (path && path.Update(dt)) regenerated = true;
         }
 
         if (!this.IsUpdating()) return;
@@ -381,9 +372,12 @@ export class EveChildLineSet extends EveChild
         if (regenerated || this._updateLineSet)
         {
             this.GenerateManagedPoints();
-            this.InitializeLineSet();
             this._updateLineSet = false;
         }
+
+        // Direct curve bindings and visibility changes need no OnModified call.
+        if (this.renderType !== EveChildLineSet.RenderType.OBJECT_RENDER) this.InitializeLineSet();
+        if (this.renderType !== EveChildLineSet.RenderType.LINE_RENDER) this.UpdateBuffer();
 
         if (this.lineSet)
         {
@@ -395,45 +389,46 @@ export class EveChildLineSet extends EveChild
         }
     }
 
-    /**
-     * Intersects this child.
-     *
-     * The incoming `worldTransform` is the PARENT's, and is deliberately not
-     * used: `_worldTransform` is rebuilt every frame by Update and already
-     * carries the parent, the bone and every transform modifier. Composing
-     * the parent again would apply it twice, and re-deriving from
-     * `localTransform` would answer the bind pose for anything animated -
-     * which is exactly the case a hit test on a moving part has to get right.
-     *
-     * @param {Tw2RayCaster} ray
-     * @param {Array} intersects
-     * @param {mat4} [_worldTransform] - the parent's, unused; see above
-     * @param {Object} [cache]
-     * @returns {?Object} the intersection, if any
-     */
+    /** Picks the generated mesh instances in their current world transforms. */
     Intersect(ray, intersects, _worldTransform, cache)
     {
-        if (!this.display || !this.isVisible || ray.IsMasked(this)) return null;
-        if (ray.GetOption("lineSets", "skip")) return null;
-
-        const target = this.mesh;
-        if (!target || !target.Intersect) return null;
-
+        if (!this.IsUpdating() || !this._hasUpdated || ray.IsMasked(this)) return null;
+        if (ray.GetOption("lineSets", "skip") || this.renderType === EveChildLineSet.RenderType.LINE_RENDER) return null;
+        if (!this.mesh) return null;
         const before = intersects.length;
-        target.Intersect(ray, intersects, this._worldTransform, cache);
-
-        // Name the child rather than the mesh: a caller picking in a scene
-        // wants the thing it can select, and the mesh is an implementation
-        // detail of it.
-        for (let i = before; i < intersects.length; i++)
+        const matrix = mat4.create();
+        const world = mat4.create();
+        for (let i = 0; i < this._instanceCount; i++)
         {
-            if (!intersects[i].item) intersects[i].item = this;
-            if (!intersects[i].name) intersects[i].name = this.name || "";
+            this.GetInstanceTransform(i, matrix);
+            if (mat4.determinant(matrix) === 0) continue;
+            // Carbon (row-vector): instance * system, instance first.
+            mat4.multiply(world, this._worldTransform, matrix);
+            const at = intersects.length;
+            this.mesh.Intersect(ray, intersects, world, {});
+            for (let j = at; j < intersects.length; j++)
+            {
+                intersects[j].instanceIndex = i;
+                if (!intersects[j].item) intersects[j].item = this;
+                if (!intersects[j].name) intersects[j].name = this.name;
+            }
         }
-
-        // No segment of its own: a parent names its children, because only
-        // the parent knows which property they hang off. This is a leaf.
         return intersects.length > before ? intersects[before] : null;
+    }
+
+    /** Decodes one CPU instance for picking and attachment inspection. */
+    GetInstanceTransform(index, out)
+    {
+        if (index < 0 || index >= this._instanceCount) return null;
+        mat4.identity(out);
+        for (let row = 0; row < 3; row++)
+        {
+            for (let column = 0; column < 4; column++)
+            {
+                out[column * 4 + row] = this._instanceData[index * 12 + row * 4 + column];
+            }
+        }
+        return out;
     }
 
     /**
@@ -447,29 +442,107 @@ export class EveChildLineSet extends EveChild
         return out;
     }
 
-    /**
-     * Hands the contained line set's batches up.
-     *
-     * Carbon reaches the same place by a different route: its `GetBatches` serves
-     * only the instanced-object half, and the lines arrive because
-     * `GetRenderables` (cpp:221-246) pushes `m_lineSet` into the renderable list
-     * as a peer. ccpwgl has no renderable list - children are asked for batches
-     * directly - so the set is forwarded here instead. Same guard either way:
-     * `LINE_RENDER != m_type` is what suppresses the lines, and it is the only
-     * thing `renderType` gates on this path.
-     *
-     * @param {Number} mode
-     * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData} perObjectData
-     * @returns {Boolean} true if batches were accumulated
-     */
+    /** Collects both render paths using the authored mesh area selection. */
     GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.IsUpdating() || !this._hasUpdated) return false;
-        if (this.renderType === EveChildLineSet.RenderType.OBJECT_RENDER) return false;
-        if (!this.lineSet) return false;
+        let added = false;
+        if (this.renderType !== EveChildLineSet.RenderType.OBJECT_RENDER && this.lineSet)
+        {
+            added = !!this.lineSet.GetBatches(mode, accumulator, perObjectData);
+        }
+        if (this.renderType === EveChildLineSet.RenderType.LINE_RENDER || !this.mesh || !this._instanceCount) return added;
+        if (!this._perObjectData) this._perObjectData = new GLESPerObjectDataEveSpaceObject();
+        const bag = GLESPerObjectDataEveSpaceObject.Unpack(perObjectData);
+        bag.worldTransform = this._worldTransform;
+        bag.worldTransformLast = this._worldTransformLast;
+        bag.inverseWorldTransformTranspose = null;
+        GLESPerObjectDataEveSpaceObject.Pack(bag, this._perObjectData);
+        const owner = this;
+        const forwarding = {
+            length: 0,
+            Commit(source)
+            {
+                const batch = new Tw2InstancedMeshBatch();
+                batch.renderMode = source.renderMode;
+                batch.perObjectData = source.perObjectData;
+                batch.meshIx = source.meshIx;
+                batch.start = source.start;
+                batch.count = source.count;
+                batch.effect = source.effect;
+                batch.instanceMesh = owner;
+                accumulator.Commit(batch);
+                this.length++;
+            }
+        };
+        this.mesh.GetBatches(mode, forwarding, this._perObjectData);
+        return forwarding.length > 0 || added;
+    }
 
-        return !!this.lineSet.GetBatches(mode, accumulator, perObjectData);
+    /** Builds the CPU stream; GPU upload is deferred until an actual draw. */
+    UpdateBuffer()
+    {
+        let count = 0;
+        for (const path of this.lines) count += path.GetPointCount();
+        if (this._instanceData.length !== count * 12) this._instanceData = new Float32Array(count * 12);
+        let offset = 0;
+        for (const path of this.lines)
+        {
+            offset = path.UpdateBuffer(this._instanceData, offset, this._worldTransform, device.eyePosition);
+        }
+        this._instanceCount = count;
+        this._instanceDataDirty = true;
+        const geometry = this.mesh && this.mesh.geometryResource;
+        const meshData = geometry && geometry.IsGood() && geometry.meshes[this.mesh.meshIndex];
+        if (meshData)
+        {
+            for (const path of this.lines) path.CalculateBoundingSphere(meshData.boundsSphereRadius);
+            this.RebuildBoundingSphere();
+        }
+    }
+
+    /** Realizes TEXCOORD8..10, aliasing previous transform rows at 11..13. */
+    RenderAreas(meshIndex, start, count, effect, technique)
+    {
+        const geometry = this.mesh && this.mesh.geometryResource;
+        if (!geometry || !geometry.IsGood() || !this._instanceCount) return false;
+        const gl = device.gl;
+        if (!this._instanceDeclaration)
+        {
+            const elements = [];
+            for (let i = 0; i < 6; i++) elements.push({ usage: "TEXCOORD", usageIndex: 8 + i, elements: 4 });
+            this._instanceDeclaration = Tw2VertexDeclaration.from(elements);
+            for (let i = 0; i < 6; i++) this._instanceDeclaration.elements[i].offset = (i % 3) * 16;
+            this._instanceDeclaration.stride = 48;
+        }
+        if (!this._instanceBuffer)
+        {
+            this._instanceBuffer = gl.createBuffer();
+            this._instanceDataDirty = true;
+        }
+        if (this._instanceDataDirty)
+        {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this._instanceData, gl.DYNAMIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            this._instanceDataDirty = false;
+        }
+        return geometry.RenderAreasInstanced(meshIndex, start, count, effect, technique,
+            this._instanceBuffer, this._instanceDeclaration, 48, this._instanceCount);
+    }
+
+    /** Releases owned buffers; retained CPU records support the next draw. */
+    Unload()
+    {
+        if (this._instanceBuffer) device.gl.deleteBuffer(this._instanceBuffer);
+        this._instanceBuffer = null;
+        if (this.lineSet) this.lineSet.Unload();
+    }
+
+    /** Carbon's shader validation surface reports the current transform rows. */
+    GetVertexElementAddedThroughCode()
+    {
+        return [ [ 5, 8 ], [ 5, 9 ], [ 5, 10 ] ];
     }
 
     /**
@@ -477,7 +550,9 @@ export class EveChildLineSet extends EveChild
      */
     HasTransparentBatches()
     {
-        return !!this.lineSet && !this.additiveBatches;
+        if (!this.display) return false;
+        return (this.renderType !== EveChildLineSet.RenderType.OBJECT_RENDER && !!this.lineSet && !this.additiveBatches)
+            || (this.renderType !== EveChildLineSet.RenderType.LINE_RENDER && !!this.mesh && this.mesh.transparentAreas.length > 0);
     }
 
     static global = {

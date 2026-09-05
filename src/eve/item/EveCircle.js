@@ -192,6 +192,30 @@ export class EveCircle extends IEveLineSetPath
         }
     }
 
+    /** Carbon EveCircle::UpdateBuffer: interpolate around the ring each frame. */
+    UpdateBuffer(data, offset = 0, systemLocation, viewPosition)
+    {
+        if (!this.display || !this.isVisible) return this.WriteHiddenInstances(data, offset);
+        const g = IEveLineSetPath.global;
+        const count = this._points.length;
+        for (let i = 0; i < count; i++)
+        {
+            let size = 1;
+            if (this.scaleEndpoints && this.completeness !== 1)
+            {
+                if (i + 2 >= count) size = 1 - this.animValue;
+                if (i === 0) size *= this.animValue;
+                size = Math.max(0.01, size);
+            }
+            const next = (i + 1) % count;
+            vec3.lerp(g.translation, this._points[i], this._points[next], this.animValue);
+            vec3.lerp(g.direction, this._points[next], this._points[(next + 1) % count], this.animValue);
+            vec3.subtract(g.direction, g.direction, g.translation);
+            offset = this.WriteInstanceTransform(data, offset, g.translation, g.direction, size, systemLocation, viewPosition);
+        }
+        return offset;
+    }
+
     /** Remembered mesh size, see `CalculateBoundingSphere`. */
     _meshSize = 0;
 

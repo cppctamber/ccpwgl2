@@ -206,6 +206,54 @@ export class EveBezierCurve extends IEveLineSetPath
         }
     }
 
+    /** Carbon EveBezierCurve::UpdateBuffer, including its transformed endpoint quirk. */
+    UpdateBuffer(data, offset = 0, systemLocation, viewPosition)
+    {
+        if (!this.display || !this.isVisible) return this.WriteHiddenInstances(data, offset);
+        const g = IEveLineSetPath.global;
+        const count = this._points.length;
+        // Carbon quirk (cpp:244-254): a world-space endpoint is mixed with local points.
+        vec3.transformMat4(g.endpoint, this.point2, this.worldTransform);
+        for (let i = 0; i < count; i++)
+        {
+            let size = 1;
+            if (this.scaleEndpoints)
+            {
+                if (i + (this.completeness < 1 ? 2 : 1) >= count) size = 1 - this.animValue;
+                if (i === 0) size *= this.animValue;
+                size = Math.max(0.01, size);
+            }
+            const next = (i + 1) % count;
+            if (next === 0)
+            {
+                if (this.completeness < 1)
+                {
+                    data.fill(0, offset, offset + 12);
+                    offset += 12;
+                    continue;
+                }
+                vec3.lerp(g.translation, this._points[i], g.endpoint, this.animValue);
+                vec3.subtract(g.direction, g.endpoint, g.translation);
+            }
+            else
+            {
+                if (next + 1 === count)
+                {
+                    vec3.lerp(g.target, this._points[next], g.endpoint, Math.min(1, this.completeness));
+                    vec3.lerp(g.target, this._points[next], g.target, this.animValue * this.animValue);
+                }
+                else
+                {
+                    vec3.lerp(g.target, this._points[next], this._points[next + 1], this.animValue);
+                }
+                vec3.lerp(g.translation, this._points[i], this._points[next], this.animValue);
+                vec3.subtract(g.direction, g.target, g.translation);
+            }
+            offset = this.WriteInstanceTransform(data, offset, g.translation, g.direction, size, systemLocation, viewPosition);
+        }
+        return offset;
+    }
+
     /** Remembered mesh size, see `CalculateBoundingSphere`. */
     _meshSize = 0;
 

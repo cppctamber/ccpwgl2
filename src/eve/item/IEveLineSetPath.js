@@ -1,6 +1,6 @@
 // Source: E:\carbonengine\trinity\trinity\Eve\SpaceObject\Children\LineSetPaths\IEveLineSetPath.h
 import { meta } from "utils";
-import { mat4, vec3, vec4, sph3 } from "math";
+import { mat4, quat, vec3, vec4, sph3 } from "math";
 import { EveChildTransform } from "eve/child/EveChildTransform";
 
 
@@ -159,12 +159,7 @@ export class IEveLineSetPath extends EveChildTransform
         return vec4.set(out, centre[0], centre[1], centre[2], this._boundingSphere[3] * scale);
     }
 
-    // The three below are what a shape overrides, and they are deliberately NOT
-    // `@meta.abstract`. That decorator replaces the body with a throw, and
-    // `EveLineChildContainer` - a path that is still a shell, and that appears in
-    // shipped content alongside implemented ones - overrides none of them. A path
-    // nobody has written yet should contribute no lines, not take the object down
-    // with it.
+    // Empty base paths remain inert for compatibility with legacy hydrated data.
 
     /**
      * Lays out this shape's points, in its own local space.
@@ -239,19 +234,84 @@ export class IEveLineSetPath extends EveChildTransform
         this.isVisible = true;
     }
 
-    /**
-     * OBJECT_RENDER half - writes per-instance transforms for a mesh placed at
-     * each point. Unimplemented until `EveChildLineSet` grows the instanced
-     * path; the line half does not call it.
-     */
-    @meta.notImplemented
-    UpdateBuffer()
+    /** Writes packed 3x4 transforms; returns the next float offset. */
+    UpdateBuffer(data, offset = 0, systemLocation, viewPosition)
     {
+        return offset;
+    }
+
+    /** Writes Carbon's zero-scale records without changing the instance count. */
+    WriteHiddenInstances(data, offset)
+    {
+        const end = offset + this.GetPointCount() * 12;
+        data.fill(0, offset, end);
+        return end;
+    }
+
+    /**
+     * Packs one path-local instance, including camera-facing orientation.
+     * Carbon: EveCircle.cpp:240-263 and EveBezierCurve.cpp:269-287.
+     */
+    WriteInstanceTransform(data, offset, translation, direction, size, systemLocation, viewPosition)
+    {
+        const g = IEveLineSetPath.global;
+        if (this.billboardObjects)
+        {
+            // Carbon (row-vector): local * system, local first.
+            mat4.multiply(g.mat4_0, systemLocation, this.localTransform);
+            mat4.getScaling(g.vec3_2, g.mat4_0);
+            for (let column = 0; column < 3; column++)
+            {
+                for (let row = 0; row < 3; row++)
+                {
+                    g.mat4_1[column * 4 + row] = g.vec3_2[column] ? g.mat4_0[column * 4 + row] / g.vec3_2[column] : 0;
+                }
+            }
+            mat4.getRotation(g.quat_0, g.mat4_1);
+            quat.normalize(g.quat_0, g.quat_0);
+            quat.conjugate(g.quat_0, g.quat_0);
+            vec3.transformMat4(g.vec3_2, translation, g.mat4_0);
+            vec3.subtract(direction, viewPosition, g.vec3_2);
+            vec3.transformQuat(direction, direction, g.quat_0);
+        }
+
+        // TriMath.cpp:341-358, TriQuaternionArcFromForward uses forward -Z.
+        vec3.normalize(g.vec3_2, direction);
+        if (g.vec3_2[2] < 0.99999)
+        {
+            const z = Math.sqrt(1 - g.vec3_2[2]);
+            const div = Math.SQRT1_2 / z;
+            quat.set(g.quat_0, g.vec3_2[1] * div, -g.vec3_2[0] * div, 0, Math.SQRT1_2 * z);
+        }
+        else
+        {
+            quat.set(g.quat_0, 1, 0, 0, 0);
+        }
+        vec3.scale(g.vec3_2, this.objectScale, size);
+        mat4.fromRotationTranslationScale(g.mat4_0, g.quat_0, translation, g.vec3_2);
+        // Carbon (row-vector): instance * local, instance first.
+        mat4.multiply(g.mat4_0, this.localTransform, g.mat4_0);
+        for (let row = 0; row < 3; row++)
+        {
+            for (let column = 0; column < 4; column++)
+            {
+                data[offset++] = g.mat4_0[column * 4 + row];
+            }
+        }
+        return offset;
     }
 
     static global = {
         vec3_0: vec3.create(),
         vec3_1: vec3.create(),
+        vec3_2: vec3.create(),
+        translation: vec3.create(),
+        direction: vec3.create(),
+        target: vec3.create(),
+        endpoint: vec3.create(),
+        mat4_0: mat4.create(),
+        mat4_1: mat4.create(),
+        quat_0: quat.create(),
         sph3_0: sph3.create()
     };
 
