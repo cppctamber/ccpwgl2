@@ -373,7 +373,18 @@ export class EveChildMesh extends EveChild
             {
                 box3.transformMat4(this._worldBoundingBox, localBounds, this._worldTransform);
                 sph3.fromBox3(this._worldBoundingSphere, this._worldBoundingBox);
-                this._boundsReady = true;
+                // Degenerate bounds are NO bounds. Geometry bounds come from
+                // the wbg's AUTHORED per-area min/max (Tw2GeometryMesh.
+                // RebuildBounds unions them; vertices are only read under
+                // `force`), and some shipped VFX geometry - the Legion's
+                // SpeedBar bars - authors all zeros. A zero-radius sphere
+                // measures 0 projected pixels and UpdateLod size-culls the
+                // child forever, which is how those bars vanished when logical
+                // LOD armed this gate. Claiming not-ready instead routes
+                // UpdateLod to its fail-open branch: visible at its LOD tier,
+                // never size-culled - exactly the pre-gate behaviour for
+                // exactly these children.
+                this._boundsReady = this._worldBoundingSphere[3] > 0;
             }
         }
         this._hasUpdated = true;
