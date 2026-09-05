@@ -273871,6 +273871,44 @@
 	  }
 	};
 
+	/**
+	 * GLES replacement for the DX11-only QuadSimpleInstancedLight effect.
+	 * Derived from build 3494416, BINDLESS_RENDERING_DISABLED, Main.
+	 * Only UV0 reaches the pixel shader; the native VS's other varyings are unused.
+	 */
+	var quadSimpleInstancedLight = {
+	  name: "quadSimpleInstancedLight",
+	  replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/fx/quadsimpleinstancedlight",
+	  techniques: {
+	    Main: {
+	      vs: quadInstancedV5_PosTexTexTexTex,
+	      ps: {
+	        constants: [createLinearColor({
+	          name: "OuterGlow",
+	          ui: {
+	            group: "Color"
+	          }
+	        }), createLinearColor({
+	          name: "InnerGlow",
+	          ui: {
+	            group: "Color"
+	          }
+	        })],
+	        textures: [overrideTex(TextureMap_ClampBorder, {
+	          isSRGB: 0,
+	          sampler: {
+	            addressUMode: WrapMode.CLAMP_TO_EDGE,
+	            addressVMode: WrapMode.CLAMP_TO_EDGE,
+	            addressWMode: WrapMode.CLAMP_TO_EDGE,
+	            maxAnisotropy: 16
+	          }
+	        })],
+	        shader: "\n                    ".concat(header, "\n                    varying vec4 texcoord1;\n                    uniform sampler2D s0;\n                    uniform vec4 cb7[2];\n                    uniform vec4 cb2[22];\n\n                    void main()\n                    {\n                        vec3 texel = texture2D(s0, texcoord1.xy, cb2[21].y).rgb;\n                        // Native DXBC uses xyzz for both colours and texture:\n                        // alpha is the blue result, not either colour's alpha.\n                        vec4 outer = texel.rgbb * cb7[0].rgbb;\n                        vec4 inner = texel.rgbb * cb7[1].rgbb;\n                        gl_FragData[0] = outer + texel.b * (inner - outer);\n                        ").concat(shadowFooter$1, "\n                    }\n                ")
+	      }
+	    }
+	  }
+	};
+
 	var quad$1 = {
 		__proto__: null,
 		asteroidV5: asteroidV5,
@@ -273892,6 +273930,7 @@
 		quadOilV5: quadOilV5,
 		quadPickingV5: quadPickingV5,
 		quadSailsV5: quadSailsV5,
+		quadSimpleInstancedLight: quadSimpleInstancedLight,
 		quadSolidV5: quadSolidV5,
 		quadTurretV5: quadTurretV5,
 		quadUtilityHeatV5: quadUtilityHeatV5,

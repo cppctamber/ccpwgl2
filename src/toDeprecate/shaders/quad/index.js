@@ -30,3 +30,4 @@ export * from "./extended/quadExtendedPickingV5";
 export { quadV5Depth, skinnedQuadV5Depth } from "./quadV5Depth";
 
 export { quadSolidV5 } from "./quadSolidV5";
+export * from "./quadsimpleinstancedlight";
