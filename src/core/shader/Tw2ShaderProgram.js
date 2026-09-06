@@ -11,6 +11,24 @@ import { ErrShaderLink } from "./Tw2Shader";
  */
 const CARBON_LAST_CB_REGISTER = 7;
 
+/**
+ * How many `s#` sampler uniforms `SetupGLSLShader` actually assigns.
+ *
+ * Its two loops are written to the WebGL2 guarantee of 16 units per stage -
+ * `s0`..`s15` to units 0-15, `vs0`..`vs15` to 12-27 - and a driver reporting
+ * more does not make them assign more. This is therefore the boundary past
+ * which a register has been given NO unit at all.
+ *
+ * MAX_TEXTURE_IMAGE_UNITS is a different quantity: the ceiling an assigned
+ * unit must stay under. Using it as this boundary is what dropped draws on
+ * Chrome, which reports 32 - register 16 read as "in range" so the remap
+ * skipped it, while the setup loop stopped at 15 and never reached it. Its
+ * uniform kept the default 0 and collided with the samplerCube already
+ * sampling unit 0, and WebGL drops such a draw entirely.
+ * @type {Number}
+ */
+const SAMPLER_SETUP_UNITS = 16;
+
 
 @meta.define("Tw2ShaderProgram")
 export class Tw2ShaderProgram
@@ -244,6 +262,7 @@ export class Tw2ShaderProgram
     static SetupCarbonSamplerUnits(program, pass, gl)
     {
         const MAX_UNITS = Tw2ShaderProgram.GetMaxTextureImageUnits(gl);
+        const SETUP_BOUND = Math.min(MAX_UNITS, SAMPLER_SETUP_UNITS);
         const remap = new Map();    // sampler registerIndex -> texture unit
         const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, MAX_UNITS, program.program, gl);
 
@@ -256,7 +275,11 @@ export class Tw2ShaderProgram
             for (const texture of pass.stages[s].textures || [])
             {
                 const reg = texture.registerIndex;
-                if (reg < MAX_UNITS || remap.has(reg)) continue;
+
+                // Against the SETUP LOOP bound, not the driver limit - see
+                // SAMPLER_SETUP_UNITS. A register the loop never reached has no
+                // uniform set whatever the hardware reports.
+                if (reg < SETUP_BOUND || remap.has(reg)) continue;
 
                 let unit = 0;
                 while (unit < MAX_UNITS && occupied.has(unit)) unit++;
@@ -330,7 +353,10 @@ export class Tw2ShaderProgram
         {
             for (const texture of pass.stages[s].textures || [])
             {
-                if (texture.registerIndex >= maxUnits) continue;
+                // The same boundary as the remap: only registers the positional
+                // loop assigns keep unit == registerIndex, so counting a higher
+                // one as taken would deny the remap a unit that is in fact free.
+                if (texture.registerIndex >= Math.min(maxUnits, SAMPLER_SETUP_UNITS)) continue;
 
                 // A register the MANIFEST declares is not necessarily a sampler
                 // the shader HAS. The webgl emitter merges and folds: on the v5
@@ -358,10 +384,17 @@ export class Tw2ShaderProgram
             }
             for (const sampler of pass.stages[s].samplers || [])
             {
-                if (sampler.isVolume && sampler.registerIndex + 12 < maxUnits)
-                {
-                    occupied.add(sampler.registerIndex + 12);
-                }
+                if (!sampler.isVolume) continue;
+
+                // The same setup-loop bound as the textures above. The vs# loop
+                // covers vs0..vs15 and puts them at registerIndex + 12, so a
+                // register past it is assigned no unit at all and marking one
+                // occupied would deny the remap a unit that is in fact free.
+                // The resulting unit must also be one the driver can address.
+                const unit = sampler.registerIndex + 12;
+                if (sampler.registerIndex >= SAMPLER_SETUP_UNITS || unit >= maxUnits) continue;
+
+                occupied.add(unit);
             }
         }
 
