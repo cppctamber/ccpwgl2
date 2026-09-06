@@ -68,9 +68,22 @@ export class Tw2ShaderPass
         // Whether a Carbon pass carries states at all is decided when it is
         // read - see `Tw2CarbonShaderFactory.RENDER_STATE_PATHS`. A pass that
         // has them applies them; there is nothing to gate here.
-        for (let i = 0; i < this.states.length; i++)
+        //
+        // Carbon never RESTORES pass states, and `SetStandardStates` early-outs
+        // while the requested mode is current and clean - so anything applied
+        // here would otherwise leak into every later batch of the same mode,
+        // in both directions: lines3d's CULL_NONE doubles the additive VFX
+        // drawn after a line set, and a decal's src-alpha blend breaks the
+        // line batch drawn after a decal. Invalidating makes the NEXT batch
+        // re-apply its mode defaults; this pass keeps its own states, which
+        // are applied after SetStandardStates already ran for this batch.
+        if (this.states.length)
         {
-            device.SetRenderState(this.states[i].state, this.states[i].value);
+            for (let i = 0; i < this.states.length; i++)
+            {
+                device.SetRenderState(this.states[i].state, this.states[i].value);
+            }
+            device.InvalidateStandardStates();
         }
 
         if (stateOverride)
@@ -92,6 +105,8 @@ export class Tw2ShaderPass
                     }
                 }
             }
+            // Same leak, same cure as the declared states above.
+            device.InvalidateStandardStates();
         }
 
         if (device.IsAlphaTestEnabled())
