@@ -50,12 +50,6 @@ export class EveSOFDataPatternLayerProperties extends meta.Model
     @meta.boolean
     SimplePrimary = true;
 
-    @meta.boolean
-    Wreck = true;
-
-    @meta.boolean
-    Turret = true;
-
     /**
      * Checks whether the pattern layer applies to an SOF area type.
      * @param {number|string} areaType
@@ -67,18 +61,28 @@ export class EveSOFDataPatternLayerProperties extends meta.Model
         return name ? !!this[name] : true;
     }
 
+    /**
+     * The field each SOF area type index names, or null where a pattern layer
+     * declares nothing for that type.
+     *
+     * Indexed by `EveSOFDataArea.AreaType`. Carbon maps NINE applicable areas -
+     * TYPE_WRECK (5) and TYPE_TURRET (10) are absent, and default to applicable.
+     * Omitting the gap at 5 shifted every type above it by one, so a pattern's
+     * Rock flag was answering for wrecks, Monument for rocks, and so on.
+     * @type {Array<String|null>}
+     */
     static AreaTypes = [
         "Primary",
         "Glass",
         "Sails",
         "Reactor",
         "Darkhull",
+        null,
         "Rock",
         "Monument",
         "Ornament",
         "SimplePrimary",
-        "Wreck",
-        "Turret"
+        null
     ];
 
 }

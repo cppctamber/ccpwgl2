@@ -34,13 +34,43 @@ export class EveSOFDataArea extends meta.Model
     SimplePrimary = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
-    Wreck = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
     Turret = null;
 
     /**
-     * SOF Area types
+     * SOF area type indices, matching Carbon's `EveSOFDataArea::AreaType`.
+     *
+     * Hull areas declare their type as one of these NUMBERS, so the order here
+     * is data, not presentation.
+     * @type {Object<String, Number>}
+     */
+    static AreaType = {
+        TYPE_PRIMARY: 0,
+        TYPE_GLASS: 1,
+        TYPE_SAILS: 2,
+        TYPE_REACTOR: 3,
+        TYPE_DARKHULL: 4,
+        TYPE_WRECK: 5,
+        TYPE_ROCK: 6,
+        TYPE_MONUMENT: 7,
+        TYPE_ORNAMENT: 8,
+        TYPE_SIMPLEPRIMARY: 9,
+        TYPE_TURRET: 10,
+        TYPE_MAX: 11,
+        TYPE_NO_OVERWRITE: 11
+    };
+
+    /**
+     * The area material field each type index names, or null where the type has
+     * no field on this object.
+     *
+     * Slot 5 is TYPE_WRECK, and it is deliberately EMPTY: Carbon's blue mapping
+     * for EveSOFDataArea declares nine materials and no wreck among them, and no
+     * shipped faction carries one - wreck materials come from the generic data
+     * instead. This list previously omitted the gap and put "Wreck" at 9, which
+     * shifted every type from 5 up by one, so an area declaring TYPE_WRECK read
+     * Rock, TYPE_ROCK read Monument, and so on to TYPE_SIMPLEPRIMARY reading a
+     * field the data can never fill.
+     * @type {Array<String|null>}
      */
     static Types = [
         "Primary",
@@ -48,11 +78,11 @@ export class EveSOFDataArea extends meta.Model
         "Sails",
         "Reactor",
         "Darkhull",
+        null,
         "Rock",
         "Monument",
         "Ornament",
         "SimplePrimary",
-        "Wreck",
         "Turret"
     ];
 
