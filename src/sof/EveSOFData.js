@@ -2156,7 +2156,9 @@ export class EveSOFData extends meta.Model
         let pU = 0,
             pV = 0;
 
-        if (layer)
+        // A layer supplies the mask; only an authored transform enables its projection.
+        // Missing per-hull transforms must not become identity projections.
+        if (layer && transformLayer)
         {
             const textureResFilePath = layer.textureResFilePath || EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH;
 
