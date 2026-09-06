@@ -2513,6 +2513,36 @@ export class EveSOFData extends meta.Model
 
     }
 
+    /**
+     * The DNA's mesh materials, minus the slots an area refuses to have overridden.
+     *
+     * `blockedMaterials` is a bitmask on the HULL AREA naming the material slots
+     * a skin may not repaint, so the faction's own materials stand there. On
+     * mde2_fn the sails block slots 3 and 4 (mask 12) and the glass blocks all
+     * four (mask 15); a fanfest_2026 skin supplying Mtl3/Mtl4 was recolouring
+     * sails that are supposed to keep black_deadstar_coated/matt.
+     *
+     * Carbon applies the mask to the MESH command ONLY - see
+     * `EveSOFDNA::GetMeshAreaParameter`, where the blocked test guards the
+     * CMD_MATERIAL branch and the CMD_PATTERN branch below it has no such test.
+     * Pattern materials are therefore left alone here.
+     *
+     * @param {Object} sofArea - DNA area overrides
+     * @param {Number} [blockedMaterials=0] - the area's blocked slot mask
+     * @returns {Object} sofArea itself when nothing is blocked, else a filtered copy
+     */
+    static filterBlockedMaterials(sofArea, blockedMaterials = 0)
+    {
+        if (!sofArea || !blockedMaterials) return sofArea;
+
+        const out = Object.assign({}, sofArea);
+        for (let i = 0; i < 4; i++)
+        {
+            if (blockedMaterials & (1 << i)) delete out[`material${i + 1}`];
+        }
+        return out;
+    }
+
     static assignMaterialNamesIfUsable(dest, src)
     {
         [ "material1", "material2", "material3", "material4", "patternMaterial1", "patternMaterial2" ].forEach(key =>
@@ -2662,13 +2692,16 @@ export class EveSOFData extends meta.Model
                     // Area parameters
                     const areaData = sof.faction.AssignAreaType(areaType);
 
+                    // An area may refuse some of the DNA's material slots.
+                    const sofArea = this.filterBlockedMaterials(sof.area, hullArea.blockedMaterials);
+
                     // Temporarily keep track of the hull area nane
                     area._sofMeta = area._sofMeta || {};
                     area._sofMeta.areaData = Object.assign({}, areaData);
-                    this.assignMaterialNamesIfUsable(area._sofMeta.areaData, sof.area);
+                    this.assignMaterialNamesIfUsable(area._sofMeta.areaData, sofArea);
 
                     // Get custom values
-                    Object.assign(areaData, sof.area);
+                    Object.assign(areaData, sofArea);
 
                     data.AssignMaterialParameters(areaData, eff.parameters);
 
@@ -4054,6 +4087,9 @@ export class EveSOFData extends meta.Model
                 effect.autoParameter = true;
                 config.textures = source.AssignTextures(config.textures);
 
+                // Unfiltered on purpose: a layout instance is a synthetic PRIMARY
+                // area with no hull area behind it, and layout sources carry no
+                // blockedMaterials mask to consult.
                 const areaData = sof.faction.AssignAreaType(0, {});
                 Object.assign(areaData, sof.area);
                 data.AssignMaterialParameters(areaData, config.parameters);

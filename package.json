@@ -11,6 +11,7 @@
     "build": "npm run build:rollup",
     "build:rollup": "rollup -c rollup.config.mjs",
     "lint": "eslint src",
+    "test:sof-blocked-materials": "node scripts/test-sof-blocked-materials.js",
     "test:sparse-sampler-registers": "node scripts/test-sparse-sampler-registers.js",
     "test:phantom-texture-units": "node scripts/test-phantom-texture-units.js",
     "test:carbon-clip-convention": "node scripts/test-carbon-clip-convention.js",
