@@ -5,7 +5,9 @@ import { EveSpaceScene } from "eve/EveSpaceScene";
 import { TnyClient } from "./TnyClient";
 import { TnyLensflare } from "./objects/TnyLensflare";
 import { TnyPlanet } from "./objects/TnyPlanet";
+import { TnyShip } from "./objects/TnyShip";
 import { TnySpaceObject } from "./objects/TnySpaceObject";
+import { TnyStationary } from "./objects/TnyStationary";
 import { TnyStrategicCruiser } from "./objects/TnyStrategicCruiser";
 
 
@@ -454,7 +456,7 @@ export class TnyScene extends meta.Model
         // along in the dna.
         if (blendMode && wrapped.SetBlendMode) wrapped.SetBlendMode(blendMode);
 
-        const object = this.GetClass(this.constructor.getTnyClassName(wrapped)).fromWrapped(wrapped, values);
+        const object = this.constructor.getTnyClass(wrapped).fromWrapped(wrapped, values);
         if (object.RebuildSlots) await object.RebuildSlots();
 
         return this.constructor._attach(this, object, onProgress, doNotAdd);
@@ -463,25 +465,33 @@ export class TnyScene extends meta.Model
     /**
      * The Tny class that wraps a built eve object.
      *
-     * Matched on the eve class NAME, walking up the prototype chain until a
-     * mapped one is found, rather than with `instanceof`. ccpwgl's
+     * The name at each level comes from `meta.Model.getClassName`, which reads
+     * the `"type"` metadata `@meta.define` stamped on the class - a real
+     * string that minification cannot rewrite, unlike `constructor.name`. It
+     * is not asked of the constructor store either: a class is registered
+     * there under both its internal name and the name CCP knows it by, so
+     * "the" name of a constructor is not a well-defined question of the store.
+     * The class reports its own.
+     *
+     * Walks up the prototype chain rather than using `instanceof`. ccpwgl's
      * `EveStation2` extends `EveShip2`, so an `instanceof` ladder silently
-     * depends on being written most-specific-first; walking the chain cannot
-     * get that wrong.
+     * depends on being written most-specific-first; the walk cannot get that
+     * wrong, and it carries a consumer's own subclass - which reports its own
+     * name and so misses the map - up to its base's wrapper.
      *
      * @param {*} wrapped - a built eve object
-     * @returns {String} a registered Tny class name
+     * @returns {Function} a Tny class
      */
-    static getTnyClassName(wrapped)
+    static getTnyClass(wrapped)
     {
         let proto = wrapped && Object.getPrototypeOf(wrapped);
         while (proto && proto.constructor)
         {
-            const name = this.EVE_CLASS[proto.constructor.name];
-            if (name) return name;
+            const Class = this.EVE_CLASS[meta.Model.getClassName(proto.constructor)];
+            if (Class) return Class;
             proto = Object.getPrototypeOf(proto);
         }
-        return "TnySpaceObject";
+        return TnySpaceObject;
     }
 
     /**
@@ -497,21 +507,22 @@ export class TnyScene extends meta.Model
      * builder: teach it `EveMobile` and `EveSwarm` and this map is right for
      * free, with no dispatch table to keep in step.
      *
-     * Names rather than constructors, so a consumer can register its own class
-     * under one of these and have `Fetch` return it.
-     * @type {Object<String, String>}
+     * Keyed by the eve class's own reported name (`@meta.define`), valued with
+     * the Tny class itself - these are all imported here anyway, so there is
+     * nothing for a name to buy on that side.
+     * @type {Object<String, Function>}
      */
     static EVE_CLASS = {
-        EvePlanet: "TnyPlanet",
-        EveOldPlanet: "TnyPlanet",
-        EveLensflare: "TnyLensflare",
-        EveStation2: "TnyStationary",
-        EveShip2: "TnyShip",
-        EveShip: "TnyShip",
-        EveSpaceObject: "TnySpaceObject",
-        EveEffectRoot2: "TnySpaceObject",
-        EveEffectRoot: "TnySpaceObject",
-        EveTransform: "TnySpaceObject"
+        EvePlanet: TnyPlanet,
+        EveOldPlanet: TnyPlanet,
+        EveLensflare: TnyLensflare,
+        EveStation2: TnyStationary,
+        EveShip2: TnyShip,
+        EveShip: TnyShip,
+        EveSpaceObject: TnySpaceObject,
+        EveEffectRoot2: TnySpaceObject,
+        EveEffectRoot: TnySpaceObject,
+        EveTransform: TnySpaceObject
     };
 
     /**
