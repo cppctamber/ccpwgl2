@@ -25,6 +25,17 @@ export class EveShip2 extends EveObject
     @meta.list("EveObjectSet")
     attachments = [];
 
+    /**
+     * Gets the current model center without refreshing bounds or transforms.
+     * Carbon EveSpaceObject2::GetModelCenterWorldPosition.
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
+    GetModelCenterWorldPosition(out)
+    {
+        return vec3.transformMat4(out, this.boundingSphereCenter, this._worldTransform);
+    }
+
     /** Runtime-audio emitters owned by this space object. */
     audioEmitters = [];
 
