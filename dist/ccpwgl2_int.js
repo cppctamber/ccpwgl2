@@ -265243,7 +265243,11 @@
 	      // shows as black patches on reflective hulls, worst on Amarr.
 	      yield Promise.all([scene.SetEnvMapReflection(nebula.envMapResPath, awaitResources), scene.SetEnvMapDiffuse(nebula.envMap1ResPath, awaitResources), scene.SetEnvMapBlur(nebula.envMap2ResPath, awaitResources)]);
 	      if (scene.backgroundEffect && nebula.backgroundEffect) {
-	        scene.backgroundEffect.SetTextures(nebula.backgroundEffect.GetTextures());
+	        var textures = nebula.backgroundEffect.GetTextures();
+
+	        // Empty means "keep the sky's own stars"; a path replaces them.
+	        if (TnyScene.STAR_OVERRIDE) textures.StarMap = TnyScene.STAR_OVERRIDE;
+	        scene.backgroundEffect.SetTextures(textures);
 	        scene.backgroundEffect.SetParameters(nebula.backgroundEffect.GetParameters());
 	      }
 	      for (var key of TnyScene.NEBULA_VALUES) {
@@ -265262,8 +265266,24 @@
 	  }
 
 	  /**
-	   * The scene values a nebula authors for itself, adopted with its picture.
-	   * @type {Array<String>}
+	   * The star map every adopted sky gets, or empty to keep the sky's own.
+	   *
+	   * Nebulae author their own stars and the authored ones are poor - which is
+	   * why both consumers were already replacing them by hand, each with a
+	   * private copy of the same file and its own `local:` prefix to reach it.
+	   *
+	   * This is that file, in the one place it can be reached from without any
+	   * setup. `res:/dx9/scene/starfield/stars01_tile2.dds` is CCP's, from the
+	   * pre-nebula starfield set beside `staratlas` and `starcolors`, and it is
+	   * what those private copies were: 2048x2048 24-bit RGB, 99.3% pixel-exact
+	   * against `stars2.png` on the sample checked. The shipped DDS is the BETTER
+	   * artifact - it carries 12 mip levels where a PNG carries none, and an
+	   * unmipped star field aliases badly at glancing angles.
+	   *
+	   * The `res:` prefix is registered by default, so this needs no hosting, no
+	   * bundled asset and no consumer wiring. Set it to "" or null to keep
+	   * whatever the nebula authored.
+	   * @type {String}
 	   */
 
 	  /**
@@ -265351,7 +265371,7 @@
 	  EveEffectRoot2: TnySpaceObject,
 	  EveEffectRoot: TnySpaceObject,
 	  EveTransform: TnySpaceObject
-	}, _TnyScene.NEBULA_VALUES = ["nebulaIntensity", "reflectionIntensity", "sunDirection", "sunDiffuseColor", "ambientColor", "fogColor", "fogStart", "fogEnd", "fogMax"], _TnyScene), _descriptor$4 = _applyDecoratedDescriptor(_class2$4.prototype, "wrapped", [_dec2$4], {
+	}, _TnyScene.STAR_OVERRIDE = "res:/dx9/scene/starfield/stars01_tile2.dds", _TnyScene.NEBULA_VALUES = ["nebulaIntensity", "reflectionIntensity", "sunDirection", "sunDiffuseColor", "ambientColor", "fogColor", "fogStart", "fogEnd", "fogMax"], _TnyScene), _descriptor$4 = _applyDecoratedDescriptor(_class2$4.prototype, "wrapped", [_dec2$4], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
