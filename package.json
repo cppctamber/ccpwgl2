@@ -11,6 +11,7 @@
     "build": "npm run build:rollup",
     "build:rollup": "rollup -c rollup.config.mjs",
     "lint": "eslint src",
+    "test:tny-fetch-nebula": "node scripts/test-tny-fetch-nebula.js",
     "test:sof-area-types": "node scripts/test-sof-area-types.js",
     "test:sof-blocked-materials": "node scripts/test-sof-blocked-materials.js",
     "test:sparse-sampler-registers": "node scripts/test-sparse-sampler-registers.js",

@@ -265193,6 +265193,80 @@
 	  }
 
 	  /**
+	   * Adopts another scene's SKY, without replacing this scene.
+	   *
+	   * A nebula ships as a serialised `EveSpaceScene` (`res:/.../x_cube.black`)
+	   * that exists only to carry a sky: three environment maps, a background
+	   * effect, and the scene values authored to light a hull standing in it.
+	   * This fetches that scene and copies those onto `wrapped`, so everything
+	   * already in this scene stays exactly where it is - which is the whole
+	   * point, and why this is not `TnyScene.fetch`.
+	   *
+	   * THE VALUES COME WITH THE PICTURE. Adopting the maps alone leaves the
+	   * scene on its constructor defaults - intensity 1, reflection 1, a black
+	   * ambient - while the backdrop changes, so the hull ends up lit for a sky
+	   * it is no longer in. The SUN is part of that: every nebula is authored
+	   * with a light that suits it. A caller that keeps a sun of its own must
+	   * re-assert it AFTER this resolves, and the same goes for anything written
+	   * into the background effect - stars, fog - because this replaces it.
+	   *
+	   * Values are COPIED, never assigned across. They are typed arrays on the
+	   * fetched nebula, so handing this scene the same array means a later edit
+	   * to the scene's sun silently rewrites the cached nebula, and the next
+	   * fetch of that sky arrives already wearing the change.
+	   *
+	   * @param {String} path - res path of a nebula scene
+	   * @param {Boolean} [awaitResources] - wait for the environment maps
+	   * @returns {Promise<Boolean>} false when there was nothing to adopt
+	   */
+	  FetchNebula(path, awaitResources) {
+	    var _this7 = this;
+	    return _asyncToGenerator(function* () {
+	      var scene = _this7.wrapped;
+	      if (!scene || !path) return false;
+
+	      // A cube map is a sky too, but it is a PICTURE rather than a scene: it
+	      // carries no values to adopt, and its reflection and blur are sibling
+	      // files (`_cube_refl`, `_cube_blur`) whose absence must fall back to
+	      // black rather than to the plain cube. Only a caller that knows which
+	      // cubes it has can choose those, so it sets the three maps itself.
+	      if (/\.(?:dds|png|qube)$/i.test(path)) {
+	        throw new TypeError("Not a nebula scene: \"".concat(path, "\" - ") + "set SetEnvMapReflection/Diffuse/Blur directly for a cube map");
+	      }
+
+	      // As everywhere else here, `.red` names the same asset as `.black`.
+	      var nebula = yield tw2.Fetch(path.replace(/\.red$/i, ".black"));
+	      if (!nebula) return false;
+
+	      // `envMap1ResPath`, NOT `envMapRes1Path`. The transposed spelling reads
+	      // undefined, so the diffuse environment falls back to black - which
+	      // shows as black patches on reflective hulls, worst on Amarr.
+	      yield Promise.all([scene.SetEnvMapReflection(nebula.envMapResPath, awaitResources), scene.SetEnvMapDiffuse(nebula.envMap1ResPath, awaitResources), scene.SetEnvMapBlur(nebula.envMap2ResPath, awaitResources)]);
+	      if (scene.backgroundEffect && nebula.backgroundEffect) {
+	        scene.backgroundEffect.SetTextures(nebula.backgroundEffect.GetTextures());
+	        scene.backgroundEffect.SetParameters(nebula.backgroundEffect.GetParameters());
+	      }
+	      for (var key of TnyScene.NEBULA_VALUES) {
+	        var value = nebula[key];
+	        if (value === undefined) continue;
+	        if (ArrayBuffer.isView(value) || Array.isArray(value)) {
+	          var held = scene[key];
+	          if (held && held.set && held.length >= value.length) held.set(value);else scene[key] = value.slice();
+	          continue;
+	        }
+	        scene[key] = value;
+	      }
+	      scene.UpdateValues();
+	      return true;
+	    })();
+	  }
+
+	  /**
+	   * The scene values a nebula authors for itself, adopted with its picture.
+	   * @type {Array<String>}
+	   */
+
+	  /**
 	   * Fetches a SCENE - the static, as against the instance `Fetch` above,
 	   * which puts something into a scene that already exists.
 	   * @param {String|Object|Array} options - res path, clear colour, or values
@@ -265201,7 +265275,7 @@
 	   */
 	  static fetch() {
 	    var _arguments = arguments,
-	      _this7 = this;
+	      _this8 = this;
 	    return _asyncToGenerator(function* () {
 	      var options = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : {};
 	      var onProgress = _arguments.length > 1 ? _arguments[1] : undefined;
@@ -265247,7 +265321,7 @@
 	        wrapped.clearColor[2] = background[2];
 	        wrapped.clearColor[3] = background[3] !== undefined ? background[3] : 1;
 	      }
-	      var scene = new _this7(wrapped, values);
+	      var scene = new _this8(wrapped, values);
 
 	      // Watch rejects when any watched resource errors. The scene itself is
 	      // already built by then, so a failed nebula texture must not discard
@@ -265277,7 +265351,7 @@
 	  EveEffectRoot2: TnySpaceObject,
 	  EveEffectRoot: TnySpaceObject,
 	  EveTransform: TnySpaceObject
-	}, _TnyScene), _descriptor$4 = _applyDecoratedDescriptor(_class2$4.prototype, "wrapped", [_dec2$4], {
+	}, _TnyScene.NEBULA_VALUES = ["nebulaIntensity", "reflectionIntensity", "sunDirection", "sunDiffuseColor", "ambientColor", "fogColor", "fogStart", "fogEnd", "fogMax"], _TnyScene), _descriptor$4 = _applyDecoratedDescriptor(_class2$4.prototype, "wrapped", [_dec2$4], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
