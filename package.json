@@ -125,7 +125,6 @@
     "core-js": "^3.6.5",
     "earcut": "^2.2.4",
     "eslint": "^5.16.0",
-    "geo-ambient-occlusion": "^3.0.4",
     "gl-matrix": "^3.4.1",
     "playwright": "^1.61.1",
     "reflect-metadata": "^0.1.13",

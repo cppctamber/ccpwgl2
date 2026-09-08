@@ -6,7 +6,6 @@ import { vec3, quat, mat4, box3, mat3 } from "math";
 import { GL_FLOAT } from "constant/gl";
 import { device } from "global/tw2";
 
-import geo from "geo-ambient-occlusion";
 
 
 import {
@@ -79,17 +78,6 @@ export class Gr2Reader
 
     static DEFAULT_OPTIONS = {
         firstMeshOnly: true,
-        // The GPU AO bake (geo-ambient-occlusion) blocks on ReadPixels at
-        // load; on large hulls the stall trips the OS GPU watchdog (~2s TDR
-        // on Windows), the driver resets, and the WebGL context is lost -
-        // every shader compiled afterwards then fails with glError 0x9242.
-        // Opt in per load (or flip this back) only for scenes small enough
-        // to bake within the watchdog budget.
-        aoGenerate: false,
-        aoResolution: 512,
-        aoBias: 0.5,
-        aoSamples: 256,
-        aoIndexed: false,
         unpackTangents: false,
         skipInvalidBoneBindings: false,
         // Granny exports expose the two skinning channels under historically
@@ -300,64 +288,19 @@ export class Gr2Reader
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
 
-            let faces = [];
-            for (let i = 0; i < indexData.length; i += 3)
+            // The ambient-occlusion stream, always white.
+            //
+            // The baker that used to fill it is retired (operator, 2026-09-09).
+            // It was geo-ambient-occlusion, driven at load: 256 GPU samples per
+            // mesh at 1024 square, fed a per-triangle cell array built for every
+            // mesh whether or not it ran. aoGenerate defaulted to false and the
+            // only switch was a dev checkbox, so the cell array was dead work on
+            // every geometry load in every consumer.
+            //
+            // The ELEMENT stays: TEXCOORD 20 is a stream the shaders read, so it
+            // is emitted as it always was when the baker was off.
             {
-                faces.push([ indexData[i], indexData[i + 1], indexData[i + 2] ]);
-            }
-
-            /*---- Calculate Ambient Occlusion ----*/
-
-            if (options["aoGenerate"])
-            {
-                const { aoBias = 0.01, aoSamples = 256, aoResolution = 1024, aoIndexed = false } = options;
-
-                const
-                    positions = vertexElements.find(x => x.usage === Tw2VertexElement.Type.POSITION && x.usageIndex === 0),
-                    normals = vertexElements.find(x => x.usage === Tw2VertexElement.Type.NORMAL && x.usageIndex === 0);
-
-                if (positions)
-                {
-                    const aoT0 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
-
-                    const aoSampler = geo(positions.data, {
-                        cells: faces,
-                        bias: aoBias,
-                        resolution: aoResolution,
-                        normals: normals ? normals.data : undefined,
-                    });
-
-                    for (let i = 0; i < aoSamples; i++) aoSampler.sample();
-                    const data = aoSampler.report();
-
-                    if (Gr2Reader.DEBUG_TIMING)
-                    {
-                        console.log(`  Gr2Reader AO [${mesh.name || iMesh}] verts=${vertexCount} samples=${aoSamples} res=${aoResolution} -> ${(performance.now() - aoT0).toFixed(1)}ms`);
-                    }
-
-                    // Flip colours
-                    for (let i = 0; i < data.length; i++)
-                    {
-                        data[i] = 1.0 - data[i];
-                    }
-
-                    vertexElements.push({
-                        usage: Tw2VertexElement.Type.TEXCOORD,
-                        usageIndex: 20,
-                        offset: vertexSize * 4,
-                        type: GL_FLOAT,
-                        elements: 1,
-                        data
-                    });
-
-                    aoSampler.dispose();
-                    vertexSize += 1;
-                }
-            }
-            // Fill will all white for now
-            else
-            {
-                let data = [];
+                const data = [];
                 for (let i = 0; i < vertexCount; i++) data[i] = 1;
                 vertexElements.push({
                     usage: Tw2VertexElement.Type.TEXCOORD,
