@@ -36,7 +36,7 @@ import {
 
 import { EveStation2 } from "../eve/object/EveStation2";
 import { ReflectionMode } from "../eve/EveComponentTypes";
-import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
+import { EveBoosterSet2, EveHazeSet, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
 import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
@@ -47,6 +47,7 @@ import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetIte
 import { EveSOFDataHullLocatorSet } from "sof/hull/EveSOFDataHullLocatorSet";
 import { EveSOFDataHullLocatorSetGroup } from "sof/hull/EveSOFDataHullLocatorSetGroup";
 import { EveSOFDataHullPlaneSet } from "sof/hull/EveSOFDataHullPlaneSet";
+import { EveSOFDataHullHazeSet } from "sof/hull/EveSOFDataHullHazeSet";
 import { planSofLayouts } from "sof/layout/planSofLayouts";
 
 
@@ -174,6 +175,7 @@ export class EveSOFData extends meta.Model
 
         effectPath: {
             plane: "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
+            hazeSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx",
             spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
             spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
 
@@ -4246,17 +4248,107 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Sets up haze sets
-     * // TODO: Share haze sets...
-     * // TODO: Animated haze sets...
-     * @param data
-     * @param obj
-     * @param sof
-     * @param options
+     * Sets up haze sets.
+     *
+     * Haze is a volume of light around a point on the hull - the glow inside a
+     * hangar mouth, the wash around a structure's spine. The data was being
+     * read and thrown away: this was one Debug line, so no set was ever built,
+     * on the roughly one hull in six that authors them.
+     *
+     * Follows `EveSOF::SetupHazeSets` (EveSOF.cpp:1451). Three things there are
+     * easy to get wrong and are the reason this is written out rather than
+     * guessed - see docs/research/haze-sets.md in the organization docs:
+     *
+     * - the COLOUR is the faction colour set indexed by the item's colorType,
+     *   multiplied by hazeBrightness and then saturated. Brightness does not
+     *   reach the shader as its own number;
+     * - the visibility group gates the whole SET, as with every other set here;
+     *   and
+     * - skinning selects a different shader in Carbon. Here the bone is baked
+     *   into the item transform instead, the way spotlights already do it, so
+     *   one effect covers both.
+     *
+     * ONLY the spherical type is built. Carbon also has a half-spherical shader
+     * and ships one for gles2, but the type is blocked in the editor (operator,
+     * 2026-09-10) so nothing should be authoring it - and a half-sphere drawn
+     * with the spherical shader would be a silent wrong picture rather than a
+     * missing one. It says so and skips.
+     *
+     * @param {EveSOFData} data
+     * @param {EveShip2|EveStation2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
      */
     static SetupHazeSets(data, obj, sof, options)
     {
-        tw2.Debug({ name: "Space object factory", message: "Haze sets not implemented" });
+        const
+            { isSkinned = false } = sof.hull,
+            arr = obj.attachments || obj["hazeSets"],
+            toRemove = EveSOFData.FindObjectsByConstructor(arr, EveHazeSet);
+
+        if (!arr) return;
+
+        const hazeSets = sof.hull.hazeSets
+            .filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x));
+
+        hazeSets.forEach(srcSet =>
+        {
+            if (srcSet.hazeType !== EveSOFDataHullHazeSet.Type.SPHERICAL)
+            {
+                tw2.Debug({
+                    name: "Space object factory",
+                    message: `Haze set "${srcSet.name}" skipped: only spherical haze is supported`
+                });
+                return;
+            }
+
+            let set = this.FindAttachmentByConstructorAndName(arr, EveHazeSet, srcSet.name, true);
+            if (set)
+            {
+                set.ClearItems();
+                toRemove.splice(toRemove.indexOf(set), 1);
+            }
+            else
+            {
+                set = EveHazeSet.from({ name: srcSet.name });
+                arr.push(set);
+            }
+
+            set.skinned = isSkinned && srcSet.skinned;
+            set.effect = set.effect || new Tw2Effect();
+            set.effect.SetValues({
+                effectFilePath: options.effectPath.hazeSpherical
+            });
+
+            srcSet.items.forEach(item => set.CreateItem(item));
+
+            const color = vec4.alloc();
+
+            set.items.forEach((item, index) =>
+            {
+                const src = srcSet.items[index];
+
+                color[0] = color[1] = color[2] = 0;
+                color[3] = 1;
+                sof.faction.GetColorType(src.colorType, color, 0);
+
+                // Brightness first, then saturation - Carbon's order, and they
+                // do not commute.
+                vec4.scale(color, color, src.hazeBrightness);
+                Saturate(color, color, src.saturation);
+
+                item.SetValues({ color });
+            });
+
+            vec4.unalloc(color);
+            set.Rebuild();
+        });
+
+        toRemove.forEach(set =>
+        {
+            set.Destroy();
+            arr.splice(arr.indexOf(set), 1);
+        });
     }
 
     /**
