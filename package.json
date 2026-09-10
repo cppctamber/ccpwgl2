@@ -94,8 +94,7 @@
     "test:gpu-emitters": "node scripts/test-gpu-emitters.js",
     "test:gpu-particle-state": "node scripts/test-gpu-particle-state.js",
     "test:gpu-emit-pass": "node scripts/test-gpu-emit-pass.js",
-    "test:gpu-particle-params": "node scripts/test-gpu-particle-params.js",
-    "test:haze-set": "node scripts/test-haze-set.js"
+    "test:gpu-particle-params": "node scripts/test-gpu-particle-params.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {

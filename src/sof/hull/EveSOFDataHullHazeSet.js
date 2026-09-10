@@ -20,16 +20,4 @@ export class EveSOFDataHullHazeSet extends meta.Model
     @meta.boolean
     skinned = false;
 
-
-    /**
-     * Which shader draws the set, from Carbon's HazeType (EveSOFData.h:861).
-     *
-     * Only SPHERICAL is built here. Carbon has a half-spherical shader and one
-     * ships for gles2, but the type is blocked in the editor (operator,
-     * 2026-09-10), so a hull carrying it would be data nothing authored.
-     */
-    static Type = Object.freeze({
-        SPHERICAL: 0,
-        HALF_SPHERICAL: 1
-    });
 }

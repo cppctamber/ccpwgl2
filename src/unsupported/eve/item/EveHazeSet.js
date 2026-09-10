@@ -4,12 +4,8 @@ import { Tw2Effect, Tw2RenderBatch, Tw2VertexDeclaration } from "core";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 import { device } from "global/tw2";
 
-// Two, where EveObjectSet.global carries one: a haze vertex needs the item
-// transform AND its inverse at the same time.
-const HAZE_TRANSFORM = mat4.create();
-const HAZE_INVERSE = mat4.create();
 
-
+@meta.notImplemented
 export class EveHazeSetBatch extends Tw2RenderBatch
 {
 
@@ -38,6 +34,7 @@ export class EveHazeSetBatch extends Tw2RenderBatch
 }
 
 
+@meta.notImplemented
 @meta.define("EveHazeSetItem", true)
 export class EveHazeSetItem extends EveObjectSetItem
 {
@@ -48,7 +45,7 @@ export class EveHazeSetItem extends EveObjectSetItem
     @meta.boolean
     boosterGainInfluence = false;
 
-    @meta.color
+    @meta.uint
     color = vec4.fromValues(0, 0, 0, 1);
 
     @meta.float
@@ -71,9 +68,6 @@ export class EveHazeSetItem extends EveObjectSetItem
 
     @meta.float
     sourceSize = 0;
-
-    @meta.int32
-    boneIndex = -1;
 
     /**
      * The item's own transform, rebuilt whenever its srt changes.
@@ -98,37 +92,6 @@ export class EveHazeSetItem extends EveObjectSetItem
     }
 
     /**
-     * Fires when rebuilt by the parent, and is where the bone is resolved.
-     *
-     * Carbon draws skinned haze with a skinned shader that looks the bone up
-     * per vertex. This bakes the bone into the item transform at rebuild
-     * instead, which is what every other set here does (see
-     * EveSpotlightSetItem) and what keeps one effect for both cases. The cost
-     * is the same as those: the set has to be rebuilt for the haze to follow
-     * an animating bone.
-     *
-     * @param {EveHazeSet} parent
-     */
-    OnRebuiltByParent(parent)
-    {
-        this._parent = parent;
-        this._bone = parent ? parent.GetBone(this.boneIndex) : null;
-        this._dirty = false;
-    }
-
-    /**
-     * Gets the item transform, with its bone applied.
-     * @param {mat4} m
-     * @returns {mat4} m
-     */
-    GetTransform(m)
-    {
-        mat4.copy(m, this._transform);
-        if (this._bone) mat4.multiply(m, this._bone.offsetTransform, m);
-        return m;
-    }
-
-    /**
      * Gets the item's bounding box.
      *
      * A box rather than a sphere: haze is placed with a full srt and is not
@@ -149,6 +112,7 @@ export class EveHazeSetItem extends EveObjectSetItem
 }
 
 
+@meta.notImplemented
 @meta.define("EveHazeSet", true)
 export class EveHazeSet extends EveObjectSet
 {
@@ -158,7 +122,7 @@ export class EveHazeSet extends EveObjectSet
 
     @meta.struct()
     effect = Tw2Effect.from({
-        effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx"
+        effectFilePath: "res:/graphics/effect.gles2/managed/space/spaceobject/fx/hazespherical.fx"
     });
 
     _decl = Tw2VertexDeclaration.from(EveHazeSet.vertexDeclarations);
@@ -237,39 +201,6 @@ export class EveHazeSet extends EveObjectSet
         this._dirty = true;
     }
 
-    /**
-     * The six faces of a box, as corner indices.
-     *
-     * Carbon's own table (EveHazeSet.cpp), kept in its order. The shader reads
-     * the corner index from attr8.x and fetches the corner's position out of a
-     * constant buffer of eight, so these ARE the geometry - the vertex buffer
-     * carries no positions at all.
-     */
-    static boxIndices = [
-        [ 0, 1, 2, 3 ],
-        [ 7, 6, 5, 4 ],
-        [ 0, 4, 5, 1 ],
-        [ 3, 2, 6, 7 ],
-        [ 1, 5, 6, 2 ],
-        [ 4, 0, 3, 7 ]
-    ];
-
-    /**
-     * Rebuilds the vertex and index buffers.
-     *
-     * A BOX per haze, six faces of four corners - twenty four vertices, where
-     * this drew four. Haze is a volume: the shader takes the eye ray into the
-     * item's own space and integrates through a sphere, so the geometry it
-     * rasterises has to enclose that sphere from any angle. One quad cannot,
-     * and the version this replaces could not have worked at any camera
-     * position - see docs/research/haze-sets.md in the organization docs for
-     * the Carbon source and the shader decode that establish it.
-     *
-     * Every vertex carries the whole item, because there is no per-instance
-     * data here: the transform, its INVERSE (which is what takes the ray into
-     * item space), the packed haze data, the colour, and which corner of the
-     * box this vertex is.
-     */
     Rebuild(opt)
     {
         this.Unload(true);
@@ -283,106 +214,106 @@ export class EveHazeSet extends EveObjectSet
             return;
         }
 
-        const
-            faces = EveHazeSet.boxIndices,
+        const { mat4_0, vec3_0 } = EveObjectSet.global;
+
+        const 
             vertexSize = 35,
-            perItem = 24,
-            array = new Float32Array(itemCount * perItem * vertexSize);
+            array = new Float32Array(itemCount * vertexSize * 4);
 
         for (let i = 0; i < itemCount; i++)
         {
-            const item = this._visibleItems[i];
+            const
+                item = this._visibleItems[i],
+                offset = i * 4 * vertexSize;
 
-            // The bone is baked here rather than looked up per vertex, so the
-            // transform is the finished one.
-            item.GetTransform(HAZE_TRANSFORM);
-            mat4.invert(HAZE_INVERSE, HAZE_TRANSFORM);
+            mat4.fromRotationTranslationScale(mat4_0, item.rotation, item.position, item.scaling);
 
-            for (let face = 0; face < 6; face++)
+            for (let j = 0; j < 4; j++)
             {
-                for (let corner = 0; corner < 4; corner++)
-                {
-                    const vo = (i * perItem + face * 4 + corner) * vertexSize;
+                let vo = offset + j * vertexSize;
 
-                    // The item transform, by rows - which is the column of the
-                    // row-vector matrix Carbon writes here.
-                    array[vo] = HAZE_TRANSFORM[0];
-                    array[vo + 1] = HAZE_TRANSFORM[4];
-                    array[vo + 2] = HAZE_TRANSFORM[8];
-                    array[vo + 3] = HAZE_TRANSFORM[12];
-                    array[vo + 4] = HAZE_TRANSFORM[1];
-                    array[vo + 5] = HAZE_TRANSFORM[5];
-                    array[vo + 6] = HAZE_TRANSFORM[9];
-                    array[vo + 7] = HAZE_TRANSFORM[13];
-                    array[vo + 8] = HAZE_TRANSFORM[2];
-                    array[vo + 9] = HAZE_TRANSFORM[6];
-                    array[vo + 10] = HAZE_TRANSFORM[10];
-                    array[vo + 11] = HAZE_TRANSFORM[14];
+                // Transform 1
+                // attr0
+                array[vo + 0] = mat4_0[0];
+                array[vo + 1] = mat4_0[4];
+                array[vo + 2] = mat4_0[8];
+                array[vo + 3] = mat4_0[12];
+                // attr1
+                array[vo + 4] = mat4_0[1];
+                array[vo + 5] = mat4_0[5];
+                array[vo + 6] = mat4_0[9];
+                array[vo + 7] = mat4_0[13];
+                // attr2
+                array[vo + 8] = mat4_0[2];
+                array[vo + 9] = mat4_0[6];
+                array[vo + 10] = mat4_0[10];
+                array[vo + 11] = mat4_0[14];
 
-                    // And its inverse. The shader runs these three through the
-                    // view matrix to bring the eye ray into the haze's space.
-                    array[vo + 12] = HAZE_INVERSE[0];
-                    array[vo + 13] = HAZE_INVERSE[4];
-                    array[vo + 14] = HAZE_INVERSE[8];
-                    array[vo + 15] = HAZE_INVERSE[12];
-                    array[vo + 16] = HAZE_INVERSE[1];
-                    array[vo + 17] = HAZE_INVERSE[5];
-                    array[vo + 18] = HAZE_INVERSE[9];
-                    array[vo + 19] = HAZE_INVERSE[13];
-                    array[vo + 20] = HAZE_INVERSE[2];
-                    array[vo + 21] = HAZE_INVERSE[6];
-                    array[vo + 22] = HAZE_INVERSE[10];
-                    array[vo + 23] = HAZE_INVERSE[14];
+                // Transform 2
+                vec3.multiply(vec3_0, item.scaling, [ item.sourceSize, item.sourceSize, item.sourceSize ]);
+                mat4.fromRotationTranslationScale(mat4_0, item.rotation, item.position, vec3_0);
 
-                    // hazeData. Brightness is NOT in here - it is folded into
-                    // the colour when the set is built, the way Carbon does it -
-                    // and the fourth slot is the booster gain influence, which
-                    // the shader multiplies the colour by.
-                    array[vo + 24] = item.hazeFalloff;
-                    array[vo + 25] = item.sourceSize;
-                    array[vo + 26] = item.sourceBrightness;
-                    array[vo + 27] = item.boosterGainInfluence ? 1 : 0;
-
-                    array[vo + 28] = item.color[0];
-                    array[vo + 29] = item.color[1];
-                    array[vo + 30] = item.color[2];
-                    array[vo + 31] = item.color[3];
-
-                    // Which corner, which bone, and one spare. The corner is
-                    // the whole of the geometry.
-                    array[vo + 32] = faces[face][corner];
-                    array[vo + 33] = item.boneIndex;
-                    array[vo + 34] = 0;
-                }
+                //attr3
+                array[vo + 12] = mat4_0[0]; // Unknown mat4
+                array[vo + 13] = mat4_0[4]; // Unknown mat4
+                array[vo + 14] = mat4_0[8]; // Unknown mat4
+                array[vo + 15] = mat4_0[12]; // Unknown mat4
+                //attr4
+                array[vo + 16] = mat4_0[1]; // unknown mat4
+                array[vo + 17] = mat4_0[5]; // unknown mat4
+                array[vo + 18] = mat4_0[9]; // unknown mat4
+                array[vo + 19] = mat4_0[13]; // unknown mat4
+                //attr5
+                array[vo + 20] = mat4_0[2]; // unknown mat4
+                array[vo + 21] = mat4_0[6]; // unknown mat4
+                array[vo + 22] = mat4_0[10]; // unknown mat4
+                array[vo + 23] = mat4_0[14]; // unknown mat4
+                //attr6
+                array[vo + 24] = item.hazeBrightness;  // Unknown
+                array[vo + 25] = item.hazeFalloff;     // Unknown
+                array[vo + 26] = item.sourceSize;      // Unknown
+                array[vo + 27] = item.sourceBrightness; // Unknown Multiplied by unknown0.x  ?
+                //attr7
+                array[vo + 28] = item.color[0];
+                array[vo + 29] = item.color[1];
+                array[vo + 30] = item.color[2];
+                array[vo + 31] = item.color[3];
+                //attr8
+                array[vo + 32] = 1; // changes constant vertex position?
+                array[vo + 33] = 1; // -1;  // Unknown
+                array[vo + 34] = 1; //item.boosterGainInfluence ? 255 : 0; // Unknown
             }
         }
-
+        
         const { gl } = device;
         this._vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-        // Six indices a face, six faces an item.
         const
             order = this._indexOrder,
-            quads = itemCount * 6,
-            indexes = new Uint16Array(quads * 6);
+            indexes = new Uint16Array(itemCount * 6);
 
-        for (let quad = 0; quad < quads; quad++)
+        for (let i = 0; i < itemCount; ++i)
         {
             const
-                offset = quad * 6,
-                vtxOffset = quad * 4;
+                offset = i * 6,
+                vtxOffset = i * 4;
 
-            for (let n = 0; n < 6; n++) indexes[offset + n] = vtxOffset + order[n];
+            indexes[offset] = vtxOffset + order[0];
+            indexes[offset + 1] = vtxOffset + order[1];
+            indexes[offset + 2] = vtxOffset + order[2];
+            indexes[offset + 3] = vtxOffset + order[3];
+            indexes[offset + 4] = vtxOffset + order[4];
+            indexes[offset + 5] = vtxOffset + order[5];
         }
 
         this._indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-        this._indexBuffer.count = quads * 6;
+        this._indexBuffer.count = itemCount * 6;
 
         super.Rebuild(opt);
     }
