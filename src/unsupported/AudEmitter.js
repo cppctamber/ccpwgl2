@@ -1,12 +1,12 @@
 import { meta } from "utils";
 import { tw2 } from "global";
-import { AudEmitter as CjsAudEmitter } from "@carbonenginejs/runtime-audio";
+import { AudEmitter as CjsAudEmitter } from "@carbonenginejs/runtime/audio";
 
 
 /**
  * Deserialization adapter for Carbon sound emitters: keeps ccpwgl's binary
  * layout while forwarding the emitter contract (SendEvent/SetRTPC/SetSwitch/
- * SetPrefix/placement) to a lazily created @carbonenginejs/runtime-audio
+ * SetPrefix/placement) to a lazily created @carbonenginejs/runtime/audio
  * AudEmitter adopted by tw2.audMan.
  */
 @meta.define("AudEmitter", true)

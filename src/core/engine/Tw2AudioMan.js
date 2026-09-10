@@ -1,10 +1,10 @@
 import { vec3, mat4 } from "math";
 import { tw2 } from "global";
 import { assignIfExists } from "utils";
-import { CjsAudioMan } from "@carbonenginejs/runtime-audio";
+import { CjsAudioMan } from "@carbonenginejs/runtime/audio";
 
 /**
- * CCPWGL integration facade over `@carbonenginejs/runtime-audio`.
+ * CCPWGL integration facade over `@carbonenginejs/runtime/audio`.
  *
  * Runtime-audio owns the installed document, source selection, original-bank
  * range or whole-file delivery, WEM preparation, decoded buffers, Carbon

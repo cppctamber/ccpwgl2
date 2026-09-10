@@ -1,6 +1,6 @@
 import { device, resMan } from "global";
 import { num } from "math";
-import { CjsDdsFormat } from "@carbonenginejs/runtime-resource/formats/dds";
+import { CjsDdsFormat } from "@carbonenginejs/runtime/resource/formats/dds";
 import {
     ErrResourceFormatInvalid,
     ErrResourceFormatUnsupported

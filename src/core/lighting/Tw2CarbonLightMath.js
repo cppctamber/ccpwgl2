@@ -271,7 +271,7 @@ export function ComposeLightProfileBits(index)
  * Per-light shadow-casting mode. Matches Carbon's PerLightShadowSetting enum
  * (carbonengine trinity/trinity/Lights/Tr2Light.h:20-25) and is confirmed as
  * the canonical `LightData.castsShadows` type by the format-black schema
- * (@carbonenginejs/format-black - `castsShadows: enum`). This three-state
+ * (@carbonenginejs/runtime/resource/formats/black - `castsShadows: enum`). This three-state
  * setting is not the same thing as the single `Carbon_FLAG_CASTS_SHADOWS` bit:
  * the bit says whether a light casts at all, and nothing here writes it yet.
  * @enum {Number}

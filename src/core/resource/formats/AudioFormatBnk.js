@@ -1,7 +1,7 @@
-import { CjsBnkFormat } from "@carbonenginejs/runtime-resource/formats/bnk";
+import { CjsBnkFormat } from "@carbonenginejs/runtime/resource/formats/bnk";
 
 /**
- * Wwise soundbank format, backed by @carbonenginejs/runtime-resource.
+ * Wwise soundbank format, backed by @carbonenginejs/runtime/resource.
  * Banks carry embedded wem media in their DIDX/DATA sections; members are
  * addressed either through the parsed bank or by the byte windows recorded
  * in a carbonenginejs.audioLibrary document's embeddedMedia records.

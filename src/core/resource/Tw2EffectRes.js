@@ -4,7 +4,7 @@ import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 import { device, tw2 } from "global";
-import { CjsWebglFormat } from "@carbonenginejs/runtime-resource/formats/webgl";
+import { CjsWebglFormat } from "@carbonenginejs/runtime/resource/formats/webgl";
 import { Tw2Device } from "../engine/Tw2Device";
 import { Tw2CarbonShaderFactory } from "./Tw2CarbonEffectReader";
 

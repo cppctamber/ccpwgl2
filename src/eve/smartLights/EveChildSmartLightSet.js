@@ -3,7 +3,7 @@
 //   trinity/trinity/Eve/SpaceObject/Children/SmartLightSets/EveChildSmartLightSet.cpp
 //
 // Transcribed from the org's checked port
-// (`@carbonenginejs/runtime-trinity` src/eve/smartLights/EveChildSmartLightSet.js),
+// (`@carbonenginejs/runtime/trinity` src/eve/smartLights/EveChildSmartLightSet.js),
 // which is where the rest of `src/eve/smartLights/**` came from.
 //
 // TWO ADAPTATIONS, both at the boundary with the parent object:

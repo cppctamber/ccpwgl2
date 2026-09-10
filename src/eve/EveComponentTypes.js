@@ -8,7 +8,7 @@
 
 // TODO(port): ccpwgl has no shared ReflectionMode/ReflectionSetting enum
 // modules yet (runtime-trinity keeps them at
-// @carbonenginejs/runtime-utils/graphics `trinityEnums.js` and
+// @carbonenginejs/runtime/trinity `trinityEnums.js` and
 // src/generated/eve/enums.js respectively - neither is ported here). Values
 // verified against those sources and kept verbatim so ShouldReflect below is
 // byte-for-byte faithful; move these to a shared module if/when one is

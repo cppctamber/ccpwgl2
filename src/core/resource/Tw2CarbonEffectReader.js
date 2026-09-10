@@ -76,7 +76,7 @@ export class Tw2CarbonShaderFactory
     /**
      * Builds the indexes shader construction walks.
      *
-     * Both inputs come from `@carbonenginejs/runtime-resource/formats/webgl`
+     * Both inputs come from `@carbonenginejs/runtime/resource/formats/webgl`
      * reading one Carbon v15 container. There are no chunks: `read()` returns a
      * flat stage/shader graph, and each stage carries its own manifest rather
      * than being paired against a separate META body.

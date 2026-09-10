@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { tw2 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "curve";
 import { wstring } from "core/reader/Tw2BlackPropertyReaders";
-import { AudEmitter } from "@carbonenginejs/runtime-audio";
+import { AudEmitter } from "@carbonenginejs/runtime/audio";
 
 
 @meta.define("AudEventKey", true)
@@ -25,7 +25,7 @@ export class AudEventKey extends Tw2CurveKey
 
 /**
  * Timeline curve whose keys fire audio events, ported from Carbon's
- * AudEventCurve (see @carbonenginejs/runtime-audio). Events post through an
+ * AudEventCurve (see @carbonenginejs/runtime/audio). Events post through an
  * AudEmitter attached to the source observer's placement; a key crossed
  * before the emitter has a placement holds the latest event until one
  * arrives, matching Carbon.

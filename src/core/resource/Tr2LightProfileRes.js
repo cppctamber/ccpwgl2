@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { num } from "math";
 import { resMan } from "global";
-import { CjsDdsFormat } from "@carbonenginejs/runtime-resource/formats/dds";
+import { CjsDdsFormat } from "@carbonenginejs/runtime/resource/formats/dds";
 import { Tw2Resource, ErrResourceFormatInvalid } from "./Tw2Resource";
 
 /** Carbon Tr2LightProfileRes: an IES distribution or a baked R16F strip. */

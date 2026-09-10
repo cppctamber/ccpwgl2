@@ -1,6 +1,6 @@
 import { getPathExtension } from "utils";
 import { device, tw2, resMan } from "global";
-import { CjsDdsFormat } from "@carbonenginejs/runtime-resource/formats/dds";
+import { CjsDdsFormat } from "@carbonenginejs/runtime/resource/formats/dds";
 import { Tw2TextureArrayRes } from "./Tw2TextureArrayRes";
 import {
     ErrResourceFormatInvalid,

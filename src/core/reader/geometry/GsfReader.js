@@ -1,4 +1,4 @@
-import { CjsGr2Format } from "@carbonenginejs/runtime-resource/formats/gr2";
+import { CjsGr2Format } from "@carbonenginejs/runtime/resource/formats/gr2";
 
 
 /**

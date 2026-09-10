@@ -1,7 +1,7 @@
-import { CjsWemFormat } from "@carbonenginejs/runtime-resource/formats/wem";
+import { CjsWemFormat } from "@carbonenginejs/runtime/resource/formats/wem";
 
 /**
- * Wwise wem audio format, backed by @carbonenginejs/runtime-resource.
+ * Wwise wem audio format, backed by @carbonenginejs/runtime/resource.
  * Vorbis-in-wem converts to a standard Ogg container for native browser
  * decoding; PTADPCM decodes to raw PCM channel data.
  */

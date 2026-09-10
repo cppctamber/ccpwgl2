@@ -11,7 +11,7 @@
 // time. That is the only adaptation - every formula below is verbatim, including
 // the quirks, which are called out where they would otherwise read as bugs.
 //
-// Ported from `@carbonenginejs/runtime-trinity`
+// Ported from `@carbonenginejs/runtime/trinity`
 // (`src/eve/attachment/EveSpaceObjectAttachmentUtils.js`), which is the org's
 // checked transcription of the Carbon source above.
 

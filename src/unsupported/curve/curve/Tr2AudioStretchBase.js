@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 import { tw2 } from "global";
 import { wstring } from "core/reader/Tw2BlackPropertyReaders";
-import { StretchAudio } from "@carbonenginejs/runtime-audio";
+import { StretchAudio } from "@carbonenginejs/runtime/audio";
 import { AudEmitter } from "../../AudEmitter";
 
 
