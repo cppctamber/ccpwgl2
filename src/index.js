@@ -17,7 +17,7 @@ import { tw2 } from "./global";
 import * as runtime from "./runtime";
 import { shaders as deprecatedShaders } from "./toDeprecate/shaders";
 import { pickingShaders } from "./picking";
-import { Tw2GpuParticleShaders } from "./unsupported/particle/shaders";
+import { Tw2GpuParticleShaders } from "./particle/gpu/shaders";
 
 tw2.runtime = runtime;
 
@@ -40,11 +40,11 @@ export { Tw2MaterialPicker, Tw2MaterialPickResult } from "./picking";
 // GPU particle state. Exported so it can be exercised directly - the arithmetic
 // is unit tested, but whether four rgba32f targets are real is a device
 // question and only a device can answer it.
-export { Tw2GpuParticleState } from "./unsupported/particle/Tw2GpuParticleState";
+export { Tw2GpuParticleState } from "./particle/gpu/Tw2GpuParticleState";
 export { Tw2MultiRenderTarget } from "./core/Tw2MultiRenderTarget";
-export { Tw2GpuParticleEmitPass } from "./unsupported/particle/Tw2GpuParticleEmitPass";
-export { Tw2GpuParticleParams } from "./unsupported/particle/Tw2GpuParticleParams";
-export { Tw2GpuParticleRenderer } from "./unsupported/particle/Tw2GpuParticleRenderer";
+export { Tw2GpuParticleEmitPass } from "./particle/gpu/Tw2GpuParticleEmitPass";
+export { Tw2GpuParticleParams } from "./particle/gpu/Tw2GpuParticleParams";
+export { Tw2GpuParticleRenderer } from "./particle/gpu/Tw2GpuParticleRenderer";
 
 // The material class itself. Anything driving a MANUAL shader - a picking pass,
 // a particle pass, a tool - has to build an effect around it, and until now the

@@ -1,5 +1,6 @@
 /**
- * Classes only, for the reason given in `src/unsupported/index.js`.
+ * Classes only, for the reason given in the `constructors` note in
+ * `src/config.js`.
  *
  * The shader definitions themselves are not classes, so they are reached
  * through `Tw2GpuParticleShaders` statics rather than exported loose.

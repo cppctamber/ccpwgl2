@@ -485,8 +485,8 @@ export const config = {
     //     re-exported through these barrels.
     //
     // This has cost twice: once for particle shader inputs exported through
-    // `unsupported/particle`, and it is why `src/picking` and
-    // `unsupported/particle/shaders` are imported directly by `src/index.js`
+    // `particle/gpu`, and it is why `src/picking` and
+    // `particle/gpu/shaders` are imported directly by `src/index.js`
     // rather than being folded into a namespace here.
     constructors: [
         { ...core },

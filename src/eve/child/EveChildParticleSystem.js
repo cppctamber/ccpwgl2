@@ -3,7 +3,7 @@ import { mat4, quat, sph3, vec3 } from "math";
 import { Tw2PerObjectData } from "core";
 import { Tr2Lod } from "constant/ccpwgl";
 import { EveChild } from "./EveChild";
-import { Tw2GpuParticleRenderer } from "unsupported/particle/Tw2GpuParticleRenderer";
+import { Tw2GpuParticleRenderer } from "particle/gpu/Tw2GpuParticleRenderer";
 
 
 @meta.define("EveChildParticleSystem", true)

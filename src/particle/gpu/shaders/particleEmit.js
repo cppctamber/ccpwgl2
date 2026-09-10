@@ -274,7 +274,7 @@ const definition = {
 
 /**
  * The emission pass, exposed as statics for the reason given in
- * `src/unsupported/index.js`.
+ * the `constructors` note in `src/config.js`.
  */
 export class Tw2GpuParticleEmitShader
 {

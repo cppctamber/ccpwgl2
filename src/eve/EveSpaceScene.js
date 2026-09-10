@@ -4,7 +4,7 @@ import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2CarbonLightCollector } from "core/carbon/Tw2CarbonLightCollector";
 import { Tw2CarbonResourceBinder } from "core/carbon/Tw2CarbonResourceBinder";
 import { Tw2CarbonShadowRenderer } from "core/carbon/Tw2CarbonShadowRenderer";
-import { Tw2GpuParticleRenderer } from "unsupported/particle/Tw2GpuParticleRenderer";
+import { Tw2GpuParticleRenderer } from "particle/gpu/Tw2GpuParticleRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
 import { EveUpdateContext } from "./EveUpdateContext";
