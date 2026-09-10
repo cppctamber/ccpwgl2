@@ -23,7 +23,6 @@ import { Tr2GpuSharedEmitter } from "./Tr2GpuSharedEmitter";
  * different scales are genuinely different emitters.
  */
 @meta.define("Tr2GpuUniqueEmitter", true)
-@meta.notImplemented
 export class Tr2GpuUniqueEmitter extends Tr2GpuSharedEmitter
 {
 

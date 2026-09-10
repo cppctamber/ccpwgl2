@@ -9,7 +9,6 @@ const HASH_FLOATS = new Float32Array(33);
 
 
 @meta.define("Tr2GpuSharedEmitter", true)
-@meta.notImplemented
 export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
 {
 

@@ -4,9 +4,18 @@ import { meta } from "utils";
 /**
  * The shipped `Tr2GpuParticleSystem` object, as data.
  *
- * This is the schema mirror only - every method here is an empty stub, and the
- * system that actually runs is `Tw2GpuParticleRenderer`. The effect slots below
- * are what the shipped `.black` carries, not a list of things to implement.
+ * The PERSISTED shape, and deliberately little else. What runs a GPU particle
+ * system is `Tw2GpuParticleRenderer`, a singleton the scene ticks and draws -
+ * so the methods here are inert by design rather than unfinished, bar the few
+ * that maintain this object's own data (`SetMaxParticles`, `DoClear`,
+ * `OnPrepareResources`). The effect slots below are what the shipped `.black`
+ * carries, not a list of things to implement.
+ *
+ * It carried `@meta.notImplemented` until 2026-09-10, which read as "GPU
+ * particles do not work" when they do - the renderer draws them and five test
+ * scripts cover it. Nothing reads that metadata; its only audience is a person,
+ * and it was misinforming them. See .agents/DECISIONS.md on the same marker
+ * being wrong across the controller layer.
  *
  * ## There is nothing to port behind `sort`, `sortStep`, `sortInner` or
  * `setSortParameters`
@@ -22,7 +31,6 @@ import { meta } from "utils";
  * `shaders/particleDraw`), which is commutative, so particle order cannot change
  * a pixel. A sort added here would cost a pass and change nothing.
  */
-@meta.notImplemented
 @meta.define("Tr2GpuParticleSystem", true)
 export class Tr2GpuParticleSystem
 {
