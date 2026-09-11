@@ -47,6 +47,10 @@ export class Tw2InstancedMesh extends meta.Model
     @meta.isPrivate
     geometryResource = null;
 
+    /** Cached union of the base bounds over every instance transform. */
+    _instanceBounds = null;
+    _instanceBoundsCount = -1;
+
     @meta.path
     geometryResPath = "";
 
@@ -285,41 +289,90 @@ export class Tw2InstancedMesh extends meta.Model
     }
 
     /**
-     * Gets the bounding box for the mesh
+     * Gets the bounding box for the mesh: the base geometry's bounds unioned
+     * over every instance transform.
+     *
+     * Carbon declines to answer this at all - `EveChildInstancedMeshes::
+     * GetBoundingSphere` is literally `return false;` - but ccpwgl cannot
+     * afford to. `EveTransform.UpdateLod` starts a mesh-bearing transform at
+     * `meshVisible = !this.mesh`, so a mesh that reports no bounds is never
+     * made visible and silently never draws. In a sof layout, which is mostly
+     * instanced placements, that is the whole scene.
+     *
+     * Cached, and rebuilt only when forced or when the instance count changes.
+     * The walk is O(instances) and `UpdateLod` asks every frame.
+     *
      * @param {box3} out
      * @param {Boolean} force
      * @return {box3|null} `out` when it holds usable bounds, otherwise null
      */
     GetBoundingBox(out, force)
     {
-        // Carbon reports no bounds for instanced meshes - this is its whole
-        // body, not a stub: `bool EveChildInstancedMeshes::GetBoundingSphere(
-        // Vector4&, BoundingSphereQuery ) const { return false; }`
-        // (EveChildInstancedMeshes.cpp).
-        //
-        // Null rather than Carbon's false because the two engines disagree on
-        // the shape of this answer and ccpwgl is what this class lives in:
-        // Carbon returns bool and writes `out` only when true
-        // (IEveTransform.h:20), while every ccpwgl bounds method returns `out`
-        // or null - WglTransform.js:94, Tw2Mesh, Tw2GeometryRes. Both are
-        // falsy, so callers that test the result cannot tell them apart; the
-        // difference is only which contract this reads as. What matters is that
-        // it ANSWERS: this threw ErrFeatureNotImplemented, which killed the
-        // render loop from inside UpdateLod the first time a turret firing fx
-        // put an instanced mesh under an EveTransform.
-        return null;
+        if (!this.IsGood()) return null;
+
+        const count = this.GetInstanceCount();
+
+        // No instances means nothing is drawn, so there is nothing to bound.
+        // Distinct from "bounds unknown": the answer is that there is no extent.
+        if (!count) return null;
+
+        if (force || !this._instanceBounds || this._instanceBoundsCount !== count)
+        {
+            this._instanceBounds = this._instanceBounds || box3.create();
+            this._instanceBoundsCount = count;
+
+            const { mat4_0 } = Tw2InstancedMesh.global;
+            const base = Tw2InstancedMesh.global.box3_0;
+            const worked = Tw2InstancedMesh.global.box3_1;
+
+            if (!this.geometryResource.GetBoundingBox(base, force))
+            {
+                this._instanceBounds = null;
+                return null;
+            }
+
+            let unioned = false;
+            for (let i = 0; i < count; i++)
+            {
+                // Asked once. A mesh either knows its instance layout or does
+                // not, and it will not start knowing it at instance seven -
+                // the same rule `Intersect` follows.
+                if (!this.GetInstanceTransform(i, mat4_0)) break;
+
+                box3.transformMat4(worked, base, mat4_0);
+
+                if (unioned)
+                {
+                    box3.union(this._instanceBounds, this._instanceBounds, worked);
+                }
+                else
+                {
+                    box3.copy(this._instanceBounds, worked);
+                    unioned = true;
+                }
+            }
+
+            // Layout unknown: the base geometry's own bounds. Coarse - every
+            // instance is assumed to sit at the mesh's own transform - but real,
+            // and the same fallback `Intersect` takes rather than answering
+            // nothing.
+            if (!unioned) box3.copy(this._instanceBounds, base);
+        }
+
+        return box3.copy(out, this._instanceBounds);
     }
 
     /**
-     * Gets the bounding sphere for the mesh
+     * Gets the bounding sphere for the mesh. See `GetBoundingBox`.
      * @param {sph3} out
      * @param {Boolean} force
      * @return {sph3|null} `out` when it holds usable bounds, otherwise null
      */
     GetBoundingSphere(out, force)
     {
-        // See GetBoundingBox.
-        return null;
+        const box = Tw2InstancedMesh.global.box3_2;
+        if (!this.GetBoundingBox(box, force)) return null;
+        return sph3.fromBox3(out, box);
     }
 
     /**
@@ -589,7 +642,10 @@ export class Tw2InstancedMesh extends meta.Model
      */
     static global = {
         mat4_0: mat4.create(),
-        mat4_1: mat4.create()
+        mat4_1: mat4.create(),
+        box3_0: box3.create(),
+        box3_1: box3.create(),
+        box3_2: box3.create()
     };
 
 }
