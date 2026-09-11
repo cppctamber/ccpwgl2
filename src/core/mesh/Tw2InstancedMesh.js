@@ -47,10 +47,6 @@ export class Tw2InstancedMesh extends meta.Model
     @meta.isPrivate
     geometryResource = null;
 
-    /** Cached union of the base bounds over every instance transform. */
-    _instanceBounds = null;
-    _instanceBoundsCount = -1;
-
     @meta.path
     geometryResPath = "";
 
@@ -299,8 +295,15 @@ export class Tw2InstancedMesh extends meta.Model
      * made visible and silently never draws. In a sof layout, which is mostly
      * instanced placements, that is the whole scene.
      *
-     * Cached, and rebuilt only when forced or when the instance count changes.
-     * The walk is O(instances) and `UpdateLod` asks every frame.
+     * Recomputed every call, NOT cached. Caching this on the instance count
+     * was wrong: instances move without the count changing, so the bounds went
+     * stale, stopped matching where the geometry actually was, and the frustum
+     * culled things that were on screen - objects vanishing, and LOD picked
+     * from a pixel size measured against the wrong sphere.
+     *
+     * The walk is O(instances) and `UpdateLod` asks every frame, so this wants
+     * a real invalidation signal from the instance data rather than a recompute.
+     * Correctness first; there is no such signal today.
      *
      * @param {box3} out
      * @param {Boolean} force
@@ -316,50 +319,39 @@ export class Tw2InstancedMesh extends meta.Model
         // Distinct from "bounds unknown": the answer is that there is no extent.
         if (!count) return null;
 
-        if (force || !this._instanceBounds || this._instanceBoundsCount !== count)
+        const { mat4_0 } = Tw2InstancedMesh.global;
+        const base = Tw2InstancedMesh.global.box3_0;
+        const worked = Tw2InstancedMesh.global.box3_1;
+
+        if (!this.geometryResource.GetBoundingBox(base, force)) return null;
+
+        let unioned = false;
+        for (let i = 0; i < count; i++)
         {
-            this._instanceBounds = this._instanceBounds || box3.create();
-            this._instanceBoundsCount = count;
+            // Asked once. A mesh either knows its instance layout or does not,
+            // and it will not start knowing it at instance seven - the same
+            // rule `Intersect` follows.
+            if (!this.GetInstanceTransform(i, mat4_0)) break;
 
-            const { mat4_0 } = Tw2InstancedMesh.global;
-            const base = Tw2InstancedMesh.global.box3_0;
-            const worked = Tw2InstancedMesh.global.box3_1;
+            box3.transformMat4(worked, base, mat4_0);
 
-            if (!this.geometryResource.GetBoundingBox(base, force))
+            if (unioned)
             {
-                this._instanceBounds = null;
-                return null;
+                box3.union(out, out, worked);
             }
-
-            let unioned = false;
-            for (let i = 0; i < count; i++)
+            else
             {
-                // Asked once. A mesh either knows its instance layout or does
-                // not, and it will not start knowing it at instance seven -
-                // the same rule `Intersect` follows.
-                if (!this.GetInstanceTransform(i, mat4_0)) break;
-
-                box3.transformMat4(worked, base, mat4_0);
-
-                if (unioned)
-                {
-                    box3.union(this._instanceBounds, this._instanceBounds, worked);
-                }
-                else
-                {
-                    box3.copy(this._instanceBounds, worked);
-                    unioned = true;
-                }
+                box3.copy(out, worked);
+                unioned = true;
             }
-
-            // Layout unknown: the base geometry's own bounds. Coarse - every
-            // instance is assumed to sit at the mesh's own transform - but real,
-            // and the same fallback `Intersect` takes rather than answering
-            // nothing.
-            if (!unioned) box3.copy(this._instanceBounds, base);
         }
 
-        return box3.copy(out, this._instanceBounds);
+        // Layout unknown: the base geometry's own bounds. Coarse - every
+        // instance is assumed to sit at the mesh's own transform - but real,
+        // and the same fallback `Intersect` takes rather than answering nothing.
+        if (!unioned) box3.copy(out, base);
+
+        return out;
     }
 
     /**
