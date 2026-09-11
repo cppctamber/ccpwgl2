@@ -1383,7 +1383,21 @@ export class EveTurretSet extends EveObjectSet
 
                 const activeTurret = this.items[this._activeTurret];
 
-                if (this._activeAnimation.models.length)
+                // The index can outlive the item it names. `items` is rebuilt
+                // whenever turrets are mounted, unmounted or the locators
+                // change, and `_activeTurret` is not revised with it - the only
+                // check here was against the -1 sentinel, which says nothing
+                // about whether the index is still in range. A stale one read
+                // `undefined._localTransform` below and threw from inside
+                // `EveSpaceScene.Update`, killing the whole update pass.
+                //
+                // Treated as "no active turret", which is what it now is: the
+                // set reselects one the next time it fires.
+                if (!activeTurret)
+                {
+                    this._activeTurret = -1;
+                }
+                else if (this._activeAnimation.models.length)
                 {
                     const
                         model = this._activeAnimation.models[0],
