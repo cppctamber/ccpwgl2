@@ -13,7 +13,6 @@ import {
     RM_PICKABLE,
     RM_NORMAL
 } from "constant";
-import { ErrFeatureNotImplemented } from "core";
 
 
 @meta.todo("Is this deprecated?")
@@ -289,22 +288,38 @@ export class Tw2InstancedMesh extends meta.Model
      * Gets the bounding box for the mesh
      * @param {box3} out
      * @param {Boolean} force
-     * @return {box3|null}
+     * @return {box3|null} `out` when it holds usable bounds, otherwise null
      */
     GetBoundingBox(out, force)
     {
-        throw new ErrFeatureNotImplemented({ feature: "Instance mesh bounds" });
+        // Carbon reports no bounds for instanced meshes - this is its whole
+        // body, not a stub: `bool EveChildInstancedMeshes::GetBoundingSphere(
+        // Vector4&, BoundingSphereQuery ) const { return false; }`
+        // (EveChildInstancedMeshes.cpp).
+        //
+        // Null rather than Carbon's false because the two engines disagree on
+        // the shape of this answer and ccpwgl is what this class lives in:
+        // Carbon returns bool and writes `out` only when true
+        // (IEveTransform.h:20), while every ccpwgl bounds method returns `out`
+        // or null - WglTransform.js:94, Tw2Mesh, Tw2GeometryRes. Both are
+        // falsy, so callers that test the result cannot tell them apart; the
+        // difference is only which contract this reads as. What matters is that
+        // it ANSWERS: this threw ErrFeatureNotImplemented, which killed the
+        // render loop from inside UpdateLod the first time a turret firing fx
+        // put an instanced mesh under an EveTransform.
+        return null;
     }
 
     /**
      * Gets the bounding sphere for the mesh
      * @param {sph3} out
      * @param {Boolean} force
-     * @return {sph3|null}
+     * @return {sph3|null} `out` when it holds usable bounds, otherwise null
      */
     GetBoundingSphere(out, force)
     {
-        throw new ErrFeatureNotImplemented({ feature: "Instance mesh bounds" });
+        // See GetBoundingBox.
+        return null;
     }
 
     /**

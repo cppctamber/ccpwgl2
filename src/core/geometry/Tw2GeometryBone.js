@@ -61,12 +61,24 @@ export class Tw2GeometryBone
      * Gets box bounds
      * @param {box3} out
      * @param {Boolean} [force]
-     * @return {box3} out
+     * @return {box3|null} `out` when it holds usable bounds, otherwise null
      */
     GetBoundingBox(out, force)
     {
         if (force) this.UpdateTransform();
-        if (!this.boundingBox) return box3.empty(out);
+
+        // Null, not an empty box. An empty box is a truthy object, so
+        // `if (bone.GetBoundingBox(out))` - the shape the rest of the bounds
+        // family is written for - took the success branch on a bone that has
+        // no bounds at all and unioned a zero-extent box at the origin into
+        // the caller's accumulation. `out` is still emptied so it is in a
+        // defined state either way, matching WglTransform.js:94.
+        if (!this.boundingBox)
+        {
+            box3.empty(out);
+            return null;
+        }
+
         return box3.transformMat4(out, this.boundingBox, this.localTransform);
     }
 
@@ -74,12 +86,24 @@ export class Tw2GeometryBone
      * Gets box bounds
      * @param {box3} out
      * @param {Boolean} [force]
-     * @return {box3} out
+     * @return {box3|null} `out` when it holds usable bounds, otherwise null
      */
     GetWorldBoundingBoxInverse(out, force)
     {
         if (force) this.UpdateTransform();
-        if (!this.boundingBox) return box3.empty(out);
+
+        // Null, not an empty box. An empty box is a truthy object, so
+        // `if (bone.GetWorldBoundingBoxInverse(out))` - the shape the rest of the bounds
+        // family is written for - took the success branch on a bone that has
+        // no bounds at all and unioned a zero-extent box at the origin into
+        // the caller's accumulation. `out` is still emptied so it is in a
+        // defined state either way, matching WglTransform.js:94.
+        if (!this.boundingBox)
+        {
+            box3.empty(out);
+            return null;
+        }
+
         return box3.transformMat4(out, this.boundingBox, this.worldTransformInv);
     }
 
@@ -87,12 +111,24 @@ export class Tw2GeometryBone
      * Gets box bounds
      * @param {box3} out
      * @param {Boolean} [force]
-     * @return {box3} out
+     * @return {box3|null} `out` when it holds usable bounds, otherwise null
      */
     GetWorldBoundingBox(out, force)
     {
         if (force) this.UpdateTransform();
-        if (!this.boundingBox) return box3.empty(out);
+
+        // Null, not an empty box. An empty box is a truthy object, so
+        // `if (bone.GetWorldBoundingBox(out))` - the shape the rest of the bounds
+        // family is written for - took the success branch on a bone that has
+        // no bounds at all and unioned a zero-extent box at the origin into
+        // the caller's accumulation. `out` is still emptied so it is in a
+        // defined state either way, matching WglTransform.js:94.
+        if (!this.boundingBox)
+        {
+            box3.empty(out);
+            return null;
+        }
+
         return box3.transformMat4(out, this.boundingBox, this.worldTransform);
     }
 

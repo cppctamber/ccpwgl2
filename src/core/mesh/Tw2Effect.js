@@ -929,7 +929,13 @@ export class Tw2Effect extends meta.Model
                             }
                             else if (isAutoregister)
                             {
-                                texture = this.parameters[name] = tw2.CreateVariable(name, undefined, Tw2TextureParameter);
+                                // Assigned only when one was actually created:
+                                // CreateVariable can decline, and storing its
+                                // nothing leaves an own key holding undefined
+                                // for every later walk to trip over.
+                                const created = tw2.CreateVariable(name, undefined, Tw2TextureParameter);
+                                if (created) this.parameters[name] = created;
+                                texture = created;
                             }
                             else if (this.autoParameter)
                             {
@@ -1689,7 +1695,18 @@ export class Tw2Effect extends meta.Model
         {
             if (parent.hasOwnProperty(key))
             {
-                const rv = func({ struct: parent[key], parent, key, path: `/parameters/${key}` });
+                // `struct || includeEmpty`, the same gate the base walk applies
+                // (Model.js:494). This override skipped it and handed every own
+                // key over, empty or not, so a consumer written against the base
+                // contract - `x.struct.GetResources` in GetResources, just above
+                // - read a property of undefined and took the render loop with
+                // it. A parameter slot can legitimately hold nothing: an
+                // autoregistered texture whose variable could not be created
+                // lands here as undefined.
+                const struct = parent[key];
+                if (!struct && !includeEmpty) continue;
+
+                const rv = func({ struct, parent, key, path: `/parameters/${key}` });
                 if (rv !== undefined) return rv;
             }
         }
