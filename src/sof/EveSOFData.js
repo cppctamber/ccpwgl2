@@ -4843,10 +4843,20 @@ export class EveSOFData extends meta.Model
      *   (EveSwarm.h:118) and adds vehicle simulation on top, so the base is
      *   right and only the simulation is missing.
      * - 4 (EXTENSION) builds `EveMobile`, which IS the class Carbon uses - but
-     *   Carbon also builds extensions through a separate path that skips the
-     *   mesh, decals, locators, attachments, audio, controllers and boosters
-     *   (`SetupExtensionBuild`). That path is unported, so the class is right
-     *   and the contents are still a full build.
+     *   Carbon assembles extensions differently, and the difference is about
+     *   LAYOUTS rather than about leaving things out. `SetupExtensionBuild`
+     *   makes an "Extension Container" that is a placement root
+     *   (`isPlacementRoot = true`), moves the hull's mesh down into an
+     *   `EveChildMesh` inside it, and hands that container to `SetupLayout` as
+     *   the thing placements are parented into. The root's own mesh is empty
+     *   BECAUSE the mesh went into the container, not because it was skipped -
+     *   decals, attachments, controllers, audio, effects, instanced meshes and
+     *   locator sets are all still built, just at the level that now owns them.
+     *
+     *   ccpwgl has the layout machinery (`planSofLayouts`, `SetupLayout`,
+     *   `BuildLayoutPlacement*`) but not that variant of it, so an extension
+     *   hull here keeps its mesh at the root and hangs its layouts beside it
+     *   rather than inside a placement root.
      *
      * @type {Object<Number, Function>}
      */
