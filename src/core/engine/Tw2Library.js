@@ -1161,15 +1161,6 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Manually removes a resource
-     * @param {String} resPath
-     */
-    RemoveResource(resPath)
-    {
-        return this.resMan.motherLode.Remove(resPath);
-    }
-
-    /**
      * Gets a resource
      * @param {String} resPath
      * @param {Function} [onResolved]

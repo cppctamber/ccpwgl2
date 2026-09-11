@@ -383,6 +383,21 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Removes a resource from the cache.
+     *
+     * Here rather than on the library: what is cached, and under what key, is
+     * the manager's business. The library knows about SOF and dna; the manager
+     * knows only paths, and nothing above it needs a way to evict one.
+     *
+     * @param {String} path
+     * @returns {Boolean} true when something was removed
+     */
+    RemoveResource(path)
+    {
+        return this.motherLode.Remove(path);
+    }
+
+    /**
      * Fires on path events
      * @param {String} path      - Resource path
      * @param {String} eventName - Resource state name
@@ -832,7 +847,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         const res = this.motherLode.Find(path);
         this._retained.delete(path);
         if (res) res.Unlock();
-        this.motherLode.Remove(path);
+        this.RemoveResource(path);
         return true;
     }
 

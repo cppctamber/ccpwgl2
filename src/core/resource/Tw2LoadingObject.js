@@ -1,4 +1,4 @@
-import { resMan, tw2 } from "global";
+import { resMan } from "global";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2ObjectReader } from "../reader/Tw2ObjectReader";
 import { Tw2BlackReader } from "../reader/Tw2BlackReader";
@@ -192,7 +192,7 @@ export class Tw2LoadingObject extends Tw2Resource
                 this._objects[i].onRejected(err);
             }
         }
-        tw2.RemoveResource(this.path);
+        resMan.RemoveResource(this.path);
         this._objects.splice(0);
         return err;
     }
@@ -210,7 +210,7 @@ export class Tw2LoadingObject extends Tw2Resource
         // drop out as they always did.
         if (!resMan.RetainLoadingObject(this))
         {
-            tw2.RemoveResource(this.path);
+            resMan.RemoveResource(this.path);
         }
 
         // The consumers queued for this prepare have all been served. Later
