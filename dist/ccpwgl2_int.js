@@ -41611,12 +41611,34 @@
 	      if (onRejected) {
 	        onRejected(err);
 	      }
-	    } else {
-	      this._objects.push({
-	        onResolved,
-	        onRejected
-	      });
+	      return;
 	    }
+
+	    // Already prepared, so there is no second `Prepare` coming: the object
+	    // is not in the prepare queue and nothing would put it back. Construct
+	    // now, the same call `Prepare` makes for each consumer.
+	    //
+	    // Before loading objects were retained this branch was unreachable -
+	    // `OnPrepared` removed the object from the motherlode, so nobody could
+	    // find one to add to. Retaining them makes it the common case, and
+	    // without it a late consumer would be pushed onto a list nothing ever
+	    // walks and its promise would never settle.
+	    if (this._constructor && this._inPrepare !== null) {
+	      try {
+	        onResolved(this._constructor.Construct());
+	      } catch (constructError) {
+	        if (onRejected) onRejected(constructError);
+	        this.OnWarning({
+	          err: constructError,
+	          message: "Error constructing child object"
+	        });
+	      }
+	      return;
+	    }
+	    this._objects.push({
+	      onResolved,
+	      onRejected
+	    });
 	  }
 
 	  /**
@@ -41701,7 +41723,18 @@
 	   * @param {eventLog} eventLog
 	   */
 	  OnPrepared(eventLog) {
-	    tw2.RemoveResource(this.path);
+	    // Retained rather than dropped, when the manager is retaining: the
+	    // reader stays so the next consumer of this path constructs from memory
+	    // instead of re-fetching and re-parsing the file. `RetainLoadingObject`
+	    // declines for a raw load task (no path) or anything errored, and those
+	    // drop out as they always did.
+	    if (!resMan.RetainLoadingObject(this)) {
+	      tw2.RemoveResource(this.path);
+	    }
+
+	    // The consumers queued for this prepare have all been served. Later
+	    // arrivals are constructed on the spot by `AddObject`, so this list has
+	    // no further use either way.
 	    this._objects.splice(0);
 	    super.OnPrepared(eventLog);
 	  }
@@ -66411,6 +66444,37 @@
 	    this.activeFrame = 0;
 	    /** Seconds a resource can stay unused before purge triggers, minimum threshold. */
 	    this.purgeTime = 30;
+	    /**
+	     * Keeps a `Tw2LoadingObject` after it prepares, so the same `.black` asked
+	     * for again is constructed from what is already in memory.
+	     *
+	     * A loading object used to remove itself from the motherlode the instant it
+	     * prepared, which is right for something read once and never again, and
+	     * wrong the moment two consumers are more than a frame apart: each later
+	     * one re-fetches and re-PARSES a file already read. A layout is the extreme
+	     * case - a hangar shares its ads, banners and logos across hundreds of
+	     * placements spread over minutes - but anything building the same object
+	     * twice pays it.
+	     *
+	     * Held objects are cheap. These files are kilobytes (EVE's hangar `.black`
+	     * run 1.5-5.4 kB), and what is retained is the raw bytes plus a reader over
+	     * them, not the constructed objects - those belong to whoever asked.
+	     * @type {Boolean}
+	     */
+	    this.retainLoadingObjects = true;
+	    /**
+	     * Seconds since a retained loading object was last REQUESTED before it is
+	     * dropped. Measured from the request, not from binding: nothing binds a
+	     * loading object, which is why the inactivity purge is the wrong instrument
+	     * for them and they get this sweep instead.
+	     * @type {Number}
+	     */
+	    this.retainedObjectTime = 60;
+	    /**
+	     * Per-sweep time allowance, in seconds, matching `maxPrepareTime`.
+	     * @type {Number}
+	     */
+	    this.maxRetainedSweepTime = 0.01;
 	    /** Max milliseconds spent updating watched objects per frame. */
 	    this.maxWatchedUpdateTime = 0.05;
 	    /** Max number of watched objects processed per update pass. */
@@ -66437,6 +66501,8 @@
 	    this._activeLoads = new Set();
 	    /** Time accumulator for purge cadence, in seconds. */
 	    this._purgeTime = 0;
+	    /** Retained loading objects, path -> last requested time in ms. */
+	    this._retained = new Map();
 	    /** Frame counter used for periodic purge window checks. */
 	    this._purgeFrame = 0;
 	    /** Frame interval threshold before purge runs. */
@@ -66530,7 +66596,7 @@
 	  Register(opt) {
 	    if (!opt) return;
 	    if ("events" in opt) this.AddEvents(opt.events);
-	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
+	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
 	    if (opt.useWorkerLoading !== undefined) {
 	      this.UseWorkerLoading(opt.useWorkerLoading);
 	    } else if (opt.workerLoading !== undefined) {
@@ -66787,6 +66853,9 @@
 	      this.activeFrame += 1;
 	      this._purgeTime -= Math.floor(this._purgeTime);
 	      this._purgeFrame += 1;
+	      if (this.retainLoadingObjects) {
+	        this.SweepRetainedObjects(this.maxRetainedSweepTime);
+	      }
 	      if (this._purgeFrame >= 5) {
 	        if (this.autoPurgeResources) {
 	          this.motherLode.PurgeInactive(this._purgeFrame, this._purgeFrameLimit, this.purgeTime);
@@ -66977,6 +67046,9 @@
 	    // Check if already loaded
 	    var res = this.motherLode.Find(path);
 	    if (res) {
+	      // A retained object that is asked for again is in use, whatever the
+	      // inactivity purge thinks: nothing ever binds a loading object.
+	      if (this._retained.has(path)) this._retained.set(path, this.tw2.now);
 	      res.AddObject(onResolved, onRejected);
 	      return;
 	    }
@@ -66984,6 +67056,73 @@
 	    res.path = path;
 	    res.AddObject(onResolved, onRejected);
 	    this.LoadResource(res);
+	  }
+
+	  /**
+	   * Keeps a prepared loading object instead of dropping it.
+	   *
+	   * Called by `Tw2LoadingObject.OnPrepared` in place of the self-eviction it
+	   * used to do unconditionally. Locked so the inactivity purge cannot take it
+	   * - the retained sweep owns its lifetime instead, on its own timer.
+	   *
+	   * @param {Tw2LoadingObject} res
+	   * @returns {Boolean} true when retained
+	   */
+	  RetainLoadingObject(res) {
+	    if (!this.retainLoadingObjects || !res || !res.path) return false;
+	    if (res.HasErrored()) return false;
+	    if (this._retained.has(res.path)) return true;
+	    res.Lock();
+	    this._retained.set(res.path, this.tw2.now);
+	    return true;
+	  }
+
+	  /**
+	   * Drops one retained loading object and removes it from the motherlode.
+	   * @param {String} path
+	   * @returns {Boolean} true when something was dropped
+	   */
+	  ReleaseLoadingObject(path) {
+	    if (!this._retained.has(path)) return false;
+	    var res = this.motherLode.Find(path);
+	    this._retained.delete(path);
+	    if (res) res.Unlock();
+	    this.motherLode.Remove(path);
+	    return true;
+	  }
+
+	  /**
+	   * Drops retained loading objects not requested within `retainedObjectTime`.
+	   *
+	   * Budgeted per sweep like the prepare queue: a scene that retained hundreds
+	   * of files must not pay for all of them in one frame. Whatever is not
+	   * reached stays until the next sweep, which is harmless - the cost of
+	   * holding one a second longer is a few kilobytes.
+	   *
+	   * @param {Number} budget - seconds
+	   * @returns {Number} how many were dropped
+	   */
+	  SweepRetainedObjects(budget) {
+	    if (!this._retained.size) return 0;
+	    var startTime = this.tw2.now,
+	      deadline = this.retainedObjectTime * 1000,
+	      expired = [];
+	    for (var _ref9 of this._retained) {
+	      var _ref8 = _slicedToArray(_ref9, 2);
+	      var path = _ref8[0];
+	      var lastRequested = _ref8[1];
+	      if (startTime - lastRequested >= deadline) expired.push(path);
+	    }
+	    var dropped = 0;
+	    for (var i = 0; i < expired.length; i++) {
+	      this.ReleaseLoadingObject(expired[i]);
+	      dropped++;
+
+	      // Charged from the top of the sweep, so the budget is what the
+	      // sweep has spent rather than what this one drop cost.
+	      if ((this.tw2.now - startTime) / 1000 >= budget) break;
+	    }
+	    return dropped;
 	  }
 
 	  /**

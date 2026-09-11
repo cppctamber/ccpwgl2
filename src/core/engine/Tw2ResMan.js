@@ -34,6 +34,40 @@ export class Tw2ResMan extends Tw2EventEmitter
     /** Seconds a resource can stay unused before purge triggers, minimum threshold. */
     purgeTime = 30;
 
+    /**
+     * Keeps a `Tw2LoadingObject` after it prepares, so the same `.black` asked
+     * for again is constructed from what is already in memory.
+     *
+     * A loading object used to remove itself from the motherlode the instant it
+     * prepared, which is right for something read once and never again, and
+     * wrong the moment two consumers are more than a frame apart: each later
+     * one re-fetches and re-PARSES a file already read. A layout is the extreme
+     * case - a hangar shares its ads, banners and logos across hundreds of
+     * placements spread over minutes - but anything building the same object
+     * twice pays it.
+     *
+     * Held objects are cheap. These files are kilobytes (EVE's hangar `.black`
+     * run 1.5-5.4 kB), and what is retained is the raw bytes plus a reader over
+     * them, not the constructed objects - those belong to whoever asked.
+     * @type {Boolean}
+     */
+    retainLoadingObjects = true;
+
+    /**
+     * Seconds since a retained loading object was last REQUESTED before it is
+     * dropped. Measured from the request, not from binding: nothing binds a
+     * loading object, which is why the inactivity purge is the wrong instrument
+     * for them and they get this sweep instead.
+     * @type {Number}
+     */
+    retainedObjectTime = 60;
+
+    /**
+     * Per-sweep time allowance, in seconds, matching `maxPrepareTime`.
+     * @type {Number}
+     */
+    maxRetainedSweepTime = 0.01;
+
     /** Max milliseconds spent updating watched objects per frame. */
     maxWatchedUpdateTime = 0.05;
     /** Max number of watched objects processed per update pass. */
@@ -61,6 +95,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     _activeLoads = new Set();
     /** Time accumulator for purge cadence, in seconds. */
     _purgeTime = 0;
+
+    /** Retained loading objects, path -> last requested time in ms. */
+    _retained = new Map();
     /** Frame counter used for periodic purge window checks. */
     _purgeFrame = 0;
     /** Frame interval threshold before purge runs. */
@@ -208,6 +245,9 @@ export class Tw2ResMan extends Tw2EventEmitter
             "fetchOptions",
             "autoPurgeResources",
             "purgeTime",
+            "retainLoadingObjects",
+            "retainedObjectTime",
+            "maxRetainedSweepTime",
             "minimumAutoReloadSeconds",
             "maxAutoReloadsPerTick",
             "maxWatchedTime",
@@ -518,6 +558,11 @@ export class Tw2ResMan extends Tw2EventEmitter
             this._purgeTime -= Math.floor(this._purgeTime);
             this._purgeFrame += 1;
 
+            if (this.retainLoadingObjects)
+            {
+                this.SweepRetainedObjects(this.maxRetainedSweepTime);
+            }
+
             if (this._purgeFrame >= 5)
             {
                 if (this.autoPurgeResources)
@@ -741,6 +786,9 @@ export class Tw2ResMan extends Tw2EventEmitter
         let res = this.motherLode.Find(path);
         if (res)
         {
+            // A retained object that is asked for again is in use, whatever the
+            // inactivity purge thinks: nothing ever binds a loading object.
+            if (this._retained.has(path)) this._retained.set(path, this.tw2.now);
             res.AddObject(onResolved, onRejected);
             return;
         }
@@ -749,6 +797,82 @@ export class Tw2ResMan extends Tw2EventEmitter
         res.path = path;
         res.AddObject(onResolved, onRejected);
         this.LoadResource(res);
+    }
+
+    /**
+     * Keeps a prepared loading object instead of dropping it.
+     *
+     * Called by `Tw2LoadingObject.OnPrepared` in place of the self-eviction it
+     * used to do unconditionally. Locked so the inactivity purge cannot take it
+     * - the retained sweep owns its lifetime instead, on its own timer.
+     *
+     * @param {Tw2LoadingObject} res
+     * @returns {Boolean} true when retained
+     */
+    RetainLoadingObject(res)
+    {
+        if (!this.retainLoadingObjects || !res || !res.path) return false;
+        if (res.HasErrored()) return false;
+        if (this._retained.has(res.path)) return true;
+
+        res.Lock();
+        this._retained.set(res.path, this.tw2.now);
+        return true;
+    }
+
+    /**
+     * Drops one retained loading object and removes it from the motherlode.
+     * @param {String} path
+     * @returns {Boolean} true when something was dropped
+     */
+    ReleaseLoadingObject(path)
+    {
+        if (!this._retained.has(path)) return false;
+
+        const res = this.motherLode.Find(path);
+        this._retained.delete(path);
+        if (res) res.Unlock();
+        this.motherLode.Remove(path);
+        return true;
+    }
+
+    /**
+     * Drops retained loading objects not requested within `retainedObjectTime`.
+     *
+     * Budgeted per sweep like the prepare queue: a scene that retained hundreds
+     * of files must not pay for all of them in one frame. Whatever is not
+     * reached stays until the next sweep, which is harmless - the cost of
+     * holding one a second longer is a few kilobytes.
+     *
+     * @param {Number} budget - seconds
+     * @returns {Number} how many were dropped
+     */
+    SweepRetainedObjects(budget)
+    {
+        if (!this._retained.size) return 0;
+
+        const
+            startTime = this.tw2.now,
+            deadline = this.retainedObjectTime * 1000,
+            expired = [];
+
+        for (const [ path, lastRequested ] of this._retained)
+        {
+            if (startTime - lastRequested >= deadline) expired.push(path);
+        }
+
+        let dropped = 0;
+        for (let i = 0; i < expired.length; i++)
+        {
+            this.ReleaseLoadingObject(expired[i]);
+            dropped++;
+
+            // Charged from the top of the sweep, so the budget is what the
+            // sweep has spent rather than what this one drop cost.
+            if ((this.tw2.now - startTime) / 1000 >= budget) break;
+        }
+
+        return dropped;
     }
 
     /**

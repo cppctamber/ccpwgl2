@@ -1,4 +1,4 @@
-import { tw2 } from "global";
+import { resMan, tw2 } from "global";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2ObjectReader } from "../reader/Tw2ObjectReader";
 import { Tw2BlackReader } from "../reader/Tw2BlackReader";
@@ -66,11 +66,33 @@ export class Tw2LoadingObject extends Tw2Resource
             {
                 onRejected(err);
             }
+            return;
         }
-        else
+
+        // Already prepared, so there is no second `Prepare` coming: the object
+        // is not in the prepare queue and nothing would put it back. Construct
+        // now, the same call `Prepare` makes for each consumer.
+        //
+        // Before loading objects were retained this branch was unreachable -
+        // `OnPrepared` removed the object from the motherlode, so nobody could
+        // find one to add to. Retaining them makes it the common case, and
+        // without it a late consumer would be pushed onto a list nothing ever
+        // walks and its promise would never settle.
+        if (this._constructor && this._inPrepare !== null)
         {
-            this._objects.push({ onResolved, onRejected });
+            try
+            {
+                onResolved(this._constructor.Construct());
+            }
+            catch (constructError)
+            {
+                if (onRejected) onRejected(constructError);
+                this.OnWarning({ err: constructError, message: "Error constructing child object" });
+            }
+            return;
         }
+
+        this._objects.push({ onResolved, onRejected });
     }
 
     /**
@@ -181,7 +203,19 @@ export class Tw2LoadingObject extends Tw2Resource
      */
     OnPrepared(eventLog)
     {
-        tw2.RemoveResource(this.path);
+        // Retained rather than dropped, when the manager is retaining: the
+        // reader stays so the next consumer of this path constructs from memory
+        // instead of re-fetching and re-parsing the file. `RetainLoadingObject`
+        // declines for a raw load task (no path) or anything errored, and those
+        // drop out as they always did.
+        if (!resMan.RetainLoadingObject(this))
+        {
+            tw2.RemoveResource(this.path);
+        }
+
+        // The consumers queued for this prepare have all been served. Later
+        // arrivals are constructed on the spot by `AddObject`, so this list has
+        // no further use either way.
         this._objects.splice(0);
         super.OnPrepared(eventLog);
     }
