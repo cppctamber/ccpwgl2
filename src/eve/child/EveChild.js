@@ -94,12 +94,20 @@ export class EveChild extends meta.Model
 
     /**
      * Per frame update
+     *
+     * Carbon passes children one `EveChildUpdateParams` block rather than a
+     * positional list (`UpdateSyncronous( const EveUpdateContext&, const
+     * EveChildUpdateParams& )`). This port spread that block across arguments
+     * and paid for it twice: the defaults went missing, so an unset transform
+     * arrived as `undefined` and killed the render loop, and two callers put a
+     * bone array in the `perObjectData` slot, where it was silently discarded.
+     * `dt` stays separate because ccpwgl has no EveUpdateContext.
+     *
      * @param {number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} [perObjectData]
+     * @param {EveChildUpdateParams} [params]
      */
     // @meta.abstract
-    Update(dt, parentTransform, perObjectData)
+    Update(dt, params)
     {
 
     }

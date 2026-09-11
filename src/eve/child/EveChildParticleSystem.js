@@ -3,6 +3,7 @@ import { mat4, quat, sph3, vec3 } from "math";
 import { Tw2PerObjectData } from "core";
 import { Tr2Lod } from "constant/ccpwgl";
 import { EveChild } from "./EveChild";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { Tw2GpuParticleRenderer } from "particle/gpu/Tw2GpuParticleRenderer";
 
 
@@ -245,10 +246,12 @@ export class EveChildParticleSystem extends EveChild
     /**
      * Per frame update
      * @param {number} dt
-     * @param {mat4} parentTransform
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform = EveChild.IDENTITY)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const parentTransform = params.localToWorldTransform;
+
         if (this.useSRT)
         {
             quat.normalize(this.rotation, this.rotation);

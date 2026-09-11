@@ -62,7 +62,7 @@ export class EveChildProceduralContainer extends EveChildContainer
      * one Update. Tick the selector first so its initial choice can load and
      * render through the inherited EveChildContainer traversal this frame.
      */
-    Update(dt, parentTransform, perObjectData, parentSpaceObject)
+    Update(dt, params)
     {
         if (this.selectionMethod)
         {
@@ -74,7 +74,7 @@ export class EveChildProceduralContainer extends EveChildContainer
             }
         }
 
-        super.Update(dt, parentTransform, perObjectData, parentSpaceObject);
+        super.Update(dt, params);
     }
 
 }

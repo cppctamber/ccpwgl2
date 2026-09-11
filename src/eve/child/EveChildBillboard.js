@@ -3,6 +3,7 @@ import { device } from "global";
 import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 
 
 @meta.define("EveChildBillboard", true)
@@ -98,10 +99,12 @@ export class EveChildBillboard extends EveChild
     /**
      * Per frame update
      * @param {number} dt
-     * @param {mat4} parentTransform
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform = EveChild.IDENTITY)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const parentTransform = params.localToWorldTransform;
+
         mat4.copy(this._worldTransformLast, this._worldTransform);
         this.PrepareLod(parentTransform);
     }

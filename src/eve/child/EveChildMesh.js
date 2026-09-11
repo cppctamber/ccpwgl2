@@ -2,12 +2,20 @@ import { meta } from "utils";
 import { box3, vec3, quat, mat4, sph3 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2InstancedMesh, Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
 
 @meta.define("EveChildMesh", true)
 export class EveChildMesh extends EveChild
 {
+
+    /**
+     * The block handed to owned smart lights by `GetLights`, refilled per call.
+     * Separate from the child block because GetLights runs outside Update.
+     * @type {EveChildUpdateParams}
+     */
+    _lightUpdateParams = new EveChildUpdateParams();
 
     @meta.string
     name = "";
@@ -285,11 +293,14 @@ export class EveChildMesh extends EveChild
     /**
      * Per frame update
      * @param {number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData|} perObjectData
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const
+            parentTransform = params.localToWorldTransform,
+            perObjectData = params.perObjectData;
+
         mat4.copy(this._worldTransformLast, this._worldTransform);
 
         if (this.useSRT)
@@ -685,7 +696,20 @@ export class EveChildMesh extends EveChild
         {
             const light = this.lights[i];
             if (!light) continue;
-            light.Update(dt, this._worldTransform, bones);
+            // The bones the caller handed us, put where a light actually
+            // reads them. This used to be `light.Update(dt, this._worldTransform,
+            // bones)` - the third positional argument was `perObjectData`, and
+            // EveChildSmartLightSet pulls bones out of it with
+            // GetJointMatrices, which finds nothing on a raw array. The bones
+            // were silently discarded. That is the failure the params block
+            // exists to make impossible.
+            const lightParams = this._lightUpdateParams;
+            lightParams.childParent = this;
+            lightParams.bones = bones;
+            lightParams.boneCount = bones ? bones.length / 12 : 0;
+            mat4.copy(lightParams.localToWorldTransform, this._worldTransform);
+
+            light.Update(dt, lightParams);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
         }
     }

@@ -4,12 +4,20 @@ import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
 import { Tr2Lod } from "constant/ccpwgl";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 
 
 @meta.define("EveEffectRoot", true)
 @meta.todo("Implement LOD")
 export class EveEffectRoot extends EveObject
 {
+
+    /**
+     * The root block for this object's child update chain, refilled each
+     * frame. See EveChildUpdateParams.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
 
     @meta.list("Tw2CurveSet")
     curveSets = [];
@@ -222,9 +230,16 @@ export class EveEffectRoot extends EveObject
             this.curveSets[i].UpdateDelta(dt);
         }
 
+        const childParams = this._childUpdateParams;
+        childParams.spaceObjectParent = this;
+        childParams.childParent = null;
+        childParams.perObjectData = null;
+        childParams.isVisible = this.display !== false;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         for (let i = 0; i < this.effectChildren.length; ++i)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform);
+            this.effectChildren[i].Update(dt, childParams);
             if (this.effectChildren[i]._boundsDirty) this._boundsDirty = true;
         }
     }

@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { vec3 } from "math";
 import { EveChild } from "eve/child";
+import { EveChildUpdateParams } from "../../../eve/EveChildUpdateParams";
 
 
 /**
@@ -24,10 +25,12 @@ export class EveChildAudio extends EveChild
     /**
      * Per frame update
      * @param {Number} dt
-     * @param {mat4} parentTransform
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const parentTransform = params.localToWorldTransform;
+
         const emitter = this.audioEmitter;
         if (!emitter) return;
 

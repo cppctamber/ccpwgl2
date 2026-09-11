@@ -30,6 +30,7 @@ import { mat4 } from "math";
 import { tw2 } from "global/tw2";
 import { EveChild } from "eve/child";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 
 
 @meta.define("EveChildSmartLightSet", true)
@@ -143,13 +144,15 @@ export class EveChildSmartLightSet extends EveChild
      * has one update phase, so both are called in Carbon's order.
      *
      * @param {Number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} [perObjectData]
-     * @param {?EveShip2} [parentSpaceObject]
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform, perObjectData, parentSpaceObject)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
-        mat4.copy(this._worldTransform, parentTransform);
+        const
+            perObjectData = params.perObjectData,
+            parentSpaceObject = params.spaceObjectParent;
+
+        mat4.copy(this._worldTransform, params.localToWorldTransform);
 
         if (!this.distribution || !this.display || this._failed) return;
 
@@ -167,7 +170,7 @@ export class EveChildSmartLightSet extends EveChild
         // fault logs once instead of every frame.
         try
         {
-            this._Update(dt, perObjectData, parentSpaceObject);
+            this._Update(dt, params);
         }
         catch (err)
         {
@@ -192,24 +195,33 @@ export class EveChildSmartLightSet extends EveChild
     /**
      * The body of `Update`, separated so the guard above reads as one thing.
      * @param {Number} dt
-     * @param {Tw2PerObjectData} [perObjectData]
-     * @param {?EveShip2} [parentSpaceObject]
+     * @param {EveChildUpdateParams} incoming - the block this set was updated with
      */
-    _Update(dt, perObjectData, parentSpaceObject)
+    _Update(dt, incoming)
     {
 
         this._dt = dt;
 
+        const perObjectData = incoming.perObjectData;
+
         const params = this._updateParams || (this._updateParams = {});
-        params.spaceObjectParent = parentSpaceObject || null;
+        params.spaceObjectParent = incoming.spaceObjectParent || null;
         params.childParent = this;
         params.localToWorldTransform = this._worldTransform;
-        params.bones = EveChild.GetJointMatrices(perObjectData);
+
+        // The caller's bones win. A parent that HAS a bone array puts it in the
+        // block (EveChildMesh/EveChildContainer.GetLights); one that only has a
+        // per-object data bag leaves it null and the joint matrices are dug out
+        // of that instead. Before the block existed there was only the second
+        // route, and the parents with real bones were passing them into the
+        // per-object data argument, where GetJointMatrices could not see them.
+        params.bones = incoming.bones || EveChild.GetJointMatrices(perObjectData);
         params.boneCount = params.bones ? params.bones.length / 12 : 0;
+
         params.activationStrength = perObjectData && perObjectData.activationStrength !== undefined
             ? perObjectData.activationStrength
-            : 1;
-        params.isVisible = true;
+            : incoming.activationStrength;
+        params.isVisible = incoming.isVisible;
 
         const context = this._distributionUpdateContext;
 

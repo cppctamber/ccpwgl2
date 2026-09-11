@@ -2,6 +2,7 @@
 import { meta } from "utils";
 import { quat, vec3 } from "math";
 import { EveChildContainer } from "./EveChildContainer";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { EveChildInstanceContainer } from "./EveChildInstanceContainer";
 import { Tr2Lod } from "constant/ccpwgl";
 
@@ -297,12 +298,12 @@ export class EveChildEffectPropagator extends EveChildContainer
      * rebuilds the world transform and ticks curve sets and controllers.
      *
      * @param {Number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} [perObjectData]
-     * @param {EveShip2} [parentSpaceObject]
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform, perObjectData, parentSpaceObject)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const parentSpaceObject = params.spaceObjectParent;
+
         if (this.trigger)
         {
             this.ProcessLocators(parentSpaceObject);
@@ -348,7 +349,7 @@ export class EveChildEffectPropagator extends EveChildContainer
             }
         }
 
-        super.Update(dt, parentTransform, perObjectData, parentSpaceObject);
+        super.Update(dt, params);
     }
 
     /**

@@ -11,6 +11,7 @@ import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
 import { Tr2Lod, CustomMaskBlendMode } from "constant/ccpwgl";
 import { tw2 } from "global";
 import { EveLODHelper } from "../EveLODHelper";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 
 
 @meta.define("EveSpaceObject2", true)
@@ -201,6 +202,13 @@ export class EveSpaceObject2 extends EveObject
     _parentTransform = mat4.create();
     _perObjectData = new GLESPerObjectDataEveSpaceObject();
     _perObjectDataBagOfStuff = {};
+
+    /**
+     * The root block for this object's child update chain, refilled each
+     * frame. See EveChildUpdateParams.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
     _lastLodUpdateDelta = EveLODHelper.lowUpdateRate;
     _customMaskBlending = vec4.create();
     _worldTransformLast = mat4.create();
@@ -1698,11 +1706,27 @@ export class EveSpaceObject2 extends EveObject
         // modifier reading one of these acts on this frame's value.
         this._PublishControllerVariables(perObjectDataBagOfStuff);
 
+        // The root of the child update chain. Carbon builds one of these per
+        // space object and lets each level derive its own
+        // (EveEffectRoot2.cpp:215, EvePlanet.cpp:46); everything below reads
+        // the block rather than a positional list.
+        //
+        // `spaceObjectParent` is this object and stays this object all the way
+        // down, so nested EveChildContainer controllers resolve
+        // ShipSpeed()/ShipMaxSpeed() against the ship rather than an
+        // intermediate container (carbon parity: EveChildContainer.cpp:603).
+        const childParams = this._childUpdateParams;
+        childParams.spaceObjectParent = this;
+        childParams.childParent = null;
+        childParams.perObjectData = perObjectDataBagOfStuff;
+        childParams.isVisible = this.display;
+        childParams.ownerMaxSpeed = this.ShipMaxSpeed ? this.ShipMaxSpeed() : 0;
+        childParams.controllerUpdateFrequency = this._controllerUpdateFrequency;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         for (let i = 0; i < this.children.length; i++)
         {
-            // 4th arg: parent space object, so nested EveChildContainer controllers can resolve
-            // ShipSpeed()/ShipMaxSpeed() against this ship (carbon parity: EveChildContainer.cpp:603).
-            this.children[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
+            this.children[i].Update(dt, childParams);
 
             if (this.children[i]._boundsDirty)
             {
@@ -1712,7 +1736,7 @@ export class EveSpaceObject2 extends EveObject
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
+            this.effectChildren[i].Update(dt, childParams);
 
             if (this.effectChildren[i]._boundsDirty)
             {

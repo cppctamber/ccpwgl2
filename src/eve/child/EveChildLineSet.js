@@ -7,6 +7,7 @@ import { device } from "global/tw2";
 import { GLESPerObjectDataEveSpaceObject } from "core/data/Tr2PerObjectData";
 import { Tw2InstancedMeshBatch } from "core/batch/Tw2InstancedMeshBatch";
 import { Tw2VertexDeclaration } from "core/vertex/Tw2VertexDeclaration";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 
 
 /**
@@ -344,8 +345,12 @@ export class EveChildLineSet extends EveChild
     }
 
     /** Advances paths and refreshes visible lines and mesh instances. */
-    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const
+            parentTransform = params.localToWorldTransform,
+            perObjectData = params.perObjectData;
+
         // Carbon composes the local transform from the SRT triple each frame unless
         // the child is static or opts out (`EveChildTransform::UpdateTransform`,
         // cpp:59-67); an authored `localTransform` is only used as-is in that case.

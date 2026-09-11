@@ -2,6 +2,7 @@
 import { meta } from "utils";
 import { tw2 } from "global";
 import { EveChild } from "./EveChild";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { EveChildContainer } from "./EveChildContainer";
 import { mat4, quat, vec3, sph3 } from "math";
 
@@ -125,6 +126,13 @@ export class EveChildInstanceContainer extends EveChild
     _reset = true;
 
     _hasUpdated = false;
+
+    /**
+     * The block handed to this container's instances, refilled each frame.
+     * See EveChildContainer._childUpdateParams.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
 
     _pendingColorSet = null;
 
@@ -476,12 +484,15 @@ export class EveChildInstanceContainer extends EveChild
      * `UpdateSyncronous` (cpp:395-399), gated on the same reset flag.
      *
      * @param {Number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} [perObjectData]
-     * @param {EveShip2} [parentSpaceObject]
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData, parentSpaceObject)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const
+            parentTransform = params.localToWorldTransform,
+            perObjectData = params.perObjectData,
+            parentSpaceObject = params.spaceObjectParent;
+
         if (!this.display) return;
 
         if (this.useSRT && !this.staticTransform)
@@ -498,11 +509,17 @@ export class EveChildInstanceContainer extends EveChild
             this._reset = false;
         }
 
+        // Derived, not forwarded - see EveChildContainer.Update.
+        const childParams = this._childUpdateParams.CopyFrom(params);
+        childParams.childParent = this;
+        childParams.isVisible = params.isVisible && this.display;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         const instances = this.GetInstances();
         for (let i = 0; i < instances.length; i++)
         {
             const instance = instances[i];
-            if (instance) instance.Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
+            if (instance) instance.Update(dt, childParams);
         }
     }
 

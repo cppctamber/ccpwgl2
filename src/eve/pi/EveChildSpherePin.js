@@ -100,12 +100,11 @@ export class EveChildSpherePin extends EveChildMesh
 
     /**
      * @param {Number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} perObjectData
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform, perObjectData)
+    Update(dt, params)
     {
-        super.Update(dt, parentTransform, perObjectData);
+        super.Update(dt, params);
 
         // Carbon drives these from its async update with absolute time; ccpwgl's
         // children drive curve sets by delta, which is what EveChildContainer

@@ -3,11 +3,19 @@ import { box3, vec3, mat4, sph3 } from "math";
 import { Tw2AnimationController, Tw2PerObjectData } from "core";
 import { EveObject } from "../EveObject";
 import { Tr2Lod } from "constant/ccpwgl";
+import { EveChildUpdateParams } from "../../EveChildUpdateParams";
 
 
 @meta.define("EveSpaceObject", true)
 export class EveSpaceObject extends EveObject
 {
+
+    /**
+     * The root block for this object's child update chain, refilled each
+     * frame. See EveChildUpdateParams.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
 
     @meta.struct("Tw2AnimationController")
     @meta.isPrivate
@@ -599,9 +607,16 @@ export class EveSpaceObject extends EveObject
             this.children[i].Update(dt);
         }
 
+        const childParams = this._childUpdateParams;
+        childParams.spaceObjectParent = this;
+        childParams.childParent = null;
+        childParams.perObjectData = this._perObjectData;
+        childParams.isVisible = this.display !== false;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         for (let i = 0; i < this.effectChildren.length; ++i)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform, this._perObjectData, this);
+            this.effectChildren[i].Update(dt, childParams);
         }
 
         for (let i = 0; i < this.curveSets.length; ++i)

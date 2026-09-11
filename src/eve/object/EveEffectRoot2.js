@@ -6,6 +6,7 @@ import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDuration
 import { SetControllerVariableOn, ReplayControllerVariablesOn } from "../../state/controllerVariables";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 import { Tr2Lod } from "constant/ccpwgl";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 
 
 /**
@@ -38,6 +39,20 @@ import { Tr2Lod } from "constant/ccpwgl";
 @meta.stage(2)
 export class EveEffectRoot2 extends EveObject
 {
+
+    /**
+     * The root block for this object's child update chain, refilled each
+     * frame. See EveChildUpdateParams.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
+
+    /**
+     * The block handed to owned smart lights, refilled per call. Separate from
+     * the child block because light collection runs outside Update.
+     * @type {EveChildUpdateParams}
+     */
+    _lightUpdateParams = new EveChildUpdateParams();
 
     @meta.vector3
     boundingSphereCenter = vec3.create();
@@ -321,7 +336,11 @@ export class EveEffectRoot2 extends EveObject
             if (!light) continue;
             if (light.display === false) continue;
 
-            light.Update(dt, this._worldTransform, null);
+            const lightParams = this._lightUpdateParams;
+            lightParams.childParent = null;
+            lightParams.perObjectData = null;
+            mat4.copy(lightParams.localToWorldTransform, this._worldTransform);
+            light.Update(dt, lightParams);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
             collected++;
         }
@@ -755,10 +774,17 @@ export class EveEffectRoot2 extends EveObject
             this.curveSets[i].UpdateDelta(dt);
         }
 
+        const childParams = this._childUpdateParams;
+        childParams.spaceObjectParent = this;
+        childParams.childParent = null;
+        childParams.perObjectData = this._perObjectData;
+        childParams.isVisible = this.display !== false;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         for (let i = 0; i < this.effectChildren.length; i++)
         {
             const child = this.effectChildren[i];
-            child.Update(dt, this._worldTransform, this._perObjectData, this);
+            child.Update(dt, childParams);
             if (child._boundsDirty) this._boundsDirty = true;
         }
 

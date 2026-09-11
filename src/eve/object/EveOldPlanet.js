@@ -38,6 +38,7 @@ import { device, tw2 } from "global";
 import { vec3, mat4, box3, sph3 } from "math";
 import { Tw2Effect, Tw2PerObjectData, Tw2RenderTarget, Tw2Resource } from "core";
 import { EveTransform } from "./EveTransform";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { EveObject } from "./EveObject";
 import { EveShip2 } from "eve";
 import { Tr2Lod } from "constant/ccpwgl";
@@ -48,6 +49,13 @@ import { Tr2Lod } from "constant/ccpwgl";
 @meta.define("EveOldPlanet", true)
 export class EveOldPlanet extends EveObject
 {
+
+    /**
+     * The root block for this object's child update chain, refilled each
+     * frame. See EveChildUpdateParams.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
 
     @meta.list("Tw2CurveSet")
     curveSets = [];
@@ -264,9 +272,16 @@ export class EveOldPlanet extends EveObject
             this.curveSets[i].Update(dt);
         }
 
+        const childParams = this._childUpdateParams;
+        childParams.spaceObjectParent = this;
+        childParams.childParent = null;
+        childParams.perObjectData = this._perObjectData;
+        childParams.isVisible = this.display !== false;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform, this._perObjectData);
+            this.effectChildren[i].Update(dt, childParams);
 
             if (this.effectChildren[i]._boundsDirty)
             {

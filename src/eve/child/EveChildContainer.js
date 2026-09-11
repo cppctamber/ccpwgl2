@@ -1,4 +1,5 @@
 import { EveChild } from "./EveChild";
+import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { meta } from "utils";
 import { SetControllerVariableOn, ReplayControllerVariablesOn } from "../../state/controllerVariables";
 import { PlayCurveSetOn, StopCurveSetOn } from "../../curve/curveSetOwner";
@@ -121,6 +122,21 @@ export class EveChildContainer extends EveChild
      * @type {?EveShip2}
      */
     _parentSpaceObject = null;
+
+    /**
+     * The block handed to this container's children, refilled each frame from
+     * the one this container was given. One instance rather than a fresh object
+     * per child per frame; nothing may retain it past the call.
+     * @type {EveChildUpdateParams}
+     */
+    _childUpdateParams = new EveChildUpdateParams();
+
+    /**
+     * The block handed to owned smart lights by `GetLights`, refilled per call.
+     * Separate from the child block because GetLights runs outside Update.
+     * @type {EveChildUpdateParams}
+     */
+    _lightUpdateParams = new EveChildUpdateParams();
 
     /**
      * Links this container's controllers with the container as their owner, mirroring
@@ -580,13 +596,17 @@ export class EveChildContainer extends EveChild
     /**
      * Per frame update
      * @param {number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} perObjectData
-     * @param {?EveShip2} [parentSpaceObject] - top-level space object, threaded down so nested
-     *  containers' controllers can resolve ShipSpeed()/ShipMaxSpeed() (see `_parentSpaceObject`)
+     * @param {EveChildUpdateParams} [params] - `spaceObjectParent` is the top-level space object,
+     *  threaded down so nested containers' controllers can resolve ShipSpeed()/ShipMaxSpeed()
+     *  (see `_parentSpaceObject`)
      */
-    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData, parentSpaceObject)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const
+            parentTransform = params.localToWorldTransform,
+            perObjectData = params.perObjectData,
+            parentSpaceObject = params.spaceObjectParent;
+
         this._parentSpaceObject = parentSpaceObject || null;
 
         if (this.useSRT)
@@ -737,17 +757,30 @@ export class EveChildContainer extends EveChild
             }
         }
 
+        // Carbon derives the child block from its own and overwrites what
+        // changes at this level (EveChildContainer.cpp:499-502): the child's
+        // parent becomes this container, the transform becomes this
+        // container's world transform, and visibility accumulates down the
+        // tree. The instance is reused per frame - see
+        // `EveChildUpdateParams.CopyFrom`.
+        //
+        // `spaceObjectParent` is deliberately NOT changed to `this`: it is the
+        // top-level space object, so a deeply nested container still resolves
+        // ShipSpeed() against the ship rather than an intermediate container.
+        const childParams = this._childUpdateParams.CopyFrom(params);
+        childParams.childParent = this;
+        childParams.isVisible = params.isVisible && this.display;
+        mat4.copy(childParams.localToWorldTransform, this._worldTransform);
+
         for (let i = 0; i < this.objects.length; i++)
         {
-            // Forward the same top-level parentSpaceObject (not `this`) so deeply nested
-            // containers still resolve ShipSpeed() against the ship, not an intermediate container.
-            this.objects[i].Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
+            this.objects[i].Update(dt, childParams);
         }
 
         /*
         for (let i = 0; i < this.lights.length; i++)
         {
-            this.lights[i].Update(dt, this._worldTransform, perObjectData);
+            this.lights[i].Update(dt, childParams);
         }
         */
     }
@@ -791,7 +824,20 @@ export class EveChildContainer extends EveChild
             const light = this.lights[i];
             if (!light) continue;
 
-            light.Update(dt, this._worldTransform, bones);
+            // The bones the caller handed us, put where a light actually
+            // reads them. This used to be `light.Update(dt, this._worldTransform,
+            // bones)` - the third positional argument was `perObjectData`, and
+            // EveChildSmartLightSet pulls bones out of it with
+            // GetJointMatrices, which finds nothing on a raw array. The bones
+            // were silently discarded. That is the failure the params block
+            // exists to make impossible.
+            const lightParams = this._lightUpdateParams;
+            lightParams.childParent = this;
+            lightParams.bones = bones;
+            lightParams.boneCount = bones ? bones.length / 12 : 0;
+            mat4.copy(lightParams.localToWorldTransform, this._worldTransform);
+
+            light.Update(dt, lightParams);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
         }
 

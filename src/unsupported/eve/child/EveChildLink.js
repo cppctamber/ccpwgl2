@@ -4,6 +4,7 @@ import { mat4, quat, vec3, sph3 } from "math";
 import { EveChildMesh } from "eve/child/EveChildMesh";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
 import { device } from "global/tw2";
+import { EveChildUpdateParams } from "../../../eve/EveChildUpdateParams";
 
 
 @meta.define("EveChildLink", true)
@@ -51,8 +52,12 @@ export class EveChildLink extends EveChildMesh
     }
 
     /** Updates targeting, then strength bindings, then the shader's two transforms. */
-    Update(dt, parentTransform, perObjectData, parentSpaceObject)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        const
+            parentTransform = params.localToWorldTransform,
+            parentSpaceObject = params.spaceObjectParent;
+
         const { targetPosition, sourcePosition, inverseParent, arcRotation, rotation, up } = EveChildLink.global;
         this.UpdateAnimation(dt);
 
@@ -115,8 +120,19 @@ export class EveChildLink extends EveChildMesh
         this._worldTransformLast[14] = sourcePosition[2];
 
         mat4.copy(this._linkWorldTransform, parentTransform);
+
         // Only direct space-object children receive the shield-ellipsoid offset.
-        if (parentSpaceObject && parentTransform === parentSpaceObject._worldTransform && parentSpaceObject._ellipsoidCenter)
+        //
+        // "Direct" is `childParent === null`, which is how Carbon asks the same
+        // question (`if( !params.childParent )` - EveChildContainer.cpp:592):
+        // every level below the root sets `childParent` to itself before
+        // handing the block down. This used to compare the transform BY
+        // REFERENCE against the space object's own matrix, which happened to
+        // work only while the parent transform was passed down as a shared
+        // reference. Carbon holds `localToWorldTransform` as a Matrix VALUE, so
+        // no reference survives the hand-off and the identity test could never
+        // have been what Carbon meant.
+        if (parentSpaceObject && !params.childParent && parentSpaceObject._ellipsoidCenter)
         {
             // Carbon Translation(center) * parent: local offset first.
             mat4.translate(this._linkWorldTransform, parentTransform, parentSpaceObject._ellipsoidCenter);
