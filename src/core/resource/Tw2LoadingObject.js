@@ -14,6 +14,7 @@ export class Tw2LoadingObject extends Tw2Resource
     loader = null;
 
     _view = null;
+    _requeued = false;
     _inPrepare = null;
     _objects = [];
     _constructor = null;
@@ -69,30 +70,28 @@ export class Tw2LoadingObject extends Tw2Resource
             return;
         }
 
-        // Already prepared, so there is no second `Prepare` coming: the object
-        // is not in the prepare queue and nothing would put it back. Construct
-        // now, the same call `Prepare` makes for each consumer.
-        //
-        // Before loading objects were retained this branch was unreachable -
-        // `OnPrepared` removed the object from the motherlode, so nobody could
-        // find one to add to. Retaining them makes it the common case, and
-        // without it a late consumer would be pushed onto a list nothing ever
-        // walks and its promise would never settle.
-        if (this._constructor && this._inPrepare !== null)
-        {
-            try
-            {
-                onResolved(this._constructor.Construct());
-            }
-            catch (constructError)
-            {
-                if (onRejected) onRejected(constructError);
-                this.OnWarning({ err: constructError, message: "Error constructing child object" });
-            }
-            return;
-        }
-
         this._objects.push({ onResolved, onRejected });
+
+        // Already prepared, so no `Prepare` is coming on its own - the object
+        // left the prepare queue when it finished and nothing puts it back.
+        // Re-queue it, and `Prepare` walks the consumers added since.
+        //
+        // Through the QUEUE rather than constructing here, which is what this
+        // did first and was wrong. Construction is prepare work: it is charged
+        // to `maxPrepareTime` and spread across frames. Doing it inline made
+        // every fetch of a retained object resolve as a microtask, and a build
+        // awaiting hundreds of them then ran as one unbroken microtask chain -
+        // no macrotask, so no paint, no input, not even a tab close. The
+        // network used to provide that yield by accident; retaining the object
+        // took it away, and the queue is where it properly belongs.
+        //
+        // Before retention this branch was unreachable: `OnPrepared` dropped
+        // the object from the motherlode, so no one could find one to add to.
+        if (this._constructor && !this._requeued)
+        {
+            this._requeued = true;
+            resMan.Queue(this, this._view);
+        }
     }
 
     /**
@@ -213,10 +212,14 @@ export class Tw2LoadingObject extends Tw2Resource
             resMan.RemoveResource(this.path);
         }
 
-        // The consumers queued for this prepare have all been served. Later
-        // arrivals are constructed on the spot by `AddObject`, so this list has
-        // no further use either way.
+        // The consumers queued for this prepare have all been served. Reset the
+        // cursor with the list: `AddObject` re-queues later arrivals and
+        // `Prepare` walks them from the start of the emptied list, so the two
+        // must agree or a re-queued prepare would walk nothing and those
+        // consumers would never settle.
         this._objects.splice(0);
+        if (this._inPrepare !== null) this._inPrepare = 0;
+        this._requeued = false;
         super.OnPrepared(eventLog);
     }
 

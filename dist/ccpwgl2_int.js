@@ -41566,6 +41566,7 @@
 	    this.targetResource = null;
 	    this.loader = null;
 	    this._view = null;
+	    this._requeued = false;
 	    this._inPrepare = null;
 	    this._objects = [];
 	    this._constructor = null;
@@ -41613,32 +41614,30 @@
 	      }
 	      return;
 	    }
-
-	    // Already prepared, so there is no second `Prepare` coming: the object
-	    // is not in the prepare queue and nothing would put it back. Construct
-	    // now, the same call `Prepare` makes for each consumer.
-	    //
-	    // Before loading objects were retained this branch was unreachable -
-	    // `OnPrepared` removed the object from the motherlode, so nobody could
-	    // find one to add to. Retaining them makes it the common case, and
-	    // without it a late consumer would be pushed onto a list nothing ever
-	    // walks and its promise would never settle.
-	    if (this._constructor && this._inPrepare !== null) {
-	      try {
-	        onResolved(this._constructor.Construct());
-	      } catch (constructError) {
-	        if (onRejected) onRejected(constructError);
-	        this.OnWarning({
-	          err: constructError,
-	          message: "Error constructing child object"
-	        });
-	      }
-	      return;
-	    }
 	    this._objects.push({
 	      onResolved,
 	      onRejected
 	    });
+
+	    // Already prepared, so no `Prepare` is coming on its own - the object
+	    // left the prepare queue when it finished and nothing puts it back.
+	    // Re-queue it, and `Prepare` walks the consumers added since.
+	    //
+	    // Through the QUEUE rather than constructing here, which is what this
+	    // did first and was wrong. Construction is prepare work: it is charged
+	    // to `maxPrepareTime` and spread across frames. Doing it inline made
+	    // every fetch of a retained object resolve as a microtask, and a build
+	    // awaiting hundreds of them then ran as one unbroken microtask chain -
+	    // no macrotask, so no paint, no input, not even a tab close. The
+	    // network used to provide that yield by accident; retaining the object
+	    // took it away, and the queue is where it properly belongs.
+	    //
+	    // Before retention this branch was unreachable: `OnPrepared` dropped
+	    // the object from the motherlode, so no one could find one to add to.
+	    if (this._constructor && !this._requeued) {
+	      this._requeued = true;
+	      resMan.Queue(this, this._view);
+	    }
 	  }
 
 	  /**
@@ -41732,10 +41731,14 @@
 	      resMan.RemoveResource(this.path);
 	    }
 
-	    // The consumers queued for this prepare have all been served. Later
-	    // arrivals are constructed on the spot by `AddObject`, so this list has
-	    // no further use either way.
+	    // The consumers queued for this prepare have all been served. Reset the
+	    // cursor with the list: `AddObject` re-queues later arrivals and
+	    // `Prepare` walks them from the start of the emptied list, so the two
+	    // must agree or a re-queued prepare would walk nothing and those
+	    // consumers would never settle.
 	    this._objects.splice(0);
+	    if (this._inPrepare !== null) this._inPrepare = 0;
+	    this._requeued = false;
 	    super.OnPrepared(eventLog);
 	  }
 
@@ -66467,9 +66470,17 @@
 	     * dropped. Measured from the request, not from binding: nothing binds a
 	     * loading object, which is why the inactivity purge is the wrong instrument
 	     * for them and they get this sweep instead.
+	     *
+	     * Generous, because the gap between two uses of one file is set by the size
+	     * of the thing being built, not by anything the cache can see. A hangar
+	     * layout takes minutes, and a `.black` first needed at ten seconds may not
+	     * be needed again until three minutes in - so a short window drops exactly
+	     * the files the retention exists for, and the biggest scenes suffer most.
+	     * The objects are kilobytes; holding one too long costs nothing worth
+	     * measuring, and dropping one too early costs a fetch and a re-parse.
 	     * @type {Number}
 	     */
-	    this.retainedObjectTime = 60;
+	    this.retainedObjectTime = 300;
 	    /**
 	     * Per-sweep time allowance, in seconds, matching `maxPrepareTime`.
 	     * @type {Number}
@@ -66867,7 +66878,13 @@
 	      this.activeFrame += 1;
 	      this._purgeTime -= Math.floor(this._purgeTime);
 	      this._purgeFrame += 1;
-	      if (this.retainLoadingObjects) {
+
+	      // Not while the manager is still working. Anything loading or
+	      // waiting to prepare is part of a build in progress, and a build is
+	      // precisely when an already-read file is most likely to be wanted
+	      // again - evicting during one is how retention ends up fetching the
+	      // same file twice. Sweeping resumes once things go quiet.
+	      if (this.retainLoadingObjects && !this.IsLoading()) {
 	        this.SweepRetainedObjects(this.maxRetainedSweepTime);
 	      }
 	      if (this._purgeFrame >= 5) {
@@ -67125,7 +67142,17 @@
 	      var _ref8 = _slicedToArray(_ref9, 2);
 	      var path = _ref8[0];
 	      var lastRequested = _ref8[1];
-	      if (startTime - lastRequested >= deadline) expired.push(path);
+	      if (startTime - lastRequested < deadline) continue;
+
+	      // Never drop one that still owes somebody an object. A long build
+	      // can queue a request and not reach the construction for it until
+	      // much later - the prepare queue is budgeted, so a backlog is
+	      // normal - and the idle clock runs from the REQUEST. Dropping it in
+	      // that window would evict the reader out from under consumers that
+	      // are still waiting on it.
+	      var res = this.motherLode.Find(path);
+	      if (res && res._objects && res._objects.length) continue;
+	      expired.push(path);
 	    }
 	    var dropped = 0;
 	    for (var i = 0; i < expired.length; i++) {

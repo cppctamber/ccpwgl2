@@ -58,9 +58,17 @@ export class Tw2ResMan extends Tw2EventEmitter
      * dropped. Measured from the request, not from binding: nothing binds a
      * loading object, which is why the inactivity purge is the wrong instrument
      * for them and they get this sweep instead.
+     *
+     * Generous, because the gap between two uses of one file is set by the size
+     * of the thing being built, not by anything the cache can see. A hangar
+     * layout takes minutes, and a `.black` first needed at ten seconds may not
+     * be needed again until three minutes in - so a short window drops exactly
+     * the files the retention exists for, and the biggest scenes suffer most.
+     * The objects are kilobytes; holding one too long costs nothing worth
+     * measuring, and dropping one too early costs a fetch and a re-parse.
      * @type {Number}
      */
-    retainedObjectTime = 60;
+    retainedObjectTime = 300;
 
     /**
      * Per-sweep time allowance, in seconds, matching `maxPrepareTime`.
@@ -573,7 +581,12 @@ export class Tw2ResMan extends Tw2EventEmitter
             this._purgeTime -= Math.floor(this._purgeTime);
             this._purgeFrame += 1;
 
-            if (this.retainLoadingObjects)
+            // Not while the manager is still working. Anything loading or
+            // waiting to prepare is part of a build in progress, and a build is
+            // precisely when an already-read file is most likely to be wanted
+            // again - evicting during one is how retention ends up fetching the
+            // same file twice. Sweeping resumes once things go quiet.
+            if (this.retainLoadingObjects && !this.IsLoading())
             {
                 this.SweepRetainedObjects(this.maxRetainedSweepTime);
             }
@@ -873,7 +886,18 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         for (const [ path, lastRequested ] of this._retained)
         {
-            if (startTime - lastRequested >= deadline) expired.push(path);
+            if (startTime - lastRequested < deadline) continue;
+
+            // Never drop one that still owes somebody an object. A long build
+            // can queue a request and not reach the construction for it until
+            // much later - the prepare queue is budgeted, so a backlog is
+            // normal - and the idle clock runs from the REQUEST. Dropping it in
+            // that window would evict the reader out from under consumers that
+            // are still waiting on it.
+            const res = this.motherLode.Find(path);
+            if (res && res._objects && res._objects.length) continue;
+
+            expired.push(path);
         }
 
         let dropped = 0;
