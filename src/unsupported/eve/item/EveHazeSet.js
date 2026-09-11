@@ -117,6 +117,26 @@ export class EveHazeSetItem extends EveObjectSetItem
 export class EveHazeSet extends EveObjectSet
 {
 
+    /**
+     * Whether haze sets draw at all, independent of the authored `display`.
+     *
+     * OFF: the port is unfinished and what it draws is wrong - large
+     * semi-translucent boxes where the haze should be, which is worse than
+     * nothing because it obscures what is behind them. The sof builder already
+     * declines to make these (`EveSOFData.SetupHazeSets` only logs), but a
+     * `.black` can carry one directly and the reader constructs it, so the
+     * build path is not where this can be stopped.
+     *
+     * Separate from `display` because `display` is `@meta.boolean` and comes
+     * from the file - the data says true and would override any default set
+     * here. Reading still constructs the object, so nothing throws; it simply
+     * never reaches the accumulator.
+     *
+     * Flip to true to work on them.
+     * @type {Boolean}
+     */
+    static enabled = false;
+
     @meta.boolean
     display = true;
 
@@ -327,6 +347,8 @@ export class EveHazeSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData)
     {
+        if (!EveHazeSet.enabled) return false;
+
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.display && mode === device.RM_ADDITIVE && this._vertexBuffer && this._indexBuffer)
         {
