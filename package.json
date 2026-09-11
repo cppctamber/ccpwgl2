@@ -17,6 +17,7 @@
     "test:sparse-sampler-registers": "node scripts/test-sparse-sampler-registers.js",
     "test:phantom-texture-units": "node scripts/test-phantom-texture-units.js",
     "test:carbon-clip-convention": "node scripts/test-carbon-clip-convention.js",
+    "test:import-casing": "node scripts/test-import-casing.js",
     "test:carbon-pending": "node scripts/test-carbon-pending.js",
     "test:carbon-light-list": "node scripts/test-carbon-light-list.js",
     "test:sh-lighting": "node scripts/test-sh-lighting.js",

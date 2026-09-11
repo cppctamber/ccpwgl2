@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
@@ -11,6 +12,91 @@ import terser from "@rollup/plugin-terser";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const { CLIEngine } = require("eslint");
+
+/**
+ * Fails the build on an import whose CASE does not match the file on disk.
+ *
+ * Windows and macOS resolve `./WbgReader` to `WBGReader.js` without complaint;
+ * Linux does not. So a mismatch is invisible to everyone who develops here and
+ * stops the build dead for anyone who does not - which is exactly what happened
+ * with `./WbgReader` and with `Gr2CurveDataD3I1K16uC16u`, whose file carried a
+ * lowercase k. The second one broke the barrel that registers all 21 granny
+ * curve formats, so a single letter took out the whole animation path on Linux.
+ *
+ * Checked at `buildStart` over the whole tree rather than per module in
+ * `resolveId`, for two reasons: rollup on a case-insensitive filesystem
+ * resolves the wrong spelling successfully and hands back a path that looks
+ * right, and a whole-tree pass reports EVERY offender in one run instead of
+ * stopping at the first.
+ *
+ * Only relative specifiers. The aliases (`core`, `math`, `utils`…) name
+ * directories this config declares, and a typo there fails everywhere equally.
+ */
+export function checkImportCasing()
+{
+    const sourceRoot = path.resolve(root, "src");
+    const IMPORT = /(?:from\s*|import\s*\(\s*|export\s*\*\s*from\s*)["'](\.[^"']*)["']/g;
+
+    return {
+        name: "import-casing",
+        buildStart()
+        {
+            const problems = [];
+
+            const walk = directory =>
+            {
+                for (const entry of fs.readdirSync(directory, { withFileTypes: true }))
+                {
+                    const full = path.join(directory, entry.name);
+
+                    if (entry.isDirectory())
+                    {
+                        walk(full);
+                        continue;
+                    }
+
+                    if (!/\.(js|mjs)$/.test(entry.name)) continue;
+
+                    const code = fs.readFileSync(full, "utf8");
+
+                    for (const match of code.matchAll(IMPORT))
+                    {
+                        const
+                            target = path.resolve(path.dirname(full), match[1]),
+                            parent = path.dirname(target),
+                            base = path.basename(target);
+
+                        let listing;
+
+                        try { listing = fs.readdirSync(parent); }
+                        catch { continue; }
+
+                        // An exact hit, with or without the extension the
+                        // specifier left off, is the only thing that is safe.
+                        if (listing.some(name => name === base || name === `${base}.js` || name === `${base}.mjs`)) continue;
+
+                        const actual = listing.find(name =>
+                            name.toLowerCase() === base.toLowerCase()
+                            || name.toLowerCase() === `${base}.js`.toLowerCase()
+                            || name.toLowerCase() === `${base}.mjs`.toLowerCase());
+
+                        // No match of any casing is a missing file, which every
+                        // platform reports for itself. This plugin only owns the
+                        // ones that resolve here and nowhere else.
+                        if (actual) problems.push(`${path.relative(root, full)}\n      imports "${match[1]}" but the file is "${actual}"`);
+                    }
+                }
+            };
+
+            walk(sourceRoot);
+
+            if (problems.length)
+            {
+                this.error(`${problems.length} import(s) differ in case from the file on disk - these build here and fail on Linux:\n    ${problems.join("\n    ")}`);
+            }
+        }
+    };
+}
 
 function lintSources()
 {
@@ -71,6 +157,7 @@ function plugins()
             extensions: [ ".mjs", ".js", ".json" ]
         }),
         json(),
+        checkImportCasing(),
         lintSources(),
         commonjs(),
         babel({
