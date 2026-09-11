@@ -42,6 +42,8 @@ export class Tw2AudioMan
 
     _emittersByName = new Map();
 
+    _pendingEmitters = new Set();
+
     _tracked = new Map();
 
     _dirty = true;
@@ -158,6 +160,15 @@ export class Tw2AudioMan
         audio.InstallLibrary(library);
         this.listener = audio.listener;
         this._dirty = true;
+
+        // Emitters that arrived before a library did. See AdoptEmitter.
+        if (this._pendingEmitters.size)
+        {
+            const pending = [ ...this._pendingEmitters ];
+            this._pendingEmitters.clear();
+            for (let i = 0; i < pending.length; i++) this.AdoptEmitter(pending[i]);
+        }
+
         return this;
     }
 
@@ -539,6 +550,22 @@ export class Tw2AudioMan
      */
     AdoptEmitter(emitter)
     {
+        // CjsAudioMan throws outright with no library installed, and emitters
+        // are built while a .black is being READ - an AudEventCurve makes one
+        // in its constructor. A throw there is caught by the binary reader and
+        // reported as ErrBinaryReaderReadError, so an unrelated missing audio
+        // library takes the whole resource down: a turret fx black stops
+        // loading and the turret never renders. EveSOFData:4294 already skips
+        // audio on the same condition; this does the same for everyone else,
+        // and keeps the emitter so InstallLibrary can adopt it later.
+        // `system` as well as `library`: the runtime's own guard is on the
+        // system, and it is what actually throws.
+        if (!this.library || !this.system)
+        {
+            this._pendingEmitters.add(emitter);
+            return emitter;
+        }
+
         this._EnsureAudio().AdoptEmitter(emitter);
 
         const name = emitter.GetName?.() ?? emitter.name;
@@ -598,6 +625,7 @@ export class Tw2AudioMan
     ReleaseEmitter(emitter)
     {
         this._tracked.delete(emitter);
+        this._pendingEmitters.delete(emitter);
 
         for (const [ name, value ] of this._emittersByName)
         {
