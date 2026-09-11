@@ -228035,11 +228035,17 @@
 
 	  /**
 	   * Gets a hull's build class
+	   *
+	   * The hull's own value, one of `EveSOFData.BuildClass`. This used to
+	   * answer `buildClass === 2 ? 2 : 1`, which did not narrow the answer so
+	   * much as destroy it: a ship, a swarm and an extension all came back as 1
+	   * and no caller could tell them apart or recover the real value.
+	   *
 	   * @param {String} name
-	   * @returns {Number}
+	   * @returns {Number} EveSOFData.BuildClass
 	   */
 	  GetHullBuildClass(name) {
-	    return this.GetHull(name).buildClass === 2 ? 2 : 1;
+	    return this.GetHull(name).buildClass || 0;
 	  }
 
 	  /**
@@ -228546,13 +228552,13 @@
 	  /**
 	   * Builds an object from dna
 	   * @param {String} dna
-	   * @returns {EveStation2|EveShip2}
+	   * @returns {EveSpaceObject2}
 	   */
 	  Build(dna) {
 	    var _this5 = this;
 	    return _asyncToGenerator(function* () {
-	      var sof = _this5.ParseDNA(dna),
-	        object = sof.hull.buildClass === 2 ? new EveStation2() : new EveShip2();
+	      var sof = _this5.ParseDNA(dna);
+	      var object = new (EveSOFData.BuildClassConstructor[sof.hull.buildClass] || EveShip2)();
 	      object.dna = dna;
 	      yield EveSOFData.Build(_this5, object, sof, _this5._options);
 	      if (object.Initialize) object.Initialize();
@@ -228563,9 +228569,9 @@
 	  /**
 	   * Rebuilds an object's dna
 	   * - TODO: Redo to ensure no duplicates when rebuilding
-	   * @param {EveStation2|EveShip2} object
+	   * @param {EveSpaceObject2} object
 	   * @param {String} dna
-	   * @returns {EveStation2|EveShip2}
+	   * @returns {EveSpaceObject2}
 	   */
 	  Rebuild(object, dna) {
 	    var _this6 = this;
@@ -228587,7 +228593,7 @@
 	   * @param {*} obj
 	   * @param {object} sof
 	   * @param {object} [options={}]
-	   * @returns {EveStation2|EveShip2}
+	   * @returns {EveSpaceObject2}
 	   */
 	  static Build(data, obj, sof, options) {
 	    var _this7 = this;
@@ -228644,7 +228650,7 @@
 	   * instanced placements and static ordinary placements. Skinned ordinary
 	   * child attachments and decals still require child-owner lifecycle support.
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} options
 	   * @returns {Promise<Object>} detached placement plan
@@ -228890,7 +228896,7 @@
 	   * CCPWGL's child container has no attachment lifecycle, so the equivalent
 	   * generated sets live on the root owner with their transforms pre-applied.
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Array<Object>} placements
 	   * @param {Object} sof
 	   * @param {Object} options
@@ -229011,7 +229017,7 @@
 	   * batch. Each occurrence owns a transform container so child-local state
 	   * remains relative to the placement matrix.
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Array<Object>} placements
 	   * @param {Object} sof
 	   * @param {Object} options
@@ -229259,7 +229265,7 @@
 
 	  /**
 	   * Extends the root bounds for one emitted layout occurrence.
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} placement
 	   */
@@ -229315,7 +229321,7 @@
 	  /**
 	   * Includes a sphere in the root's current bounding sphere.
 	   * @param {vec3} rootCenter
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {vec3} childCenter
 	   * @param {Number} childRadius
 	   */
@@ -229435,7 +229441,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -229599,7 +229605,7 @@
 	   *
 	   * TODO: Generate missing bounds
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -229666,7 +229672,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   * @param {Boolean} [opaqueAreasOnly]
@@ -230040,7 +230046,7 @@
 	                  ImageMap
 	              }
 	          };
-	        bannerShader.Assign(effectSettings);
+	       bannerShader.Assign(effectSettings);
 	      set.effect.SetValues(effectSettings);
 	       */
 
@@ -230055,7 +230061,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230122,7 +230128,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230309,7 +230315,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230488,7 +230494,7 @@
 	   *
 	   * TODO: Migrate decal usage to consts
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230610,7 +230616,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230627,7 +230633,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230635,6 +230641,13 @@
 	    var hull = sof.hull,
 	      race = sof.race;
 	    if (!hull.booster || !race.booster) return;
+
+	    // Only the classes that own boosters get them. Carbon sets boosters up
+	    // for the ship interface and nothing else (`hasShipInterface` -
+	    // EveSOF.js:1074 in the runtime port), and in ccpwgl `boosters` is
+	    // declared on EveShip2 alone. Assigning one to an EveMobile or an
+	    // EveStation2 would attach a set nothing ever updates or draws.
+	    if (!("boosters" in obj)) return;
 	    var src = race.booster;
 	    var shape0 = src.shape0,
 	      shape1 = src.shape1,
@@ -230758,7 +230771,7 @@
 	   * slots, functionality, trail flag and light scale, and `EveShip2` feeds
 	   * those to the set - so this only has to describe the set itself.
 	   *
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} hull
 	   * @param {EveSOFDataBooster} src - the race booster data
 	   * @param {Object} boosterEffect
@@ -230816,7 +230829,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230867,7 +230880,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -230972,7 +230985,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -231007,7 +231020,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -231047,7 +231060,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -231061,7 +231074,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -231091,7 +231104,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   * @returns {Array}
@@ -231106,7 +231119,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   * @param {Boolean} [authoredOnly=false] excludes the standalone fallback emitter
@@ -231160,7 +231173,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   * @returns {Array}
@@ -231238,7 +231251,7 @@
 	  /**
 	   * Builds SOF-authored child effects into an explicit owned destination.
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} options
 	   * @param {Number} [buildFlags=EveSOFData.BuildFilter.STANDALONE]
@@ -231299,12 +231312,12 @@
 
 	      /*
 	      const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
-	        function onChildLoaded(child)
+	       function onChildLoaded(child)
 	      {
 	          return function(loaded)
 	          {
 	              loaded.name = child.name;
-	                if (loaded.isEffectChild)
+	               if (loaded.isEffectChild)
 	              {
 	                  obj.effectChildren.push(loaded);
 	              }
@@ -231312,17 +231325,17 @@
 	              {
 	                  obj.children.push(loaded);
 	              }
-	                vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
+	               vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
 	              quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
 	              vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
-	                const id = get(child, "id", -1);
+	               const id = get(child, "id", -1);
 	              if (id !== -1 && curves[id])
 	              {
 	                  EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
 	              }
 	          };
 	      }
-	        const { children = [] } = sof.hull;
+	       const { children = [] } = sof.hull;
 	      for (let i = 0; i < children.length; ++i)
 	      {
 	          const { redFilePath } = children[i];
@@ -231389,7 +231402,7 @@
 	  /**
 	   *
 	   * @param {EveSOFData} data
-	   * @param {EveStation2|EveShip2} obj
+	   * @param {EveSpaceObject2} obj
 	   * @param {Object} sof
 	   * @param {Object} [options={}]
 	   */
@@ -231633,7 +231646,13 @@
 	  1: "EveMobile",
 	  2: "EveStation2",
 	  3: "EveSwarm",
-	  4: "Extension"
+	  4: "EveMobile"
+	}, _EveSOFData.BuildClassConstructor = {
+	  0: EveShip2,
+	  1: EveMobile,
+	  2: EveStation2,
+	  3: EveShip2,
+	  4: EveMobile
 	}, _EveSOFData.BuildFilter = {
 	  STANDALONE: 1 << 0,
 	  NON_INSTANCED_PLACEMENT: 1 << 1,

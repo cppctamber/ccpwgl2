@@ -35,6 +35,7 @@ import {
 } from "eve";
 
 import { EveStation2 } from "../eve/object/EveStation2";
+import { EveMobile } from "../eve/object/EveMobile";
 import { ReflectionMode } from "../eve/EveComponentTypes";
 import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
@@ -617,12 +618,18 @@ export class EveSOFData extends meta.Model
 
     /**
      * Gets a hull's build class
+     *
+     * The hull's own value, one of `EveSOFData.BuildClass`. This used to
+     * answer `buildClass === 2 ? 2 : 1`, which did not narrow the answer so
+     * much as destroy it: a ship, a swarm and an extension all came back as 1
+     * and no caller could tell them apart or recover the real value.
+     *
      * @param {String} name
-     * @returns {Number}
+     * @returns {Number} EveSOFData.BuildClass
      */
     GetHullBuildClass(name)
     {
-        return this.GetHull(name).buildClass === 2 ? 2 : 1;
+        return this.GetHull(name).buildClass || 0;
     }
 
     /**
@@ -1200,13 +1207,12 @@ export class EveSOFData extends meta.Model
     /**
      * Builds an object from dna
      * @param {String} dna
-     * @returns {EveStation2|EveShip2}
+     * @returns {EveSpaceObject2}
      */
     async Build(dna)
     {
-        const
-            sof = this.ParseDNA(dna),
-            object = sof.hull.buildClass === 2 ? new EveStation2() : new EveShip2();
+        const sof = this.ParseDNA(dna);
+        const object = new (EveSOFData.BuildClassConstructor[sof.hull.buildClass] || EveShip2)();
 
         object.dna = dna;
         await EveSOFData.Build(this, object, sof, this._options);
@@ -1217,9 +1223,9 @@ export class EveSOFData extends meta.Model
     /**
      * Rebuilds an object's dna
      * - TODO: Redo to ensure no duplicates when rebuilding
-     * @param {EveStation2|EveShip2} object
+     * @param {EveSpaceObject2} object
      * @param {String} dna
-     * @returns {EveStation2|EveShip2}
+     * @returns {EveSpaceObject2}
      */
     async Rebuild(object, dna)
     {
@@ -1239,7 +1245,7 @@ export class EveSOFData extends meta.Model
      * @param {*} obj
      * @param {object} sof
      * @param {object} [options={}]
-     * @returns {EveStation2|EveShip2}
+     * @returns {EveSpaceObject2}
      */
     static async Build(data, obj, sof, options)
     {
@@ -1294,7 +1300,7 @@ export class EveSOFData extends meta.Model
      * instanced placements and static ordinary placements. Skinned ordinary
      * child attachments and decals still require child-owner lifecycle support.
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} options
      * @returns {Promise<Object>} detached placement plan
@@ -1591,7 +1597,7 @@ export class EveSOFData extends meta.Model
      * CCPWGL's child container has no attachment lifecycle, so the equivalent
      * generated sets live on the root owner with their transforms pre-applied.
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Array<Object>} placements
      * @param {Object} sof
      * @param {Object} options
@@ -1737,7 +1743,7 @@ export class EveSOFData extends meta.Model
      * batch. Each occurrence owns a transform container so child-local state
      * remains relative to the placement matrix.
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Array<Object>} placements
      * @param {Object} sof
      * @param {Object} options
@@ -2009,7 +2015,7 @@ export class EveSOFData extends meta.Model
 
     /**
      * Extends the root bounds for one emitted layout occurrence.
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} placement
      */
@@ -2100,7 +2106,7 @@ export class EveSOFData extends meta.Model
     /**
      * Includes a sphere in the root's current bounding sphere.
      * @param {vec3} rootCenter
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {vec3} childCenter
      * @param {Number} childRadius
      */
@@ -2255,7 +2261,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -2477,7 +2483,7 @@ export class EveSOFData extends meta.Model
      *
      * TODO: Generate missing bounds
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -2557,7 +2563,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      * @param {Boolean} [opaqueAreasOnly]
@@ -3047,7 +3053,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -3133,7 +3139,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -3359,7 +3365,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -3587,7 +3593,7 @@ export class EveSOFData extends meta.Model
      *
      * TODO: Migrate decal usage to consts
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -3736,7 +3742,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -3754,7 +3760,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -3762,6 +3768,13 @@ export class EveSOFData extends meta.Model
     {
         const { hull, race } = sof;
         if (!hull.booster || !race.booster) return;
+
+        // Only the classes that own boosters get them. Carbon sets boosters up
+        // for the ship interface and nothing else (`hasShipInterface` -
+        // EveSOF.js:1074 in the runtime port), and in ccpwgl `boosters` is
+        // declared on EveShip2 alone. Assigning one to an EveMobile or an
+        // EveStation2 would attach a set nothing ever updates or draws.
+        if (!("boosters" in obj)) return;
 
         const src = race.booster;
         const { shape0, shape1, warpShape0, warpShape1 } = src;
@@ -3889,7 +3902,7 @@ export class EveSOFData extends meta.Model
      * slots, functionality, trail flag and light scale, and `EveShip2` feeds
      * those to the set - so this only has to describe the set itself.
      *
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} hull
      * @param {EveSOFDataBooster} src - the race booster data
      * @param {Object} boosterEffect
@@ -3948,7 +3961,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4010,7 +4023,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4137,7 +4150,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4176,7 +4189,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4224,7 +4237,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4236,7 +4249,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4262,7 +4275,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      * @returns {Array}
@@ -4278,7 +4291,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      * @param {Boolean} [authoredOnly=false] excludes the standalone fallback emitter
@@ -4338,7 +4351,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      * @returns {Array}
@@ -4416,7 +4429,7 @@ export class EveSOFData extends meta.Model
     /**
      * Builds SOF-authored child effects into an explicit owned destination.
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} options
      * @param {Number} [buildFlags=EveSOFData.BuildFilter.STANDALONE]
@@ -4599,7 +4612,7 @@ export class EveSOFData extends meta.Model
     /**
      *
      * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
+     * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
      */
@@ -4817,7 +4830,32 @@ export class EveSOFData extends meta.Model
         1: "EveMobile",
         2: "EveStation2",
         3: "EveSwarm",
-        4: "Extension"
+        4: "EveMobile"
+    };
+
+    /**
+     * The class each build class actually builds here.
+     *
+     * Two of these are not what Carbon would construct, because the class does
+     * not exist yet:
+     *
+     * - 3 (SWARM) builds `EveShip2`. Carbon's `EveSwarm` extends `EveShip2`
+     *   (EveSwarm.h:118) and adds vehicle simulation on top, so the base is
+     *   right and only the simulation is missing.
+     * - 4 (EXTENSION) builds `EveMobile`, which IS the class Carbon uses - but
+     *   Carbon also builds extensions through a separate path that skips the
+     *   mesh, decals, locators, attachments, audio, controllers and boosters
+     *   (`SetupExtensionBuild`). That path is unported, so the class is right
+     *   and the contents are still a full build.
+     *
+     * @type {Object<Number, Function>}
+     */
+    static BuildClassConstructor = {
+        0: EveShip2,
+        1: EveMobile,
+        2: EveStation2,
+        3: EveShip2,
+        4: EveMobile
     };
 
     /**
