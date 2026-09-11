@@ -38411,10 +38411,10 @@
 	var OUTPUT_IMAGE = "image";
 	var OUTPUT_TEXTURE = "texture";
 	var OUTPUT_RGBA = "rgba";
-	var OUTPUT_RAW$6 = "raw";
-	var OUTPUT_JSON$b = "json";
-	var DEFAULT_VALUES$8 = Object.freeze({
-	  emit: OUTPUT_RAW$6,
+	var OUTPUT_RAW$7 = "raw";
+	var OUTPUT_JSON$c = "json";
+	var DEFAULT_VALUES$9 = Object.freeze({
+	  emit: OUTPUT_RAW$7,
 	  inputType: "",
 	  source: ""
 	});
@@ -38483,11 +38483,11 @@
 	 * Normalizes reader options against their supported defaults for the DDS format
 	 * reader.
 	 */
-	function normalizeValues$8() {
-	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$8;
+	function normalizeValues$9() {
+	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$9;
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsImageFormat";
-	  var values = _objectSpread2(_objectSpread2(_objectSpread2({}, DEFAULT_VALUES$8), base || {}), options || {});
+	  var values = _objectSpread2(_objectSpread2(_objectSpread2({}, DEFAULT_VALUES$9), base || {}), options || {});
 	  values.inputType = normalizeInputType(values.inputType);
 	  values.emit = normalizeEmit$5(values.emit, values.inputType, readerName);
 	  return values;
@@ -38502,20 +38502,20 @@
 
 	/** Normalizes the requested output representation for the DDS format reader. */
 	function normalizeEmit$5(emit, inputType, readerName) {
-	  if (emit === undefined || emit === null) return OUTPUT_RAW$6;
-	  if (emit === OUTPUT_JSON$b && inputType) return DEBUG_OUTPUTS[inputType] || OUTPUT_JSON$b;
-	  if ([OUTPUT_IMAGE, OUTPUT_TEXTURE, OUTPUT_RGBA, OUTPUT_RAW$6, OUTPUT_JSON$b].includes(emit)) return emit;
+	  if (emit === undefined || emit === null) return OUTPUT_RAW$7;
+	  if (emit === OUTPUT_JSON$c && inputType) return DEBUG_OUTPUTS[inputType] || OUTPUT_JSON$c;
+	  if ([OUTPUT_IMAGE, OUTPUT_TEXTURE, OUTPUT_RGBA, OUTPUT_RAW$7, OUTPUT_JSON$c].includes(emit)) return emit;
 	  if (Object.values(DEBUG_OUTPUTS).includes(emit)) return emit;
 	  throw new TypeError("".concat(readerName, ": unknown emit value ").concat(JSON.stringify(emit)));
 	}
 
 	/** Returns a byte view over the supplied binary input for the DDS format reader. */
 	/** Inspects input using normalized format options for the DDS format reader. */
-	function inspectWithValues$6(input) {
-	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$8;
+	function inspectWithValues$7(input) {
+	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$9;
 	  var expectedType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 	  var bytes = asUint8Array(input, "Image input");
-	  var detected = inspectBytes(bytes);
+	  var detected = inspectBytes$1(bytes);
 	  var sourceFormat = expectedType || values.inputType || detected.sourceFormat;
 	  if (expectedType && detected.sourceFormat && detected.sourceFormat !== expectedType) {
 	    throw new TypeError("CjsFormat".concat(capitalize(expectedType), ": expected ").concat(expectedType, ", got ").concat(detected.sourceFormat));
@@ -38532,11 +38532,11 @@
 	 * Reports whether input is supported under normalized format options for the DDS
 	 * format reader.
 	 */
-	function probeSupportWithValues$1(input) {
-	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$8;
+	function probeSupportWithValues$2(input) {
+	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$9;
 	  var expectedType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 	  try {
-	    var metadata = inspectWithValues$6(input, values, expectedType);
+	    var metadata = inspectWithValues$7(input, values, expectedType);
 	    var hasCompleteTextureData = metadata.isDataComplete !== false;
 	    var canEmitTexture = metadata.sourceFormat === "dds" && metadata.dataOffset > 0 && !!metadata.pixelFormat && hasCompleteTextureData;
 	    var canEmitRgba = canDecodeDdsToRgba(metadata) && hasCompleteTextureData;
@@ -38600,12 +38600,12 @@
 	}
 
 	/** Reads input using normalized format options for the DDS format reader. */
-	function readWithValues$7(input) {
-	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$8;
+	function readWithValues$8(input) {
+	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$9;
 	  var expectedType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 	  var bytes = asUint8Array(input, "Image input");
-	  var metadata = inspectWithValues$6(bytes, values, expectedType);
-	  if (values.emit === OUTPUT_RAW$6) {
+	  var metadata = inspectWithValues$7(bytes, values, expectedType);
+	  if (values.emit === OUTPUT_RAW$7) {
 	    return {
 	      payloadType: "raw",
 	      sourceFormat: metadata.sourceFormat,
@@ -38613,7 +38613,7 @@
 	      bytes
 	    };
 	  }
-	  if (values.emit === OUTPUT_JSON$b || values.emit === DEBUG_OUTPUTS[metadata.sourceFormat]) {
+	  if (values.emit === OUTPUT_JSON$c || values.emit === DEBUG_OUTPUTS[metadata.sourceFormat]) {
 	    return metadata;
 	  }
 	  if (values.emit === OUTPUT_TEXTURE && metadata.sourceFormat === "dds") {
@@ -38630,20 +38630,20 @@
 	}
 
 	/** Converts a parsed payload into a JSON-safe value for the DDS format reader. */
-	function toJsonValue$8(value) {
+	function toJsonValue$9(value) {
 	  if (value instanceof Uint8Array) {
 	    return {
 	      byteLength: value.byteLength
 	    };
 	  }
-	  if (Array.isArray(value)) return value.map(toJsonValue$8);
+	  if (Array.isArray(value)) return value.map(toJsonValue$9);
 	  if (value && typeof value === "object") {
 	    var output = {};
 	    for (var _ref3 of Object.entries(value)) {
 	      var _ref2 = _slicedToArray(_ref3, 2);
 	      var key = _ref2[0];
 	      var entry = _ref2[1];
-	      output[key] = toJsonValue$8(entry);
+	      output[key] = toJsonValue$9(entry);
 	    }
 	    return output;
 	  }
@@ -38654,7 +38654,7 @@
 	 * Inspects the supplied bytes without decoding their payload for the DDS format
 	 * reader.
 	 */
-	function inspectBytes(bytes) {
+	function inspectBytes$1(bytes) {
 	  if (isPNG(bytes)) return inspectPNG(bytes);
 	  if (isJPEG(bytes)) return inspectJPEG(bytes);
 	  if (isDDS(bytes)) return inspectDDS(bytes);
@@ -39383,7 +39383,7 @@
 	  return value ? value[0].toUpperCase() + value.slice(1) : "Image";
 	}
 
-	var FORMAT_NAME$7 = "CjsDdsFormat";
+	var FORMAT_NAME$8 = "CjsDdsFormat";
 
 	/**
 	 * DDS texture format profile that inspects header metadata, probes output
@@ -39391,7 +39391,7 @@
 	 * software-decoded RGBA and float payloads (BC1-BC5, BC7, and BC6H
 	 * included).
 	 */
-	var _values$2 = /*#__PURE__*/_classPrivateFieldLooseKey("values");
+	var _values$3 = /*#__PURE__*/_classPrivateFieldLooseKey("values");
 	class CjsDdsFormat extends CjsFormat {
 	  /**
 	   * Create a reusable DDS format profile.
@@ -39401,9 +39401,9 @@
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
-	    Object.defineProperty(this, _values$2, {
+	    Object.defineProperty(this, _values$3, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8
+	      value: DEFAULT_VALUES$9
 	    });
 	    this.SetValues(options);
 	  }
@@ -39416,9 +39416,9 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    _classPrivateFieldLooseBase(this, _values$2)[_values$2] = normalizeValues$8(_classPrivateFieldLooseBase(this, _values$2)[_values$2], _objectSpread2({
+	    _classPrivateFieldLooseBase(this, _values$3)[_values$3] = normalizeValues$9(_classPrivateFieldLooseBase(this, _values$3)[_values$3], _objectSpread2({
 	      inputType: "dds"
-	    }, options), FORMAT_NAME$7);
+	    }, options), FORMAT_NAME$8);
 	    return this;
 	  }
 
@@ -39430,9 +39430,9 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$8(_classPrivateFieldLooseBase(this, _values$2)[_values$2], _objectSpread2({
+	    return normalizeValues$9(_classPrivateFieldLooseBase(this, _values$3)[_values$3], _objectSpread2({
 	      inputType: "dds"
-	    }, options), FORMAT_NAME$7);
+	    }, options), FORMAT_NAME$8);
 	  }
 
 	  /**
@@ -39444,7 +39444,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$7(input, this.GetValues(options), "dds");
+	    return readWithValues$8(input, this.GetValues(options), "dds");
 	  }
 
 	  /**
@@ -39472,7 +39472,7 @@
 	   */
 	  Inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$6(input, this.GetValues(options), "dds");
+	    return inspectWithValues$7(input, this.GetValues(options), "dds");
 	  }
 
 	  /**
@@ -39482,7 +39482,7 @@
 	   * @returns {any} JSON-compatible value.
 	   */
 	  ToJSON(value) {
-	    return toJsonValue$8(value);
+	    return toJsonValue$9(value);
 	  }
 
 	  /**
@@ -39494,9 +39494,9 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$7(input, normalizeValues$8(DEFAULT_VALUES$8, _objectSpread2({
+	    return readWithValues$8(input, normalizeValues$9(DEFAULT_VALUES$9, _objectSpread2({
 	      inputType: "dds"
-	    }, options), FORMAT_NAME$7), "dds");
+	    }, options), FORMAT_NAME$8), "dds");
 	  }
 
 	  /**
@@ -39523,9 +39523,9 @@
 	   */
 	  static inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$6(input, normalizeValues$8(DEFAULT_VALUES$8, _objectSpread2({
+	    return inspectWithValues$7(input, normalizeValues$9(DEFAULT_VALUES$9, _objectSpread2({
 	      inputType: "dds"
-	    }, options), FORMAT_NAME$7), "dds");
+	    }, options), FORMAT_NAME$8), "dds");
 	  }
 
 	  /**
@@ -39537,9 +39537,9 @@
 	   */
 	  static probeSupport(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return probeSupportWithValues$1(input, normalizeValues$8(DEFAULT_VALUES$8, _objectSpread2({
+	    return probeSupportWithValues$2(input, normalizeValues$9(DEFAULT_VALUES$9, _objectSpread2({
 	      inputType: "dds"
-	    }, options), FORMAT_NAME$7), "dds");
+	    }, options), FORMAT_NAME$8), "dds");
 	  }
 
 	  /**
@@ -39549,7 +39549,7 @@
 	   * @returns {any} JSON-compatible value.
 	   */
 	  static toJSON(value) {
-	    return toJsonValue$8(value);
+	    return toJsonValue$9(value);
 	  }
 
 	  /**
@@ -39574,8 +39574,8 @@
 	  IMAGE: OUTPUT_IMAGE,
 	  TEXTURE: OUTPUT_TEXTURE,
 	  RGBA: OUTPUT_RGBA,
-	  RAW: OUTPUT_RAW$6,
-	  JSON: OUTPUT_JSON$b
+	  RAW: OUTPUT_RAW$7,
+	  JSON: OUTPUT_JSON$c
 	});
 	CjsDdsFormat.OUTPUT_DDS_JSON = "ddsJson";
 	CjsDdsFormat.id = "dds";
@@ -47514,12 +47514,12 @@
 
 	var FILE_SIGNATURE = 0x66666D63;
 	var FILE_VERSION = 1;
-	var OUTPUT_JSON$a = "json";
+	var OUTPUT_JSON$b = "json";
 	var OUTPUT_CMF$3 = "cmf";
 	var OUTPUT_CMF_JSON = "cmfJson";
 	var OUTPUT_GR2$3 = "gr2";
 	var OUTPUT_NATIVE = "native";
-	var OUTPUT_RAW$5 = "raw";
+	var OUTPUT_RAW$6 = "raw";
 	var OUTPUT_SHARED$2 = "shared";
 	var STRUCT_SIZE = Object.freeze({
 	  BufferView: 16,
@@ -51676,13 +51676,13 @@
 	}
 
 	var CLASS_KEYS$4 = Object.freeze(Array.from(new Set([...CLASS_KEYS$5, ...CMF_CLASS_KEYS])));
-	var OUTPUT_JSON$9 = "json";
+	var OUTPUT_JSON$a = "json";
 	var OUTPUT_GR2$2 = "gr2";
 	var OUTPUT_GR2_JSON = "gr2Json";
 	var OUTPUT_CMF$2 = "cmf";
-	var OUTPUT_RAW$4 = "raw";
-	var DEFAULT_VALUES$7 = Object.freeze({
-	  emit: OUTPUT_JSON$9,
+	var OUTPUT_RAW$5 = "raw";
+	var DEFAULT_VALUES$8 = Object.freeze({
+	  emit: OUTPUT_JSON$a,
 	  decompressCurves: false,
 	  unpackTangents: false,
 	  rebuildMissingNormals: false,
@@ -51693,11 +51693,11 @@
 	});
 	var OPTION_KEYS$4 = new Set(["emit", "decompressCurves", "unpackTangents", "rebuildMissingNormals", "rebuildMissingTangents", "rebuildMissingBiNormals", "rebuildMissingBounds", "classes"]);
 	function normalizeEmit$4(emit) {
-	  if (emit === undefined || emit === OUTPUT_JSON$9) return OUTPUT_JSON$9;
+	  if (emit === undefined || emit === OUTPUT_JSON$a) return OUTPUT_JSON$a;
 	  if (emit === OUTPUT_GR2_JSON) return OUTPUT_GR2_JSON;
 	  if (emit === OUTPUT_GR2$2) return OUTPUT_GR2$2;
 	  if (emit === OUTPUT_CMF$2) return OUTPUT_CMF$2;
-	  if (emit === OUTPUT_RAW$4) return OUTPUT_RAW$4;
+	  if (emit === OUTPUT_RAW$5) return OUTPUT_RAW$5;
 	  throw new Error("CjsGr2Format unknown emit value \"".concat(emit, "\""));
 	}
 	function classMap(values) {
@@ -51772,8 +51772,8 @@
 	 * Normalizes reader options against their supported defaults for the GR2 format
 	 * reader.
 	 */
-	function normalizeValues$7() {
-	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$7;
+	function normalizeValues$8() {
+	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$8;
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  if (!options || typeof options !== "object") {
 	    throw new TypeError("CjsGr2Format options must be an object");
@@ -51979,7 +51979,7 @@
 	}
 	function buildJson(reader, raw, values) {
 	  return finishProjection(reader, emitJson(raw.fileInfo, raw.version, {
-	    classes: values.emit === OUTPUT_GR2$2 || (values.emit === OUTPUT_JSON$9 || values.emit === OUTPUT_GR2_JSON) && hasClasses$2(values.classes) ? values.classes : {},
+	    classes: values.emit === OUTPUT_GR2$2 || (values.emit === OUTPUT_JSON$a || values.emit === OUTPUT_GR2_JSON) && hasClasses$2(values.classes) ? values.classes : {},
 	    rebuildMissingBounds: values.rebuildMissingBounds
 	  }), raw, values);
 	}
@@ -51993,32 +51993,32 @@
 	}
 
 	/** Reads input using normalized format options for the GR2 format reader. */
-	function readWithValues$6(reader, input, values) {
+	function readWithValues$7(reader, input, values) {
 	  var parsed = readRawInput(input);
-	  if (values.emit === OUTPUT_RAW$4) return parsed;
+	  if (values.emit === OUTPUT_RAW$5) return parsed;
 	  if (values.emit === OUTPUT_CMF$2) return buildCmf(reader, parsed, values);
 	  return buildJson(reader, parsed, values);
 	}
 
 	/** Converts a parsed payload into a JSON-safe value for the GR2 format reader. */
-	function toJsonValue$7(value) {
+	function toJsonValue$8(value) {
 	  var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
 	  if (value === null || typeof value !== "object") return value;
-	  if (ArrayBuffer.isView(value)) return Array.from(value, item => toJsonValue$7(item, seen));
-	  if (Array.isArray(value)) return value.map(item => toJsonValue$7(item, seen));
+	  if (ArrayBuffer.isView(value)) return Array.from(value, item => toJsonValue$8(item, seen));
+	  if (Array.isArray(value)) return value.map(item => toJsonValue$8(item, seen));
 	  if (seen.has(value)) {
 	    throw new TypeError("CjsGr2Format.toJSON cannot convert circular data");
 	  }
 	  if (typeof value.toJSON === "function") {
 	    seen.add(value);
-	    var json = toJsonValue$7(value.toJSON(), seen);
+	    var json = toJsonValue$8(value.toJSON(), seen);
 	    seen.delete(value);
 	    return json;
 	  }
 	  seen.add(value);
 	  var out = {};
 	  for (var key of Object.keys(value)) {
-	    out[key] = toJsonValue$7(value[key], seen);
+	    out[key] = toJsonValue$8(value[key], seen);
 	  }
 	  seen.delete(value);
 	  return out;
@@ -52075,27 +52075,27 @@
 	    super();
 	    Object.defineProperty(this, _emit$5, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.emit
+	      value: DEFAULT_VALUES$8.emit
 	    });
 	    Object.defineProperty(this, _decompressCurves, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.decompressCurves
+	      value: DEFAULT_VALUES$8.decompressCurves
 	    });
 	    Object.defineProperty(this, _unpackTangents, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.unpackTangents
+	      value: DEFAULT_VALUES$8.unpackTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingNormals$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.rebuildMissingNormals
+	      value: DEFAULT_VALUES$8.rebuildMissingNormals
 	    });
 	    Object.defineProperty(this, _rebuildMissingTangents$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.rebuildMissingTangents
+	      value: DEFAULT_VALUES$8.rebuildMissingTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingBiNormals$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.rebuildMissingBiNormals
+	      value: DEFAULT_VALUES$8.rebuildMissingBiNormals
 	    });
 	    Object.defineProperty(this, _classes$3, {
 	      writable: true,
@@ -52112,7 +52112,7 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var values = normalizeValues$7(this.GetValues(), options);
+	    var values = normalizeValues$8(this.GetValues(), options);
 	    _classPrivateFieldLooseBase(this, _emit$5)[_emit$5] = values.emit;
 	    _classPrivateFieldLooseBase(this, _decompressCurves)[_decompressCurves] = values.decompressCurves;
 	    _classPrivateFieldLooseBase(this, _unpackTangents)[_unpackTangents] = values.unpackTangents;
@@ -52131,7 +52131,7 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$7({
+	    return normalizeValues$8({
 	      emit: _classPrivateFieldLooseBase(this, _emit$5)[_emit$5],
 	      decompressCurves: _classPrivateFieldLooseBase(this, _decompressCurves)[_decompressCurves],
 	      unpackTangents: _classPrivateFieldLooseBase(this, _unpackTangents)[_unpackTangents],
@@ -52206,7 +52206,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$6(this, input, this.GetValues(options));
+	    return readWithValues$7(this, input, this.GetValues(options));
 	  }
 
 	  /**
@@ -52277,7 +52277,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  ToJSON(value) {
-	    return toJsonValue$7(value);
+	    return toJsonValue$8(value);
 	  }
 
 	  /**
@@ -52289,7 +52289,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$6(CjsGr2Format, input, normalizeValues$7(DEFAULT_VALUES$7, options));
+	    return readWithValues$7(CjsGr2Format, input, normalizeValues$8(DEFAULT_VALUES$8, options));
 	  }
 
 	  /**
@@ -52370,7 +52370,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  static toJSON(value) {
-	    return toJsonValue$7(value);
+	    return toJsonValue$8(value);
 	  }
 	  /**
 	   * Cheap magic probe for GR2/GSF byte streams.
@@ -52398,11 +52398,11 @@
 	    })();
 	  }
 	}
-	CjsGr2Format.OUTPUT_JSON = OUTPUT_JSON$9;
+	CjsGr2Format.OUTPUT_JSON = OUTPUT_JSON$a;
 	CjsGr2Format.OUTPUT_GR2 = OUTPUT_GR2$2;
 	CjsGr2Format.OUTPUT_GR2_JSON = OUTPUT_GR2_JSON;
 	CjsGr2Format.OUTPUT_CMF = OUTPUT_CMF$2;
-	CjsGr2Format.OUTPUT_RAW = OUTPUT_RAW$4;
+	CjsGr2Format.OUTPUT_RAW = OUTPUT_RAW$5;
 	CjsGr2Format.CLASS_KEYS = CLASS_KEYS$4;
 	CjsGr2Format.id = "gr2";
 	CjsGr2Format.mediaTypes = Object.freeze(["geometry"]);
@@ -57197,12 +57197,12 @@
 	 */
 
 	var CLASS_KEYS$3 = Object.freeze(Array.from(new Set([...GR2_CLASS_KEYS, ...CMF_CLASS_KEYS])));
-	var OUTPUT_JSON$8 = "json";
+	var OUTPUT_JSON$9 = "json";
 	var OUTPUT_OBJ_JSON = "objJson";
 	var OUTPUT_SHARED$1 = "shared";
 	var OUTPUT_GR2$1 = "gr2";
 	var OUTPUT_CMF$1 = "cmf";
-	var DEFAULT_VALUES$6 = Object.freeze({
+	var DEFAULT_VALUES$7 = Object.freeze({
 	  emit: OUTPUT_OBJ_JSON,
 	  source: "memory",
 	  packTangents: false,
@@ -57290,7 +57290,7 @@
 	 * @returns {"right"|"left"} Normalized handedness.
 	 */
 	function normalizeUvHandedness$1(value, readerName) {
-	  if (value === undefined || value === null) return DEFAULT_VALUES$6.uvHandedness;
+	  if (value === undefined || value === null) return DEFAULT_VALUES$7.uvHandedness;
 	  if (value === "right" || value === 1 || value === "positive") return "right";
 	  if (value === "left" || value === -1 || value === "negative") return "left";
 	  throw new TypeError("".concat(readerName, ": uvHandedness must be \"right\" or \"left\""));
@@ -57304,7 +57304,7 @@
 	 * @param {string} [readerName] Format name used in error messages.
 	 * @returns {object} A validated copy of the merged values.
 	 */
-	function normalizeValues$6(base) {
+	function normalizeValues$7(base) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsObjFormat";
 	  if (!options || typeof options !== "object") {
@@ -57322,7 +57322,7 @@
 	    throw new TypeError("".concat(readerName, ": emit \"").concat(emit, "\" requires explicit classes"));
 	  }
 	  if (typeof values.source !== "string" || !values.source) {
-	    values.source = DEFAULT_VALUES$6.source;
+	    values.source = DEFAULT_VALUES$7.source;
 	  }
 	  return {
 	    emit,
@@ -57336,7 +57336,7 @@
 	  };
 	}
 	function normalizeEmit$3(emit, readerName) {
-	  if (emit === undefined || emit === null || emit === OUTPUT_JSON$8 || emit === OUTPUT_OBJ_JSON || emit === OUTPUT_SHARED$1) {
+	  if (emit === undefined || emit === null || emit === OUTPUT_JSON$9 || emit === OUTPUT_OBJ_JSON || emit === OUTPUT_SHARED$1) {
 	    return OUTPUT_OBJ_JSON;
 	  }
 	  if (emit === OUTPUT_GR2$1 || emit === OUTPUT_CMF$1) return emit;
@@ -57505,7 +57505,7 @@
 	 * @param {string} readerName Format name.
 	 * @returns {object} Shared JSON graph.
 	 */
-	function readWithValues$5(format, input, values) {
+	function readWithValues$6(format, input, values) {
 	  var readerName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "CjsObjFormat";
 	  var text = toText(input);
 	  var json = parseObjText(text, {
@@ -57639,7 +57639,7 @@
 	 * @param {object} values Normalized format values.
 	 * @returns {object} Plain summary data.
 	 */
-	function inspectWithValues$5(input, values) {
+	function inspectWithValues$6(input, values) {
 	  var json = parseObjText(toText(input), {
 	    source: values.source
 	  });
@@ -57668,23 +57668,23 @@
 	 * @param {any} value Format output.
 	 * @returns {any} JSON-compatible value.
 	 */
-	function toJsonValue$6(value) {
+	function toJsonValue$7(value) {
 	  if (value === null || value === undefined) return value;
 	  if (typeof value !== "object") return value;
 	  if (typeof value.toJSON === "function") {
 	    var next = value.toJSON();
-	    if (next !== value) return toJsonValue$6(next);
+	    if (next !== value) return toJsonValue$7(next);
 	  }
-	  if (Array.isArray(value)) return value.map(toJsonValue$6);
+	  if (Array.isArray(value)) return value.map(toJsonValue$7);
 	  if (ArrayBuffer.isView(value) && !(value instanceof DataView)) return Array.from(value);
 	  var out = {};
 	  for (var key of Object.keys(value)) {
-	    out[key] = toJsonValue$6(value[key]);
+	    out[key] = toJsonValue$7(value[key]);
 	  }
 	  return out;
 	}
 
-	var FORMAT_NAME$6 = "CjsObjFormat";
+	var FORMAT_NAME$7 = "CjsObjFormat";
 
 	/**
 	 * CarbonEngineJS-facing Wavefront OBJ format surface.
@@ -57712,35 +57712,35 @@
 	    super();
 	    Object.defineProperty(this, _emit$4, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.emit
+	      value: DEFAULT_VALUES$7.emit
 	    });
 	    Object.defineProperty(this, _source$5, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.source
+	      value: DEFAULT_VALUES$7.source
 	    });
 	    Object.defineProperty(this, _packTangents$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.packTangents
+	      value: DEFAULT_VALUES$7.packTangents
 	    });
 	    Object.defineProperty(this, _uvHandedness$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.uvHandedness
+	      value: DEFAULT_VALUES$7.uvHandedness
 	    });
 	    Object.defineProperty(this, _rebuildMissingNormals$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.rebuildMissingNormals
+	      value: DEFAULT_VALUES$7.rebuildMissingNormals
 	    });
 	    Object.defineProperty(this, _rebuildMissingTangents$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.rebuildMissingTangents
+	      value: DEFAULT_VALUES$7.rebuildMissingTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingBiNormals$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.rebuildMissingBiNormals
+	      value: DEFAULT_VALUES$7.rebuildMissingBiNormals
 	    });
 	    Object.defineProperty(this, _classes$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.classes
+	      value: DEFAULT_VALUES$7.classes
 	    });
 	    this.SetValues(options);
 	  }
@@ -57753,7 +57753,7 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var values = normalizeValues$6(this.GetValues(), options, FORMAT_NAME$6);
+	    var values = normalizeValues$7(this.GetValues(), options, FORMAT_NAME$7);
 	    _classPrivateFieldLooseBase(this, _emit$4)[_emit$4] = values.emit;
 	    _classPrivateFieldLooseBase(this, _source$5)[_source$5] = values.source;
 	    _classPrivateFieldLooseBase(this, _packTangents$1)[_packTangents$1] = values.packTangents;
@@ -57773,7 +57773,7 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$6({
+	    return normalizeValues$7({
 	      emit: _classPrivateFieldLooseBase(this, _emit$4)[_emit$4],
 	      source: _classPrivateFieldLooseBase(this, _source$5)[_source$5],
 	      packTangents: _classPrivateFieldLooseBase(this, _packTangents$1)[_packTangents$1],
@@ -57782,7 +57782,7 @@
 	      rebuildMissingTangents: _classPrivateFieldLooseBase(this, _rebuildMissingTangents$1)[_rebuildMissingTangents$1],
 	      rebuildMissingBiNormals: _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals$1)[_rebuildMissingBiNormals$1],
 	      classes: _classPrivateFieldLooseBase(this, _classes$2)[_classes$2]
-	    }, options, FORMAT_NAME$6);
+	    }, options, FORMAT_NAME$7);
 	  }
 
 	  /**
@@ -57807,13 +57807,13 @@
 	   */
 	  SetClass(type, Class) {
 	    if (Class === null || Class === undefined) {
-	      validateClassKey$2(type, FORMAT_NAME$6);
+	      validateClassKey$2(type, FORMAT_NAME$7);
 	      var classes = _objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$2)[_classes$2]);
 	      delete classes[type];
 	      _classPrivateFieldLooseBase(this, _classes$2)[_classes$2] = classes;
 	      return this;
 	    }
-	    validateClass$2(type, Class, FORMAT_NAME$6);
+	    validateClass$2(type, Class, FORMAT_NAME$7);
 	    return this.SetValues({
 	      classes: {
 	        [type]: Class
@@ -57828,7 +57828,7 @@
 	   * @returns {Function|undefined} The registered constructor, if any.
 	   */
 	  GetClass(type) {
-	    validateClassKey$2(type, FORMAT_NAME$6);
+	    validateClassKey$2(type, FORMAT_NAME$7);
 	    return _classPrivateFieldLooseBase(this, _classes$2)[_classes$2][type];
 	  }
 
@@ -57851,7 +57851,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$5(this, input, this.GetValues(options), FORMAT_NAME$6);
+	    return readWithValues$6(this, input, this.GetValues(options), FORMAT_NAME$7);
 	  }
 
 	  /**
@@ -57863,7 +57863,7 @@
 	   */
 	  Inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$5(input, this.GetValues(options));
+	    return inspectWithValues$6(input, this.GetValues(options));
 	  }
 
 	  /**
@@ -57873,7 +57873,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  ToJSON(value) {
-	    return toJsonValue$6(value);
+	    return toJsonValue$7(value);
 	  }
 
 	  /**
@@ -57885,7 +57885,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$5(CjsObjFormat, input, normalizeValues$6(DEFAULT_VALUES$6, options, FORMAT_NAME$6), FORMAT_NAME$6);
+	    return readWithValues$6(CjsObjFormat, input, normalizeValues$7(DEFAULT_VALUES$7, options, FORMAT_NAME$7), FORMAT_NAME$7);
 	  }
 
 	  /**
@@ -57897,7 +57897,7 @@
 	   */
 	  static inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$5(input, normalizeValues$6(DEFAULT_VALUES$6, options, FORMAT_NAME$6));
+	    return inspectWithValues$6(input, normalizeValues$7(DEFAULT_VALUES$7, options, FORMAT_NAME$7));
 	  }
 
 	  /**
@@ -57907,7 +57907,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  static toJSON(value) {
-	    return toJsonValue$6(value);
+	    return toJsonValue$7(value);
 	  }
 
 	  /**
@@ -57930,7 +57930,7 @@
 	   */
 	}
 	CjsObjFormat.Output = Object.freeze({
-	  JSON: OUTPUT_JSON$8,
+	  JSON: OUTPUT_JSON$9,
 	  OBJ_JSON: OUTPUT_OBJ_JSON,
 	  SHARED: OUTPUT_SHARED$1,
 	  GR2: OUTPUT_GR2$1,
@@ -60233,12 +60233,12 @@
 	 */
 
 	var CLASS_KEYS$1 = Object.freeze(Array.from(new Set([...CLASS_KEYS$2, ...CMF_CLASS_KEYS])));
-	var OUTPUT_JSON$7 = "json";
+	var OUTPUT_JSON$8 = "json";
 	var OUTPUT_GLTF_JSON = "gltfJson";
 	var OUTPUT_SHARED = "shared";
 	var OUTPUT_GR2 = "gr2";
 	var OUTPUT_CMF = "cmf";
-	var DEFAULT_VALUES$5 = Object.freeze({
+	var DEFAULT_VALUES$6 = Object.freeze({
 	  emit: OUTPUT_SHARED,
 	  source: "memory",
 	  buffers: null,
@@ -60290,7 +60290,7 @@
 	  throw new TypeError("".concat(readerName, ": ").concat(name, " must be true, false, or a function"));
 	}
 	function normalizeUvHandedness(value, readerName) {
-	  if (value === undefined || value === null) return DEFAULT_VALUES$5.uvHandedness;
+	  if (value === undefined || value === null) return DEFAULT_VALUES$6.uvHandedness;
 	  if (value === "right" || value === 1 || value === "positive") return "right";
 	  if (value === "left" || value === -1 || value === "negative") return "left";
 	  throw new TypeError("".concat(readerName, ": uvHandedness must be \"right\" or \"left\""));
@@ -60300,7 +60300,7 @@
 	 * Normalizes reader options against their supported defaults for the glTF format
 	 * reader.
 	 */
-	function normalizeValues$5(base) {
+	function normalizeValues$6(base) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsGltfFormat";
 	  if (!options || typeof options !== "object") {
@@ -60318,7 +60318,7 @@
 	    throw new TypeError("".concat(readerName, ": emit \"").concat(emit, "\" requires explicit classes"));
 	  }
 	  if (typeof values.source !== "string" || !values.source) {
-	    values.source = DEFAULT_VALUES$5.source;
+	    values.source = DEFAULT_VALUES$6.source;
 	  }
 	  return {
 	    emit,
@@ -60334,7 +60334,7 @@
 	}
 	function normalizeEmit$2(emit, readerName) {
 	  if (emit === undefined || emit === null) return OUTPUT_SHARED;
-	  if (emit === OUTPUT_JSON$7 || emit === OUTPUT_GLTF_JSON || emit === OUTPUT_SHARED || emit === OUTPUT_GR2 || emit === OUTPUT_CMF) return emit;
+	  if (emit === OUTPUT_JSON$8 || emit === OUTPUT_GLTF_JSON || emit === OUTPUT_SHARED || emit === OUTPUT_GR2 || emit === OUTPUT_CMF) return emit;
 	  throw new TypeError("".concat(readerName, ": emit must be \"").concat(OUTPUT_SHARED, "\", \"").concat(OUTPUT_GLTF_JSON, "\", \"").concat(OUTPUT_GR2, "\", or \"").concat(OUTPUT_CMF, "\", got ").concat(JSON.stringify(emit)));
 	}
 	function hasClasses(classes) {
@@ -60467,7 +60467,7 @@
 	}
 
 	/** Reads input using normalized format options for the glTF format reader. */
-	function readWithValues$4(format, input, values) {
+	function readWithValues$5(format, input, values) {
 	  var parsed = parseInput(input);
 	  var shared = parseGltfToShared(parsed.gltf, {
 	    binaryChunk: parsed.binaryChunk,
@@ -60480,8 +60480,8 @@
 	      source: values.source
 	    }, "CjsGltfFormat CMF");
 	  }
-	  if (values.emit === OUTPUT_JSON$7 || values.emit === OUTPUT_GLTF_JSON) {
-	    return toJsonValue$5(shared);
+	  if (values.emit === OUTPUT_JSON$8 || values.emit === OUTPUT_GLTF_JSON) {
+	    return toJsonValue$6(shared);
 	  }
 	  return hydrateShared(shared, {
 	    classes: values.classes,
@@ -60490,7 +60490,7 @@
 	}
 
 	/** Inspects input using normalized format options for the glTF format reader. */
-	function inspectWithValues$4(input, values) {
+	function inspectWithValues$5(input, values) {
 	  var parsed = parseInput(input);
 	  return inspectGltf(parsed.gltf, {
 	    format: parsed.format,
@@ -60499,23 +60499,23 @@
 	}
 
 	/** Converts a parsed payload into a JSON-safe value for the glTF format reader. */
-	function toJsonValue$5(value) {
+	function toJsonValue$6(value) {
 	  if (value === null || value === undefined) return value;
 	  if (typeof value !== "object") return value;
 	  if (typeof value.toJSON === "function") {
 	    var next = value.toJSON();
-	    if (next !== value) return toJsonValue$5(next);
+	    if (next !== value) return toJsonValue$6(next);
 	  }
-	  if (Array.isArray(value)) return value.map(toJsonValue$5);
+	  if (Array.isArray(value)) return value.map(toJsonValue$6);
 	  if (ArrayBuffer.isView(value) && !(value instanceof DataView)) return Array.from(value);
 	  var out = {};
 	  for (var key of Object.keys(value)) {
-	    out[key] = toJsonValue$5(value[key]);
+	    out[key] = toJsonValue$6(value[key]);
 	  }
 	  return out;
 	}
 
-	var FORMAT_NAME$5 = "CjsGltfFormat";
+	var FORMAT_NAME$6 = "CjsGltfFormat";
 
 	/**
 	 * glTF/GLB format class that parses documents, decodes accessors, and converts
@@ -60547,39 +60547,39 @@
 	    super();
 	    Object.defineProperty(this, _emit$3, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.emit
+	      value: DEFAULT_VALUES$6.emit
 	    });
 	    Object.defineProperty(this, _source$4, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.source
+	      value: DEFAULT_VALUES$6.source
 	    });
 	    Object.defineProperty(this, _buffers$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.buffers
+	      value: DEFAULT_VALUES$6.buffers
 	    });
 	    Object.defineProperty(this, _packTangents, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.packTangents
+	      value: DEFAULT_VALUES$6.packTangents
 	    });
 	    Object.defineProperty(this, _uvHandedness, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.uvHandedness
+	      value: DEFAULT_VALUES$6.uvHandedness
 	    });
 	    Object.defineProperty(this, _rebuildMissingNormals, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.rebuildMissingNormals
+	      value: DEFAULT_VALUES$6.rebuildMissingNormals
 	    });
 	    Object.defineProperty(this, _rebuildMissingTangents, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.rebuildMissingTangents
+	      value: DEFAULT_VALUES$6.rebuildMissingTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingBiNormals, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.rebuildMissingBiNormals
+	      value: DEFAULT_VALUES$6.rebuildMissingBiNormals
 	    });
 	    Object.defineProperty(this, _classes$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$5.classes
+	      value: DEFAULT_VALUES$6.classes
 	    });
 	    this.SetValues(options);
 	  }
@@ -60592,7 +60592,7 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var values = normalizeValues$5(this.GetValues(), options, FORMAT_NAME$5);
+	    var values = normalizeValues$6(this.GetValues(), options, FORMAT_NAME$6);
 	    _classPrivateFieldLooseBase(this, _emit$3)[_emit$3] = values.emit;
 	    _classPrivateFieldLooseBase(this, _source$4)[_source$4] = values.source;
 	    _classPrivateFieldLooseBase(this, _buffers$1)[_buffers$1] = values.buffers;
@@ -60613,7 +60613,7 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$5({
+	    return normalizeValues$6({
 	      emit: _classPrivateFieldLooseBase(this, _emit$3)[_emit$3],
 	      source: _classPrivateFieldLooseBase(this, _source$4)[_source$4],
 	      buffers: _classPrivateFieldLooseBase(this, _buffers$1)[_buffers$1],
@@ -60623,7 +60623,7 @@
 	      rebuildMissingTangents: _classPrivateFieldLooseBase(this, _rebuildMissingTangents)[_rebuildMissingTangents],
 	      rebuildMissingBiNormals: _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals)[_rebuildMissingBiNormals],
 	      classes: _classPrivateFieldLooseBase(this, _classes$1)[_classes$1]
-	    }, options, FORMAT_NAME$5);
+	    }, options, FORMAT_NAME$6);
 	  }
 
 	  /**
@@ -60648,13 +60648,13 @@
 	   */
 	  SetClass(type, Class) {
 	    if (Class === null || Class === undefined) {
-	      validateClassKey$1(type, FORMAT_NAME$5);
+	      validateClassKey$1(type, FORMAT_NAME$6);
 	      var classes = _objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$1)[_classes$1]);
 	      delete classes[type];
 	      _classPrivateFieldLooseBase(this, _classes$1)[_classes$1] = classes;
 	      return this;
 	    }
-	    validateClass$1(type, Class, FORMAT_NAME$5);
+	    validateClass$1(type, Class, FORMAT_NAME$6);
 	    return this.SetValues({
 	      classes: {
 	        [type]: Class
@@ -60669,7 +60669,7 @@
 	   * @returns {Function|undefined} The registered constructor, if any.
 	   */
 	  GetClass(type) {
-	    validateClassKey$1(type, FORMAT_NAME$5);
+	    validateClassKey$1(type, FORMAT_NAME$6);
 	    return _classPrivateFieldLooseBase(this, _classes$1)[_classes$1][type];
 	  }
 
@@ -60692,7 +60692,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$4(this, input, this.GetValues(options));
+	    return readWithValues$5(this, input, this.GetValues(options));
 	  }
 
 	  /**
@@ -60704,7 +60704,7 @@
 	   */
 	  Inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$4(input, this.GetValues(options));
+	    return inspectWithValues$5(input, this.GetValues(options));
 	  }
 
 	  /**
@@ -60714,7 +60714,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  ToJSON(value) {
-	    return toJsonValue$5(value);
+	    return toJsonValue$6(value);
 	  }
 
 	  /**
@@ -60726,7 +60726,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$4(CjsGltfFormat, input, normalizeValues$5(DEFAULT_VALUES$5, options, FORMAT_NAME$5));
+	    return readWithValues$5(CjsGltfFormat, input, normalizeValues$6(DEFAULT_VALUES$6, options, FORMAT_NAME$6));
 	  }
 
 	  /**
@@ -60738,7 +60738,7 @@
 	   */
 	  static inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$4(input, normalizeValues$5(DEFAULT_VALUES$5, options, FORMAT_NAME$5));
+	    return inspectWithValues$5(input, normalizeValues$6(DEFAULT_VALUES$6, options, FORMAT_NAME$6));
 	  }
 
 	  /**
@@ -60748,7 +60748,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  static toJSON(value) {
-	    return toJsonValue$5(value);
+	    return toJsonValue$6(value);
 	  }
 
 	  /**
@@ -60786,7 +60786,7 @@
 	   */
 	}
 	CjsGltfFormat.Output = Object.freeze({
-	  JSON: OUTPUT_JSON$7,
+	  JSON: OUTPUT_JSON$8,
 	  GLTF_JSON: OUTPUT_GLTF_JSON,
 	  SHARED: OUTPUT_SHARED,
 	  GR2: OUTPUT_GR2,
@@ -64301,6 +64301,808 @@
 	TextureFormatHTML.formatName = "html";
 	TextureFormatHTML.exts = ["html"];
 
+	var GZIP_PREFIX = new Uint8Array([0x1f, 0x8b]);
+
+	/** Returns whether byte input has the gzip magic prefix. */
+	function isGzip(value) {
+	  return hasBytePrefix(value, GZIP_PREFIX);
+	}
+
+	/** Decompresses bytes with the platform DecompressionStream API. */
+	function decompressBytes(_x, _x2) {
+	  return _decompressBytes.apply(this, arguments);
+	}
+	/** Decompresses one gzip byte sequence. */
+	function _decompressBytes() {
+	  _decompressBytes = _asyncToGenerator(function* (value, format) {
+	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    var DecompressionStreamClass = Object.hasOwn(options, "decompressionStreamClass") ? options.decompressionStreamClass : globalThis.DecompressionStream;
+	    var ResponseClass = Object.hasOwn(options, "responseClass") ? options.responseClass : globalThis.Response;
+	    if (typeof DecompressionStreamClass !== "function" || typeof ResponseClass !== "function") {
+	      var error = new Error("DecompressionStream support for ".concat(JSON.stringify(format), " is unavailable in this environment."));
+	      error.code = "CJS_DECOMPRESSION_UNSUPPORTED";
+	      throw error;
+	    }
+	    var source = new ResponseClass(asUint8Array(value, "compressed input"));
+	    if (!source.body) {
+	      throw new Error("The platform Response did not expose a readable byte stream.");
+	    }
+	    var stream = source.body.pipeThrough(new DecompressionStreamClass(String(format)));
+	    var output = yield new ResponseClass(stream).arrayBuffer();
+	    return new Uint8Array(output);
+	  });
+	  return _decompressBytes.apply(this, arguments);
+	}
+	function decompressGzip(value) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  return decompressBytes(value, "gzip", options);
+	}
+
+	/** Decompresses gzip input and returns an unchanged view for plain bytes. */
+	function decompressGzipIfNeeded(value) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var bytes = asUint8Array(value, "input");
+	  return isGzip(bytes) ? decompressGzip(bytes, options) : Promise.resolve(bytes);
+	}
+
+	/**
+	 * VTA RLE7-family payload decoder.
+	 *
+	 * Carbon's encoder quantizes voxel values to 7/6/5 bits (Rle7/Rle7_5/Rle6),
+	 * but the DECODER is identical for all three: the low bit of a token byte is
+	 * the run flag, so every decoded value is even (Tr2 VtaHandler.cpp:25,63).
+	 * Reference: FrameDecoder absolute decode VtaHandler.cpp:92-113, delta
+	 * decode VtaHandler.cpp:115-137.
+	 */
+
+	/**
+	 * Decode one RLE7 frame into a voxel buffer.
+	 *
+	 * Frame 0 of a grid is absolute. Every later frame is a DELTA over the
+	 * previously decoded frame: `out[i] = (value + previous[i]) & 0xff`
+	 * (uint8 wraparound, exactly as Carbon adds in place). Passing the same
+	 * buffer as `out` and `previous` is safe - each index is read before it is
+	 * written, matching Carbon's base == dest advance-in-lockstep.
+	 *
+	 * @param {Uint8Array} encoded RLE7 stream (already zlib-inflated).
+	 * @param {Uint8Array} out Destination voxel buffer, fully overwritten.
+	 * @param {Uint8Array|null} [previous] Previous frame's voxels for delta frames.
+	 * @returns {Uint8Array} out.
+	 */
+	function decodeRle7(encoded, out) {
+	  var previous = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+	  var size = out.length;
+	  var read = 0,
+	    written = 0;
+	  if (previous && previous.length !== size) {
+	    throw new Error("CjsVtaFormat RLE7 delta frame requires a previous buffer of ".concat(size, " bytes, got ").concat(previous.length, "."));
+	  }
+	  while (written < size) {
+	    if (read >= encoded.length) {
+	      throw new Error("CjsVtaFormat RLE7 stream ended after ".concat(written, " of ").concat(size, " voxels."));
+	    }
+	    var token = encoded[read++],
+	      value = token & 0xfe;
+	    var count = 1;
+	    if (token & 1) {
+	      if (read >= encoded.length) {
+	        throw new Error("CjsVtaFormat RLE7 run token is missing its length byte.");
+	      }
+	      count = encoded[read++] + 1;
+	    }
+	    if (written + count > size) {
+	      throw new Error("CjsVtaFormat RLE7 run overflows the voxel buffer at ".concat(written, " + ").concat(count, " > ").concat(size, "."));
+	    }
+	    if (previous) {
+	      for (var i = 0; i < count; i++, written++) {
+	        out[written] = value + previous[written] & 0xff;
+	      }
+	    } else {
+	      out.fill(value, written, written + count);
+	      written += count;
+	    }
+	  }
+	  if (read !== encoded.length) {
+	    throw new Error("CjsVtaFormat RLE7 stream has ".concat(encoded.length - read, " trailing bytes after ").concat(size, " voxels."));
+	  }
+	  return out;
+	}
+
+	/**
+	 * VTA - Carbon's Volume Texture Animation container.
+	 *
+	 * A multi-grid, multi-frame, zlib-compressed animated dense 3D texture,
+	 * produced by rasterizing NanoVDB grids to R8 volumes. Authority is
+	 * Carbon's imageio VtaHandler (reader/writer are symmetric); the layout,
+	 * decode rules and consumption paths are recorded with file:line citations
+	 * in the org docs page "VTA format spec" (research, 2026-09-06). Carbon's
+	 * static texture path collapses a VTA to grid 0 / frame 0 as a true 3D
+	 * texture; Tr2TextureAnimation streams frames per grid.
+	 */
+
+	var OUTPUT_VOLUME = "volume";
+	var OUTPUT_RAW$4 = "raw";
+	var OUTPUT_JSON$7 = "json";
+	var OUTPUT_VTA_JSON = "vtaJson";
+	var HEADER_SIZE$1 = 32;
+	var GRID_INFO_SIZE = 52;
+	var GRID_NAME_SIZE = 32;
+	var VTA_VERSION = 1;
+
+	/** Grid payload encodings (VtaHandler.h:17-23). One decoder serves 1/2/3. */
+	var VTA_ENCODING = Object.freeze({
+	  NONE: 0,
+	  RLE7: 1,
+	  RLE7_5: 2,
+	  RLE6: 3
+	});
+
+	/**
+	 * Bytes per voxel for the pixel formats a VTA can carry. Carbon's writer
+	 * only ever emits PIXEL_FORMAT_R8_UNORM (61) - IsSaveSupported rejects
+	 * everything else - but the field is read, not assumed, and an unknown
+	 * format is an error rather than a guess.
+	 */
+	var BYTES_PER_PIXEL = Object.freeze({
+	  61: 1 // PIXEL_FORMAT_R8_UNORM
+	});
+	var DEFAULT_VALUES$5 = Object.freeze({
+	  emit: OUTPUT_RAW$4,
+	  frame: 0,
+	  allFrames: false,
+	  grid: null
+	});
+	var textDecoder$1 = new TextDecoder("utf-8", {
+	  fatal: false
+	});
+
+	/** Tests whether bytes carry the VTA signature and supported version. */
+	function isVTA(bytes) {
+	  return bytes.length >= HEADER_SIZE$1 && bytes[0] === 0x56 && bytes[1] === 0x54 && bytes[2] === 0x41 && bytes[3] === 0 && readU32$3(bytes, 4) === VTA_VERSION;
+	}
+
+	/** Normalizes and validates VTA read options over a base profile. */
+	function normalizeValues$5() {
+	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$5;
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsVtaFormat";
+	  if (!options || typeof options !== "object") {
+	    throw new TypeError("".concat(readerName, " options must be an object"));
+	  }
+	  for (var key of Object.keys(options)) {
+	    if (!(key in DEFAULT_VALUES$5)) throw new TypeError("".concat(readerName, " unknown option \"").concat(key, "\""));
+	  }
+	  var values = _objectSpread2(_objectSpread2({}, base), options);
+	  if (![OUTPUT_VOLUME, OUTPUT_RAW$4, OUTPUT_JSON$7, OUTPUT_VTA_JSON].includes(values.emit)) {
+	    throw new TypeError("".concat(readerName, " unknown emit value \"").concat(values.emit, "\""));
+	  }
+	  if (!Number.isInteger(values.frame) || values.frame < 0) {
+	    throw new TypeError("".concat(readerName, " frame option must be a non-negative integer"));
+	  }
+	  if (typeof values.allFrames !== "boolean") {
+	    throw new TypeError("".concat(readerName, " allFrames option must be true or false"));
+	  }
+	  if (values.grid !== null && typeof values.grid !== "string" && !Number.isInteger(values.grid)) {
+	    throw new TypeError("".concat(readerName, " grid option must be null, a grid name, or a grid index"));
+	  }
+	  return values;
+	}
+	function readU32$3(bytes, offset) {
+	  return (bytes[offset] | bytes[offset + 1] << 8 | bytes[offset + 2] << 16 | bytes[offset + 3] << 24) >>> 0;
+	}
+	function readU64(bytes, offset) {
+	  var lo = readU32$3(bytes, offset),
+	    hi = readU32$3(bytes, offset + 4);
+	  if (hi > 0x1fffff) {
+	    throw new Error("CjsVtaFormat 64-bit offset exceeds the safe integer range.");
+	  }
+	  return hi * 0x100000000 + lo;
+	}
+
+	/**
+	 * Parses header, grid table, offsets and metadata without touching payload.
+	 *
+	 * @param {Uint8Array} bytes Whole VTA file.
+	 * @returns {object} Structural description.
+	 */
+	function inspectBytes(bytes) {
+	  if (bytes.length < HEADER_SIZE$1 || bytes[0] !== 0x56 || bytes[1] !== 0x54 || bytes[2] !== 0x41 || bytes[3] !== 0) {
+	    throw new Error("CjsVtaFormat input does not carry the VTA signature.");
+	  }
+	  var version = readU32$3(bytes, 4);
+	  if (version !== VTA_VERSION) {
+	    throw new Error("CjsVtaFormat unsupported VTA version ".concat(version, "; only version ").concat(VTA_VERSION, " exists."));
+	  }
+	  var gridCount = readU32$3(bytes, 8),
+	    frameCount = readU32$3(bytes, 12),
+	    metadataCount = readU32$3(bytes, 16),
+	    dataEnd = readU64(bytes, 24);
+	  var offset = HEADER_SIZE$1;
+	  var grids = [];
+	  for (var i = 0; i < gridCount; i++) {
+	    var nameBytes = bytes.subarray(offset + 20, offset + 20 + GRID_NAME_SIZE);
+	    var nameEnd = 0;
+	    while (nameEnd < GRID_NAME_SIZE && nameBytes[nameEnd] !== 0) nameEnd++;
+	    grids.push({
+	      format: readU32$3(bytes, offset),
+	      encoding: readU32$3(bytes, offset + 4),
+	      width: readU32$3(bytes, offset + 8),
+	      height: readU32$3(bytes, offset + 12),
+	      depth: readU32$3(bytes, offset + 16),
+	      name: textDecoder$1.decode(nameBytes.subarray(0, nameEnd))
+	    });
+	    offset += GRID_INFO_SIZE;
+	  }
+	  var offsets = new Array(frameCount * gridCount);
+	  for (var _i = 0; _i < offsets.length; _i++, offset += 8) {
+	    offsets[_i] = readU64(bytes, offset);
+	  }
+	  var metadata = {};
+	  for (var _i2 = 0; _i2 < metadataCount; _i2++) {
+	    var keyLength = readU32$3(bytes, offset);
+	    offset += 4;
+	    var key = textDecoder$1.decode(bytes.subarray(offset, offset + keyLength));
+	    offset += keyLength;
+	    var valueLength = readU32$3(bytes, offset);
+	    offset += 4;
+	    metadata[key] = textDecoder$1.decode(bytes.subarray(offset, offset + valueLength));
+	    offset += valueLength;
+	  }
+	  if (dataEnd > bytes.length) {
+	    throw new Error("CjsVtaFormat dataEnd ".concat(dataEnd, " exceeds the ").concat(bytes.length, "-byte input."));
+	  }
+	  return {
+	    version,
+	    gridCount,
+	    frameCount,
+	    metadataCount,
+	    dataEnd,
+	    grids,
+	    offsets,
+	    metadata
+	  };
+	}
+	function bytesPerPixel(format) {
+	  var bpp = BYTES_PER_PIXEL[format];
+	  if (!bpp) {
+	    throw new Error("CjsVtaFormat pixel format ".concat(format, " has no byte size registered; Carbon only writes R8_UNORM (61)."));
+	  }
+	  return bpp;
+	}
+	function selectGrids(description, grid) {
+	  if (grid === null) return description.grids.map((info, index) => ({
+	    info,
+	    index
+	  }));
+	  if (typeof grid === "string") {
+	    var index = description.grids.findIndex(info => info.name === grid);
+	    if (index === -1) {
+	      throw new Error("CjsVtaFormat has no grid named \"".concat(grid, "\"; grids: ").concat(description.grids.map(g => g.name).join(", "), "."));
+	    }
+	    return [{
+	      info: description.grids[index],
+	      index
+	    }];
+	  }
+	  if (grid < 0 || grid >= description.grids.length) {
+	    throw new Error("CjsVtaFormat grid index ".concat(grid, " is out of range 0..").concat(description.grids.length - 1, "."));
+	  }
+	  return [{
+	    info: description.grids[grid],
+	    index: grid
+	  }];
+	}
+
+	/**
+	 * Decodes voxel frames for the selected grids.
+	 *
+	 * Frames of a grid are a DELTA CHAIN (frame N needs 0..N-1 decoded in
+	 * order), so reaching frame N always decodes from frame 0, exactly as
+	 * Carbon's FrameDecoder Restart/AdvanceFrame contract does.
+	 *
+	 * @param {Uint8Array} bytes Whole VTA file.
+	 * @param {object} values Normalized read options.
+	 * @returns {Promise<object>} Decoded volume payload.
+	 */
+	function decodeVolumes(_x, _x2) {
+	  return _decodeVolumes.apply(this, arguments);
+	}
+	/** Inspect entry shared by the instance and static surfaces. */
+	function _decodeVolumes() {
+	  _decodeVolumes = _asyncToGenerator(function* (bytes, values) {
+	    var description = inspectBytes(bytes);
+	    var lastFrame = values.allFrames ? description.frameCount - 1 : values.frame;
+	    if (description.frameCount === 0) {
+	      throw new Error("CjsVtaFormat file declares zero frames.");
+	    }
+	    if (lastFrame >= description.frameCount) {
+	      throw new Error("CjsVtaFormat frame ".concat(lastFrame, " is out of range 0..").concat(description.frameCount - 1, "."));
+	    }
+	    var grids = [];
+	    for (var _ref5 of selectGrids(description, values.grid)) {
+	      var info = _ref5.info;
+	      var index = _ref5.index;
+	      var voxelCount = info.width * info.height * info.depth * bytesPerPixel(info.format),
+	        working = new Uint8Array(voxelCount),
+	        frames = [];
+	      for (var frame = 0; frame <= lastFrame; frame++) {
+	        var blobIndex = frame * description.gridCount + index,
+	          begin = description.offsets[blobIndex],
+	          end = blobIndex + 1 === description.offsets.length ? description.dataEnd : description.offsets[blobIndex + 1],
+	          inflated = yield decompressBytes(bytes.subarray(begin, end), "deflate");
+	        if (info.encoding === VTA_ENCODING.NONE) {
+	          if (inflated.length !== voxelCount) {
+	            throw new Error("CjsVtaFormat frame ".concat(frame, " inflated to ").concat(inflated.length, " bytes; expected ").concat(voxelCount, "."));
+	          }
+	          working.set(inflated);
+	        } else {
+	          decodeRle7(inflated, working, frame === 0 ? null : working);
+	        }
+	        if (values.allFrames || frame === lastFrame) {
+	          frames.push(new Uint8Array(working));
+	        }
+	      }
+	      grids.push({
+	        name: info.name,
+	        format: "r8unorm",
+	        encoding: info.encoding,
+	        width: info.width,
+	        height: info.height,
+	        depth: info.depth,
+	        firstFrame: values.allFrames ? 0 : lastFrame,
+	        frames
+	      });
+	    }
+	    return {
+	      sourceFormat: "vta",
+	      version: description.version,
+	      gridCount: description.gridCount,
+	      frameCount: description.frameCount,
+	      metadata: description.metadata,
+	      grids
+	    };
+	  });
+	  return _decodeVolumes.apply(this, arguments);
+	}
+	function inspectWithValues$4(input) {
+	  return inspectBytes(asUint8Array(input, "VTA input"));
+	}
+
+	/** Cheap support report: signature, version, and pixel-format coverage. */
+	function probeSupportWithValues$1(input) {
+	  var bytes = asUint8Array(input, "VTA input");
+	  if (!isVTA(bytes)) return {
+	    supported: false,
+	    reason: "not a VTA version-1 file"
+	  };
+	  try {
+	    var description = inspectBytes(bytes);
+	    for (var grid of description.grids) bytesPerPixel(grid.format);
+	    return {
+	      supported: true,
+	      gridCount: description.gridCount,
+	      frameCount: description.frameCount
+	    };
+	  } catch (error) {
+	    return {
+	      supported: false,
+	      reason: error.message
+	    };
+	  }
+	}
+
+	/** Synchronous read: raw passthrough and structural debug only. */
+	function readWithValues$4(input, values) {
+	  var bytes = asUint8Array(input, "VTA input");
+	  if (values.emit === OUTPUT_RAW$4) {
+	    return {
+	      sourceFormat: "vta",
+	      emit: OUTPUT_RAW$4,
+	      bytes
+	    };
+	  }
+	  if (values.emit === OUTPUT_JSON$7 || values.emit === OUTPUT_VTA_JSON) {
+	    return _objectSpread2({
+	      sourceFormat: "vta",
+	      emit: OUTPUT_VTA_JSON
+	    }, inspectBytes(bytes));
+	  }
+	  var error = new Error("CjsVtaFormat volume decode is asynchronous (zlib inflate); use ReadAsync.");
+	  error.code = "CJS_FORMAT_OUTPUT_ASYNC_ONLY";
+	  throw error;
+	}
+
+	/** Asynchronous read: everything, including decoded volumes. */
+	function readAsyncWithValues(_x3, _x4) {
+	  return _readAsyncWithValues.apply(this, arguments);
+	}
+	/** Convert format output into JSON-compatible debug data. */
+	function _readAsyncWithValues() {
+	  _readAsyncWithValues = _asyncToGenerator(function* (input, values) {
+	    if (values.emit !== OUTPUT_VOLUME) {
+	      return readWithValues$4(input, values);
+	    }
+	    return decodeVolumes(asUint8Array(input, "VTA input"), values);
+	  });
+	  return _readAsyncWithValues.apply(this, arguments);
+	}
+	function toJsonValue$5(value) {
+	  if (value instanceof Uint8Array) {
+	    return {
+	      byteLength: value.byteLength
+	    };
+	  }
+	  if (Array.isArray(value)) return value.map(toJsonValue$5);
+	  if (value && typeof value === "object") {
+	    var output = {};
+	    for (var _ref3 of Object.entries(value)) {
+	      var _ref2 = _slicedToArray(_ref3, 2);
+	      var key = _ref2[0];
+	      var entry = _ref2[1];
+	      output[key] = toJsonValue$5(entry);
+	    }
+	    return output;
+	  }
+	  return value;
+	}
+
+	var FORMAT_NAME$5 = "CjsVtaFormat";
+
+	/**
+	 * VTA format profile - Carbon's Volume Texture Animation container.
+	 *
+	 * Reads `.vta` bytes into raw, structural debug JSON, or decoded R8 volume
+	 * payloads (per grid, per frame). Volume decode is asynchronous because
+	 * every frame blob is zlib-compressed and inflates through
+	 * DecompressionStream; `Read` serves the synchronous targets and points
+	 * volume callers at `ReadAsync`. Carbon's static texture path is grid 0 /
+	 * frame 0 - the profile's defaults select exactly that frame.
+	 */
+	var _values$2 = /*#__PURE__*/_classPrivateFieldLooseKey("values");
+	class CjsVtaFormat extends CjsFormat {
+	  /**
+	   * Create a reusable VTA format profile.
+	   *
+	   * @param {object} [options] Default read options.
+	   */
+	  constructor() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    super();
+	    Object.defineProperty(this, _values$2, {
+	      writable: true,
+	      value: DEFAULT_VALUES$5
+	    });
+	    this.SetValues(options);
+	  }
+
+	  /**
+	   * Merge options into this profile.
+	   *
+	   * @param {object} [options] Values to merge.
+	   * @returns {CjsVtaFormat} This format profile.
+	   */
+	  SetValues() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    _classPrivateFieldLooseBase(this, _values$2)[_values$2] = normalizeValues$5(_classPrivateFieldLooseBase(this, _values$2)[_values$2], options, FORMAT_NAME$5);
+	    return this;
+	  }
+
+	  /**
+	   * Get normalized profile values with optional per-call overrides.
+	   *
+	   * @param {object} [options] Per-call values.
+	   * @returns {object} Normalized read values.
+	   */
+	  GetValues() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    return normalizeValues$5(_classPrivateFieldLooseBase(this, _values$2)[_values$2], options, FORMAT_NAME$5);
+	  }
+
+	  /**
+	   * Read VTA bytes with this profile - raw and debug targets only.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object} Raw or structural payload for the selected emit target.
+	   */
+	  Read(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return readWithValues$4(input, this.GetValues(options));
+	  }
+
+	  /**
+	   * Read VTA bytes asynchronously with this profile, including volumes.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @param {object} [options] Per-call values.
+	   * @returns {Promise<object>} Payload for the selected emit target.
+	   */
+	  ReadAsync(input) {
+	    var _arguments = arguments,
+	      _this = this;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : {};
+	      return readAsyncWithValues(input, _this.GetValues(options));
+	    })();
+	  }
+
+	  /**
+	   * Inspect VTA bytes without decoding any payload.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @returns {object} Header, grid table, offsets and metadata.
+	   */
+	  Inspect(input) {
+	    return inspectWithValues$4(input);
+	  }
+
+	  /**
+	   * Convert format output into JSON-compatible debug data.
+	   *
+	   * @param {any} value Format output.
+	   * @returns {any} JSON-compatible value.
+	   */
+	  ToJSON(value) {
+	    return toJsonValue$5(value);
+	  }
+
+	  /**
+	   * One-shot VTA read - raw and debug targets only.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @param {object} [options] Read options.
+	   * @returns {object} Raw or structural payload for the selected emit target.
+	   */
+	  static read(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return readWithValues$4(input, normalizeValues$5(DEFAULT_VALUES$5, options, FORMAT_NAME$5));
+	  }
+
+	  /**
+	   * One-shot asynchronous VTA read, including decoded volumes.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @param {object} [options] Read options.
+	   * @returns {Promise<object>} Payload for the selected emit target.
+	   */
+	  static readAsync(input) {
+	    var _arguments2 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments2.length > 1 && _arguments2[1] !== undefined ? _arguments2[1] : {};
+	      return readAsyncWithValues(input, normalizeValues$5(DEFAULT_VALUES$5, options, FORMAT_NAME$5));
+	    })();
+	  }
+
+	  /**
+	   * One-shot VTA inspection.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @returns {object} Header, grid table, offsets and metadata.
+	   */
+	  static inspect(input) {
+	    return inspectWithValues$4(input);
+	  }
+
+	  /**
+	   * One-shot VTA support probe.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input VTA bytes.
+	   * @returns {object} Support/probe report.
+	   */
+	  static probeSupport(input) {
+	    return probeSupportWithValues$1(input);
+	  }
+
+	  /**
+	   * Convert format output into JSON-compatible debug data.
+	   *
+	   * @param {any} value Format output.
+	   * @returns {any} JSON-compatible value.
+	   */
+	  static toJSON(value) {
+	    return toJsonValue$5(value);
+	  }
+
+	  /**
+	   * Test whether bytes look like a version-1 VTA file.
+	   *
+	   * @param {Uint8Array|ArrayBuffer|DataView} input Candidate bytes.
+	   * @returns {boolean} True when the signature and version match.
+	   */
+	  static isVTA(input) {
+	    try {
+	      return isVTA(asUint8Array(input, "VTA input"));
+	    } catch (_unused) {
+	      return false;
+	    }
+	  }
+
+	  /**
+	   * Grid payload encodings. Rle7/Rle7_5/Rle6 differ only in the encoder's
+	   * quantization; one decoder serves all three.
+	   */
+	}
+	CjsVtaFormat.Encoding = VTA_ENCODING;
+	/** The only VTA container version Carbon ever wrote. */
+	CjsVtaFormat.VERSION = VTA_VERSION;
+	/**
+	 * Emit targets for this format (canonical frozen enum).
+	 */
+	CjsVtaFormat.Output = Object.freeze({
+	  VOLUME: OUTPUT_VOLUME,
+	  RAW: OUTPUT_RAW$4,
+	  JSON: OUTPUT_JSON$7
+	});
+	CjsVtaFormat.OUTPUT_VTA_JSON = OUTPUT_VTA_JSON;
+	CjsVtaFormat.id = "vta";
+	CjsVtaFormat.mediaTypes = Object.freeze(["image"]);
+	CjsVtaFormat.outputs = CjsFormat.defineOutputs({
+	  volume: {
+	    decoded: true,
+	    readMode: "async",
+	    probes: ["volume"]
+	  },
+	  vtaJson: {
+	    role: "debug",
+	    probes: ["vtaJson", "raw"]
+	  },
+	  raw: {
+	    role: "debug",
+	    default: true,
+	    passthrough: true
+	  }
+	});
+	CjsVtaFormat.extensions = Object.freeze([".vta"]);
+
+	/**
+	 * TextureFormatVta.js
+	 *
+	 * Carbon's Volume Texture Animation container (`.vta`) as a texture format
+	 * handler - `Tw2TextureRes` takes any extension through this seam, so a volume
+	 * needs no resource class of its own.
+	 *
+	 * The container holds one or more named 3D grids, each with a run of frames:
+	 * a header, then `GridInfo grids[]`, then `offsets[frame * gridCount + grid]`,
+	 * then metadata strings, then the frame blobs (`VtaHandler.h:36-49`). Every
+	 * blob is deflated, and the RLE7 family encodes each frame against the one
+	 * before it, so a frame can only be reached by walking from frame 0.
+	 *
+	 * Only grid 0 / frame 0 is uploaded here, which is Carbon's own static texture
+	 * path and what the runtime format defaults to. Animation is a separate job: it
+	 * needs a playback owner and a per-frame upload budget, and holding every frame
+	 * of a large grid decoded is measured in hundreds of megabytes.
+	 *
+	 * The decode is asynchronous - the blobs inflate through `DecompressionStream`
+	 * - and `Prepare` is not. So `Load` does the whole decode and queues the
+	 * finished grid; `Prepare` only uploads. That is why this handler queues a
+	 * decoded object where the others queue an ArrayBuffer.
+	 */
+	class TextureFormatVta {
+	  /**
+	   * @param {WebGLRenderingContext} gl
+	   * @returns {Object}
+	   */
+	  static GetSupport(gl) {
+	    // Two hard requirements, both absent on WebGL1: `texImage3D` for the
+	    // upload, and `DecompressionStream` for the frame blobs.
+	    var has3D = !!(gl && gl.texImage3D) && device.glVersion > 1;
+	    var hasInflate = typeof DecompressionStream !== "undefined";
+	    var supported = has3D && hasInflate;
+	    return {
+	      supported,
+	      partial: supported,
+	      declared: true,
+	      verified: false,
+	      reason: supported ? "Static volume only: grid 0, frame 0" : has3D ? "DecompressionStream unavailable" : "Requires WebGL2 texImage3D",
+	      formats: {
+	        vta: {
+	          declared: true,
+	          verified: false
+	        }
+	      }
+	    };
+	  }
+
+	  /**
+	   * Fetches and fully decodes the volume, then queues it for upload.
+	   * @param {Tw2TextureRes} res
+	   * @param {String} path
+	   * @returns {Boolean}
+	   */
+	  static Load(res, path) {
+	    resMan.FetchRaw(path, "arraybuffer").then(/*#__PURE__*/function () {
+	      var _ref = _asyncToGenerator(function* (response) {
+	        var decoded = yield new CjsVtaFormat().ReadAsync(response, {
+	          emit: "volume"
+	        });
+	        var grid = decoded && decoded.grids && decoded.grids[0];
+	        if (!grid || !grid.frames || !grid.frames.length) {
+	          throw new ErrResourceFormatUnsupported({
+	            format: "VTA",
+	            reason: "File declares no readable grid"
+	          });
+	        }
+	        res.OnLoaded();
+	        resMan.Queue(res, grid);
+	      });
+	      return function (_x) {
+	        return _ref.apply(this, arguments);
+	      };
+	    }()).catch(err => res.OnError(err));
+	    return true;
+	  }
+
+	  /**
+	   * Uploads the decoded grid as a single-channel 3D texture.
+	   * @param {Tw2TextureRes} res
+	   * @param {WebGL2RenderingContext} gl
+	   * @param {Object} grid - the decoded grid queued by `Load`
+	   */
+	  static Prepare(res, gl, grid) {
+	    if (device.glVersion === 1 || !gl.texImage3D) {
+	      throw new ErrResourceFormatUnsupported({
+	        format: "VTA",
+	        reason: "Volume textures require WebGL2 texture3D support"
+	      });
+	    }
+	    var width = grid.width,
+	      height = grid.height,
+	      depth = grid.depth;
+
+	    // The runtime decodes every grid to r8unorm, whatever the container
+	    // declared, so there is one upload shape rather than a format table.
+	    res._type = gl.UNSIGNED_BYTE;
+	    res._format = gl.RED;
+	    res._internalFormat = gl.R8;
+	    res._target = gl.TEXTURE_3D;
+
+	    // No mip chain in the container, and none generated: these are density
+	    // fields sampled volumetrically, and a generated chain would average
+	    // neighbouring voxels into a haze at distance.
+	    res._mipCount = 1;
+	    res._hasMipMaps = false;
+	    res._isCube = false;
+	    res._width = width;
+	    res._height = height;
+	    res._isPowerOfTwo = res.constructor.IsPowerOfTwo(width, height, depth);
+	    res._isVolumeAtlas = false;
+	    res._volumeAxis = "z";
+	    res._volumeSlices = depth;
+	    if (res._debugInfo) {
+	      res._debugInfo.output = {
+	        target: "TEXTURE_3D",
+	        type: "volume",
+	        name: grid.name,
+	        slices: depth,
+	        width,
+	        height,
+	        depth,
+	        frames: grid.frames.length,
+	        mipmaps: 1
+	      };
+	    }
+	    res.texture = gl.createTexture();
+	    gl.bindTexture(res._target, res.texture);
+
+	    // R8 rows are not 4-byte aligned unless the width happens to be.
+	    var prevUnpack = gl.getParameter(gl.UNPACK_ALIGNMENT);
+	    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+	    try {
+	      gl.texImage3D(res._target, 0, res._internalFormat, width, height, depth, 0, res._format, res._type, grid.frames[0]);
+	    } finally {
+	      gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
+	    }
+	    gl.texParameteri(res._target, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	    gl.texParameteri(res._target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	    gl.texParameteri(res._target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(res._target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(res._target, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+	    gl.bindTexture(res._target, null);
+	  }
+	}
+	TextureFormatVta.formatName = "VTA";
+	TextureFormatVta.exts = ["vta"];
+
 	var _dec$7w, _class$7w, _Tw2TextureRes;
 	var Tw2TextureRes = (_dec$7w = define("Tw2TextureRes"), _dec$7w(_class$7w = (_Tw2TextureRes = class Tw2TextureRes extends Tw2Resource {
 	  constructor() {
@@ -64841,6 +65643,7 @@
 	Tw2TextureRes.RegisterFormat(TextureFormatTarga);
 	Tw2TextureRes.RegisterFormat(TextureFormatVideo);
 	Tw2TextureRes.RegisterFormat(TextureFormatHTML);
+	Tw2TextureRes.RegisterFormat(TextureFormatVta);
 
 	var _dec$7v, _class$7v;
 
@@ -103791,50 +104594,6 @@
 	    };
 	  }
 	  return metadata;
-	}
-
-	var GZIP_PREFIX = new Uint8Array([0x1f, 0x8b]);
-
-	/** Returns whether byte input has the gzip magic prefix. */
-	function isGzip(value) {
-	  return hasBytePrefix(value, GZIP_PREFIX);
-	}
-
-	/** Decompresses bytes with the platform DecompressionStream API. */
-	function decompressBytes(_x, _x2) {
-	  return _decompressBytes.apply(this, arguments);
-	}
-	/** Decompresses one gzip byte sequence. */
-	function _decompressBytes() {
-	  _decompressBytes = _asyncToGenerator(function* (value, format) {
-	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	    var DecompressionStreamClass = Object.hasOwn(options, "decompressionStreamClass") ? options.decompressionStreamClass : globalThis.DecompressionStream;
-	    var ResponseClass = Object.hasOwn(options, "responseClass") ? options.responseClass : globalThis.Response;
-	    if (typeof DecompressionStreamClass !== "function" || typeof ResponseClass !== "function") {
-	      var error = new Error("DecompressionStream support for ".concat(JSON.stringify(format), " is unavailable in this environment."));
-	      error.code = "CJS_DECOMPRESSION_UNSUPPORTED";
-	      throw error;
-	    }
-	    var source = new ResponseClass(asUint8Array(value, "compressed input"));
-	    if (!source.body) {
-	      throw new Error("The platform Response did not expose a readable byte stream.");
-	    }
-	    var stream = source.body.pipeThrough(new DecompressionStreamClass(String(format)));
-	    var output = yield new ResponseClass(stream).arrayBuffer();
-	    return new Uint8Array(output);
-	  });
-	  return _decompressBytes.apply(this, arguments);
-	}
-	function decompressGzip(value) {
-	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	  return decompressBytes(value, "gzip", options);
-	}
-
-	/** Decompresses gzip input and returns an unchanged view for plain bytes. */
-	function decompressGzipIfNeeded(value) {
-	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	  var bytes = asUint8Array(value, "input");
-	  return isGzip(bytes) ? decompressGzip(bytes, options) : Promise.resolve(bytes);
 	}
 
 	var TEXT_DECODER$1 = new TextDecoder();
@@ -245578,6 +246337,8 @@
 	    "tga": Tw2TextureRes,
 	    "mp4": Tw2TextureRes,
 	    "webm": Tw2TextureRes,
+	    // Carbon volume texture animation; static grid 0 / frame 0 for now
+	    "vta": Tw2TextureRes,
 	    // Object
 	    "black": Tw2LoadingObject,
 	    "red": Tw2LoadingObject,

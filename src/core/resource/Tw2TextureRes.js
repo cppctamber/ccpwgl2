@@ -12,6 +12,7 @@ import { TextureFormatDDS } from "./formats/TextureFormatDDS";
 import { TextureFormatImage } from "./formats/TextureFormatImage";
 import { TextureFormatVideo } from "./formats/TextureFormatVideo";
 import { TextureFormatHTML } from "./formats/TextureFormatHTML";
+import { TextureFormatVta } from "./formats/TextureFormatVta";
 
 
 @meta.define("Tw2TextureRes")
@@ -659,3 +660,4 @@ Tw2TextureRes.RegisterFormat(TextureFormatImage);
 Tw2TextureRes.RegisterFormat(TextureFormatTarga);
 Tw2TextureRes.RegisterFormat(TextureFormatVideo);
 Tw2TextureRes.RegisterFormat(TextureFormatHTML);
+Tw2TextureRes.RegisterFormat(TextureFormatVta);

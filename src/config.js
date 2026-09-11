@@ -444,6 +444,8 @@ export const config = {
         "tga" : core.Tw2TextureRes,
         "mp4": core.Tw2TextureRes,
         "webm": core.Tw2TextureRes,
+        // Carbon volume texture animation; static grid 0 / frame 0 for now
+        "vta": core.Tw2TextureRes,
 
         // Object
         "black": core.Tw2LoadingObject,
