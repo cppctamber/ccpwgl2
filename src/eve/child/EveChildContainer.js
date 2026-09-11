@@ -585,7 +585,7 @@ export class EveChildContainer extends EveChild
      * @param {?EveShip2} [parentSpaceObject] - top-level space object, threaded down so nested
      *  containers' controllers can resolve ShipSpeed()/ShipMaxSpeed() (see `_parentSpaceObject`)
      */
-    Update(dt, parentTransform, perObjectData, parentSpaceObject)
+    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData, parentSpaceObject)
     {
         this._parentSpaceObject = parentSpaceObject || null;
 

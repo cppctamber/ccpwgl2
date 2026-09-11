@@ -100,7 +100,7 @@ export class EveChildBillboard extends EveChild
      * @param {number} dt
      * @param {mat4} parentTransform
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform = EveChild.IDENTITY)
     {
         mat4.copy(this._worldTransformLast, this._worldTransform);
         this.PrepareLod(parentTransform);

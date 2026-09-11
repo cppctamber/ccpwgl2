@@ -344,7 +344,7 @@ export class EveChildLineSet extends EveChild
     }
 
     /** Advances paths and refreshes visible lines and mesh instances. */
-    Update(dt, parentTransform, perObjectData)
+    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData)
     {
         // Carbon composes the local transform from the SRT triple each frame unless
         // the child is static or opts out (`EveChildTransform::UpdateTransform`,

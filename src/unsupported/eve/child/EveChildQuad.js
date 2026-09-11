@@ -196,7 +196,7 @@ export class EveChildQuad extends EveChild
      * @param {mat4} parentTransform
      * @param {Tw2PerObjectData} perObjectData
      */
-    Update(dt, parentTransform, perObjectData)
+    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData)
     {
         if (!this.display) return;
 

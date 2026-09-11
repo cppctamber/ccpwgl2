@@ -247,7 +247,7 @@ export class EveChildParticleSystem extends EveChild
      * @param {number} dt
      * @param {mat4} parentTransform
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform = EveChild.IDENTITY)
     {
         if (this.useSRT)
         {

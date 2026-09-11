@@ -163771,7 +163771,7 @@
 	  mat4_1: mat4$1.create()
 	}, _EveChild.perObjectData = {
 	  ffe: [["world", 16], ["worldInverseTranspose", 16]]
-	}, _EveChild.__isEffectChild = true, _EveChild), _descriptor$4Z = _applyDecoratedDescriptor(_class$5s.prototype, "updateOnDisplay", [_dec$5s], {
+	}, _EveChild.__isEffectChild = true, _EveChild.IDENTITY = mat4$1.identity(mat4$1.create()), _EveChild), _descriptor$4Z = _applyDecoratedDescriptor(_class$5s.prototype, "updateOnDisplay", [_dec$5s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -163850,7 +163850,8 @@
 	   * @param {number} dt
 	   * @param {mat4} parentTransform
 	   */
-	  Update(dt, parentTransform) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
 	    mat4$1.copy(this._worldTransformLast, this._worldTransform);
 	    this.PrepareLod(parentTransform);
 	  }
@@ -165031,7 +165032,10 @@
 	   * @param {?EveShip2} [parentSpaceObject] - top-level space object, threaded down so nested
 	   *  containers' controllers can resolve ShipSpeed()/ShipMaxSpeed() (see `_parentSpaceObject`)
 	   */
-	  Update(dt, parentTransform, perObjectData, parentSpaceObject) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
+	    var perObjectData = arguments.length > 2 ? arguments[2] : undefined;
+	    var parentSpaceObject = arguments.length > 3 ? arguments[3] : undefined;
 	    this._parentSpaceObject = parentSpaceObject || null;
 	    if (this.useSRT) {
 	      mat4$1.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
@@ -165804,7 +165808,10 @@
 	   * @param {Tw2PerObjectData} [perObjectData]
 	   * @param {EveShip2} [parentSpaceObject]
 	   */
-	  Update(dt, parentTransform, perObjectData, parentSpaceObject) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
+	    var perObjectData = arguments.length > 2 ? arguments[2] : undefined;
+	    var parentSpaceObject = arguments.length > 3 ? arguments[3] : undefined;
 	    if (!this.display) return;
 	    if (this.useSRT && !this.staticTransform) {
 	      mat4$1.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
@@ -169144,7 +169151,9 @@
 	  }
 
 	  /** Advances paths and refreshes visible lines and mesh instances. */
-	  Update(dt, parentTransform, perObjectData) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
+	    var perObjectData = arguments.length > 2 ? arguments[2] : undefined;
 	    // Carbon composes the local transform from the SRT triple each frame unless
 	    // the child is static or opts out (`EveChildTransform::UpdateTransform`,
 	    // cpp:59-67); an authored `localTransform` is only used as-is in that case.
@@ -169676,7 +169685,9 @@
 	   * @param {mat4} parentTransform
 	   * @param {Tw2PerObjectData|} perObjectData
 	   */
-	  Update(dt, parentTransform, perObjectData) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
+	    var perObjectData = arguments.length > 2 ? arguments[2] : undefined;
 	    mat4$1.copy(this._worldTransformLast, this._worldTransform);
 	    if (this.useSRT) {
 	      mat4$1.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
@@ -171973,7 +171984,8 @@
 	   * @param {number} dt
 	   * @param {mat4} parentTransform
 	   */
-	  Update(dt, parentTransform) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
 	    if (this.useSRT) {
 	      quat$1.normalize(this.rotation, this.rotation);
 	      mat4$1.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
@@ -175132,7 +175144,16 @@
 	          }
 	        }
 	      }
-	      this.stretch[i].Update(dt);
+	      // Only while firing, as UpdateLod and GetBatches already do. A
+	      // stretch exists to draw the beam and GetBatches refuses to draw
+	      // one when the set is not firing, so a tick here advances state
+	      // nothing can show. It also throws: EveStretch3.Update forwards
+	      // only the delta to its sourceObject, and an EveChild source needs
+	      // the parent transform - a mining turret reached this every frame
+	      // and killed the render loop, because the scene update runs before
+	      // anything draws. The wind-down does not need it either:
+	      // StopFiring tells each stretch directly before clearing the flag.
+	      if (this._isFiring) this.stretch[i].Update(dt);
 	    }
 	  }
 
@@ -202028,7 +202049,9 @@
 	   * @param {mat4} parentTransform
 	   * @param {Tw2PerObjectData} perObjectData
 	   */
-	  Update(dt, parentTransform, perObjectData) {
+	  Update(dt) {
+	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
+	    var perObjectData = arguments.length > 2 ? arguments[2] : undefined;
 	    if (!this.display) return;
 	    if (this._dirty) {
 	      mat4$1.copy(this._parentTransform, parentTransform);
@@ -244674,7 +244697,42 @@
 	}), _class2$9)) || _class$l);
 
 	/**
-	 * Classes ONLY.
+	 * What "unsupported" means here, and what it does not.
+	 *
+	 * Two kinds of class live in this folder, and both are here so that a `.black`
+	 * naming the type LOADS:
+	 *
+	 *   a schema mirror   the shipped object as data, with the fields it persists
+	 *                     and methods that do nothing. Without it the reader hits a
+	 *                     type it cannot construct and the whole file fails, taking
+	 *                     everything else in it with it - so a stub that draws
+	 *                     nothing is worth more than no class at all.
+	 *
+	 *   a partial port    real behaviour, incomplete. It runs, and some paths
+	 *                     through it are finished while others are missing or out
+	 *                     of date against Carbon.
+	 *
+	 * So a class being here does NOT mean it does nothing. `Tw2GpuParticleRenderer`
+	 * left for `particle/gpu` once it was clear it was complete; others are used
+	 * every frame while still sitting here.
+	 *
+	 * ## Some of these throw
+	 *
+	 * A partial port can reach a path nobody finished. Where that is known, the
+	 * throw is gated so the object still loads and the file still reads - the cost
+	 * is a feature that does not appear, rather than a scene that does not.
+	 *
+	 * The gating is not complete, and an ungated one is a real bug rather than an
+	 * accepted state. `EveStretch3` is the standing example: its `Update(dt)`
+	 * forwards only the delta to `sourceObject`, so an `EveChild*` source - which
+	 * needs `Update(dt, parentTransform, …)` - dereferences an undefined transform.
+	 * A mining turret reaches it every frame and kills the render loop, because the
+	 * scene update runs before anything draws.
+	 *
+	 * Report those. A throw from here is a porting gap with a name, not a reason to
+	 * work around the class.
+	 *
+	 * ## Classes ONLY
 	 *
 	 * `config.js` spreads this whole namespace into `constructors`, so every named
 	 * export here is registered as a class by its export name. That is what makes a

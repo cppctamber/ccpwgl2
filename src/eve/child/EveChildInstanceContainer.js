@@ -480,7 +480,7 @@ export class EveChildInstanceContainer extends EveChild
      * @param {Tw2PerObjectData} [perObjectData]
      * @param {EveShip2} [parentSpaceObject]
      */
-    Update(dt, parentTransform, perObjectData, parentSpaceObject)
+    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData, parentSpaceObject)
     {
         if (!this.display) return;
 

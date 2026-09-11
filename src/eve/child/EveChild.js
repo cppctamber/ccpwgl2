@@ -217,4 +217,25 @@ export class EveChild extends meta.Model
      */
     static __isEffectChild = true;
 
+
+    /**
+     * The transform a child gets when its caller does not supply one.
+     *
+     * Carbon passes children an `EveChildUpdateParams` struct whose
+     * `localToWorldTransform` is constructed as `IdentityMatrix()`
+     * (IEveSpaceObjectChild.h:28), so a caller that sets no transform still
+     * hands over identity and the child multiplies by it harmlessly.
+     * `EveStretch3` is built on exactly that: it sets the transform for its
+     * move and dest objects only, and lets source and stretch take the default.
+     *
+     * This port turned that struct into positional arguments and the defaults
+     * went with it, so an unset transform arrived as `undefined` and
+     * `mat4.multiply` read `[0]` of it - a dead render loop where Carbon has a
+     * no-op. Each subclass defaults its parameter to this rather than guarding
+     * at the multiply, because the missing thing is the ARGUMENT.
+     *
+     * Read only. It is shared by every child and nothing may write through it.
+     * @type {mat4}
+     */
+    static IDENTITY = mat4.identity(mat4.create());
 }

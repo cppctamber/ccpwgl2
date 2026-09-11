@@ -471,7 +471,16 @@ export class EveTurretFiringFX extends meta.Model
                     }
                 }
             }
-            this.stretch[i].Update(dt);
+            // Only while firing, as UpdateLod and GetBatches already do. A
+            // stretch exists to draw the beam and GetBatches refuses to draw
+            // one when the set is not firing, so a tick here advances state
+            // nothing can show. It also throws: EveStretch3.Update forwards
+            // only the delta to its sourceObject, and an EveChild source needs
+            // the parent transform - a mining turret reached this every frame
+            // and killed the render loop, because the scene update runs before
+            // anything draws. The wind-down does not need it either:
+            // StopFiring tells each stretch directly before clearing the flag.
+            if (this._isFiring) this.stretch[i].Update(dt);
         }
     }
 
