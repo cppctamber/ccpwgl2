@@ -12,6 +12,11 @@ import { TnySpaceObject } from "./TnySpaceObject";
  * are `EveMobile`'s (`EveMobile.h:88`); the base owns locators and locator
  * sets, but nothing that mounts to them.
  *
+ * ccpwgl now has an `EveMobile` in the same place, so the wrapper and the
+ * wrapped agree on where turrets live. The sof builder does not build one yet
+ * (see `TnyScene.EVE_CLASS`), so what this wraps in practice is still an
+ * `EveShip2`.
+ *
  * Before this class existed the slot arrays sat on `TnySpaceObject`, so a jump
  * gate, a station and a planet all carried six of them and ran `RebuildSlots`.
  *

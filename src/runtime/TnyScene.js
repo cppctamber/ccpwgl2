@@ -4,6 +4,7 @@ import { Tw2Picker, Tw2RayCaster } from "core";
 import { EveSpaceScene } from "eve/EveSpaceScene";
 import { TnyClient } from "./TnyClient";
 import { TnyLensflare } from "./objects/TnyLensflare";
+import { TnyMobile } from "./objects/TnyMobile";
 import { TnyPlanet } from "./objects/TnyPlanet";
 import { TnyShip } from "./objects/TnyShip";
 import { TnySpaceObject } from "./objects/TnySpaceObject";
@@ -473,11 +474,13 @@ export class TnyScene extends meta.Model
      * "the" name of a constructor is not a well-defined question of the store.
      * The class reports its own.
      *
-     * Walks up the prototype chain rather than using `instanceof`. ccpwgl's
-     * `EveStation2` extends `EveShip2`, so an `instanceof` ladder silently
-     * depends on being written most-specific-first; the walk cannot get that
-     * wrong, and it carries a consumer's own subclass - which reports its own
-     * name and so misses the map - up to its base's wrapper.
+     * Walks up the prototype chain rather than using `instanceof`. An
+     * `instanceof` ladder silently depends on being written most-specific-first
+     * - and the eve chain is now three deep on the mobile side
+     * (`EveShip2 -> EveMobile -> EveSpaceObject2`), so every entry added is
+     * another chance to get that order wrong. The walk cannot, and it carries
+     * a consumer's own subclass - which reports its own name and so misses the
+     * map - up to its base's wrapper.
      *
      * @param {*} wrapped - a built eve object
      * @returns {Function} a Tny class
@@ -497,15 +500,17 @@ export class TnyScene extends meta.Model
     /**
      * Eve root class to the Tny class that wraps it.
      *
-     * KNOWN LIMIT: ccpwgl's sof builder has one branch,
+     * KNOWN LIMIT: ccpwgl's sof builder still has one branch,
      * `buildClass === 2 ? new EveStation2() : new EveShip2()`
      * (`src/sof/EveSOFData.js:1209`), so buildClass 1 (mobile), 3 (swarm) and
      * 4 (extension) all arrive here as `EveShip2` and come back `TnyShip`.
      * A citadel therefore wraps as a ship. It still WORKS - `TnyShip` extends
      * `TnyMobile`, so the turret slots a citadel needs are there - but the
      * class is not what Carbon would have built. The fix belongs in the
-     * builder: teach it `EveMobile` and `EveSwarm` and this map is right for
-     * free, with no dispatch table to keep in step.
+     * builder, and half of it is now possible: `EveMobile` exists as a real
+     * class, so buildClass 1 has something correct to build. `EveSwarm` still
+     * does not. `EveMobile` is mapped below so that the day the builder learns
+     * it, this map is already right.
      *
      * Keyed by the eve class's own reported name (`@meta.define`), valued with
      * the Tny class itself - these are all imported here anyway, so there is
@@ -518,6 +523,7 @@ export class TnyScene extends meta.Model
         EveLensflare: TnyLensflare,
         EveStation2: TnyStationary,
         EveShip2: TnyShip,
+        EveMobile: TnyMobile,
         EveShip: TnyShip,
         EveSpaceObject: TnySpaceObject,
         EveEffectRoot2: TnySpaceObject,

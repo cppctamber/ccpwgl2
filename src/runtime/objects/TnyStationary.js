@@ -15,15 +15,15 @@ import { TnySpaceObject } from "./TnySpaceObject";
  *
  * Carbon's CLASS name `EveStation2` is the outlier here, not the enum. This
  * layer stands in for the game's Python rather than mirroring engine class
- * names, and it already declines to mirror ccpwgl's `EveStation2 extends
- * EveShip2` (`src/eve/object/EveStation2.js:30`), so it does not inherit that
- * naming wart either. The object wrapped is still an `EveStation2`.
+ * names, so it keeps the enum's word. The object wrapped is still an
+ * `EveStation2`.
  *
  * Carbon's `EveStation2` extends `EveSpaceObject2` DIRECTLY, as a sibling of
  * `EveMobile`, and declares no data at all: zero Blue attributes, overriding
  * only `GetBatches` and `PrepareShaderData` (`EveStation2.h:13-26`). Everything
  * it appears to "own" - spotlights, planes, decals, locator sets - belongs to
- * `EveSpaceObject2`. So this is a marker, deliberately.
+ * `EveSpaceObject2`. So this is a marker, deliberately. ccpwgl's `EveStation2`
+ * now extends `EveSpaceObject2` too, so the two agree.
  *
  * It extends `TnySpaceObject` and not `TnyMobile` because a stationary hull has
  * no turrets. That is measured, not assumed: of the 948 buildClass 2 hulls,
@@ -42,9 +42,9 @@ export class TnyStationary extends TnySpaceObject
 
     SetWrapped(wrapped)
     {
-        // Checked against EveStation2 specifically. ccpwgl's EveStation2
-        // extends EveShip2, so a ship test would pass for one of these and
-        // tell us nothing.
+        // Checked against EveStation2 specifically. A broader base test
+        // would pass for any space object, and this wrapper is a claim about
+        // buildClass 2 in particular.
         if (wrapped && !(wrapped instanceof EveStation2))
         {
             throw new TypeError("Invalid wrapped stationary object");
