@@ -338,8 +338,11 @@ export const config = {
         // The amount of parallel raw loads allowed at once
         "maxConcurrentLoads": 8,
 
-        // The maximum time for preparing resources per frame
-        "maxPrepareTime": 0.05,
+        // The maximum time for preparing resources per frame.
+        // 0.01 is well inside a 60Hz frame; the budget is checked AFTER each
+        // resource returns, so this is a floor on how long a frame can run, not
+        // a ceiling - one slow resource still overruns it.
+        "maxPrepareTime": 0.01,
 
         // Optional worker loader url, defaults to null
         "workerLoaderUrl": null,

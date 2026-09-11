@@ -14,9 +14,24 @@ export class Tw2LoadingObject extends Tw2Resource
     loader = null;
 
     _view = null;
-    _requeued = false;
-    _inPrepare = null;
+
+    /**
+     * Consumers this prepare is draining. Populated from `_waiting` when
+     * `Prepare` starts, and emptied as each is answered.
+     * @type {Array}
+     */
     _objects = [];
+
+    /**
+     * Consumers that arrived since the current drain began, or after the last
+     * one finished. Kept SEPARATE from `_objects` so that a request made while
+     * constructing cannot extend the list being walked - which is how one
+     * `Prepare` came to build a whole layout in a single synchronous call.
+     * @type {Array}
+     */
+    _waiting = [];
+
+    _requeued = false;
     _constructor = null;
     _requestResponseType = "arraybuffer";
 
@@ -70,22 +85,21 @@ export class Tw2LoadingObject extends Tw2Resource
             return;
         }
 
-        this._objects.push({ onResolved, onRejected });
+        // Onto the waiting list, never onto the list a drain is walking.
+        this._waiting.push({ onResolved, onRejected });
 
-        // Already prepared, so no `Prepare` is coming on its own - the object
+        // Already constructed, so no `Prepare` is coming on its own: the object
         // left the prepare queue when it finished and nothing puts it back.
-        // Re-queue it, and `Prepare` walks the consumers added since.
+        // Ask for one.
         //
-        // Through the QUEUE rather than constructing here, which is what this
-        // did first and was wrong. Construction is prepare work: it is charged
-        // to `maxPrepareTime` and spread across frames. Doing it inline made
-        // every fetch of a retained object resolve as a microtask, and a build
-        // awaiting hundreds of them then ran as one unbroken microtask chain -
-        // no macrotask, so no paint, no input, not even a tab close. The
-        // network used to provide that yield by accident; retaining the object
-        // took it away, and the queue is where it properly belongs.
+        // Through the QUEUE rather than constructing here. Construction is
+        // prepare work - it belongs to `maxPrepareTime` and gets spread across
+        // frames. Answering inline is what this did first and it froze the
+        // page: every consumer of a retained object was served without ever
+        // returning to the event loop, so a build wanting hundreds of them ran
+        // as one unbroken run with no paint and no input.
         //
-        // Before retention this branch was unreachable: `OnPrepared` dropped
+        // Before retention this could not happen at all: `OnPrepared` dropped
         // the object from the motherlode, so no one could find one to add to.
         if (this._constructor && !this._requeued)
         {
@@ -105,7 +119,17 @@ export class Tw2LoadingObject extends Tw2Resource
         const ext = this.path.substr(dot + 1);
         let first;
 
-        if (this._inPrepare === null)
+        // Take the waiting list as this drain's work. Anything requested from
+        // here on lands on a fresh `_waiting` and is served by a later prepare,
+        // so this walk has a fixed size no matter what construction asks for.
+        this._requeued = false;
+        if (this._waiting.length)
+        {
+            this._objects = this._waiting;
+            this._waiting = [];
+        }
+
+        if (this._constructor === null)
         {
             this._view = response;
 
@@ -138,14 +162,15 @@ export class Tw2LoadingObject extends Tw2Resource
                     throw new ErrResourceFormatUnsupported({ format: ext });
             }
 
-            this._inPrepare = 0;
             // Test construction once for errors??
             first = this._constructor.Construct();
         }
 
-        while (this._inPrepare < this._objects.length)
+        // Popped as they are answered, so the list IS the outstanding work and
+        // nothing has to track a cursor into it.
+        while (this._objects.length)
         {
-            const object = this._objects[this._inPrepare];
+            const object = this._objects.shift();
 
             try
             {
@@ -169,8 +194,15 @@ export class Tw2LoadingObject extends Tw2Resource
 
                 this.OnWarning({ err, message: "Error preparing child object" });
             }
+        }
 
-            this._inPrepare++;
+        // Consumers that arrived while this drain ran get the next one, so a
+        // long cascade is spread across frames and charged to the prepare
+        // budget rather than held in one call.
+        if (this._waiting.length && !this._requeued)
+        {
+            this._requeued = true;
+            resMan.Queue(this, this._view);
         }
 
         this.OnPrepared();
@@ -184,15 +216,22 @@ export class Tw2LoadingObject extends Tw2Resource
     OnError(err)
     {
         super.OnError(err);
-        for (let i = 0; i < this._objects.length; i++)
+
+        // Both lists: the one a drain was working through, and anything that
+        // arrived since. Missing the second would leave those promises unsettled.
+        const pending = this._objects.concat(this._waiting);
+        this._objects.splice(0);
+        this._waiting.splice(0);
+
+        for (let i = 0; i < pending.length; i++)
         {
-            if (this._objects[i].onRejected)
+            if (pending[i].onRejected)
             {
-                this._objects[i].onRejected(err);
+                pending[i].onRejected(err);
             }
         }
+
         resMan.RemoveResource(this.path);
-        this._objects.splice(0);
         return err;
     }
 
@@ -212,14 +251,9 @@ export class Tw2LoadingObject extends Tw2Resource
             resMan.RemoveResource(this.path);
         }
 
-        // The consumers queued for this prepare have all been served. Reset the
-        // cursor with the list: `AddObject` re-queues later arrivals and
-        // `Prepare` walks them from the start of the emptied list, so the two
-        // must agree or a re-queued prepare would walk nothing and those
-        // consumers would never settle.
-        this._objects.splice(0);
-        if (this._inPrepare !== null) this._inPrepare = 0;
-        this._requeued = false;
+        // `Prepare` pops as it goes and owns the re-queue for anything still
+        // waiting, so there is nothing to clear here. Clearing would DISCARD
+        // consumers that arrived during the drain.
         super.OnPrepared(eventLog);
     }
 

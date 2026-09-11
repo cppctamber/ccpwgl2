@@ -18,7 +18,18 @@ export class Tw2ResMan extends Tw2EventEmitter
     /** Resource cache and lifecycle root owned by this manager. */
     motherLode = new Tw2MotherLode();
     /** Max seconds per frame spent preparing loaded resources. */
-    maxPrepareTime = 0.05;
+    /**
+     * Seconds of resource preparation allowed per frame.
+     *
+     * Lowered from 0.05 when the budget arithmetic was fixed, and the two go
+     * together. 0.05s is three whole 60Hz frames, and the check is post-hoc -
+     * taken AFTER a resource returns - so the old value only ever looked
+     * survivable because the quadratic drain cut the loop short long before it
+     * was reached. Correct arithmetic against 0.05 would genuinely spend 50ms
+     * in a 16.7ms frame and stall visibly.
+     * @type {Number}
+     */
+    maxPrepareTime = 0.01;
     /** Maximum number of in-flight raw loads at once. */
     maxConcurrentLoads = 8;
     /** Whether to use worker loader for raw fetch/parse operations. */
@@ -185,12 +196,30 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Gets a count of pending loads
+     * Gets a count of outstanding work: bytes still arriving, AND resources
+     * that have arrived but are still waiting to be built.
+     *
+     * The prepare queue counts. A resource whose bytes have landed is not
+     * ready - it has no mesh, no texture, no constructed object yet - and
+     * leaving it out let this read zero while a scene was still assembling.
+     * Anything driving a progress bar, or deciding a build had finished, was
+     * told so early; a texture still queued reads as done and draws white.
      * @returns {number}
      */
     get pendingLoads()
     {
-        return this._pendingLoads.size + (this._loadQueue.length - this._loadQueueHead);
+        return this._pendingLoads.size
+            + (this._loadQueue.length - this._loadQueueHead)
+            + this.pendingPrepares;
+    }
+
+    /**
+     * Gets a count of resources waiting to be built.
+     * @returns {number}
+     */
+    get pendingPrepares()
+    {
+        return this._prepareQueue.length - this._prepareQueueHead;
     }
 
     /**
@@ -521,7 +550,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         this.PumpLoadQueue();
 
-        if (this._prepareQueue.length === this._prepareQueueHead && this.pendingLoads === 0)
+        // `pendingLoads` now covers the prepare queue as well, so this is the
+        // one question it always meant to ask: is there any outstanding work.
+        if (this.pendingLoads === 0)
         {
             if (this._noLoadFrames < 2)
             {
@@ -544,7 +575,14 @@ export class Tw2ResMan extends Tw2EventEmitter
             try
             {
                 res.Prepare(data, xml);
-                this._prepareBudget -= (this.tw2.now - startTime) * 0.001;
+
+                // Against the elapsed total, not by subtracting it each time.
+                // `startTime` is fixed before the loop, so the old
+                // `budget -= (now - startTime)` charged item one's cost again
+                // for every later item and the budget drained quadratically:
+                // with 0.05s it managed about 20 items a frame where 200 fit,
+                // and the cheaper the resources the worse the penalty.
+                this._prepareBudget = this.maxPrepareTime - (this.tw2.now - startTime) * 0.001;
                 if (this._prepareBudget < 0) break;
             }
             catch (err)
@@ -914,7 +952,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             // much later - the prepare queue is budgeted, so a backlog is
             // normal - and the clock runs from the REQUEST. Dropping it in that
             // window would take the reader out from under waiting consumers.
-            if (res && res._objects && res._objects.length) continue;
+            if (res && ((res._objects && res._objects.length) || (res._waiting && res._waiting.length))) continue;
 
             const bytes = res && res._view && res._view.byteLength ? res._view.byteLength : 0;
             totalBytes += bytes;
