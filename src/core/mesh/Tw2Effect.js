@@ -684,7 +684,12 @@ export class Tw2Effect extends meta.Model
 
         for (const param in this.parameters)
         {
-            if (this.parameters.hasOwnProperty(param))
+            // Guarded like the sampler overrides below, and like the prune that
+            // READS this flag - which already treats a missing entry as a slot
+            // to delete rather than a fault. A parameter slot can legitimately
+            // hold nothing, and unguarded this threw from inside
+            // `BindParameters`, taking a turret material build down with it.
+            if (this.parameters.hasOwnProperty(param) && this.parameters[param])
             {
                 this.parameters[param].usedByCurrentEffect = false;
                 //this.parameters[param].usedByCurrentTechnique = false;
@@ -1267,9 +1272,19 @@ export class Tw2Effect extends meta.Model
         context.constantBufferHandles = program.constantBufferHandles;
         this._RunAdapterHook("OnAfterApplyPass", context);
 
-        for (let i = 0; i < 2; ++i)
+        // Every stage the pass actually has, which is what the rest of this
+        // file already does (`:669`, `:824`) and what `Tw2ShaderPass` does
+        // throughout. This alone was hardcoded to two, and got it wrong in both
+        // directions: a pass with ONE stage read past the end and threw from
+        // inside the render loop - stopping the frame and everything after it
+        // in the batch, so whole ships vanish and the error names
+        // `Tw2Effect.ApplyPass` rather than whatever built the pass - while a
+        // pass with THREE silently never applied its third stage's parameters
+        // or textures at all.
+        for (let i = 0; i < p.stages.length; ++i)
         {
             const stages = p.stages[i];
+            if (!stages) continue;
 
             for (let j = 0; j < stages.parameters.length; ++j)
             {
