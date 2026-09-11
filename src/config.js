@@ -429,7 +429,6 @@ export const config = {
         "gr2": core.Tw2GeometryRes,
         "gr2_json": core.Tw2GeometryRes,
         "gsf": core.Tw2GeometryRes,
-        "wbg": core.Tw2GeometryRes,
         "obj": core.Tw2GeometryRes,
 
         // Texture
