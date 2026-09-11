@@ -209,12 +209,9 @@ export class EveChildSmartLightSet extends EveChild
         params.childParent = this;
         params.localToWorldTransform = this._worldTransform;
 
-        // The caller's bones win. A parent that HAS a bone array puts it in the
-        // block (EveChildMesh/EveChildContainer.GetLights); one that only has a
-        // per-object data bag leaves it null and the joint matrices are dug out
-        // of that instead. Before the block existed there was only the second
-        // route, and the parents with real bones were passing them into the
-        // per-object data argument, where GetJointMatrices could not see them.
+        // The caller's bones if the block carries any, otherwise the joint
+        // matrices off the per-object data bag - which is the only route a
+        // parent uses today.
         params.bones = incoming.bones || EveChild.GetJointMatrices(perObjectData);
         params.boneCount = params.bones ? params.bones.length / 12 : 0;
 

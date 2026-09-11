@@ -10,12 +10,6 @@ import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 export class EveChildMesh extends EveChild
 {
 
-    /**
-     * The block handed to owned smart lights by `GetLights`, refilled per call.
-     * Separate from the child block because GetLights runs outside Update.
-     * @type {EveChildUpdateParams}
-     */
-    _lightUpdateParams = new EveChildUpdateParams();
 
     @meta.string
     name = "";
@@ -696,20 +690,11 @@ export class EveChildMesh extends EveChild
         {
             const light = this.lights[i];
             if (!light) continue;
-            // The bones the caller handed us, put where a light actually
-            // reads them. This used to be `light.Update(dt, this._worldTransform,
-            // bones)` - the third positional argument was `perObjectData`, and
-            // EveChildSmartLightSet pulls bones out of it with
-            // GetJointMatrices, which finds nothing on a raw array. The bones
-            // were silently discarded. That is the failure the params block
-            // exists to make impossible.
-            const lightParams = this._lightUpdateParams;
-            lightParams.childParent = this;
-            lightParams.bones = bones;
-            lightParams.boneCount = bones ? bones.length / 12 : 0;
-            mat4.copy(lightParams.localToWorldTransform, this._worldTransform);
-
-            light.Update(dt, lightParams);
+            // `Tr2Light.Update(dt, parentMatrix, bones)` - NOT an EveChild, and
+            // not the child params block. These lists hold Tr2Light (it is what
+            // defines GetCarbonLightData, called on the next line), which has
+            // its own signature and reads the bone array directly.
+            light.Update(dt, this._worldTransform, bones);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
         }
     }

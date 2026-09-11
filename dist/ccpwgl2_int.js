@@ -165643,12 +165643,6 @@
 	     * @type {EveChildUpdateParams}
 	     */
 	    this._childUpdateParams = new EveChildUpdateParams();
-	    /**
-	     * The block handed to owned smart lights by `GetLights`, refilled per call.
-	     * Separate from the child block because GetLights runs outside Update.
-	     * @type {EveChildUpdateParams}
-	     */
-	    this._lightUpdateParams = new EveChildUpdateParams();
 	  }
 	  /**
 	   * Links this container's controllers with the container as their owner, mirroring
@@ -166219,19 +166213,11 @@
 	      var light = this.lights[i];
 	      if (!light) continue;
 
-	      // The bones the caller handed us, put where a light actually
-	      // reads them. This used to be `light.Update(dt, this._worldTransform,
-	      // bones)` - the third positional argument was `perObjectData`, and
-	      // EveChildSmartLightSet pulls bones out of it with
-	      // GetJointMatrices, which finds nothing on a raw array. The bones
-	      // were silently discarded. That is the failure the params block
-	      // exists to make impossible.
-	      var lightParams = this._lightUpdateParams;
-	      lightParams.childParent = this;
-	      lightParams.bones = bones;
-	      lightParams.boneCount = bones ? bones.length / 12 : 0;
-	      mat4$1.copy(lightParams.localToWorldTransform, this._worldTransform);
-	      light.Update(dt, lightParams);
+	      // `Tr2Light.Update(dt, parentMatrix, bones)` - NOT an EveChild, and
+	      // not the child params block. These lists hold Tr2Light (it is what
+	      // defines GetCarbonLightData, called on the next line), which has
+	      // its own signature and reads the bone array directly.
+	      light.Update(dt, this._worldTransform, bones);
 	      collector.Collect([light.GetCarbonLightData({
 	        parentBrightness,
 	        parentScale
@@ -170541,12 +170527,6 @@
 	var EveChildMesh = (_dec$5j = define("EveChildMesh", true), _dec2$4X = string, _dec3$4w = boolean, _dec4$3W = boolean, _dec5$3q = list(), _dec6$2Z = list("EveObjectSet"), _dec7$2C = list("EveSpaceObjectDecal"), _dec8$2i = list("EveMeshOverlayEffect"), _dec9$1_ = boolean, _dec0$1Q = matrix4, _dec1$1J = uint, _dec10$1v = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec11$1o = struct("Tr2GrannyAnimation"), _dec12$1d = float, _dec13$14 = float, _dec14$_ = float, _dec15$V = notImplemented, _dec16$L = uint, _dec17$I = quaternion, _dec18$E = vector3, _dec19$y = notImplemented, _dec20$v = float, _dec21$r = float, _dec22$p = notImplemented, _dec23$n = boolean, _dec24$l = notImplemented, _dec25$j = list("EveChildModifier"), _dec26$g = vector3, _dec27$g = boolean, _dec28$e = boolean, _dec29$c = boolean, _dec30$a = uint, _dec31$a = notImplemented, _dec$5j(_class$5j = (_class2$4O = (_EveChildMesh = class EveChildMesh extends EveChild {
 	  constructor() {
 	    super(...arguments);
-	    /**
-	     * The block handed to owned smart lights by `GetLights`, refilled per call.
-	     * Separate from the child block because GetLights runs outside Update.
-	     * @type {EveChildUpdateParams}
-	     */
-	    this._lightUpdateParams = new EveChildUpdateParams();
 	    _initializerDefineProperty(this, "name", _descriptor$4P, this);
 	    _initializerDefineProperty(this, "display", _descriptor2$4k, this);
 	    _initializerDefineProperty(this, "castShadow", _descriptor3$3L, this);
@@ -171041,19 +171021,11 @@
 	    for (var i = 0; i < this.lights.length; i++) {
 	      var light = this.lights[i];
 	      if (!light) continue;
-	      // The bones the caller handed us, put where a light actually
-	      // reads them. This used to be `light.Update(dt, this._worldTransform,
-	      // bones)` - the third positional argument was `perObjectData`, and
-	      // EveChildSmartLightSet pulls bones out of it with
-	      // GetJointMatrices, which finds nothing on a raw array. The bones
-	      // were silently discarded. That is the failure the params block
-	      // exists to make impossible.
-	      var lightParams = this._lightUpdateParams;
-	      lightParams.childParent = this;
-	      lightParams.bones = bones;
-	      lightParams.boneCount = bones ? bones.length / 12 : 0;
-	      mat4$1.copy(lightParams.localToWorldTransform, this._worldTransform);
-	      light.Update(dt, lightParams);
+	      // `Tr2Light.Update(dt, parentMatrix, bones)` - NOT an EveChild, and
+	      // not the child params block. These lists hold Tr2Light (it is what
+	      // defines GetCarbonLightData, called on the next line), which has
+	      // its own signature and reads the bone array directly.
+	      light.Update(dt, this._worldTransform, bones);
 	      collector.Collect([light.GetCarbonLightData({
 	        parentBrightness,
 	        parentScale
@@ -186463,12 +186435,6 @@
 	     * @type {EveChildUpdateParams}
 	     */
 	    this._childUpdateParams = new EveChildUpdateParams();
-	    /**
-	     * The block handed to owned smart lights, refilled per call. Separate from
-	     * the child block because light collection runs outside Update.
-	     * @type {EveChildUpdateParams}
-	     */
-	    this._lightUpdateParams = new EveChildUpdateParams();
 	    _initializerDefineProperty(this, "boundingSphereCenter", _descriptor$4l, this);
 	    _initializerDefineProperty(this, "boundingSphereRadius", _descriptor2$3T, this);
 	    _initializerDefineProperty(this, "controllers", _descriptor3$3j, this);
@@ -186678,11 +186644,9 @@
 	      var light = this.lights[i];
 	      if (!light) continue;
 	      if (light.display === false) continue;
-	      var lightParams = this._lightUpdateParams;
-	      lightParams.childParent = null;
-	      lightParams.perObjectData = null;
-	      mat4$1.copy(lightParams.localToWorldTransform, this._worldTransform);
-	      light.Update(dt, lightParams);
+
+	      // Tr2Light, not an EveChild - its own (dt, parentMatrix, bones).
+	      light.Update(dt, this._worldTransform, null);
 	      collector.Collect([light.GetCarbonLightData({
 	        parentBrightness,
 	        parentScale
@@ -201131,12 +201095,9 @@
 	    params.childParent = this;
 	    params.localToWorldTransform = this._worldTransform;
 
-	    // The caller's bones win. A parent that HAS a bone array puts it in the
-	    // block (EveChildMesh/EveChildContainer.GetLights); one that only has a
-	    // per-object data bag leaves it null and the joint matrices are dug out
-	    // of that instead. Before the block existed there was only the second
-	    // route, and the parents with real bones were passing them into the
-	    // per-object data argument, where GetJointMatrices could not see them.
+	    // The caller's bones if the block carries any, otherwise the joint
+	    // matrices off the per-object data bag - which is the only route a
+	    // parent uses today.
 	    params.bones = incoming.bones || EveChild.GetJointMatrices(perObjectData);
 	    params.boneCount = params.bones ? params.bones.length / 12 : 0;
 	    params.activationStrength = perObjectData && perObjectData.activationStrength !== undefined ? perObjectData.activationStrength : incoming.activationStrength;

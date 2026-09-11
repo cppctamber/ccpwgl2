@@ -47,12 +47,6 @@ export class EveEffectRoot2 extends EveObject
      */
     _childUpdateParams = new EveChildUpdateParams();
 
-    /**
-     * The block handed to owned smart lights, refilled per call. Separate from
-     * the child block because light collection runs outside Update.
-     * @type {EveChildUpdateParams}
-     */
-    _lightUpdateParams = new EveChildUpdateParams();
 
     @meta.vector3
     boundingSphereCenter = vec3.create();
@@ -336,11 +330,8 @@ export class EveEffectRoot2 extends EveObject
             if (!light) continue;
             if (light.display === false) continue;
 
-            const lightParams = this._lightUpdateParams;
-            lightParams.childParent = null;
-            lightParams.perObjectData = null;
-            mat4.copy(lightParams.localToWorldTransform, this._worldTransform);
-            light.Update(dt, lightParams);
+            // Tr2Light, not an EveChild - its own (dt, parentMatrix, bones).
+            light.Update(dt, this._worldTransform, null);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
             collected++;
         }
