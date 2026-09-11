@@ -133534,7 +133534,12 @@
 	    // shared between effects and one doesn't use it
 
 	    for (var param in this.parameters) {
-	      if (this.parameters.hasOwnProperty(param)) {
+	      // Guarded like the sampler overrides below, and like the prune that
+	      // READS this flag - which already treats a missing entry as a slot
+	      // to delete rather than a fault. A parameter slot can legitimately
+	      // hold nothing, and unguarded this threw from inside
+	      // `BindParameters`, taking a turret material build down with it.
+	      if (this.parameters.hasOwnProperty(param) && this.parameters[param]) {
 	        this.parameters[param].usedByCurrentEffect = false;
 	        //this.parameters[param].usedByCurrentTechnique = false;
 	      }
@@ -134006,8 +134011,19 @@
 	    context.program = program;
 	    context.constantBufferHandles = program.constantBufferHandles;
 	    this._RunAdapterHook("OnAfterApplyPass", context);
-	    for (var i = 0; i < 2; ++i) {
+
+	    // Every stage the pass actually has, which is what the rest of this
+	    // file already does (`:669`, `:824`) and what `Tw2ShaderPass` does
+	    // throughout. This alone was hardcoded to two, and got it wrong in both
+	    // directions: a pass with ONE stage read past the end and threw from
+	    // inside the render loop - stopping the frame and everything after it
+	    // in the batch, so whole ships vanish and the error names
+	    // `Tw2Effect.ApplyPass` rather than whatever built the pass - while a
+	    // pass with THREE silently never applied its third stage's parameters
+	    // or textures at all.
+	    for (var i = 0; i < p.stages.length; ++i) {
 	      var stages = p.stages[i];
+	      if (!stages) continue;
 	      for (var j = 0; j < stages.parameters.length; ++j) {
 	        var pp = stages.parameters[j];
 	        pp.parameter.Apply(pp.constantBuffer, pp.offset, pp.size);
@@ -183292,7 +183308,20 @@
 	          }
 	        }
 	        var activeTurret = this.items[this._activeTurret];
-	        if (this._activeAnimation.models.length) {
+
+	        // The index can outlive the item it names. `items` is rebuilt
+	        // whenever turrets are mounted, unmounted or the locators
+	        // change, and `_activeTurret` is not revised with it - the only
+	        // check here was against the -1 sentinel, which says nothing
+	        // about whether the index is still in range. A stale one read
+	        // `undefined._localTransform` below and threw from inside
+	        // `EveSpaceScene.Update`, killing the whole update pass.
+	        //
+	        // Treated as "no active turret", which is what it now is: the
+	        // set reselects one the next time it fires.
+	        if (!activeTurret) {
+	          this._activeTurret = -1;
+	        } else if (this._activeAnimation.models.length) {
 	          var model = this._activeAnimation.models[0],
 	            bones = model.bonesByName,
 	            trackedPose = this.UpdateTrackingPose(this._activeAnimation, activeTurret);
