@@ -3,6 +3,8 @@ export * from "./EveEffectRoot";
 export * from "./EveEffectRoot2";
 export * from "./EvePlanet";
 export * from "./EveOldPlanet";
+export * from "./EveSpaceObject2";
+export * from "./EveMobile";
 export * from "./EveShip2";
 export * from "./EveStation2";
 export * from "./legacy";

@@ -1,0 +1,2582 @@
+import { isArray, meta } from "utils";
+import { SetControllerVariableOn } from "../../state/controllerVariables";
+import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
+import { vec3, vec4, mat4, sph3 } from "math";
+import { EveObject } from "eve/object/EveObject";
+import { GLESPerObjectDataEveSpaceObject } from "core/data";
+import { Tw2AnimationController } from "core/model";
+import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
+import { EveMeshOverlayEffect } from "eve/effect";
+import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
+import { Tr2Lod, CustomMaskBlendMode } from "constant/ccpwgl";
+import { tw2 } from "global";
+import { EveLODHelper } from "../EveLODHelper";
+
+
+@meta.define("EveSpaceObject2", true)
+@meta.stage(2)
+export class EveSpaceObject2 extends EveObject
+{
+
+    @meta.struct("Tw2Animation")
+    @meta.isPrivate
+    animation = new Tw2AnimationController();
+
+    @meta.list("EveObjectSet")
+    attachments = [];
+
+    /**
+     * Gets the current model center without refreshing bounds or transforms.
+     * Carbon EveSpaceObject2::GetModelCenterWorldPosition.
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
+    GetModelCenterWorldPosition(out)
+    {
+        return vec3.transformMat4(out, this.boundingSphereCenter, this._worldTransform);
+    }
+
+    /** Runtime-audio emitters owned by this space object. */
+    audioEmitters = [];
+
+    @meta.list("Tw2CurveSet")
+    curveSets = [];
+
+    @meta.vector3
+    @meta.isPrivate
+    boundingSphereCenter = vec3.create();
+
+    @meta.float
+    @meta.isPrivate
+    boundingSphereRadius = 0;
+
+    @meta.list("EveObject")
+    children = [];
+
+    @meta.list("EveCustomMask")
+    customMasks = [];
+
+    /**
+     * Custom mask blend mode, for the whole object, as the Carbon permutation
+     * value - see {@link BLEND_MODES}.
+     *
+     * It belongs here rather than on each EveCustomMask because there is only
+     * ever one of it: the GLES path has a single CustomMaskBlending register
+     * shared by both masks, and the Carbon path a single BLEND_MODE
+     * permutation on the effects. Holding a copy per mask meant two sources for
+     * one value, and whichever mask was packed last silently won.
+     * @type {String}
+     */
+    @meta.string
+    blendMode = "BLEND_MODE_OVERLAY";
+
+    @meta.list("EveSpaceObjectDecal")
+    decals = [];
+
+    @meta.string
+    dna = "";
+
+    @meta.list("EveLocatorSets")
+    locatorSets = [];
+
+    @meta.list("EveLocator2")
+    locators = [];
+
+    @meta.struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod")
+    mesh = null;
+
+    @meta.struct("EveCurve") // Tr2RotationAdapter
+    @meta.isPrivate
+    rotationCurve = null;
+
+    @meta.vector3
+    @meta.isPrivate
+    shapeEllipsoidCenter = vec3.create();
+
+    @meta.vector3
+    @meta.isPrivate
+    shapeEllipsoidRadius = vec3.create();
+
+    @meta.struct("EveCurve") // Tr2TranslationAdapter
+    @meta.isPrivate
+    translationCurve = null;
+
+    @meta.uint
+    meshIndex = 0;
+
+    /*
+
+        CCPWGL only
+
+     */
+
+    @meta.vector3
+    clipSphereCenter = vec3.create();
+
+    @meta.float
+    clipSphereFactor = 0;
+
+    @meta.float
+    clipSphereFactor2 = 0;
+
+    @meta.float
+    impactDataOffset = 0;
+
+    @meta.float
+    modelScale = 1;
+
+    @meta.list("EveChild")
+    effectChildren = [];
+
+    /**
+     * NOTE `childControllers` and `childCurveSets` are not visibility - they
+     * gate per-frame UPDATE work, for performance. They live here for now
+     * because this is the existing switch bag and a second one is not worth the
+     * churn today; `visible` is the wrong word for them and both belong under a
+     * better-named home when this is revisited.
+     *
+     * Both are LIVE toggles read by `EveChildContainer.Update` off the space
+     * object parent, so they reach effect children at any nesting depth without
+     * changing anyone's update signature, and flipping one back on resumes from
+     * the current time. The load-time switch they replace called `Stop()` on
+     * every child curve set and could not be undone without reloading the hull.
+     */
+    @meta.plain
+    visible = {
+        annotations: true,
+        banners: true,
+        boosters: true,
+        childControllers: true,
+        childCurveSets: true,
+        children: true,
+        customMasks: true,
+        decals: true,
+        dirt: true,
+        effectChildren: true,
+        firingEffects: true,
+        hazeSets: true,
+        killmarks: true,
+        lineSets: true,
+        mesh: true,
+        overlayEffects: true,
+        planeSets: true,
+        spotlightSets: true,
+        spriteSets: true,
+        turretSets: true
+    };
+
+    @meta.ui({ group: "Dirt" })
+    @meta.float
+    weeksSinceCleaned = 0;
+
+    /**
+     * Runtime animation controllers (attached by the space object factory)
+     * @type {Array<Tr2Controller>}
+     */
+    controllers = [];
+
+    // Sticky record of every controller variable set on this ship, mirroring
+    // Carbon's `m_controllerVariables` (`EveEffectRoot2.cpp:882-890`). Replayed
+    // onto effect children whose controllers link later.
+    controllerVariables = new Map();
+
+    /**
+     * Embedder-set ship speed telemetry (world-velocity magnitude), backing the `ShipSpeed()`
+     * controller-expression builtin. CarbonEngine caches this from the Destiny ball's velocity
+     * every sync update (`m_speed = Length(GetWorldVelocity())`, `EveSpaceObject2.cpp:50-57`,
+     * `TriFloat m_speed`, `EveSpaceObject2.h:66`); ccpwgl has no physics/ball layer, so derivation is
+     * left entirely to the embedder (e.g. `ship.speed = |worldTransform delta| / dt` per frame,
+     * or a value pushed straight from game state). Runtime-only: not persisted.
+     * @type {Number}
+     */
+
+    _enableCurves = false;
+    _pixelSizeAcross = 0;
+
+    _spriteScale = 1;
+    _dirtyGeometry = true;
+    _ellipsoidCenter = vec3.create();
+    _ellipsoidRadii = vec3.create();
+    _jointMatrices = null;
+    _parentTransform = mat4.create();
+    _perObjectData = new GLESPerObjectDataEveSpaceObject();
+    _perObjectDataBagOfStuff = {};
+    _lastLodUpdateDelta = EveLODHelper.lowUpdateRate;
+    _customMaskBlending = vec4.create();
+    _worldTransformLast = mat4.create();
+
+    /** Reused by locator resolution, which runs per hardpoint per frame */
+    _locatorBinding = { type: 0, index: -1 };
+    /**
+     * Initializes the space object.
+     *
+     * Carbon splits this: the base prepares what every space object has, and
+     * EveShip2 overrides to add its boosters (both declare Initialize).
+     */
+    Initialize()
+    {
+        this.InvalidateMeshData();
+        super.Initialize();
+    }
+
+    /**
+     * Gets the parent bone index of a model's bone index
+     * @param {Number} modelIndex
+     * @param {Number} boneIndex
+     * @returns {number} -1 for none
+     */
+    GetAnimationBoneIndexParentIndex(modelIndex, boneIndex)
+    {
+        if (!this.animation || !this.animation.models[modelIndex] || !this.animation.models[modelIndex].bones[boneIndex])
+        {
+            throw new ReferenceError(`Invalid bone ${boneIndex} for model index ${modelIndex}`);
+        }
+        return this.animation.models[modelIndex].bones[boneIndex].GetParentBoneIndex();
+    }
+
+    /**
+     * Gets the model count for the space object
+     * @returns {Number}
+     */
+    GetAnimationModelCount()
+    {
+        return this.animation ? this.animation.models.length : 0;
+    }
+
+    /**
+     * Gets the space object's bone count
+     * - Note that the root bone will count as one
+     * @parameter {Number} modelIndex
+     * @returns {Number}
+     */
+    GetAnimationModelIndexBoneCount(modelIndex)
+    {
+        if (!this.animation || !this.animation.models[modelIndex])
+        {
+            throw new ReferenceError(`Invalid model index ${modelIndex}`);
+        }
+        return this.animation.models[modelIndex].bones.length;
+    }
+
+    /**
+     * Intersection test
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {Object} [cache]
+     * @returns {*}
+     */
+    Intersect(ray, intersects, cache= {})
+    {
+        this.RebuildBounds();
+
+        if (!this.display || !this.isVisible || this._boundsDirty) return;
+
+        const intersect = ray.IntersectBox3(this._boundingBox, this._worldTransform);
+        if (!intersect) return false;
+
+        const { root = this } = cache;
+        let args = [ ray, intersects, this._worldTransform, cache ];
+
+        if ("Intersect" in this.mesh && !ray.GetOption("mesh", "skip"))
+        {
+            const at = intersects.length;
+            this.mesh.Intersect(...args).forEach(intersect => intersect.root = root);
+            ray.TrailFrom(intersects, at, "mesh");
+        }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            let item = this.attachments[i],
+                itemIntersect;
+
+            if (!item.isVisible || !item.Intersect) continue;
+
+            let type;
+            switch (item.constructor)
+            {
+                case EveHazeSet:
+                    type = "hazeSets";
+                    break;
+
+                case EveBanner:
+                    type = "banners";
+                    break;
+
+                case EveTurretSet:
+                    type = "turretSets";
+                    break;
+
+                case EveSpotlightSet:
+                    type = "spotlightSets";
+                    break;
+
+                case EveSpriteSet:
+                    type = "spriteSets";
+                    break;
+
+                case EvePlaneSet:
+                    type = "planeSets";
+                    break;
+
+                case EveSpriteLineSet:
+                    type = "spriteLineSets";
+                    break;
+
+                case EveCurveLineSet:
+                    type = "lineSets";
+                    break;
+
+                case EveMeshOverlayEffect:
+                    type = "overlayEffects";
+                    break;
+
+            }
+
+            if (type && this.visible[type] && !ray.GetOption(type, "skip"))
+            {
+                // The visibility key is also the property these live on, so
+                // it doubles as the path segment - and the index within it
+                // is what separates one turret set from another.
+                const at = intersects.length;
+                itemIntersect = item.Intersect(...args);
+                ray.TrailFrom(intersects, at, `${type}[${this[type] ? this[type].indexOf(item) : i}]`);
+            }
+
+            if (itemIntersect)
+            {
+                itemIntersect.root = root;
+            }
+        }
+
+        // Uncommented once EveSpaceObjectDecal could actually answer: it had
+        // no Intersect at all, so this loop would have thrown had it run.
+        if (this.visible.decals && !ray.GetOption("decals", "skip"))
+        {
+            for (let i = 0; i < this.decals.length; i++)
+            {
+                if (!this.decals[i].Intersect) continue;
+
+                const at = intersects.length;
+                const itemIntersect = this.decals[i].Intersect(...args);
+                ray.TrailFrom(intersects, at, `decals[${i}]`);
+                if (itemIntersect) itemIntersect.root = root;
+            }
+        }
+
+        if (!ray.GetOption("locators", "skip"))
+        {
+            for (let i = 0; i < this.locators.length; i++)
+            {
+                const at = intersects.length;
+                const itemIntersect = this.locators[i].Intersect(...args);
+                ray.TrailFrom(intersects, at, `locators[${i}]`);
+                if (itemIntersect) itemIntersect.root = root;
+            }
+        }
+
+        if (this.visible.effectChildren && !ray.GetOption("effectChildren", "skip"))
+        {
+            for (let i = 0; i < this.effectChildren.length; i++)
+            {
+                if (this.effectChildren[i].Intersect)
+                {
+                    const at = intersects.length;
+                    const itemIntersect = this.effectChildren[i].Intersect(...args);
+                    ray.TrailFrom(intersects, at, `effectChildren[${i}]`);
+                    if (itemIntersect) itemIntersect.root = root;
+                }
+            }
+        }
+
+        if (this.visible.children && !ray.GetOption("children", "skip"))
+        {
+            for (let i = 0; i < this.children.length; i++)
+            {
+                if (this.children[i].Intersect)
+                {
+                    const at = intersects.length;
+                    const itemIntersect = this.children[i].Intersect(...args);
+                    ray.TrailFrom(intersects, at, `children[${i}]`);
+                    if (itemIntersect) itemIntersect.root = root;
+                }
+            }
+        }
+
+        // Todo: get most specific item
+        return intersect;
+    }
+
+    /**
+     * TODO: Remove this helper function
+     * Gets items by color type
+     * @param {Number} colorType
+     * @param {Array<*>} out
+     * @returns {Array<*>}
+     */
+    GetItemByColorType(colorType, out=[])
+    {
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i].GetItemByColorType)
+            {
+                this.attachments[i].GetItemByColorType(colorType, out);
+            }
+        }
+
+        for (let i = 0; i < this.decals.length; i++)
+        {
+            if (this.decals[i].colorType === colorType && !out.includes(this.decals[i]))
+            {
+                out.push(this.decals[i]);
+            }
+        }
+
+        if (this.mesh && this.mesh.GetItemByColorType)
+        {
+            this.mesh.GetItemByColorType(colorType, out);
+        }
+
+        return out;
+    }
+
+    /**
+     * TODO: Remove this, it is no longer relevant
+     * Gets items by group index
+     * @param {Number} colorType
+     * @param {Array<*>} out
+     * @returns {Array<*>}
+     */
+    GetItemByGroupIndex(groupIndex, out=[])
+    {
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i].GetItemByGroupIndex)
+            {
+                this.attachments[i].GetItemByGroupIndex(groupIndex, out);
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Decides if we want to rebuild bounds from child objects
+     * @type {boolean}
+     */
+    rebuildBoundsFromChildren = false;
+
+    /*
+
+        Eve engine doesn't rebuild bounds like we do here
+        If we need to rebuild bounds for a hull, for using in something like Intersection tests
+        We should be storing it separately to the actual hull's bounds
+        This will remove confusion when we're comparing behavior
+        TODO: Change all bound calculations to be separate from the base hull bounds
+
+     */
+
+    /**
+     * Fires when bounds need rebuilding
+     */
+    OnRebuildBounds()
+    {
+
+        if (this.animation && this.animation.animations.length)
+        {
+            //console.warn("Rebuilding bounds on animated meshes not yet supported");
+        }
+
+        if (!this.mesh || !this.mesh.IsGood())
+        {
+            this._boundsDirty = true;
+            return;
+        }
+
+        // TODO: Get from mesh and handle instanced mesh
+        this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
+
+        sph3.fromBox3(this._boundingSphere, this._boundingBox);
+        this._boundsDirty = false;
+    }
+
+    /**
+     * Gets locator count for a specific locator group
+     * @param {String} prefix
+     * @returns {number}
+     */
+    GetLocatorCount(prefix)
+    {
+        const locators = this.FindLocatorsByPrefix(prefix);
+        return locators.length;
+    }
+
+    /**
+     * Finds a locator's joint by name
+     * @param {String} name
+     * @returns {?mat4}
+     */
+    FindLocatorJointByName(name)
+    {
+        const locator = this.FindLocatorBoneByName(name);
+        return locator ? locator.worldTransform : null;
+    }
+
+    /**
+     * Finds a locator's transform by it's name
+     * @param {String} name
+     * @returns {?mat4}
+     */
+    FindLocatorTransformByName(name)
+    {
+        const locator = this.FindLocatorByName(name);
+        return locator ? locator.transform : null;
+    }
+
+    /**
+     * Checks if a locator prefix exists
+     * @param {String} prefix
+     * @returns {Boolean}
+     */
+    HasLocatorPrefix(prefix)
+    {
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            if (this.locators[i].name.indexOf(prefix) === 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Finds a mesh bone by name
+     * @param {String} boneName
+     * @param {Number} meshIndex
+     * @returns {Tw2Bone|null}
+     */
+    FindMeshBoneByName(boneName, meshIndex)
+    {
+        return this.animation ? this.animation.FindMeshBoneByName(boneName, meshIndex) : null;
+    }
+
+    /**
+     * Finds a mesh bone by index
+     * @param {Number} boneIndex
+     * @param {Number} meshIndex
+     * @returns {Tw2Bone|null}
+     */
+    FindMeshBoneByIndex(boneIndex, meshIndex)
+    {
+        return this.animation ? this.animation.FindMeshBoneByIndex(boneIndex, meshIndex) : null;
+    }
+
+    /**
+     * How a locator name resolves.
+     *
+     * After Carbon's `LocatorType` (EveSpaceObject2.h:700), which a name matches
+     * as one kind or the other and not as a fallback chain - Carbon's own
+     * comment at EveSpaceObject2.cpp:1371 is "using a bone's position has
+     * priority!".
+     *
+     *   BONE       - a bone drives it, and the bone's world transform IS the
+     *                answer. It MOVES, so it must be re-read every frame.
+     *                Carbon spells this ELT_JOINT; everything else in this
+     *                library says bone, so this does too.
+     *   TRANSFORM  - an authored locator. Static: resolve once and keep it.
+     *   NONE       - resolved, and there is nothing of this name. FINAL - a
+     *                caller can stop asking.
+     *   NOT_LOADED - cannot be answered yet. NOT final: ask again.
+     *
+     * The last two are the pair worth being careful about. Carbon collapses
+     * them into one nullptr and can afford to, because it never asks
+     * speculatively - it resolves once loading has finished and skips while
+     * loading. We can be asked at any time, and the two demand opposite
+     * behaviour: one says stop, the other says come back. Collapsing them
+     * means either giving up on a hardpoint that was merely late, or asking
+     * forever about a name that does not exist.
+     *
+     * NOT_LOADED is `null` and NONE is `0`, so BOTH are falsy: `if (!type)` is
+     * still the whole of "no transform was written", and `type === null` is the
+     * narrower "ask again".
+     *
+     * @type {Object}
+     */
+    static LocatorType = { NOT_LOADED: null, NONE: 0, TRANSFORM: 1, BONE: 2 };
+
+    /**
+     * Resolves a locator name to a kind and an index.
+     *
+     * A BONE IS CHECKED FIRST, deliberately - see LocatorType. A hardpoint whose
+     * name matches a bone is driven by that bone even when a locator of the same
+     * name also exists.
+     *
+     * NOTHING RESOLVES UNTIL THE GEOMETRY IS LOADED, and that gate is what
+     * makes the result keepable. Because a bone is checked before an authored
+     * locator, a hardpoint that WILL be driven by a bone resolves to its locator
+     * while the geometry is in flight - and looks entirely settled while doing
+     * so. A caller keeping that answer holds the bind pose for the life of the
+     * ship, having asked at the one moment it could not be known.
+     *
+     * Carbon has the same order and no such gate, because it never asks early:
+     * it resolves in `RebuildCachedData` - "loading of data is done, so check
+     * for locators and re-attach turrets" - and skips while loading
+     * (`if ((event & BELIST_LOADING) == 0)`).
+     *
+     * So a resolved TRANSFORM or BONE can be trusted and kept; NOT_LOADED means
+     * ask again; NONE means the name is genuinely nothing and asking again will
+     * not help.
+     *
+     * @param {String} name
+     * @param {Number} [meshIndex]
+     * @param {Object} [out] - reused rather than reallocated per call
+     * @returns {{type: Number, index: Number}}
+     */
+    DetermineLocatorType(name, meshIndex = this.meshIndex, out = { type: 0, index: -1 })
+    {
+        const types = EveSpaceObject2.LocatorType;
+
+        out.type = types.NONE;
+        out.index = -1;
+
+        if (!name) return out;
+
+        if (this.animation && !this.animation.IsGeometryGood())
+        {
+            out.type = types.NOT_LOADED;
+            return out;
+        }
+
+        // A bone first.
+        const model = this.animation ? this.animation.FindModelForMesh(meshIndex) : null;
+        if (model)
+        {
+            for (let i = 0; i < model.bones.length; i++)
+            {
+                const bone = model.bones[i];
+                if (bone && bone.boneRes && bone.boneRes.name === name)
+                {
+                    out.type = types.BONE;
+                    out.index = i;
+                    return out;
+                }
+            }
+        }
+
+        // Then an authored locator.
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            if (this.locators[i] && this.locators[i].name === name)
+            {
+                out.type = types.TRANSFORM;
+                out.index = i;
+                return out;
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Writes the transform of a resolved locator into `out`, and reports WHAT
+     * IT IS rather than handing back the matrix.
+     *
+     *   BONE       - written, and it can change. Ask again next frame.
+     *   TRANSFORM  - written, and it never will. Stop asking.
+     *   NOT_LOADED - nothing written. Ask again.
+     *   NONE       - nothing written, and nothing to find. Stop asking.
+     *
+     * `out` is written whenever the result is truthy, and both not-written
+     * states are falsy, so `if (!GetLocatorTransform(...))` is exactly the
+     * no-transform case.
+     *
+     * The type is not just the argument handed back: an index can be stale or
+     * out of range and a bone's pose may be absent, so a caller passing BONE
+     * can legitimately be told NONE.
+     *
+     * This is the fact Carbon keeps, in the place Carbon keeps it -
+     * `m_turretSetsLocatorInfo` caches the resolved type per turret set, and the
+     * per-frame update refreshes only the ELT_JOINT ones, "only animated if is
+     * of type JOINT!" (EveMobile.cpp:178), while an ELT_TRANSFORM turret is
+     * pushed once during the rebuild and never asked again. Returning it means a
+     * caller cannot forget to consult it, and cannot invent a private convention
+     * for the same states.
+     *
+     * @param {mat4} out - written when the result is truthy
+     * @param {Number} type - a LocatorType, from DetermineLocatorType
+     * @param {Number} index
+     * @param {Number} [meshIndex]
+     * @returns {Number|null} a LocatorType: what was written, or why it was not
+     */
+    GetLocatorTransform(out, type, index, meshIndex = this.meshIndex)
+    {
+        const types = EveSpaceObject2.LocatorType;
+
+        if (type === types.TRANSFORM)
+        {
+            const locator = this.locators[index];
+            if (!locator) return types.NONE;
+
+            mat4.copy(out, locator.transform);
+            return types.TRANSFORM;
+        }
+
+        if (type === types.BONE)
+        {
+            const model = this.animation ? this.animation.FindModelForMesh(meshIndex) : null;
+            const bone = model ? model.bones[index] : null;
+
+            // A bone the geometry has not delivered yet is the ASK AGAIN case, and
+            // is not the same as a bone that is not there: the caller resolved
+            // this index against loaded geometry, so an absent pose is a timing
+            // fact, not a naming one.
+            if (!bone) return this.animation && !this.animation.IsGeometryGood() ? types.NOT_LOADED : types.NONE;
+
+            // The bone's WORLD transform, which is model space despite the name -
+            // the same matrix a turret item positions itself from, and the reason
+            // turret placement is correct today.
+            mat4.copy(out, bone.worldTransform);
+            return types.BONE;
+        }
+
+        // Whatever the caller was told by DetermineLocatorType, passed straight
+        // back: NOT_LOADED stays ask-again, anything else is nothing to find.
+        return type === types.NOT_LOADED ? types.NOT_LOADED : types.NONE;
+    }
+
+    /**
+     * The transform of a bone, by name.
+     *
+     * The convenience form of the two above for a caller that has a name and
+     * wants a matrix. Same contract: `out` or null, and a null is not an answer
+     * to cache.
+     *
+     * @param {mat4} out
+     * @param {String} name
+     * @param {Number} [meshIndex=0] - ships are 0
+     * @returns {?mat4} out, or null
+     */
+    GetTransformForBone(out, name, meshIndex = 0)
+    {
+        const bone = this.FindMeshBoneByName(name, meshIndex);
+        return bone ? mat4.copy(out, bone.worldTransform) : null;
+    }
+
+    /**
+     * Finds a locator's bone by its name
+     * @param {String} name
+     * @returns {?Tw2Bone} null if not found
+     */
+    FindLocatorBoneByName(name)
+    {
+        return this.FindMeshBoneByName(name, this.meshIndex);
+    }
+
+    /**
+     * Finds a locator by name
+     * @param {String} name
+     * @returns {?EveLocator2}
+     */
+    FindLocatorByName(name)
+    {
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            if (this.locators[i].name === name)
+            {
+                return this.locators[i];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds locators with a given prefix
+     * @param {String} prefix
+     * @param {Array} [out=[]}
+     * @returns {Array<EveLocator2>}
+     */
+    FindLocatorsByPrefix(prefix, out = [])
+    {
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            if (this.locators[i].name.indexOf(prefix) === 0)
+            {
+                out.push(this.locators[i]);
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Updates lod
+     * @param {EveUpdateContext} updateContext
+     */
+    UpdateLod(updateContext)
+    {
+        if (!this.display)
+        {
+            this._SetLodState(false, this.lodLevel, this.lodLevelWithChildren, false);
+            return;
+        }
+
+        const
+            frustum = updateContext.GetFrustum(),
+            bodySphere = EveObject.global.sph3_0,
+            combinedSphere = EveObject.global.sph3_1,
+            lowThreshold = updateContext.GetLowDetailThreshold(),
+            mediumThreshold = updateContext.GetMediumDetailThreshold(),
+            highThreshold = updateContext.GetHighDetailThreshold();
+
+        bodySphere[0] = this.boundingSphereCenter[0];
+        bodySphere[1] = this.boundingSphereCenter[1];
+        bodySphere[2] = this.boundingSphereCenter[2];
+        bodySphere[3] = this.boundingSphereRadius;
+        sph3.transformMat4(bodySphere, bodySphere, this._worldTransform);
+
+        this.estimatedPixelDiameter = 0;
+        this.estimatedPixelDiameterWithChildren = 0;
+
+        const
+            bodyBoundsReady = bodySphere[3] > 0,
+            preserveUnboundedBody = !!this.mesh && !bodyBoundsReady;
+
+        let meshVisible = preserveUnboundedBody || (
+            bodyBoundsReady && frustum.IsSphereVisible(bodySphere, bodySphere[3])
+        );
+
+        if (meshVisible && bodyBoundsReady)
+        {
+            this.estimatedPixelDiameter = frustum.GetPixelSizeAcross(bodySphere, bodySphere[3]);
+        }
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            this.children[i].UpdateLod(updateContext);
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].PrepareLod(this._worldTransform);
+        }
+
+        let hasCombinedBounds = bodyBoundsReady;
+        if (hasCombinedBounds)
+        {
+            sph3.copy(combinedSphere, bodySphere);
+        }
+
+        let preserveUnboundedChildren = false;
+        const childSphere = EveObject.global.sph3_2;
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            if (this.children[i].GetWorldBoundingSphere(childSphere))
+            {
+                if (hasCombinedBounds) sph3.union(combinedSphere, combinedSphere, childSphere);
+                else sph3.copy(combinedSphere, childSphere);
+                hasCombinedBounds = true;
+            }
+            else preserveUnboundedChildren = true;
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            if (this.effectChildren[i].GetBoundingSphere(childSphere))
+            {
+                if (hasCombinedBounds) sph3.union(combinedSphere, combinedSphere, childSphere);
+                else sph3.copy(combinedSphere, childSphere);
+                hasCombinedBounds = true;
+            }
+            else preserveUnboundedChildren = true;
+        }
+
+        const inFrustum = hasCombinedBounds && frustum.IsSphereVisible(combinedSphere, combinedSphere[3]);
+        if (inFrustum)
+        {
+            this.estimatedPixelDiameterWithChildren = frustum.GetPixelSizeAcrossEst(combinedSphere, combinedSphere[3]);
+        }
+
+        let visible = preserveUnboundedBody || preserveUnboundedChildren || !hasCombinedBounds || (
+            inFrustum &&
+            this.estimatedPixelDiameterWithChildren >= updateContext.GetVisibilityThreshold()
+        );
+
+        let lodLevel = Tr2Lod.TR2_LOD_LOW;
+        let lodLevelWithChildren = Tr2Lod.TR2_LOD_LOW;
+
+        if (preserveUnboundedBody || !hasCombinedBounds)
+        {
+            lodLevel = Tr2Lod.TR2_LOD_HIGH;
+            lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+        }
+        else if (visible)
+        {
+            if (this.estimatedPixelDiameter > mediumThreshold)
+            {
+                lodLevel = Tr2Lod.TR2_LOD_HIGH;
+            }
+            else if (this.estimatedPixelDiameter > lowThreshold)
+            {
+                lodLevel = Tr2Lod.TR2_LOD_MEDIUM;
+            }
+
+            if (preserveUnboundedChildren)
+            {
+                // An unbounded live child must fail open at full logical detail;
+                // LOW would silently hide children whose lowestLodVisible is
+                // MEDIUM/HIGH before they have a trustworthy bound.
+                lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+            }
+            else if (this.estimatedPixelDiameterWithChildren > mediumThreshold)
+            {
+                lodLevelWithChildren = Tr2Lod.TR2_LOD_HIGH;
+            }
+            else if (this.estimatedPixelDiameterWithChildren > lowThreshold)
+            {
+                lodLevelWithChildren = Tr2Lod.TR2_LOD_MEDIUM;
+            }
+        }
+
+        // Carbon's attachment pass promotes both root and hull-mesh visibility
+        // when any independently bounded attachment is visible
+        // (EveSpaceObject2::UpdateVisibility). Resolve those sets before hull
+        // overlays so the result cannot depend on attachment array order.
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            const attachment = this.attachments[i];
+            if (attachment instanceof EveMeshOverlayEffect) continue;
+            attachment.UpdateLod(updateContext);
+            if (!attachment.isVisible) continue;
+            visible = true;
+            meshVisible = true;
+        }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            const attachment = this.attachments[i];
+            if (attachment instanceof EveMeshOverlayEffect)
+            {
+                attachment.UpdateLod(updateContext, meshVisible);
+            }
+        }
+
+        this._pixelSizeAcross = this.estimatedPixelDiameterWithChildren;
+        this._controllerUpdateFrequency = visible && highThreshold > 0
+            ? Math.min(1, this.estimatedPixelDiameter / highThreshold)
+            : 0;
+        this._SetLodState(visible, lodLevel, lodLevelWithChildren, meshVisible);
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].UpdateLod(updateContext, this.lodLevelWithChildren, this._worldTransform);
+        }
+
+        // The booster set 2 has its own lod: the boosters, the trails and the
+        // set's own visibility are three independent gates, and a trail can
+        // keep the set on screen after the hull has left it.
+        if (this.boosters)
+        {
+            this.boosters.UpdateLod(updateContext);
+        }
+    }
+
+    /**
+     * Resets LOD
+     */
+    ResetLod()
+    {
+        super.ResetLod();
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            this.children[i].ResetLod();
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].ResetLod();
+        }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            this.attachments[i].ResetLod();
+        }
+
+        if (this.boosters) this.boosters.ResetLod();
+    }
+
+    /**
+     * Gets resources
+     * @param {Array} [out=[]]
+     * @returns {Array}
+     */
+    GetResources(out = [])
+    {
+        this.PerChild(x =>
+        {
+            if ("GetResources" in x.struct)
+            {
+                x.struct.GetResources(out);
+            }
+        });
+        return out;
+    }
+
+    /**
+     * Names the locators that are driven by a BONE rather than an authored
+     * transform, so they move.
+     *
+     * A diagnostic, and the cheapest way to find a hull that has one. Nothing
+     * in the authored data announces this: `isSkinned` on the SOF hull selects
+     * shader configs and does not describe locators at all, so a hull can report
+     * unskinned and still carry bone-driven hardpoints. Resolution is the only
+     * thing that actually knows.
+     *
+     * EMPTY IS NOT AN ANSWER while the geometry is still loading - nothing
+     * resolves until then. Ask once the hull is drawn.
+     *
+     * @param {String} [prefix] - e.g. "locator_booster"; all locators if omitted
+     * @param {Array} [out]
+     * @returns {Array<String>}
+     */
+    FindBoneBoundLocatorNames(prefix = "", out = [])
+    {
+        const types = EveSpaceObject2.LocatorType;
+        const binding = this._locatorBinding;
+
+        out.length = 0;
+
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            const locator = this.locators[i];
+            if (!locator || (prefix && !locator.name.startsWith(prefix))) continue;
+
+            this.DetermineLocatorType(locator.name, this.meshIndex, binding);
+            if (binding.type === types.BONE) out.push(locator.name);
+        }
+
+        return out;
+    }
+
+    /**
+     * Resolves a transform for each of `locators`, into `out`.
+     *
+     * The ship-side half of the pushed-transform contract: a caller hands over
+     * locators and gets back where each one actually is, with nulls for the
+     * ones that cannot be answered yet.
+     *
+     * The return value is what makes a ONE-SHOT rebuild safe: it counts the
+     * entries that are not SETTLED - a bone, which moves, or a name that could
+     * not be answered yet. Zero means every answer is final and the caller
+     * never has to ask again, which is the case on nearly every hull.
+     *
+     * This is Carbon's per-frame test ("only animated if is of type JOINT!")
+     * with the not-yet-loaded case folded in, because unlike Carbon we may be
+     * asked before the geometry lands.
+     *
+     * @param {Array} locators
+     * @param {Array} [out] - the matrices, or null where unanswerable
+     * @param {Array<mat4>} [pool] - reused matrices, to keep this off the heap
+     * @returns {Number} how many are not settled, and so must be asked again
+     */
+    ResolveLocatorTransforms(locators, out = [], pool = [])
+    {
+        const types = EveSpaceObject2.LocatorType;
+        const count = locators ? locators.length : 0;
+
+        out.length = count;
+
+        const binding = this._locatorBinding;
+        let unsettled = 0;
+
+        for (let i = 0; i < count; i++)
+        {
+            const locator = locators[i];
+
+            if (!locator)
+            {
+                out[i] = null;
+                continue;
+            }
+
+            if (!pool[i]) pool[i] = mat4.create();
+
+            this.DetermineLocatorType(locator.name, this.meshIndex, binding);
+            const resolved = this.GetLocatorTransform(pool[i], binding.type, binding.index);
+
+            // The MATRIX. `resolved` is a type, and a consumer of `out` is going
+            // to treat these as transforms.
+            out[i] = resolved ? pool[i] : null;
+
+            // Only BONE and NOT_LOADED are worth asking about again. A settled
+            // TRANSFORM never changes, and NONE will not become something - so
+            // counting NONE here would have a hull with one misnamed booster
+            // re-resolving every frame for the life of the scene.
+            if (resolved === types.BONE || resolved === types.NOT_LOADED) unsettled++;
+        }
+
+        return unsettled;
+    }
+
+    /**
+     * Rebuilds overlays from a supplied array
+     * @param {Array<EveMeshOverlayEffect>} overlays
+     * @return {boolean}
+     */
+    RebuildOverlays(overlays = [])
+    {
+        let updated = false;
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i] instanceof EveMeshOverlayEffect)
+            {
+                updated = true;
+                this.attachments.splice(i, 1);
+                i--;
+            }
+        }
+
+        for (let i = 0; i < overlays.length; i++)
+        {
+            this.attachments.push(overlays[i]);
+            updated = true;
+        }
+
+        return updated;
+    }
+
+    /**
+     * Adds an animation controller
+     * @param {Tr2Controller} controller
+     */
+    AddController(controller)
+    {
+        if (controller && !this.controllers.includes(controller))
+        {
+            this.controllers.push(controller);
+            if (controller.Initialize) controller.Initialize(this);
+        }
+    }
+
+    /**
+     * Checks whether a mesh animation on the given mask/layer is currently playing.
+     * Backs the `IsAnimationPlaying("<layer>")` expression used by controller state-machine
+     * transitions (e.g. stances wait on `IsAnimationPlaying("TrackMaskStance")==0`). Without this,
+     * the expression falls back to 0 and transition clips are skipped before they finish playing.
+     * @param {String} [maskName=""]
+     * @returns {Boolean}
+     */
+    IsAnimationPlaying(maskName = "")
+    {
+        return this.animation ? this.animation.IsMaskAnimationPlaying(maskName) : false;
+    }
+
+    /**
+     * Backs the `BoundingSphereRadius()` controller-expression builtin, resolved via
+     * `context.owner.BoundingSphereRadius()` (`state/expression/Tr2ExpressionProgram.js:705`).
+     * audioshipstandard's "Ship Size" machine buckets this into the emitter
+     * prefix (ship_engine_XXS_ .. ship_engine_XXL_).
+     * @returns {Number}
+     */
+    BoundingSphereRadius()
+    {
+        return this.GetRadius();
+    }
+
+    /**
+     * Backs the `AnimationTime("<name>")` controller-expression builtin, resolved
+     * via `context.owner.AnimationTime(name)`.
+     * Carbon routes this through
+     * `EveSpaceObject2::GetAnimationController()->FindAnimationDurationByName(name)`;
+     * ccpwgl's animation controller answers the same question directly.
+     * @param {String} [name]
+     * @returns {Number} the animation's duration, or 0 when it is not loaded
+     */
+    AnimationTime(name)
+    {
+        return this.animation ? this.animation.FindAnimationDurationByName(name) : 0;
+    }
+
+    /**
+     * Plays a named curve set on this ship and everything below it.
+     *
+     * Carbon `EveSpaceObject2::PlayCurveSet` (cpp:3385-3415): every match in the
+     * object's own list, then recurse into children AND effect children.
+     * `Tr2ActionPlayCurveSet` calls this on the controller's owner, so without
+     * it a ship-level action could only ever find curve sets on the ship - and
+     * the ones that drive VFX are on the effect children.
+     *
+     * @param {String} name
+     * @param {String} [rangeName]
+     * @returns {Boolean}
+     */
+    PlayCurveSet(name, rangeName)
+    {
+        return PlayCurveSetOn(this, name, rangeName, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Stops a named curve set on this ship and everything below it.
+     * Carbon `EveSpaceObject2::StopCurveSet`.
+     * @param {String} name
+     * @returns {Boolean}
+     */
+    StopCurveSet(name)
+    {
+        return StopCurveSetOn(this, name, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Duration of a named RANGE of a named curve set, across this ship and
+     * everything below it. Carbon `EveSpaceObject2::GetRangeDuration`
+     * (cpp:3479-3503).
+     *
+     * Carbon makes this pure-virtual on `ITr2CurveSetOwner`, so a space object
+     * cannot exist without it. ccpwgl had only `PlayCurveSet`/`StopCurveSet`
+     * here, and the fallback path in `Tr2ActionPlayCurveSet` scans `curveSets`
+     * without recursing - which a ship does not even have. Every hull-level
+     * state machine therefore saw a duration of 0, which disarms the
+     * `syncToRange` veto AND makes the `CurveSetTime("Set/Range")` expression
+     * return 0, so a condition like `StateTime() > CurveSetTime(...)` was true
+     * one frame after entry. That walked the whole state ring at a state per
+     * frame, replaying a different range every frame, and no curve advanced.
+     *
+     * @param {String} setName
+     * @param {String} rangeName
+     * @returns {Number} seconds
+     */
+    GetRangeDuration(setName, rangeName)
+    {
+        return GetRangeDurationOn(this, setName, rangeName, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Longest curve duration of a named curve set across this ship and everything
+     * below it. Carbon `EveSpaceObject2::GetCurveSetDuration` (cpp:3451-3477).
+     * @param {String} setName
+     * @returns {Number} seconds
+     */
+    GetCurveSetDuration(setName)
+    {
+        return GetCurveSetDurationOn(this, setName, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Sets a controller variable across this ship: every controller it owns, and
+     * every effect child, recursively.
+     *
+     * Carbon's `EveEffectRoot2::SetControllerVariable` (cpp:880-899) does three
+     * things and all three matter:
+     *   - REMEMBERS the value in a name/value record;
+     *   - sets it on every controller the object owns, not one chosen controller;
+     *   - recurses into every effect child.
+     * The record is what makes a late child work: Carbon replays it onto children
+     * as they are attached (`EveSpaceObject2.cpp:325,375`), so a variable set
+     * before a child's controller exists still reaches it. Without that, a hull
+     * whose doors live on a child controller stops responding when the child
+     * happens to load after the value was set.
+     *
+     * Before this, `Tr2ActionSetExternalControllerVariable` fell through to a raw
+     * loop over `destination.controllers` - no record, no recursion, so it was
+     * doing LESS than Carbon rather than more.
+     *
+     * @param {String} name
+     * @param {Number} value
+     */
+    SetControllerVariable(name, value)
+    {
+        SetControllerVariableOn(this, name, value, this.effectChildren);
+    }
+
+    /**
+     * Publishes the space object's own state as controller variables
+     * (EveSpaceObject2.cpp:224-230 at construction, cpp:658-663 on change).
+     *
+     * These are how a hull's state reaches its children's controllers and its
+     * smart lights' `EveSmartLightAttributeModifierControllerVariableListener`s
+     * - Carbon does not pass them as update parameters, it fans them out by
+     * name. ccpwgl had `SetControllerVariable` and the replay map but nothing
+     * ever called them with these seven names, so every listener sat on its
+     * authored `defaultValue` forever no matter what the ship did.
+     *
+     * Only changed values are published, matching Carbon, which re-publishes
+     * ActivationStrength solely when it differs from the previous frame's.
+     * The three damage variables are Carbon's own constants: it publishes 1.0
+     * for each and ccpwgl models no damage state to vary them with.
+     *
+     * @param {Object} bag - the per-object bag, for its CLAMPED values
+     */
+    _PublishControllerVariables(bag)
+    {
+        const published = this._publishedControllerVariables;
+
+        EveSpaceObject2.global.controllerVariableValues[0] = bag.dirtLevel;
+        EveSpaceObject2.global.controllerVariableValues[1] = bag.activationStrength;
+        EveSpaceObject2.global.controllerVariableValues[2] = 1;
+        EveSpaceObject2.global.controllerVariableValues[3] = 1;
+        EveSpaceObject2.global.controllerVariableValues[4] = 1;
+        EveSpaceObject2.global.controllerVariableValues[5] = this.clipSphereFactor;
+        EveSpaceObject2.global.controllerVariableValues[6] = this.clipSphereFactor2;
+
+        for (let i = 0; i < EveSpaceObject2.CONTROLLER_VARIABLES.length; i++)
+        {
+            const
+                name = EveSpaceObject2.CONTROLLER_VARIABLES[i],
+                value = EveSpaceObject2.global.controllerVariableValues[i];
+
+            if (published.get(name) !== value)
+            {
+                published.set(name, value);
+                this.SetControllerVariable(name, value);
+            }
+        }
+    }
+
+    /** Last value published for each of CONTROLLER_VARIABLES. */
+    _publishedControllerVariables = new Map();
+
+    /**
+     * Every controller variable set on this ship so far, for replaying onto a
+     * child whose controllers link after the value was set.
+     * @returns {Map<String, Number>}
+     */
+    GetControllerVariables()
+    {
+        return this.controllerVariables;
+    }
+
+    /**
+     * Reads a controller variable owned by one of this ship's effect children,
+     * for the `GetExternalControllerVariable(name, default)` expression builtin.
+     *
+     * Carbon's ITr2ControllerOwner contract (`Controllers/ITr2ControllerOwner.h:15-19`):
+     * "external" means a controller hanging off the SAME owning node, matched by
+     * variable name - not a scene lookup and not an object reference.
+     * `EveSpaceObject2::GetControllerValueByName` (cpp:3797-3809) walks the effect
+     * children and recurses into any that own controllers themselves; the sibling
+     * walk over a node's own controllers belongs to the container
+     * (`EveChildContainer.cpp:1077-1091`), which is why this one only recurses.
+     *
+     * Carbon's signature is `bool(name, float& out)`; JS returns the value, or
+     * undefined when nothing owns that name, which is what the expression's
+     * fallback argument keys off.
+     *
+     * @param {String} name
+     * @returns {Number|undefined}
+     */
+    GetControllerValueByName(name)
+    {
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            const child = this.effectChildren[i];
+            if (child && child.GetControllerValueByName)
+            {
+                const value = child.GetControllerValueByName(name);
+                if (value !== undefined) return value;
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * Gets the first authored locator set by name
+     * @param {String} name
+     * @returns {Array<EveLocatorSetItem>|null}
+     * @private
+     */
+    _GetLocatorSetItems(name)
+    {
+        for (let i = 0; i < this.locatorSets.length; i++)
+        {
+            if (this.locatorSets[i]?.name === name) return this.locatorSets[i].locators;
+        }
+        return null;
+    }
+
+    /**
+     * Gets an authored locator set by name.
+     *
+     * Carbon's `IEveSpaceObject2::GetLocatorsForSet`. This is the name the rest
+     * of the engine calls - distribution placement generators ask a hull for the
+     * set they place against (`primaryspotlight_01`, `primaryflare_01` and so
+     * on), and Carbon's classes call it directly. It was private here as
+     * `_GetLocatorSetItems` only because damage locators were the sole caller.
+     *
+     * @param {String} name
+     * @returns {Array<EveLocatorSetItem>|null} null when the hull has no such set
+     */
+    GetLocatorsForSet(name)
+    {
+        return this._GetLocatorSetItems(name);
+    }
+
+    /**
+     * Builds a locator transform directly from authored values so targeting
+     * does not depend on view-dependent update order
+     * @param {mat4} out
+     * @param {EveLocatorSetItem} locator
+     * @param {Boolean} inWorldSpace
+     * @returns {mat4}
+     * @private
+     */
+    _GetLocatorSetItemTransform(out, locator, inWorldSpace)
+    {
+        mat4.fromRotationTranslationScale(out, locator.rotation, locator.position, locator.scaling);
+        if (locator._bone) mat4.multiply(out, locator._bone.offsetTransform, out);
+        if (inWorldSpace)
+        {
+            this.GetWorldTransform(EveSpaceObject2.global.targetWorldTransform);
+            mat4.multiply(out, EveSpaceObject2.global.targetWorldTransform, out);
+        }
+        return out;
+    }
+
+    /**
+     * Gets a damage locator position for ITriTargetable consumers
+     * @param {vec3} out
+     * @param {Number} index
+     * @param {Boolean} [inWorldSpace=true]
+     * @returns {Boolean} true when the locator exists
+     */
+    GetDamageLocatorPosition(out, index, inWorldSpace = true)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators || !(index >= 0 && index < locators.length))
+        {
+            if (inWorldSpace) this.GetWorldTranslation(out);
+            else vec3.set(out, 0, 0, 0);
+            return false;
+        }
+
+        const transform = EveSpaceObject2.global.targetTransform;
+        this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
+        mat4.getTranslation(out, transform);
+        return true;
+    }
+
+    /**
+     * Gets a damage locator's +Y direction
+     * @param {vec3} out
+     * @param {Number} index
+     * @param {Boolean} [inWorldSpace=true]
+     * @returns {Boolean} true when the locator exists
+     */
+    GetDamageLocatorDirection(out, index, inWorldSpace = true)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators || !(index >= 0 && index < locators.length))
+        {
+            vec3.set(out, 0, 1, 0);
+            return false;
+        }
+
+        const transform = EveSpaceObject2.global.targetTransform;
+        this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
+        vec3.set(out, transform[4], transform[5], transform[6]);
+        vec3.normalize(out, out);
+        return true;
+    }
+
+    /**
+     * Gets the closest facing damage locator
+     * @param {vec3} position world-space source position
+     * @returns {Number}
+     */
+    GetClosestDamageLocatorIndex(position)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators) return 0;
+
+        const g = EveSpaceObject2.global;
+        this.GetWorldInverseTransform(g.targetInverse);
+        vec3.transformMat4(g.targetSource, position, g.targetInverse);
+
+        let closestIndex = -1;
+        let closestDistance = Infinity;
+        for (let i = 0; i < locators.length; i++)
+        {
+            this._GetLocatorSetItemTransform(g.targetTransform, locators[i], false);
+            mat4.getTranslation(g.targetPosition, g.targetTransform);
+            vec3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
+            if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
+
+            const distance = vec3.squaredDistance(g.targetPosition, g.targetSource);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+        return closestIndex;
+    }
+
+    /**
+     * Gets Carbon's randomized distance/direction-fit damage locator
+     * @param {vec3} position world-space source position
+     * @returns {Number}
+     */
+    GetGoodDamageLocatorIndex(position)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators) return 0;
+
+        const g = EveSpaceObject2.global;
+        this.GetWorldInverseTransform(g.targetInverse);
+        vec3.transformMat4(g.targetSource, position, g.targetInverse);
+
+        let minDistance = Infinity;
+        let maxDistance = Number.MIN_VALUE;
+        let bestDirectionFit = 0;
+
+        for (let i = 0; i < locators.length; i++)
+        {
+            this._GetLocatorSetItemTransform(g.targetTransform, locators[i], false);
+            mat4.getTranslation(g.targetPosition, g.targetTransform);
+            vec3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
+            if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
+
+            vec3.subtract(g.targetOffset, g.targetPosition, g.targetSource);
+            const distance = vec3.length(g.targetOffset);
+            minDistance = Math.min(minDistance, distance);
+            maxDistance = Math.max(maxDistance, distance);
+            if (distance) vec3.scale(g.targetOffset, g.targetOffset, 1 / distance);
+            bestDirectionFit = Math.max(bestDirectionFit, getDirectionFit(g.targetDirection, g.targetOffset));
+        }
+
+        const desiredFit = Math.random() * (0.25 - (1 - bestDirectionFit)) + 0.75;
+        let bestFit = 1;
+        let bestLocator = -1;
+        for (let i = 0; i < locators.length; i++)
+        {
+            this._GetLocatorSetItemTransform(g.targetTransform, locators[i], false);
+            mat4.getTranslation(g.targetPosition, g.targetTransform);
+            vec3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
+            if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
+
+            vec3.subtract(g.targetOffset, g.targetPosition, g.targetSource);
+            const distance = vec3.length(g.targetOffset);
+            const range = maxDistance - minDistance;
+            let scale = range > 0 ? 1 - (distance - minDistance) / range : 1;
+            let value = 2 * scale - 1;
+            value = value < 0 ? 1 - Math.sqrt(Math.abs(value)) : Math.sqrt(Math.abs(value)) + 1;
+            value *= 0.5;
+            if (distance) vec3.scale(g.targetOffset, g.targetOffset, 1 / distance);
+            value *= getDirectionFit(g.targetDirection, g.targetOffset);
+            const fit = Math.abs(value - desiredFit);
+            if (fit < bestFit)
+            {
+                bestFit = fit;
+                bestLocator = i;
+            }
+        }
+
+        return bestLocator < 0 ? this.GetClosestDamageLocatorIndex(position) : bestLocator;
+    }
+
+    /**
+     * Gets the model-scaled target radius
+     * @returns {Number}
+     */
+    GetRadius()
+    {
+        return this.boundingSphereRadius * this.GetWorldMaxScale();
+    }
+
+    /**
+     * Computes a miss point just outside the ship silhouette
+     * @param {vec3} out
+     * @param {vec3} hit
+     * @param {vec3} source
+     * @returns {vec3}
+     */
+    GetMissPosition(out, hit, source)
+    {
+        const g = EveSpaceObject2.global;
+        this.GetWorldTranslation(out);
+        if (this.boundingSphereRadius > 0 && hit && source)
+        {
+            vec3.subtract(g.targetOffset, hit, out);
+            vec3.subtract(g.targetDirection, hit, source);
+            const directionLength = vec3.length(g.targetDirection);
+            if (directionLength) vec3.scale(g.targetDirection, g.targetDirection, 1 / directionLength);
+            vec3.scaleAndAdd(g.targetOffset, g.targetOffset, g.targetDirection, -vec3.dot(g.targetDirection, g.targetOffset));
+            const offsetLength = vec3.length(g.targetOffset);
+            if (offsetLength) vec3.scale(g.targetOffset, g.targetOffset, 1 / offsetLength);
+            vec3.scaleAndAdd(out, out, g.targetOffset, this.GetRadius() * 1.125);
+        }
+        return out;
+    }
+
+    /**
+     * ccpwgl has no Carbon impact-overlay object, so damage locators are used
+     * @returns {Number}
+     */
+    GetImpactConfiguration()
+    {
+        return 0;
+    }
+
+    HasImpactConfigurationShield()
+    {
+        return false;
+    }
+
+    /**
+     * Resolves a damage-locator collision point
+     * @param {vec3} out
+     * @param {Number} locator
+     * @param {vec3} _positionPrevious
+     * @param {vec3} positionNow
+     * @param {Number} epsilon squared collision distance
+     * @returns {Boolean}
+     */
+    GetImpactPosition(out, locator, _positionPrevious, positionNow, epsilon)
+    {
+        this.GetDamageLocatorPosition(out, locator, true);
+        return vec3.squaredDistance(positionNow, out) < Number(epsilon);
+    }
+
+    CreateImpact()
+    {
+        return -1;
+    }
+
+    UpdateImpact()
+    {
+        return false;
+    }
+
+    /**
+     * Per frame update
+     * @param {Number} dt
+     */
+    Update(dt)
+    {
+        if (!this.display)
+        {
+            return;
+        }
+
+        this.UpdateBoosters(dt);
+
+        // Recounted from scratch each frame, in the same walk Carbon uses
+        // (EveMobile.cpp:163-199 counts as it iterates m_turretSets). A count
+        // kept incrementally would drift the moment a set was added, removed or
+        // reset without telling anyone.
+        let activeTurretCount = 0;
+
+        this._lastLodUpdateDelta += dt;
+        const lodUpdateDue = EveLODHelper.ShouldUpdate(this.lodLevelWithChildren, this._lastLodUpdateDelta);
+        const lodUpdateDelta = lodUpdateDue ? this._lastLodUpdateDelta : 0;
+        if (lodUpdateDue) this._lastLodUpdateDelta = 0;
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            // TODO: Normalize
+            activeTurretCount += this.UpdateTurretAttachment(this.attachments[i]);
+
+            if (this.attachments[i] instanceof EveMeshOverlayEffect)
+            {
+                if (lodUpdateDue) this.attachments[i].Update(lodUpdateDelta, this);
+            }
+            else
+            {
+                this.attachments[i].Update(dt, this);
+            }
+
+            if (this.attachments[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
+        }
+
+        this.OnTurretsCounted(activeTurretCount);
+
+        const perObjectDataBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
+
+        // Published BEFORE the children update, so a controller or smart light
+        // modifier reading one of these acts on this frame's value.
+        this._PublishControllerVariables(perObjectDataBagOfStuff);
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            // 4th arg: parent space object, so nested EveChildContainer controllers can resolve
+            // ShipSpeed()/ShipMaxSpeed() against this ship (carbon parity: EveChildContainer.cpp:603).
+            this.children[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
+
+            if (this.children[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
+
+            if (this.effectChildren[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
+        }
+
+        if (lodUpdateDue)
+        {
+            for (let i = 0; i < this.curveSets.length; i++)
+            {
+                this.curveSets[i].UpdateDelta(lodUpdateDelta);
+            }
+        }
+
+        for (let i = 0; i < this.controllers.length; i++)
+        {
+            this.controllers[i].Update(dt, this._controllerUpdateFrequency);
+        }
+
+        if (this.animation)
+        {
+            this.animation.Update(dt);
+
+            // Handle bounds
+        }
+
+    }
+
+    /**
+     * Gets render batches
+     * @param {number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} [perObjectData=this._perObjectData]
+     * @returns {Boolean} true if batches accumulated
+     */
+    GetBatches(mode, accumulator, perObjectData = this._perObjectData)
+    {
+        if (!this.display) return false;
+        const hasExternalPerObjectData = perObjectData !== this._perObjectData;
+        const previousPerObjectData = this._perObjectData;
+        if (hasExternalPerObjectData)
+        {
+            this._perObjectData = perObjectData;
+        }
+
+        const
+            c = accumulator.length,
+            show = this.visible,
+            res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
+
+        if (show.boosters && this.boosters)
+        {
+            this.boosters.GetBatches(mode, accumulator, this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff));
+        }
+
+        if (!this.isVisible)
+        {
+            const hasBatches = accumulator.length !== c;
+            if (hasExternalPerObjectData) this._perObjectData = previousPerObjectData;
+            return hasBatches;
+        }
+
+        if (res)
+        {
+            // TODO: Throw an error
+            if (this.meshIndex >= res.meshes.length)
+            {
+                this.meshIndex = res.meshes.length - 1;
+            }
+            // TODO: Why are we doing this? Must assume the data is correct
+            this.mesh.SetMeshIndex(this.meshIndex);
+
+            if (show.mesh && this._isMeshVisible)
+            {
+                this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+            }
+        }
+
+        const showFiringEffects = show.firingEffect !== undefined ? show.firingEffect : show.firingEffects;
+        let doFiringEffects = showFiringEffects;
+
+        {
+
+            // TODO: normalize GetBatches for all attachments
+            for (let i = 0; i < this.attachments.length; i++)
+            {
+                const item = this.attachments[i];
+                switch (item.constructor)
+                {
+                    case EveTurretSet:
+                        if (show.turretSets)
+                        {
+                            doFiringEffects = false;
+                            item.GetBatches(mode, accumulator, this._perObjectData, showFiringEffects);
+                        }
+                        break;
+
+                    case EveSpotlightSet:
+                        if (show.spotlightSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                        }
+                        break;
+
+                    case EvePlaneSet:
+                        if (show.planeSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        break;
+
+                    case EveSpriteSet:
+                        if (show.spriteSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                        }
+                        break;
+
+                    case EveSpriteLineSet:
+                        if (show.spriteLineSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        break;
+
+                    case EveCurveLineSet:
+                        if (show.lineSets)
+                        {
+                            item.GetBatches(mode, accumulator);
+                        }
+                        break;
+
+                    case EveMeshOverlayEffect:
+                        if (show.overlayEffects)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+                        }
+                        break;
+
+                    case EveHazeSet:
+                        if (show.hazeSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        break;
+
+                    case EveBanner:
+                        if (show.banners)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        break;
+
+                    default:
+                        item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                        break;
+                }
+            }
+
+            if (res && this._isMeshVisible)
+            {
+                if (show.decals)
+                {
+                    const killMarks = show.killmarks ? this.killCount : 0;
+                    for (let i = 0; i < this.decals.length; i++)
+                    {
+                        this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, killMarks, this.mesh.GetMeshIndex());
+                    }
+                }
+            }
+        }
+
+        if (doFiringEffects)
+        {
+            for (let i = 0; i < this.attachments.length; i++)
+            {
+                if (this.attachments[i].isVisible && this.attachments[i] instanceof EveTurretSet)
+                {
+                    this.attachments[i].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
+                }
+            }
+        }
+
+        if (show.children)
+        {
+            for (let i = 0; i < this.children.length; i++)
+            {
+                this.children[i].GetBatches(mode, accumulator, this._perObjectData);
+            }
+        }
+
+        if (show.effectChildren)
+        {
+            for (let i = 0; i < this.effectChildren.length; i++)
+            {
+                this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
+            }
+        }
+
+        const hasBatches = accumulator.length !== c;
+
+        if (hasExternalPerObjectData)
+        {
+            this._perObjectData = previousPerObjectData;
+        }
+
+        return hasBatches;
+    }
+
+    /**
+     * Gets per-object data for the batch context
+     * @param {Number} mode
+     * @param {Object} [context]
+     * @returns {Tw2PerObjectData}
+     */
+    GetPerObjectData(_mode, _context = {})
+    {
+        return this._perObjectData;
+    }
+
+    /**
+     * Marks stable mesh-derived shader data dirty.
+     */
+    InvalidateMeshData()
+    {
+        this._dirtyGeometry = true;
+    }
+
+    /**
+     * Rebuilds stable mesh-derived shader data from the current geometry resource.
+     * This intentionally does not use `OnRebuildBounds()`, which is a runtime
+     * intersection/culling bounds path and may include attachments or children.
+     * @param {Boolean} [force=false]
+     * @returns {Boolean}
+     */
+    RebuildMeshData(force = false)
+    {
+        const
+            mesh = this.mesh && this.mesh.IsGood() ? this.mesh : null,
+            res = mesh ? mesh.geometryResource : null;
+
+        if (!res)
+        {
+            this._dirtyGeometry = true;
+            return false;
+        }
+
+        if (!force && !this._dirtyGeometry)
+        {
+            return true;
+        }
+
+        res.RebuildBounds();
+
+        vec3.copy(this.boundingSphereCenter, res.boundsSpherePosition);
+        this.boundingSphereRadius = res.boundsSphereRadius;
+
+        const
+            center = this._ellipsoidCenter,
+            radii = this._ellipsoidRadii;
+
+        if (this.shapeEllipsoidRadius[0] > 0)
+        {
+            vec3.copy(center, this.shapeEllipsoidCenter);
+            vec3.copy(radii, this.shapeEllipsoidRadius);
+        }
+        else
+        {
+            const { maxBounds, minBounds } = res;
+            vec3.subtract(center, maxBounds, minBounds);
+            vec3.scale(center, center, 0.5 * 1.732050807);
+            vec3.add(radii, maxBounds, minBounds);
+            vec3.scale(radii, radii, 0.5);
+        }
+
+        this._dirtyGeometry = false;
+        return true;
+    }
+
+    /**
+     * Carbon's `g_secondaryLightingRadiusCutoffFactor`
+     * (EveSpaceObject2.cpp:52). Scales this hull's bounding radius into the
+     * cutoff radius below which a bounce source is too small to matter.
+     * @type {Number}
+     */
+    static SECONDARY_LIGHTING_RADIUS_CUTOFF_FACTOR = 0.3;
+
+    /**
+     * Packed SH secondary-lighting coefficients for this hull, seven vec4s.
+     * Zero until a scene with an `shLightingManager` updates them.
+     * @type {Float32Array}
+     */
+    _shLightingCoefficients = new Float32Array(28);
+
+    /**
+     * Samples the scene's SH manager for this hull's secondary-lighting
+     * coefficients, faded in across the low-detail threshold so a hull entering
+     * that range does not pop.
+     *
+     * Mirrors `EveSpaceObject2::UpdateShLighting` (EveSpaceObject2.cpp:1398-1409).
+     * The coefficients are cleared first, which is also what leaves the unwritten
+     * tail zero on the L1 path.
+     *
+     * Carbon measures `m_estimatedPixelDiameterWithChildren`; ccpwgl tracks only
+     * the hull's own `_pixelSizeAcross`, so a hull whose children extend well past
+     * its bounding sphere fades in slightly later here than in the client.
+     *
+     * @param {Tr2ShLightingManager} manager
+     * @param {EveSpaceScene} [scene] - supplies the detail thresholds
+     * @returns {Boolean} whether coefficients were written
+     */
+    UpdateShLighting(manager, scene)
+    {
+        this._shLightingCoefficients.fill(0);
+
+        const low = scene && scene.lowDetailThreshold !== undefined ? scene.lowDetailThreshold : 100;
+
+        if (!(this._pixelSizeAcross > low) || !manager || typeof manager.GetLighting !== "function")
+        {
+            return false;
+        }
+
+        const
+            medium = scene && scene.mediumDetailThreshold !== undefined ? scene.mediumDetailThreshold : 400,
+            fadeRadius = (medium - low) * 0.25,
+            intensity = Math.min(Math.max((this._pixelSizeAcross - low) / fadeRadius, 0), 1);
+
+        vec3.set(
+            EveObject.global.vec3_0,
+            this._worldTransform[12],
+            this._worldTransform[13],
+            this._worldTransform[14]
+        );
+
+        manager.GetLighting(
+            EveObject.global.vec3_0,
+            intensity,
+            this.boundingSphereRadius * EveSpaceObject2.SECONDARY_LIGHTING_RADIUS_CUTOFF_FACTOR,
+            this._shLightingCoefficients
+        );
+
+        if (scene) scene._shLightingReceivers = (scene._shLightingReceivers || 0) + 1;
+        return true;
+    }
+
+    /**
+     * Drops this hull's secondary-lighting contribution back to nothing
+     *
+     * Mirrors `EveSpaceObject2::ClearShLighting` (EveSpaceObject2.cpp:1411-1414).
+     */
+    ClearShLighting()
+    {
+        this._shLightingCoefficients.fill(0);
+    }
+
+    /**
+     * Gets a temporary semantic-ish bag of values used to build per-object data.
+     * Values may be references to object/raw arrays; treat the bag as read-only.
+     * @param {Object} [out]
+     * @returns {Object}
+     */
+    /**
+     * The object's custom mask blend mode, as the Carbon permutation value.
+     * @returns {String}
+     */
+    GetBlendMode()
+    {
+        return this.blendMode;
+    }
+
+    /**
+     * Sets the object's custom mask blend mode and applies it.
+     *
+     * Takes the ACTUAL permutation value - "BLEND_MODE_NESTED" - and nothing
+     * else. Anything unrecognised throws.
+     *
+     * No normalising, no near-miss tolerance, no fallback. The bug this
+     * replaces was exactly that: an unrecognised value quietly became OVERLAY,
+     * so a wrong blend mode and a correct one looked identical and nothing
+     * reported it. Callers holding another vocabulary - SKINR payloads, black
+     * data, a UI label - translate before calling.
+     * @param {String} value - e.g. "BLEND_MODE_SUBTRACT"
+     * @throws {TypeError} on anything not in {@link BLEND_MODES}
+     * @returns {EveShip2}
+     */
+    SetBlendMode(value)
+    {
+        if (!EveSpaceObject2.BLEND_MODES.includes(value))
+        {
+            throw new TypeError(
+                `Invalid blend mode: ${JSON.stringify(value)}. `
+                + `Expected one of: ${EveSpaceObject2.BLEND_MODES.join(", ")}`
+            );
+        }
+
+        this.blendMode = value;
+
+        // The masks still carry it for the GLES per-object register, which
+        // EveCustomMask packs from a string property. They are followers now,
+        // not sources - written here so the two paths cannot disagree.
+        const name = value.replace("BLEND_MODE_", "").toLowerCase();
+        for (let i = 0; i < this.customMasks.length; i++)
+        {
+            if (this.customMasks[i]) this.customMasks[i].blendMode = name;
+        }
+
+        this.UpdateBlendMode();
+        return this;
+    }
+
+    /**
+     * Applies the current blend mode to every effect declaring the BLEND_MODE
+     * permutation.
+     *
+     * The Carbon path compiles blend mode in rather than reading a register, so
+     * without this a dx11 scene never tracked it at all - only a UI setting the
+     * option by hand did anything. SetEffectsOption is the graph-wide walk,
+     * which already skips effects without the option and remembers it for ones
+     * that have not loaded yet.
+     * @returns {Array} the effects whose option changed
+     */
+    UpdateBlendMode()
+    {
+        return this.SetEffectsOption("BLEND_MODE", this.blendMode);
+    }
+
+    /**
+     * The values Carbon's BLEND_MODE axis declares, read from the shipped quad
+     * packages. Note there are five: CustomMaskBlendMode carries nine, and the
+     * other four have no permutation, so they cannot be expressed on dx11.
+     * @type {Array<String>}
+     */
+    static BLEND_MODES = [
+        "BLEND_MODE_OVERLAY",
+        "BLEND_MODE_SUBTRACT",
+        "BLEND_MODE_EXCLUSION",
+        "BLEND_MODE_NESTED",
+        "BLEND_MODE_NESTED_INVERTED"
+    ];
+
+    /**
+     * The numeric value the GLES CustomMaskBlending register carries for a
+     * permutation value. OVERLAY is Carbon's name for no blending, which the
+     * shaders read as 0.
+     * @param {String} value
+     * @returns {Number}
+     */
+    static GetBlendModeValue(value)
+    {
+        const key = String(value).replace("BLEND_MODE_", "");
+        return key === "OVERLAY" ? CustomMaskBlendMode.NONE : CustomMaskBlendMode[key] ?? CustomMaskBlendMode.NONE;
+    }
+
+    GetPerObjectDataBagOfStuff(out = {})
+    {
+        this.RebuildMeshData();
+
+        delete out.shipData;
+        delete out.clipData;
+        delete out.clipData1;
+        delete out.miscData;
+        delete out.clipRadius2Sq;
+        delete out.worldTransformTranspose;
+        delete out.worldTransformLastTranspose;
+        delete out.inverseWorldTransformTranspose;
+        delete out.shapeEllipsoidCenter;
+        delete out.shapeEllipsoidRadius;
+        delete out.boundingSphereRadiusSq;
+        delete out.clipSphereCenter;
+        delete out.clipSphereSignedRadiusSq;
+        delete out.customMaskBlending;
+        delete out.jointMatrices;
+
+        const
+            boosterGain = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
+            activationStrength = Math.max(Math.min(this.activationStrength, 1), 0),
+            dirtLevel = Math.max(EveSpaceObject2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0),
+            modelScale = this.modelScale === 0 ? 1 : this.modelScale,
+            clipOffset = vec3.length(this.clipSphereCenter),
+            normalizedBoundingRadius = this.boundingSphereRadius / modelScale + clipOffset,
+            insideSpherePercentage = normalizedBoundingRadius > 0
+                ? Math.min(1, clipOffset / normalizedBoundingRadius)
+                : 0,
+            clipScale = normalizedBoundingRadius * (1 + insideSpherePercentage),
+            dissolveRadius = this.clipSphereFactor * clipScale,
+            dissolveRadius2 = this.clipSphereFactor2 * clipScale,
+            clipRadiusSq = Math.sign(dissolveRadius) * dissolveRadius * dissolveRadius,
+            clipRadius2Sq = Math.sign(dissolveRadius2) * dissolveRadius2 * dissolveRadius2,
+            clipCenter = [
+                this.boundingSphereCenter[0] + this.clipSphereCenter[0],
+                this.boundingSphereCenter[1] + this.clipSphereCenter[1],
+                this.boundingSphereCenter[2] + this.clipSphereCenter[2],
+                clipRadiusSq
+            ];
+
+        out.source = this;
+        out.perObjectData = this._perObjectData;
+        out.legacyPerObjectData = this._perObjectData;
+        out.worldTransform = this._worldTransform;
+        out.worldTransformLast = this._worldTransformLast;
+        out.parentTransform = this._parentTransform;
+        out.boosterGain = boosterGain;
+        out.activationStrength = activationStrength;
+        out.dirtLevel = dirtLevel;
+        out.weeksSinceCleaned = this.weeksSinceCleaned;
+        out.boundingSphereCenter = this.boundingSphereCenter;
+        out.boundingSphereRadius = this.boundingSphereRadius;
+        out.shipData = [ boosterGain, activationStrength, dirtLevel, this.boundingSphereRadius ];
+        out.clipData = clipCenter;
+        out.clipSphereCenter = clipCenter;
+        out.clipSphereSignedRadiusSq = clipRadiusSq;
+        out.miscData = [ clipRadius2Sq, this.impactDataOffset, this.clipSphereFactor2, this.clipSphereFactor ];
+        out.sphericalHarmonicLighting = this._shLightingCoefficients;
+        out.clipRadius2Sq = clipRadius2Sq;
+        out.shapeEllipsoidCenter = this.shapeEllipsoidCenter;
+        out.shapeEllipsoidRadius = this.shapeEllipsoidRadius;
+        out.ellipsoidCenter = this._ellipsoidCenter;
+        out.ellipsoidRadii = this._ellipsoidRadii;
+        out.customMasks = this.customMasks;
+
+        if (this._jointMatrices) out.jointMatrices = this._jointMatrices;
+        out.jointCount = 0;
+
+        if (out.jointMatrices && this.animation && this.animation.models[this.meshIndex])
+        {
+            const bones = this.animation.models[this.meshIndex].bones;
+            out.jointCount = isArray(bones) ? bones.length : 0;
+        }
+
+        return out;
+    }
+
+    /**
+     * Gets render payload for experimental batch contexts.
+     * The legacy per-object data is exposed explicitly as compatibility data;
+     * batch.perObjectData remains the final shader upload payload.
+     * @param {Number} mode
+     * @param {Object} [_context]
+     * @returns {Object}
+     */
+    GetRenderPayload(mode, _context = {})
+    {
+        const
+            mesh = this.mesh && this.mesh.IsGood() ? this.mesh : null,
+            geometryRes = mesh ? mesh.geometryResource : null,
+            meshIndex = mesh && typeof mesh.GetMeshIndex === "function" ? mesh.GetMeshIndex() : this.meshIndex,
+            vs = this._perObjectData && this._perObjectData.vs,
+            ps = this._perObjectData && this._perObjectData.ps;
+
+        return {
+            source: this,
+            mode,
+            legacyPerObjectData: this._perObjectData,
+            worldTransform: this._worldTransform,
+            parentTransform: this._parentTransform,
+            mesh,
+            geometryRes,
+            meshIndex,
+            isVisible: this.isVisible,
+            meshVisible: this._isMeshVisible,
+            lodLevel: this.lodLevel,
+            lodLevelWithChildren: this.lodLevelWithChildren,
+            visible: this.visible,
+            boosterGain: this.boosterGain,
+            killCount: this.killCount,
+            clip: this.clip,
+            shipData: vs && vs.Get("Shipdata"),
+            jointMatrices: vs && vs.Get("JointMat"),
+            pixelShaderData: ps && ps.data
+        };
+    }
+
+    /**
+     * Gets render batches for a mode in the experimental batch context
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} [perObjectData=this._perObjectData]
+     * @param {*} [renderReason]
+     * @param {*} [renderPacket]
+     * @returns {Boolean}
+     */
+    GetBatchesForMode(mode, accumulator, perObjectData = this._perObjectData, _renderReason, _renderPacket)
+    {
+        return this.GetBatches(mode, accumulator, perObjectData || this._perObjectData);
+    }
+
+    /**
+     * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Number} dt
+     */
+    UpdateViewDependentData(parentTransform, dt)
+    {
+        mat4.copy(this._parentTransform, parentTransform);
+        mat4.copy(this._worldTransformLast, this._worldTransform);
+
+
+        // Enabling curves overrides rotation and translation
+        if (this._enableCurves && (this.rotationCurve || this.translationCurve))
+        {
+            if (this.rotationCurve)
+            {
+                this.rotationCurve.GetValueAt(tw2.currentTime, this.rotation);
+            }
+
+            if (this.translationCurve)
+            {
+                this.translationCurve.GetValueAt(tw2.currentTime, this.translation);
+            }
+        }
+
+        this.RebuildTransforms({ force: true, skipUpdate: true });
+
+        const res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
+        if (res)
+        {
+            // What is this, this doesn't look standard
+            // We can probably remove this.
+            if (this.meshIndex >= res.meshes.length)
+            {
+                this.meshIndex = res.meshes.length - 1;
+            }
+            this.mesh.SetMeshIndex(this.meshIndex);
+            this.RebuildMeshData();
+
+            // If we have animations, check if they're loaded
+            if (this.animation)
+            {
+                if (!this.animation.HasGeometryResource(res))
+                {
+                    this.animation.SetGeometryResource(res);
+                    this.animation.OnResPrepared(res);
+                }
+
+                if (this.animation.animations.length)
+                {
+                    this._jointMatrices = this.animation.GetBoneMatrices(this.meshIndex);
+                }
+
+                // Todo: Do bounds check on animations
+
+                // Update locator bones
+                // Todo: Find a way to update this without checking every frame
+                for (let i = 0; i < this.locators.length; i++)
+                {
+                    if (this.locators[i]._meshIndex !== this.meshIndex)
+                    {
+                        // Same latch rule as EveLocator2.FindBone, and the same
+                        // reason: caching a null here as though it were an answer
+                        // leaves any locator that resolved before the geometry was
+                        // ready permanently at its bind pose.
+                        const bone = this.animation.FindMeshBoneByName(this.locators[i].name, this.meshIndex);
+                        this.locators[i]._bone = bone;
+
+                        if (bone || this.animation.IsGeometryGood())
+                        {
+                            this.locators[i]._meshIndex = this.meshIndex;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Is this correct?
+        const id = mat4.identity(EveObject.global.mat4_0);
+        id[12] = 0;
+        id[13] = 0;
+        id[14] = 0;
+
+        const customMaskBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
+        for (let i = 0; i < this.customMasks.length; ++i)
+        {
+            this.customMasks[i].GetPerObjectDataBagOfStuff(id, customMaskBagOfStuff, i, this.visible.customMasks);
+        }
+
+        // Packed here, after the masks, because the blend mode belongs to the
+        // object and not to either mask. CustomMaskBlending is a SINGLE
+        // register shared by both, so letting each mask write it made the last
+        // one packed the winner - two masks with different modes meant one of
+        // them silently decided for the pair.
+        //
+        // .x is the blend mode, .y the swapped flag; .zw are unused.
+        //
+        // Swapped stays on the masks and is aggregated here. It is per mask,
+        // and it is NOT in Carbon yet - it is intended to become a permutation
+        // there, like blend mode did, once that can be added upstream. So this
+        // lane is a ccpwgl-only stand-in: do not treat it as the Carbon shape,
+        // and note one lane cannot express a per-mask flag for two masks.
+        const blending = this._customMaskBlending;
+        blending[0] = EveSpaceObject2.GetBlendModeValue(this.blendMode);
+        blending[1] = this.customMasks.some(mask => mask && mask.customMasksSwapped) ? 1 : 0;
+        blending[2] = 0;
+        blending[3] = 0;
+        customMaskBagOfStuff.customMaskBlending = blending;
+
+        GLESPerObjectDataEveSpaceObject.Pack(customMaskBagOfStuff, this._perObjectData);
+
+        // Custom scaler for sprites
+        // - Note that ccp doesn't do this however we want to do this
+        // - incase we want to scale the scene down, e.g. for Virtual Reality/ Mixed Reality projections
+        this._spriteScale = mat4.maxScaleOnAxis(this._worldTransform);
+
+        // Collect our bones
+        let bones = null;
+        if (this.animation && this.animation.models[this.meshIndex])
+        {
+            bones = this.animation.models[this.meshIndex].bones;
+            if (!isArray(bones))
+            {
+                console.dir({ msg: "Invalid bones", bones });
+                bones = null;
+            }
+        }
+
+        for (let i = 0; i < this.children.length; ++i)
+        {
+            this.children[i].UpdateViewDependentData(this._worldTransform, dt);
+        }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if ("UpdateViewDependentData" in this.attachments[i])
+            {
+                this.attachments[i].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
+            }
+        }
+
+        for (let i = 0; i < this.locatorSets.length; i++)
+        {
+            this.locatorSets[i].UpdateViewDependentData(this._worldTransform, bones);
+        }
+
+        if (this.boosters)
+        {
+            this.boosters.UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
+        }
+
+        for (let i = 0; i < this.decals.length; i++)
+        {
+            this.decals[i].UpdateViewDependentData(this._worldTransform);
+        }
+
+    }
+
+    @meta.float
+    activationStrength = 1.0;
+
+    /**
+     * The level to use when dirt is off
+     * @type {number}
+     */
+    //static DIRT_OFF_LEVEL = 5.0;
+
+    /**
+     * Age modifier
+     * @type {number}
+     */
+    //static DIRT_AGE_MODIFIER = 0.01;
+
+    /**
+     * Gets dirt level from weeks since cleaned
+     * @param {Number} weeks
+     * @param {Boolean} [isDisabled]
+     * @returns {number}
+     */
+    static getDirtLevelFromWeeks(weeks, isDisabled)
+    {
+        //weeks *= this.DIRT_AGE_MODIFIER;
+        //if (isDisabled || isNaN(weeks)) return this.DIRT_OFF_LEVEL;
+        if (isDisabled || isNaN(weeks)) return 0;
+        return (0.7 - 1.0 / (Math.pow(Math.max(weeks, 0.0), 0.65) + (1.0 / 2.7)));
+    }
+
+    /**
+     * Per object data
+     * @type {{ps: ((string|number[])[]|(string|number)[])[], vs: ((string|number)[]|(string|number[])[])[]}}
+     */
+    static perObjectData = GLESPerObjectDataEveSpaceObject.layout;
+
+    static global = {
+        ...EveObject.global,
+        targetTransform: mat4.create(),
+        targetWorldTransform: mat4.create(),
+        targetInverse: mat4.create(),
+        targetSource: vec3.create(),
+        targetPosition: vec3.create(),
+        targetDirection: vec3.create(),
+        targetOffset: vec3.create(),
+        controllerVariableValues: new Float64Array(7)
+    };
+
+    /**
+     * The controller variables a space object publishes about itself, in the
+     * order EveSpaceObject2.cpp:224-230 publishes them.
+     */
+    static CONTROLLER_VARIABLES = Object.freeze([
+        "DirtLevel",
+        "ActivationStrength",
+        "ShieldDamage",
+        "ArmorDamage",
+        "HullDamage",
+        "ClipSphereFactor",
+        "ClipSphereFactor2"
+    ]);
+
+
+    /**
+     * Updates the boosters, for the subclass that has them.
+     *
+     * A no-op here. Carbon puts boosters on `EveShip2` (`EveShip2.h:69`), so a
+     * station has none to update and the base has no business knowing what one
+     * is. The call stays in the base's update because the ORDER matters - it
+     * runs before the attachments, as it always has.
+     *
+     * @param {Number} dt
+     */
+    UpdateBoosters(dt)
+    {
+    }
+
+    /**
+     * Handles one attachment if it is a turret set, and says whether it is firing.
+     *
+     * A no-op here, returning nothing to count. Turret sets are `EveMobile`'s in
+     * Carbon (`EveMobile.h:88`); ccpwgl keeps them in the base's polymorphic
+     * `attachments` list, so the base still WALKS them - it just no longer knows
+     * what they are.
+     *
+     * @param {*} attachment
+     * @returns {Number} 1 when the attachment is an active turret set, else 0
+     */
+    UpdateTurretAttachment(attachment)
+    {
+        return 0;
+    }
+
+    /**
+     * Receives the active turret count once the walk is finished.
+     *
+     * A no-op here, for the same reason: the base counts nothing because it
+     * recognises nothing. Recounted from scratch each frame, as Carbon does
+     * (`EveMobile.cpp:163-199`).
+     *
+     * @param {Number} count
+     */
+    OnTurretsCounted(count)
+    {
+    }
+}
+
+
+function isLocatorFacing(locatorDirection, sourcePosition)
+{
+    const moved = EveSpaceObject2.global.targetOffset;
+    vec3.subtract(moved, sourcePosition, locatorDirection);
+    return vec3.squaredLength(moved) < vec3.squaredLength(sourcePosition);
+}
+
+
+function getDirectionFit(a, b)
+{
+    const direction = -vec3.dot(a, b);
+    return direction < 0
+        ? (1 - Math.sqrt(Math.abs(direction))) * 0.5
+        : (Math.sqrt(Math.abs(direction)) + 1) * 0.5;
+}
