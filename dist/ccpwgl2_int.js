@@ -41566,9 +41566,21 @@
 	    this.targetResource = null;
 	    this.loader = null;
 	    this._view = null;
-	    this._requeued = false;
-	    this._inPrepare = null;
+	    /**
+	     * Consumers this prepare is draining. Populated from `_waiting` when
+	     * `Prepare` starts, and emptied as each is answered.
+	     * @type {Array}
+	     */
 	    this._objects = [];
+	    /**
+	     * Consumers that arrived since the current drain began, or after the last
+	     * one finished. Kept SEPARATE from `_objects` so that a request made while
+	     * constructing cannot extend the list being walked - which is how one
+	     * `Prepare` came to build a whole layout in a single synchronous call.
+	     * @type {Array}
+	     */
+	    this._waiting = [];
+	    this._requeued = false;
 	    this._constructor = null;
 	    this._requestResponseType = "arraybuffer";
 	  }
@@ -41614,25 +41626,25 @@
 	      }
 	      return;
 	    }
-	    this._objects.push({
+
+	    // Onto the waiting list, never onto the list a drain is walking.
+	    this._waiting.push({
 	      onResolved,
 	      onRejected
 	    });
 
-	    // Already prepared, so no `Prepare` is coming on its own - the object
+	    // Already constructed, so no `Prepare` is coming on its own: the object
 	    // left the prepare queue when it finished and nothing puts it back.
-	    // Re-queue it, and `Prepare` walks the consumers added since.
+	    // Ask for one.
 	    //
-	    // Through the QUEUE rather than constructing here, which is what this
-	    // did first and was wrong. Construction is prepare work: it is charged
-	    // to `maxPrepareTime` and spread across frames. Doing it inline made
-	    // every fetch of a retained object resolve as a microtask, and a build
-	    // awaiting hundreds of them then ran as one unbroken microtask chain -
-	    // no macrotask, so no paint, no input, not even a tab close. The
-	    // network used to provide that yield by accident; retaining the object
-	    // took it away, and the queue is where it properly belongs.
+	    // Through the QUEUE rather than constructing here. Construction is
+	    // prepare work - it belongs to `maxPrepareTime` and gets spread across
+	    // frames. Answering inline is what this did first and it froze the
+	    // page: every consumer of a retained object was served without ever
+	    // returning to the event loop, so a build wanting hundreds of them ran
+	    // as one unbroken run with no paint and no input.
 	    //
-	    // Before retention this branch was unreachable: `OnPrepared` dropped
+	    // Before retention this could not happen at all: `OnPrepared` dropped
 	    // the object from the motherlode, so no one could find one to add to.
 	    if (this._constructor && !this._requeued) {
 	      this._requeued = true;
@@ -41649,7 +41661,16 @@
 	    if (dot === -1) return null;
 	    var ext = this.path.substr(dot + 1);
 	    var first;
-	    if (this._inPrepare === null) {
+
+	    // Take the waiting list as this drain's work. Anything requested from
+	    // here on lands on a fresh `_waiting` and is served by a later prepare,
+	    // so this walk has a fixed size no matter what construction asks for.
+	    this._requeued = false;
+	    if (this._waiting.length) {
+	      this._objects = this._waiting;
+	      this._waiting = [];
+	    }
+	    if (this._constructor === null) {
 	      this._view = response;
 	      switch (ext) {
 	        case "red":
@@ -41672,12 +41693,15 @@
 	            format: ext
 	          });
 	      }
-	      this._inPrepare = 0;
+
 	      // Test construction once for errors??
 	      first = this._constructor.Construct();
 	    }
-	    while (this._inPrepare < this._objects.length) {
-	      var object = this._objects[this._inPrepare];
+
+	    // Popped as they are answered, so the list IS the outstanding work and
+	    // nothing has to track a cursor into it.
+	    while (this._objects.length) {
+	      var object = this._objects.shift();
 	      try {
 	        if (first) {
 	          object.onResolved(first);
@@ -41695,7 +41719,14 @@
 	          message: "Error preparing child object"
 	        });
 	      }
-	      this._inPrepare++;
+	    }
+
+	    // Consumers that arrived while this drain ran get the next one, so a
+	    // long cascade is spread across frames and charged to the prepare
+	    // budget rather than held in one call.
+	    if (this._waiting.length && !this._requeued) {
+	      this._requeued = true;
+	      resMan.Queue(this, this._view);
 	    }
 	    this.OnPrepared();
 	  }
@@ -41707,13 +41738,18 @@
 	   */
 	  OnError(err) {
 	    super.OnError(err);
-	    for (var i = 0; i < this._objects.length; i++) {
-	      if (this._objects[i].onRejected) {
-	        this._objects[i].onRejected(err);
+
+	    // Both lists: the one a drain was working through, and anything that
+	    // arrived since. Missing the second would leave those promises unsettled.
+	    var pending = this._objects.concat(this._waiting);
+	    this._objects.splice(0);
+	    this._waiting.splice(0);
+	    for (var i = 0; i < pending.length; i++) {
+	      if (pending[i].onRejected) {
+	        pending[i].onRejected(err);
 	      }
 	    }
 	    resMan.RemoveResource(this.path);
-	    this._objects.splice(0);
 	    return err;
 	  }
 
@@ -41731,14 +41767,9 @@
 	      resMan.RemoveResource(this.path);
 	    }
 
-	    // The consumers queued for this prepare have all been served. Reset the
-	    // cursor with the list: `AddObject` re-queues later arrivals and
-	    // `Prepare` walks them from the start of the emptied list, so the two
-	    // must agree or a re-queued prepare would walk nothing and those
-	    // consumers would never settle.
-	    this._objects.splice(0);
-	    if (this._inPrepare !== null) this._inPrepare = 0;
-	    this._requeued = false;
+	    // `Prepare` pops as it goes and owns the re-queue for anything still
+	    // waiting, so there is nothing to clear here. Clearing would DISCARD
+	    // consumers that arrived during the drain.
 	    super.OnPrepared(eventLog);
 	  }
 
@@ -66414,11 +66445,26 @@
 	  }
 
 	  /**
-	   * Gets a count of pending loads
+	   * Gets a count of outstanding work: bytes still arriving, AND resources
+	   * that have arrived but are still waiting to be built.
+	   *
+	   * The prepare queue counts. A resource whose bytes have landed is not
+	   * ready - it has no mesh, no texture, no constructed object yet - and
+	   * leaving it out let this read zero while a scene was still assembling.
+	   * Anything driving a progress bar, or deciding a build had finished, was
+	   * told so early; a texture still queued reads as done and draws white.
 	   * @returns {number}
 	   */
 	  get pendingLoads() {
-	    return this._pendingLoads.size + (this._loadQueue.length - this._loadQueueHead);
+	    return this._pendingLoads.size + (this._loadQueue.length - this._loadQueueHead) + this.pendingPrepares;
+	  }
+
+	  /**
+	   * Gets a count of resources waiting to be built.
+	   * @returns {number}
+	   */
+	  get pendingPrepares() {
+	    return this._prepareQueue.length - this._prepareQueueHead;
 	  }
 
 	  /**
@@ -66432,7 +66478,18 @@
 	    /** Resource cache and lifecycle root owned by this manager. */
 	    this.motherLode = new Tw2MotherLode();
 	    /** Max seconds per frame spent preparing loaded resources. */
-	    this.maxPrepareTime = 0.05;
+	    /**
+	     * Seconds of resource preparation allowed per frame.
+	     *
+	     * Lowered from 0.05 when the budget arithmetic was fixed, and the two go
+	     * together. 0.05s is three whole 60Hz frames, and the check is post-hoc -
+	     * taken AFTER a resource returns - so the old value only ever looked
+	     * survivable because the quadratic drain cut the loop short long before it
+	     * was reached. Correct arithmetic against 0.05 would genuinely spend 50ms
+	     * in a 16.7ms frame and stall visibly.
+	     * @type {Number}
+	     */
+	    this.maxPrepareTime = 0.01;
 	    /** Maximum number of in-flight raw loads at once. */
 	    this.maxConcurrentLoads = 8;
 	    /** Whether to use worker loader for raw fetch/parse operations. */
@@ -66835,7 +66892,10 @@
 	   */
 	  Tick() {
 	    this.PumpLoadQueue();
-	    if (this._prepareQueue.length === this._prepareQueueHead && this.pendingLoads === 0) {
+
+	    // `pendingLoads` now covers the prepare queue as well, so this is the
+	    // one question it always meant to ask: is there any outstanding work.
+	    if (this.pendingLoads === 0) {
 	      if (this._noLoadFrames < 2) {
 	        this._noLoadFrames++;
 	      }
@@ -66852,7 +66912,14 @@
 	      this._prepareQueueHead += 1;
 	      try {
 	        res.Prepare(data, xml);
-	        this._prepareBudget -= (this.tw2.now - startTime) * 0.001;
+
+	        // Against the elapsed total, not by subtracting it each time.
+	        // `startTime` is fixed before the loop, so the old
+	        // `budget -= (now - startTime)` charged item one's cost again
+	        // for every later item and the budget drained quadratically:
+	        // with 0.05s it managed about 20 items a frame where 200 fit,
+	        // and the cheaper the resources the worse the penalty.
+	        this._prepareBudget = this.maxPrepareTime - (this.tw2.now - startTime) * 0.001;
 	        if (this._prepareBudget < 0) break;
 	      } catch (err) {
 	        this._prepareBudget = 0;
@@ -67167,7 +67234,7 @@
 	      // much later - the prepare queue is budgeted, so a backlog is
 	      // normal - and the clock runs from the REQUEST. Dropping it in that
 	      // window would take the reader out from under waiting consumers.
-	      if (res && res._objects && res._objects.length) continue;
+	      if (res && (res._objects && res._objects.length || res._waiting && res._waiting.length)) continue;
 	      var bytes = res && res._view && res._view.byteLength ? res._view.byteLength : 0;
 	      totalBytes += bytes;
 	      entries.push({
@@ -147178,6 +147245,9 @@
 	    _initializerDefineProperty(this, "depthAreas", _descriptor6$3c, this);
 	    _initializerDefineProperty(this, "distortionAreas", _descriptor7$2K, this);
 	    _initializerDefineProperty(this, "geometryResource", _descriptor8$2p, this);
+	    /** Cached union of the base bounds over every instance transform. */
+	    this._instanceBounds = null;
+	    this._instanceBoundsCount = -1;
 	    _initializerDefineProperty(this, "geometryResPath", _descriptor9$2b, this);
 	    _initializerDefineProperty(this, "instanceGeometryResource", _descriptor0$1_, this);
 	    _initializerDefineProperty(this, "instanceGeometryResPath", _descriptor1$1E, this);
@@ -147360,39 +147430,74 @@
 	  }
 
 	  /**
-	   * Gets the bounding box for the mesh
+	   * Gets the bounding box for the mesh: the base geometry's bounds unioned
+	   * over every instance transform.
+	   *
+	   * Carbon declines to answer this at all - `EveChildInstancedMeshes::
+	   * GetBoundingSphere` is literally `return false;` - but ccpwgl cannot
+	   * afford to. `EveTransform.UpdateLod` starts a mesh-bearing transform at
+	   * `meshVisible = !this.mesh`, so a mesh that reports no bounds is never
+	   * made visible and silently never draws. In a sof layout, which is mostly
+	   * instanced placements, that is the whole scene.
+	   *
+	   * Cached, and rebuilt only when forced or when the instance count changes.
+	   * The walk is O(instances) and `UpdateLod` asks every frame.
+	   *
 	   * @param {box3} out
 	   * @param {Boolean} force
 	   * @return {box3|null} `out` when it holds usable bounds, otherwise null
 	   */
 	  GetBoundingBox(out, force) {
-	    // Carbon reports no bounds for instanced meshes - this is its whole
-	    // body, not a stub: `bool EveChildInstancedMeshes::GetBoundingSphere(
-	    // Vector4&, BoundingSphereQuery ) const { return false; }`
-	    // (EveChildInstancedMeshes.cpp).
-	    //
-	    // Null rather than Carbon's false because the two engines disagree on
-	    // the shape of this answer and ccpwgl is what this class lives in:
-	    // Carbon returns bool and writes `out` only when true
-	    // (IEveTransform.h:20), while every ccpwgl bounds method returns `out`
-	    // or null - WglTransform.js:94, Tw2Mesh, Tw2GeometryRes. Both are
-	    // falsy, so callers that test the result cannot tell them apart; the
-	    // difference is only which contract this reads as. What matters is that
-	    // it ANSWERS: this threw ErrFeatureNotImplemented, which killed the
-	    // render loop from inside UpdateLod the first time a turret firing fx
-	    // put an instanced mesh under an EveTransform.
-	    return null;
+	    if (!this.IsGood()) return null;
+	    var count = this.GetInstanceCount();
+
+	    // No instances means nothing is drawn, so there is nothing to bound.
+	    // Distinct from "bounds unknown": the answer is that there is no extent.
+	    if (!count) return null;
+	    if (force || !this._instanceBounds || this._instanceBoundsCount !== count) {
+	      this._instanceBounds = this._instanceBounds || box3.create();
+	      this._instanceBoundsCount = count;
+	      var mat4_0 = Tw2InstancedMesh.global.mat4_0;
+	      var base = Tw2InstancedMesh.global.box3_0;
+	      var worked = Tw2InstancedMesh.global.box3_1;
+	      if (!this.geometryResource.GetBoundingBox(base, force)) {
+	        this._instanceBounds = null;
+	        return null;
+	      }
+	      var unioned = false;
+	      for (var i = 0; i < count; i++) {
+	        // Asked once. A mesh either knows its instance layout or does
+	        // not, and it will not start knowing it at instance seven -
+	        // the same rule `Intersect` follows.
+	        if (!this.GetInstanceTransform(i, mat4_0)) break;
+	        box3.transformMat4(worked, base, mat4_0);
+	        if (unioned) {
+	          box3.union(this._instanceBounds, this._instanceBounds, worked);
+	        } else {
+	          box3.copy(this._instanceBounds, worked);
+	          unioned = true;
+	        }
+	      }
+
+	      // Layout unknown: the base geometry's own bounds. Coarse - every
+	      // instance is assumed to sit at the mesh's own transform - but real,
+	      // and the same fallback `Intersect` takes rather than answering
+	      // nothing.
+	      if (!unioned) box3.copy(this._instanceBounds, base);
+	    }
+	    return box3.copy(out, this._instanceBounds);
 	  }
 
 	  /**
-	   * Gets the bounding sphere for the mesh
+	   * Gets the bounding sphere for the mesh. See `GetBoundingBox`.
 	   * @param {sph3} out
 	   * @param {Boolean} force
 	   * @return {sph3|null} `out` when it holds usable bounds, otherwise null
 	   */
 	  GetBoundingSphere(out, force) {
-	    // See GetBoundingBox.
-	    return null;
+	    var box = Tw2InstancedMesh.global.box3_2;
+	    if (!this.GetBoundingBox(box, force)) return null;
+	    return sph3.fromBox3(out, box);
 	  }
 
 	  /**
@@ -147602,7 +147707,10 @@
 	   */
 	}, _Tw2InstancedMesh.global = {
 	  mat4_0: mat4$1.create(),
-	  mat4_1: mat4$1.create()
+	  mat4_1: mat4$1.create(),
+	  box3_0: box3.create(),
+	  box3_1: box3.create(),
+	  box3_2: box3.create()
 	}, _Tw2InstancedMesh), _descriptor$6i = _applyDecoratedDescriptor(_class2$6f.prototype, "name", [_dec3$5W], {
 	  configurable: true,
 	  enumerable: true,
@@ -190943,6 +191051,7 @@
 	   */
 	  GetBatches(mode, accumulator, perObjectData) {
 	    var _accumulator$GetCurre;
+	    if (!EveHazeSet.enabled) return false;
 	    perObjectData = perObjectData || ((_accumulator$GetCurre = accumulator.GetCurrentPerObjectData) === null || _accumulator$GetCurre === void 0 ? void 0 : _accumulator$GetCurre.call(accumulator));
 	    if (this.display && mode === device.RM_ADDITIVE && this._vertexBuffer && this._indexBuffer) {
 	      var batch = new EveHazeSetBatch();
@@ -190981,7 +191090,7 @@
 	   * Haze set item constructor
 	   * @type {EveHazeSetItem}
 	   */
-	}, _EveHazeSet.Item = EveHazeSetItem, _EveHazeSet.vertexDeclarations = [{
+	}, _EveHazeSet.enabled = false, _EveHazeSet.Item = EveHazeSetItem, _EveHazeSet.vertexDeclarations = [{
 	  usage: "TEXCOORD",
 	  usageIndex: 0,
 	  elements: 4,
@@ -246430,8 +246539,11 @@
 	    "maxRetainedSweepTime": 0.01,
 	    // The amount of parallel raw loads allowed at once
 	    "maxConcurrentLoads": 8,
-	    // The maximum time for preparing resources per frame
-	    "maxPrepareTime": 0.05,
+	    // The maximum time for preparing resources per frame.
+	    // 0.01 is well inside a 60Hz frame; the budget is checked AFTER each
+	    // resource returns, so this is a floor on how long a frame can run, not
+	    // a ceiling - one slow resource still overruns it.
+	    "maxPrepareTime": 0.01,
 	    // Optional worker loader url, defaults to null
 	    "workerLoaderUrl": null,
 	    // Toggles using worker-backed raw loads
