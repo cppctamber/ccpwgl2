@@ -316,6 +316,25 @@ export const config = {
         // The amount of time to wait before purging an unused resource
         "purgeTime": 60,
 
+        // Keeps a loading object after it prepares, so the next consumer of the
+        // same file constructs from memory instead of re-fetching and
+        // re-parsing it. Nothing binds a loading object, so the purge above
+        // cannot see that one is in use - these settings own their lifetime.
+        "retainLoadingObjects": true,
+
+        // Optional idle backstop for retained loading objects, in seconds since
+        // one was last requested. Zero disables it, which is the default:
+        // elapsed time says nothing about whether a file will be wanted again,
+        // so capacity is the bound that means something.
+        "retainedObjectTime": 0,
+
+        // Bytes of retained source data held before the least recently
+        // requested loading objects are dropped
+        "maxRetainedBytes": 33554432,
+
+        // The maximum time for sweeping retained loading objects per frame
+        "maxRetainedSweepTime": 0.01,
+
         // The amount of parallel raw loads allowed at once
         "maxConcurrentLoads": 8,
 

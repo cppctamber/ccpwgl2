@@ -66466,21 +66466,33 @@
 	     */
 	    this.retainLoadingObjects = true;
 	    /**
-	     * Seconds since a retained loading object was last REQUESTED before it is
-	     * dropped. Measured from the request, not from binding: nothing binds a
-	     * loading object, which is why the inactivity purge is the wrong instrument
-	     * for them and they get this sweep instead.
+	     * Optional idle backstop, in seconds since a retained object was last
+	     * requested. ZERO, and off by default, because elapsed time carries no
+	     * information about whether a file will be wanted again.
 	     *
-	     * Generous, because the gap between two uses of one file is set by the size
-	     * of the thing being built, not by anything the cache can see. A hangar
-	     * layout takes minutes, and a `.black` first needed at ten seconds may not
-	     * be needed again until three minutes in - so a short window drops exactly
-	     * the files the retention exists for, and the biggest scenes suffer most.
-	     * The objects are kilobytes; holding one too long costs nothing worth
-	     * measuring, and dropping one too early costs a fetch and a re-parse.
+	     * A hangar cycles random adverts: the same `.black` may be needed again in
+	     * thirty seconds, or in ten minutes, and nothing at load time can tell
+	     * which. Any window wide enough to cover the long gaps is indistinguishable
+	     * from never evicting, and any window narrow enough to bound memory
+	     * guarantees a refetch of something still in use. Capacity is the honest
+	     * bound - see `maxRetainedBytes` - and it is what Carbon uses
+	     * (MotherLode.h:36, oldest-first over a memory limit).
+	     *
+	     * Set it only for a workload known to be one-shot.
 	     * @type {Number}
 	     */
-	    this.retainedObjectTime = 300;
+	    this.retainedObjectTime = 0;
+	    /**
+	     * Bytes of retained source data held before the least recently REQUESTED
+	     * objects are dropped. Carbon's rule, with the same reasoning: what a cache
+	     * can measure is what it costs, not whether it will be wanted.
+	     *
+	     * Counts the raw bytes each loading object holds, which is what retention
+	     * actually keeps alive; the objects constructed from them belong to their
+	     * callers. EVE's hangar `.black` run 1.5-5.4 kB, so this holds thousands.
+	     * @type {Number}
+	     */
+	    this.maxRetainedBytes = 32 * 1024 * 1024;
 	    /**
 	     * Per-sweep time allowance, in seconds, matching `maxPrepareTime`.
 	     * @type {Number}
@@ -66607,7 +66619,7 @@
 	  Register(opt) {
 	    if (!opt) return;
 	    if ("events" in opt) this.AddEvents(opt.events);
-	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
+	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
 	    if (opt.useWorkerLoading !== undefined) {
 	      this.UseWorkerLoading(opt.useWorkerLoading);
 	    } else if (opt.workerLoading !== undefined) {
@@ -67123,12 +67135,17 @@
 	  }
 
 	  /**
-	   * Drops retained loading objects not requested within `retainedObjectTime`.
+	   * Drops retained loading objects once they cost more than `maxRetainedBytes`,
+	   * least recently REQUESTED first, and any past an optional idle backstop.
 	   *
-	   * Budgeted per sweep like the prepare queue: a scene that retained hundreds
-	   * of files must not pay for all of them in one frame. Whatever is not
-	   * reached stays until the next sweep, which is harmless - the cost of
-	   * holding one a second longer is a few kilobytes.
+	   * Oldest-first over a size limit is Carbon's rule (MotherLode.h:36) and the
+	   * only one that survives a workload whose reuse gaps are unpredictable - a
+	   * hangar re-showing a random advert minutes later is not a stale entry, it
+	   * is the entry the cache exists for.
+	   *
+	   * Budgeted per sweep like the prepare queue: a scene holding thousands of
+	   * files must not pay for all of them in one frame. Whatever is not reached
+	   * waits for the next sweep, which costs only the bytes it is still holding.
 	   *
 	   * @param {Number} budget - seconds
 	   * @returns {Number} how many were dropped
@@ -67136,27 +67153,51 @@
 	  SweepRetainedObjects(budget) {
 	    if (!this._retained.size) return 0;
 	    var startTime = this.tw2.now,
-	      deadline = this.retainedObjectTime * 1000,
+	      entries = [],
 	      expired = [];
+	    var totalBytes = 0;
 	    for (var _ref9 of this._retained) {
 	      var _ref8 = _slicedToArray(_ref9, 2);
 	      var path = _ref8[0];
 	      var lastRequested = _ref8[1];
-	      if (startTime - lastRequested < deadline) continue;
+	      var res = this.motherLode.Find(path);
 
 	      // Never drop one that still owes somebody an object. A long build
 	      // can queue a request and not reach the construction for it until
 	      // much later - the prepare queue is budgeted, so a backlog is
-	      // normal - and the idle clock runs from the REQUEST. Dropping it in
-	      // that window would evict the reader out from under consumers that
-	      // are still waiting on it.
-	      var res = this.motherLode.Find(path);
+	      // normal - and the clock runs from the REQUEST. Dropping it in that
+	      // window would take the reader out from under waiting consumers.
 	      if (res && res._objects && res._objects.length) continue;
-	      expired.push(path);
+	      var bytes = res && res._view && res._view.byteLength ? res._view.byteLength : 0;
+	      totalBytes += bytes;
+	      entries.push({
+	        path,
+	        lastRequested,
+	        bytes
+	      });
+	    }
+
+	    // The idle backstop, off unless someone sets it.
+	    if (this.retainedObjectTime > 0) {
+	      var deadline = this.retainedObjectTime * 1000;
+	      for (var i = 0; i < entries.length; i++) {
+	        if (startTime - entries[i].lastRequested >= deadline) expired.push(entries[i]);
+	      }
+	    }
+
+	    // Then oldest-first until back under the size limit. Sorted only when
+	    // over it, so the common case walks the map once and stops.
+	    if (totalBytes > this.maxRetainedBytes) {
+	      var byAge = entries.filter(entry => !expired.includes(entry)).sort((a, b) => a.lastRequested - b.lastRequested);
+	      var over = totalBytes - this.maxRetainedBytes;
+	      for (var _i = 0; _i < byAge.length && over > 0; _i++) {
+	        expired.push(byAge[_i]);
+	        over -= byAge[_i].bytes;
+	      }
 	    }
 	    var dropped = 0;
-	    for (var i = 0; i < expired.length; i++) {
-	      this.ReleaseLoadingObject(expired[i]);
+	    for (var _i2 = 0; _i2 < expired.length; _i2++) {
+	      this.ReleaseLoadingObject(expired[_i2].path);
 	      dropped++;
 
 	      // Charged from the top of the sweep, so the budget is what the
@@ -246372,6 +246413,21 @@
 	    "autoPurgeResources": true,
 	    // The amount of time to wait before purging an unused resource
 	    "purgeTime": 60,
+	    // Keeps a loading object after it prepares, so the next consumer of the
+	    // same file constructs from memory instead of re-fetching and
+	    // re-parsing it. Nothing binds a loading object, so the purge above
+	    // cannot see that one is in use - these settings own their lifetime.
+	    "retainLoadingObjects": true,
+	    // Optional idle backstop for retained loading objects, in seconds since
+	    // one was last requested. Zero disables it, which is the default:
+	    // elapsed time says nothing about whether a file will be wanted again,
+	    // so capacity is the bound that means something.
+	    "retainedObjectTime": 0,
+	    // Bytes of retained source data held before the least recently
+	    // requested loading objects are dropped
+	    "maxRetainedBytes": 33554432,
+	    // The maximum time for sweeping retained loading objects per frame
+	    "maxRetainedSweepTime": 0.01,
 	    // The amount of parallel raw loads allowed at once
 	    "maxConcurrentLoads": 8,
 	    // The maximum time for preparing resources per frame
