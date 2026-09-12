@@ -7,6 +7,7 @@ import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2ColorTextureRes } from "../resource/Tw2ColorTextureRes";
 import { Tw2TextureArrayRes } from "../resource/Tw2TextureArrayRes";
 import { Tw2TextureAtlasArrayRes } from "../resource/Tw2TextureAtlasArrayRes";
+import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
 import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, normalizeResourcePath } from "utils";
@@ -1113,6 +1114,69 @@ export class Tw2ResMan extends Tw2EventEmitter
             throw new Tw2Error({ message: `Dynamic resource constructor "${name}" must implement GetResource` });
         }
         this._dynamicConstructors.set(name.toLowerCase(), constructor);
+    }
+
+    /**
+     * Registers a lazy, shared dynamic video playlist.
+     * Browser adaptation of videoplayer/playlistresource.py's resource
+     * constructor and shuffled_videos. The host supplies paths; registration
+     * does no loading. A single texture/decoder is shared per dynamic path.
+     * Re-registration changes future resources; existing cached ones retain
+     * their playlist until unloaded and removed from the resource cache.
+     * @param {String} name Name following dynamic:/, e.g. hangarvideos
+     * @param {Array<String>} paths Browser-playable video resource paths
+     * @returns {String} First path in the shuffled playlist
+     */
+    RegisterVideoPlaylist(name, paths)
+    {
+        const videos = paths.filter(path => /\.(webm|mp4|ogg)$/i.test(path));
+        if (!videos.length) throw new Tw2Error({ message: "Video playlist requires a playable video path" });
+        for (let i = videos.length - 1; i > 0; i--)
+        {
+            const j = Math.floor(Math.random() * (i + 1));
+            [ videos[i], videos[j] ] = [ videos[j], videos[i] ];
+        }
+        const manager = this;
+        this.RegisterResourceConstructor(name, {
+            /** Creates the shared texture without starting playback. */
+            GetResource()
+            {
+                const resource = new Tw2TextureRes();
+                let index = -1;
+                let failures = 0;
+                resource.DoCustomLoad = function ()
+                {
+                    index = (index + 1) % videos.length;
+                    const sourcePath = videos[index];
+                    // Resolve when the load gate opens, against the host's
+                    // final paths. Keep this.path as the shared dynamic key.
+                    const url = manager.tw2.GetURL(sourcePath);
+                    const loading = Tw2TextureRes.prototype.DoCustomLoad.call(
+                        this, url, getPathExtension(sourcePath)
+                    );
+                    const runtime = this._runtime;
+                    runtime.cycle = false;
+                    runtime.onEnded = () => this.Reload();
+                    const video = runtime.el;
+                    video.addEventListener("playing", () => { failures = 0; });
+                    const onError = video.onerror;
+                    video.onerror = () =>
+                    {
+                        if (this._runtime !== runtime || runtime.el !== video) return;
+                        // Deliberate browser deviation: Carbon retries forever.
+                        // Stop after a completely failed cycle to avoid endless
+                        // network traffic for an unavailable application list.
+                        if (++failures >= videos.length) return onError();
+                        manager.RemovePendingLoad(url);
+                        this.Unload({ hide: true });
+                        manager.LoadResource(this);
+                    };
+                    return loading;
+                };
+                return resource;
+            }
+        });
+        return videos[0];
     }
 
     /**

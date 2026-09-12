@@ -121,6 +121,11 @@ export class VideoRuntime
     {
         if (this.el)
         {
+            // Carbon playlistresource._destroy detaches callbacks before
+            // releasing playback. Clearing an HTML video source can emit an
+            // error later; it must not mark the next playlist item as failed.
+            this.el.onerror = this.el.onloadedmetadata = null;
+            this.el.onended = this.el.onpause = this.el.onplaying = null;
             try
             {
                 this.el.pause();

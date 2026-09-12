@@ -98,6 +98,24 @@ export const config = {
     // published - they exist for the same missing input.
     forceUberDepthOff: true,
 
+    // Case-insensitive dynamic provider names. Each playlist loads on demand.
+    dynamic: {
+        inspacevideos: [
+            "res:/video/billboards/common/matigu_sushi.webm",
+            "res:/video/billboards/common/2036671_fun_inc.webm",
+            "res:/video/billboards/common/2036674_dark_venture_corporation.webm",
+            "res:/video/billboards/common/eve_shipad_astero_timeless.webm",
+            "res:/video/billboards/common/eve_shipad_dominix_timeless.webm"
+        ],
+        hangarvideos: [
+            "res:/video/billboards/common/matigu_sushi.webm",
+            "res:/video/billboards/common/2036671_fun_inc.webm",
+            "res:/video/billboards/common/2036674_dark_venture_corporation.webm",
+            "res:/video/billboards/common/eve_shipad_astero_timeless.webm",
+            "res:/video/billboards/common/eve_shipad_dominix_timeless.webm"
+        ]
+    },
+
     // Enables experimental Carbon-shaped render batch context
     enableExperimentalBatchContext: false,
 

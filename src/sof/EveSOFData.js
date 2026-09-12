@@ -64,6 +64,14 @@ export class EveSOFData extends meta.Model
     enableSof6 = true;
 
     /**
+     * Application adjustment for SOF video-plane RGB, applied during setup.
+     * Deliberate ccpwgl extension: Carbon uses the authored faction colour.
+     * Alpha is preserved; rebuild existing objects after changing this value.
+     */
+    @meta.float
+    globalVideoBrightnessModifier = 5;
+
+    /**
      * The material used when a named one is not in the data.
      *
      * Not a debugging aid any more, and not empty. Some materials genuinely are
@@ -175,6 +183,7 @@ export class EveSOFData extends meta.Model
 
         effectPath: {
             plane: "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
+            planeVideo: "res:/graphics/effect/managed/space/spaceobject/fx/planehologram.fx",
             spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
             spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
 
@@ -3275,91 +3284,30 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Points a hull's video planes at something to show.
-     *
-     * Carbon does this by `usage` (`EveSOF.cpp:996-1005`): a plane set declares
-     * itself SPACE_VIDEO or HANGAR_VIDEO and its `ImageMap` is set to
-     * `dynamic:/inspacevideos` or `dynamic:/hangarvideos` — one provider path,
-     * no list, no choosing. `MaskMap` is authored data and Carbon never touches
-     * it here.
-     *
-     * This used to find the sets by NAME, matching anything containing
-     * "BILLBOARD" or "VIDEOS", and then wrote the chosen path over `MaskMap` —
-     * the wrong parameter, so the mask was replaced and the image slot left
-     * alone. It also crashed outright when no list was supplied, which is the
-     * default: an empty array indexed at `randomInt(0, -1)` gives undefined, and
-     * the `res:/` prefix check called `.indexOf` on it. Any hull with a plane
-     * set so named was therefore unrenderable.
-     *
-     * What remains ours is the *source*. We have no video pipeline and no
-     * playlist, so a random still from `options.billboards` stands in for what
-     * the provider would supply. That is a stand-in for a `dynamic:/` factory
-     * rather than a different design, and it is why the selection survives when
-     * the name-matching did not.
-     *
-     * @param {*} obj
-     * @param {Object} options
+     * Carbon EveSOF.cpp:1208-1215 binds the application video provider to
+     * ImageMap. Source selection belongs to that shared provider, not to
+     * each plane. MaskMap remains the authored mask.
      */
-    static HandleBillboards(obj, options)
+    static HandleBillboards(obj)
     {
-        const
-            found = [],
-            arr = obj.attachments || obj.planeSets;
-
-        arr.forEach(set =>
+        const planes = (obj.attachments || obj.planeSets).filter(set =>
+            set.constructor === EvePlaneSet && EveSOFData.VIDEO_PLANE_USAGES.includes(set.usage));
+        for (const plane of planes)
         {
-            // `usage` is carried on the set, and it is what Carbon reads.
-            if (set.constructor === EvePlaneSet && EveSOFData.VIDEO_PLANE_USAGES.includes(set.usage))
+            plane.effect.SetTextures({ ImageMap: EveSOFDataHullPlaneSet.VideoProvider[plane.usage] });
+        }
+        // Preserve the demo's explicit advance control; advance each shared
+        // resource once, even when multiple planes reference it.
+        obj.RandomizeBillboards = () =>
+        {
+            const resources = new Set();
+            for (const plane of planes)
             {
-                found.push(set);
+                const resource = plane.effect.parameters.ImageMap.textureRes;
+                if (resource) resources.add(resource);
             }
-        });
-
-        // Temp add billboard randomizer
-        if (found.length)
-        {
-            obj.RandomizeBillboards = function ()
-            {
-                const { billboards = [] } = options;
-
-                // Nothing to choose from is the normal case, not a failure.
-                //
-                // This read `billboards[randomInt(0, billboards.length - 1)]`
-                // against an empty list, which indexes an empty array and gives
-                // undefined, and then called `.indexOf` on it — so any hull
-                // carrying a plane set whose name contains BILLBOARD or VIDEOS
-                // threw and took the entire SOF build with it, unless the caller
-                // happened to have supplied a billboard list. Almost nobody does:
-                // the option defaults to an empty array.
-                //
-                // A billboard is decoration. Leaving the mask as authored is the
-                // right answer when there is nothing to swap in.
-                if (!billboards.length) return;
-
-                found.forEach(billboard =>
-                {
-                    let bb = billboards[num.randomInt(0, billboards.length - 1)];
-
-                    // A list entry is whatever a caller put there, so a bad one
-                    // declines rather than throwing.
-                    if (typeof bb !== "string" || !bb) return;
-                    if (bb.indexOf(":") === -1) bb = "res:/" + bb;
-
-                    // ImageMap, which is the slot Carbon fills. MaskMap is
-                    // authored on the plane set and stays as it was.
-                    billboard.effect?.parameters?.ImageMap?.SetValue(bb);
-                });
-            };
-
-            obj.RandomizeBillboards();
-        }
-        else
-        {
-            obj.RandomizeBillboards = () =>
-            {
-
-            };
-        }
+            for (const resource of resources) resource.Reload();
+        };
     }
 
     /**
@@ -3440,13 +3388,18 @@ export class EveSOFData extends meta.Model
             // Temporary
             set.effect = set.effect || new Tw2Effect();
             const atlasAspectRatio = srcSet.atlasAspectRatio;
+            // Carbon GetPlaneSetEffectPath selects the ImageMap-consuming
+            // hologram shader for SPACE_VIDEO and HANGAR_VIDEO.
+            const isVideo = EveSOFData.VIDEO_PLANE_USAGES.includes(srcSet.usage);
             set.effect.SetValues({
-                effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
+                effectFilePath: data.GetShaderPath(isVideo ? options.effectPath.planeVideo : options.effectPath.plane, isSkinned && srcSet.skinned),
                 autoParameter: true,
                 parameters: {
                     PlaneData: [
                         srcSet.usage === EveSOFDataHullPlaneSet.Usage.HAZE ? 1 : 0,
-                        srcSet.atlasSize,
+                        // Restore the legacy no-atlas fallback removed in
+                        // 780bd9553: the GLES shader divides UVs by this value.
+                        srcSet.atlasSize || 1,
                         Math.floor(atlasAspectRatio[0]),
                         Math.floor(atlasAspectRatio[1])
                     ]
@@ -3473,6 +3426,12 @@ export class EveSOFData extends meta.Model
                     if (faction) vec4.copy(item.color, faction.color);
                 }
 
+                if (isVideo)
+                {
+                    item.color[0] *= data.globalVideoBrightnessModifier;
+                    item.color[1] *= data.globalVideoBrightnessModifier;
+                    item.color[2] *= data.globalVideoBrightnessModifier;
+                }
                 if (EveSOFData.isZeroColor(item.color)) item.display = false;
                 item.UpdateValues();
             });

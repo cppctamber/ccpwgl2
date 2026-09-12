@@ -322,6 +322,9 @@ export class Tw2Library extends Tw2EventEmitter
      */
     eveSof = null;
 
+    /** Application dynamic video playlists, indexed by lowercase provider name. */
+    dynamic = {};
+
     /**
      * Optional DNA handler, registered before Initialize.
      * Called with a DNA string (or null at boot) and must resolve to an
@@ -700,6 +703,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.paths) this.paths.Register(opt.paths);
         if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
         if (opt.extensions) this.extensions.Register(opt.extensions);
+        if (opt.dynamic) this.RegisterDynamic(opt.dynamic);
         if (opt.variables) this.variables.Register(opt.variables);
         if (opt.propertyTypes) registerPropertyTypes(this.propertyTypes, opt.propertyTypes);
         if (opt.renderBatchSorter !== undefined) this.renderBatchSorter = opt.renderBatchSorter;
@@ -712,6 +716,25 @@ export class Tw2Library extends Tw2EventEmitter
 
         // Shortcut to device.glParams
         if (opt.glParams) this.device.Register({ glParams: opt.glParams });
+    }
+
+    /**
+     * Configures named application video playlists before scene loading.
+     * Carbon's application registers separate playlist constructors;
+     * resource caching shares playback within each channel.
+     * Registration itself performs no downloads or video decoding.
+     * @param {Object<String, Array<String>>} playlists Case-insensitive provider keys
+     */
+    RegisterDynamic(playlists)
+    {
+        for (const key of Object.keys(playlists))
+        {
+            const name = key.toLowerCase();
+            const paths = Array.from(playlists[key]);
+            if (paths.length) this.resMan.RegisterVideoPlaylist(name, paths);
+            else this.resMan.UnregisterResourceConstructor(name);
+            this.dynamic[name] = paths;
+        }
     }
 
     /**
