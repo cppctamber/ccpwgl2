@@ -536,13 +536,14 @@ export class Tw2InstancedMesh extends meta.Model
     {
         if (!this.IsGood()) return;
 
+        // Carbon Tr2InstancedMesh::MergeVertexDeclarations shifts instance semantics by 8.
         const buffer = this.instanceGeometryResource.GetInstanceBuffer(this.instanceMeshIndex);
         if (buffer)
         {
             this.geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer,
                 this.instanceGeometryResource.GetInstanceDeclaration(this.instanceMeshIndex),
                 this.instanceGeometryResource.GetInstanceStride(this.instanceMeshIndex),
-                this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex));
+                this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex), 8);
         }
     }
 

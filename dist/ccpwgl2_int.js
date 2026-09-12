@@ -33804,7 +33804,7 @@
 	}
 	calculateTangents.handedness = 1.0;
 
-	var vertex = {
+	var vertex$1 = {
 		__proto__: null,
 		calculateNormals: calculateNormals,
 		calculateTangents: calculateTangents
@@ -35264,7 +35264,7 @@
 		vec2: vec2,
 		vec3: vec3$2,
 		vec4: vec4,
-		vertex: vertex
+		vertex: vertex$1
 	};
 
 	var HAS_CAPTURE_STACK_TRACE = isFunction$1(Error["captureStackTrace"]);
@@ -41859,6 +41859,35 @@
 	   */
 	}
 	Tw2LoadingObject.isLoadingObject = true;
+
+	/** Retains float4 instance channels omitted by runtime alpha.0 JSON projection. */
+	function restoreGr2VertexChannels(raw, json) {
+	  // Compatibility with runtime alpha.0: its JSON projector truncates
+	  // Position to xyz and UVs to xy. Traffic uses float4 streams; recover
+	  // their already-decoded floats from the same raw graph (no second read).
+	  for (var i = 0; i < (json.meshes || []).length; i++) {
+	    var _raw$fileInfo$Meshes$;
+	    var vertices = (_raw$fileInfo$Meshes$ = raw.fileInfo.Meshes[i].PrimaryVertexData) === null || _raw$fileInfo$Meshes$ === void 0 ? void 0 : _raw$fileInfo$Meshes$.Vertices;
+	    if (!(vertices !== null && vertices !== void 0 && vertices.length)) continue;
+	    var mesh = json.meshes[i];
+	    var _loop = function () {
+	        var _vertices$__type, _mesh$vertex$name;
+	        _ref2 = _slicedToArray(_ref3, 2);
+	        var name = _ref2[0];
+	        var member = _ref2[1];
+	        var type = (_vertices$__type = vertices.__type) === null || _vertices$__type === void 0 ? void 0 : _vertices$__type.find(x => x.name === member);
+	        if (!type || type.arrayWidth !== 4 || ((_mesh$vertex$name = mesh.vertex[name]) === null || _mesh$vertex$name === void 0 ? void 0 : _mesh$vertex$name.length) === vertices.length * 4) return 1; // continue
+	        // Granny Real32/Real16 are decoded to JS numbers by readRaw.
+	        if (type.type !== 10 && type.type !== 21) throw new Error("Unsupported four-component traffic channel: " + member);
+	        mesh.vertex[name] = vertices.flatMap(vertex => vertex[member].map(Math.fround));
+	        if (name === "position") mesh.vertexCount = vertices.length;
+	      },
+	      _ref2;
+	    for (var _ref3 of [["position", "Position"], ["texcoord0", "TextureCoordinates0"], ["texcoord1", "TextureCoordinates1"]]) {
+	      if (_loop()) continue;
+	    }
+	  }
+	}
 
 	/**
 	 * Granny animation-curve decompression helpers
@@ -56435,6 +56464,7 @@
 	      emit: "json",
 	      unpackTangents: options.unpackTangents
 	    });
+	    restoreGr2VertexChannels(raw, json);
 	    var t1 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
 	    Gr2Reader.BuildGeometryRes(json, res, options);
 	    if (Gr2Reader.DEBUG_TIMING) {
@@ -56484,14 +56514,15 @@
 	        vertexSize = 0,
 	        vertexElements = [];
 	      if (srcM.vertex) {
-	        // Establish the vertex count from POSITION (always 3-wide)
+	        // Use the authored count for four-wide instance POSITION streams
 	        // so other channels' widths can be inferred from their
 	        // actual data rather than assumed from the VertexTypes
 	        // table - e.g. tangent/binormal are 4-wide packed frames
 	        // by default but CjsGr2Format's unpackTangents rewrites
 	        // them (and normal) as 3-wide channels.
 	        if (srcM.vertex.position && srcM.vertex.position.length) {
-	          vertexCount = srcM.vertex.position.length / 3;
+	          var _srcM$vertexCount;
+	          vertexCount = (_srcM$vertexCount = srcM.vertexCount) != null ? _srcM$vertexCount : srcM.vertex.position.length / 3;
 	        }
 	        for (var key in srcM.vertex) {
 	          if (srcM.vertex.hasOwnProperty(key) && srcM.vertex[key] && srcM.vertex[key].length) {
@@ -61482,6 +61513,7 @@
 	    var instanceDecl = arguments.length > 6 ? arguments[6] : undefined;
 	    var instanceStride = arguments.length > 7 ? arguments[7] : undefined;
 	    var instanceCount = arguments.length > 8 ? arguments[8] : undefined;
+	    var usageOffset = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 0;
 	    this.KeepAlive();
 	    var passCount = effect.GetPassCount(technique);
 	    if (!passCount || !this.IsGood() || meshIx >= this.meshes.length) return false;
@@ -61496,7 +61528,7 @@
 	      gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
 	      mesh.declaration.SetPartialDeclaration(d, passInput, mesh.declaration.stride);
 	      gl.bindBuffer(gl.ARRAY_BUFFER, instanceVB);
-	      var resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 0, 1);
+	      var resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, usageOffset, 1);
 	      d.ApplyShadowState();
 	      for (var i = 0; i < count; ++i) {
 	        if (i + start < mesh.areas.length) {
@@ -147975,9 +148007,11 @@
 	   */
 	  RenderAreas(meshIx, start, count, effect, technique) {
 	    if (!this.IsGood()) return;
+
+	    // Carbon Tr2InstancedMesh::MergeVertexDeclarations shifts instance semantics by 8.
 	    var buffer = this.instanceGeometryResource.GetInstanceBuffer(this.instanceMeshIndex);
 	    if (buffer) {
-	      this.geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer, this.instanceGeometryResource.GetInstanceDeclaration(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceStride(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex));
+	      this.geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer, this.instanceGeometryResource.GetInstanceDeclaration(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceStride(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex), 8);
 	    }
 	  }
 
@@ -191589,8 +191623,8 @@
 	    _initializerDefineProperty(this, "translationCurve", _descriptor15$n, this);
 	    _initializerDefineProperty(this, "meshIndex", _descriptor16$i, this);
 	    /*
-	         CCPWGL only
-	      */
+	          CCPWGL only
+	       */
 	    _initializerDefineProperty(this, "clipSphereCenter", _descriptor17$g, this);
 	    _initializerDefineProperty(this, "clipSphereFactor", _descriptor18$g, this);
 	    _initializerDefineProperty(this, "clipSphereFactor2", _descriptor19$c, this);
@@ -191877,12 +191911,12 @@
 	    return out;
 	  }
 	  /*
-	       Eve engine doesn't rebuild bounds like we do here
+	        Eve engine doesn't rebuild bounds like we do here
 	      If we need to rebuild bounds for a hull, for using in something like Intersection tests
 	      We should be storing it separately to the actual hull's bounds
 	      This will remove confusion when we're comparing behavior
 	      TODO: Change all bound calculations to be separate from the base hull bounds
-	    */
+	     */
 
 	  /**
 	   * Fires when bounds need rebuilding
@@ -268888,7 +268922,7 @@
 	var planeTexCoord = _objectSpread2(_objectSpread2({}, PlaneTexCoord), {}, {
 	  value: PlaneTexCoord.value.map((value, index) => index % 4 === 0 ? 1 - value : value)
 	});
-	var inputDefinitions = [...[0, 1, 2].map(usageIndex => ({
+	var inputDefinitions$1 = [...[0, 1, 2].map(usageIndex => ({
 	  usage: "TEXCOORD",
 	  usageIndex,
 	  elements: 4
@@ -268901,7 +268935,7 @@
 	  usageIndex,
 	  elements: 4
 	}))];
-	var constants = [PlaneCornerOffset, planeTexCoord, PlaneNormal, PlaneData];
+	var constants$1 = [PlaneCornerOffset, planeTexCoord, PlaneNormal, PlaneData];
 	var textures$1 = ["Layer1Map", "Layer2Map", "MaskMap"].map(name => ({
 	  name,
 	  type: 2,
@@ -268922,8 +268956,8 @@
 	  techniques: {
 	    Main: {
 	      vs: {
-	        inputDefinitions,
-	        constants,
+	        inputDefinitions: inputDefinitions$1,
+	        constants: constants$1,
 	        shader: "//planeglow.sm_hi\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nattribute vec4 attr7;\nattribute vec4 attr8;\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 color;\nuniform vec4 cb0[10];\nuniform vec4 cb1[34];\nuniform vec4 cb3[13];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 v8;\nvec4 r0;\nvec4 r1;\nivec4 a0;\nvec4 c10=vec4(1,0,0,0);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nv7=attr7;\nv8=attr8;\nr0.w=c10.x;\na0.x=int(v8.x+0.5);\nr1.xy=c10.xy;\nr1=cb0[0+a0.x].xyzx*r1.xxxy+r1.yyyx;\nr0.x=dot(r1,v0);\nr0.y=dot(r1,v1);\nr0.z=dot(r1,v2);\nr1.x=dot(r0,cb3[0]);\nr1.y=dot(r0,cb3[1]);\nr1.z=dot(r0,cb3[2]);\nr1.w=dot(r0,cb3[3]);\ngl_Position.x=dot(r1,cb1[4]);\ngl_Position.y=dot(r1,cb1[5]);\ngl_Position.z=dot(r1,cb1[6]);\ngl_Position.w=dot(r1,cb1[7]);\ntexcoord2=r1;\nr0.x=dot(cb0[8].xyz,v0.xyz);\nr0.y=dot(cb0[8].xyz,v1.xyz);\nr0.z=dot(cb0[8].xyz,v2.xyz);\ntexcoord3.x=dot(r0.xyz,cb3[0].xyz);\ntexcoord3.y=dot(r0.xyz,cb3[1].xyz);\ntexcoord3.z=dot(r0.xyz,cb3[2].xyz);\ntexcoord3.w=dot(r0.xyz,cb3[3].xyz);\nr0.xy=v6.xy*cb1[33].xx+v6.zw;\nr0.zw=cb0[4+a0.x].xy*v4.xy+v4.zw;\ntexcoord.xy=r0.xy+r0.zw;\nr0.xy=v7.xy*cb1[33].xx+v7.zw;\nr0.zw=cb0[4+a0.x].xy*v5.xy+v5.zw;\ntexcoord.zw=r0.xy+r0.zw;\nr0.x=1.0/cb0[9].y;\nr0.y=r0.x*v8.z;\nr0.z=fract(r0.y);\nr0.w=r0.y+(-r0.z);\nr0.z=(-r0.z)<r0.z?1.0:0.0;\nr0.y=r0.y<(-r0.y)?1.0:0.0;\nr0.y=r0.y*r0.z+r0.w;\nr0.z=v8.z*r0.x+(-r0.y);\nr0.y=r0.y+cb0[4+a0.x].y;\ntexcoord1.x=cb0[4+a0.x].x*r0.x+r0.z;\ntexcoord1.y=r0.x*r0.y;\ncolor=cb3[12].yyyy*v3;\ntexcoord1.zw=c10.yy;\ntexcoord4=c10.yyyy;\ntexcoord5=c10.yyyy;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n"
 	      },
 	      ps: {
@@ -268940,8 +268974,8 @@
 	  techniques: {
 	    Main: {
 	      vs: {
-	        inputDefinitions,
-	        constants,
+	        inputDefinitions: inputDefinitions$1,
+	        constants: constants$1,
 	        shader: "//skinned_planeglow.sm_hi\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nattribute vec4 attr7;\nattribute vec4 attr8;\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 color;\nuniform vec4 cb0[10];\nuniform vec4 cb1[34];\nuniform vec4 cb3[200];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 v8;\nvec4 r0;\nvec4 r1;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nivec4 a0;\nvec4 c10=vec4(1,0,3,0);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nv7=attr7;\nv8=attr8;\nr0.x=c10.z*v8.y;\na0.x=int(r0.x+0.5);\nr0=cb3[27+a0.x];\nr1=r0*cb3[0].yyyy;\nr2=cb3[26+a0.x];\nr1=r2*cb3[0].xxxx+r1;\nr3=cb3[28+a0.x];\nr1=r3*cb3[0].zzzz+r1;\nr4.xy=c10.xy;\nr1=cb3[0].wwww*r4.yyyx+r1;\nr5.w=c10.x;\na0.x=int(v8.x+0.5);\nr6=cb0[0+a0.x].xyzx*r4.xxxy+r4.yyyx;\nr5.x=dot(r6,v0);\nr5.y=dot(r6,v1);\nr5.z=dot(r6,v2);\nr6.x=dot(r5,r1);\nr7=r0*cb3[1].yyyy;\nr7=r2*cb3[1].xxxx+r7;\nr7=r3*cb3[1].zzzz+r7;\nr7=cb3[1].wwww*r4.yyyx+r7;\nr6.y=dot(r5,r7);\nr8=r0*cb3[2].yyyy;\nr8=r2*cb3[2].xxxx+r8;\nr8=r3*cb3[2].zzzz+r8;\nr8=cb3[2].wwww*r4.yyyx+r8;\nr6.z=dot(r5,r8);\nr0=r0*cb3[3].yyyy;\nr0=r2*cb3[3].xxxx+r0;\nr0=r3*cb3[3].zzzz+r0;\nr0=cb3[3].wwww*r4.yyyx+r0;\nr6.w=dot(r5,r0);\ngl_Position.x=dot(r6,cb1[4]);\ngl_Position.y=dot(r6,cb1[5]);\ngl_Position.z=dot(r6,cb1[6]);\ngl_Position.w=dot(r6,cb1[7]);\ntexcoord2=r6;\nr2.x=dot(cb0[8].xyz,v0.xyz);\nr2.y=dot(cb0[8].xyz,v1.xyz);\nr2.z=dot(cb0[8].xyz,v2.xyz);\ntexcoord3.x=dot(r2.xyz,r1.xyz);\ntexcoord3.y=dot(r2.xyz,r7.xyz);\ntexcoord3.z=dot(r2.xyz,r8.xyz);\ntexcoord3.w=dot(r2.xyz,r0.xyz);\nr0.xy=v6.xy*cb1[33].xx+v6.zw;\nr0.zw=cb0[4+a0.x].xy*v4.xy+v4.zw;\ntexcoord.xy=r0.xy+r0.zw;\nr0.xy=v7.xy*cb1[33].xx+v7.zw;\nr0.zw=cb0[4+a0.x].xy*v5.xy+v5.zw;\ntexcoord.zw=r0.xy+r0.zw;\nr0.x=1.0/cb0[9].y;\nr0.y=r0.x*v8.z;\nr0.z=fract(r0.y);\nr0.w=r0.y+(-r0.z);\nr0.z=(-r0.z)<r0.z?1.0:0.0;\nr0.y=r0.y<(-r0.y)?1.0:0.0;\nr0.y=r0.y*r0.z+r0.w;\nr0.z=v8.z*r0.x+(-r0.y);\nr0.y=r0.y+cb0[4+a0.x].y;\ntexcoord1.x=cb0[4+a0.x].x*r0.x+r0.z;\ntexcoord1.y=r0.x*r0.y;\ncolor=v3*cb3[12].yyyy;\ntexcoord1.zw=c10.yy;\ntexcoord4=c10.yyyy;\ntexcoord5=c10.yyyy;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n"
 	      },
 	      ps: {
@@ -268949,6 +268983,98 @@
 	        textures: textures$1,
 	        shader: "//skinned_planeglow.sm_hi\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 color;\nuniform sampler2D s0;\nuniform sampler2D s1;\nuniform sampler2D s2;\nuniform vec4 cb2[4];\nuniform vec4 cb7[1];\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 r0;\nvec4 r1;\nvec4 c1=vec4(-1,1,0,0);\nv0=texcoord;\nv1=texcoord1;\nv2=texcoord2;\nv3=texcoord3;\nv4=color;\nr0.xyz=cb2[3].xyz+(-v2.xyz);\nr1.xyz=normalize(r0.xyz);\nr0.xyz=normalize(v3.xyz);\nr0.x=dot(r1.xyz,r0.xyz);\nr0.x=abs(r0.x)+c1.x;\nr0.y=c1.y;\nr0.x=cb7[0].x*r0.x+r0.y;\nr1=texture2D(s0,v0.xy);\nr0=r0.xxxx*r1;\nr1=texture2D(s1,v0.zw);\nr0=r0*r1;\nr1=texture2D(s2,v1.xy);\nr0=r0*r1;\ngl_FragData[0]=r0*v4;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n"
 	      }
+	    }
+	  }
+	};
+
+	// Native traffic.sm_hi DXBC has two passes: lights and rear-facing boosters.
+	// Ported from its instruction stream. GLES uses MiscSettings at cb1[33]
+	// instead of cb1[45], and the standard GLES clip conversion. Its shipped
+	// fragment shader has no volumetric fog; retain that GLES contract here.
+	var inputDefinitions = [{
+	  usage: "POSITION",
+	  usageIndex: 0,
+	  elements: 3
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 0,
+	  elements: 2
+	}, {
+	  usage: "POSITION",
+	  usageIndex: 8,
+	  elements: 4
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 8,
+	  elements: 4
+	}];
+	var constants = [{
+	  name: "TextureProperties",
+	  value: [64, 3, 1, 1]
+	}, {
+	  name: "SpriteSizes",
+	  value: [1, 1, 4, 0.5]
+	}, {
+	  name: "SpriteProperties",
+	  value: [0.8, 0.02, 1000, 1]
+	}];
+	var sampler = {
+	  filterMode: 3,
+	  mipFilterMode: 2,
+	  magFilterMode: 2,
+	  addressUMode: 3,
+	  addressVMode: 3,
+	  addressWMode: 3,
+	  maxAnisotropy: 16
+	};
+	var positionMap = {
+	  name: "PositionMap",
+	  type: 2,
+	  sampler: _objectSpread2(_objectSpread2({}, sampler), {}, {
+	    name: "PositionMapSampler"
+	  })
+	};
+	var fragment = {
+	  textures: [{
+	    name: "TexMap",
+	    type: 2,
+	    sampler: _objectSpread2(_objectSpread2({}, sampler), {}, {
+	      name: "TexMapSampler",
+	      addressUMode: 1,
+	      addressVMode: 1
+	    })
+	  }],
+	  shader: "\n        ".concat(precision, "\n        varying vec4 color;\n        varying vec2 texcoord;\n        uniform sampler2D s0;\n        ").concat(shadowHeader$1, "\n        void main()\n        {\n            vec4 texel = texture2D(s0, texcoord);\n            gl_FragData[0] = vec4(texel.rgb * color.rgb, 1.0) * texel.a;\n            ").concat(shadowFooter$1, "\n        }\n    ")
+	};
+	function vertex(booster) {
+	  return {
+	    inputDefinitions,
+	    textures: [positionMap],
+	    constants: [...constants, ...(booster ? [{
+	      name: "BoosterColor",
+	      value: [1, 1, 1, 1]
+	    }] : [{
+	      name: "GlowColor1",
+	      value: [1, 1, 1, 1]
+	    }, {
+	      name: "GlowColor2",
+	      value: [1, 1, 1, 1]
+	    }])],
+	    shader: "\n            attribute vec3 attr0;\n            attribute vec2 attr1;\n            attribute vec4 attr2;\n            attribute vec4 attr3;\n            varying vec4 color;\n            varying vec2 texcoord;\n            uniform vec4 cb0[".concat(booster ? 4 : 5, "];\n            uniform vec4 cb1[34];\n            uniform vec4 cb3[4];\n            uniform highp sampler2D vs0;\n            uniform vec3 ssyf;\n            ").concat(shadowHeader, "\n\n            vec3 samplePosition(float phase, vec3 rows)\n            {\n                return vec3(\n                    texture2DLod(vs0, vec2(phase, rows.x), 0.0).r,\n                    texture2DLod(vs0, vec2(phase, rows.y), 0.0).r,\n                    texture2DLod(vs0, vec2(phase, rows.z), 0.0).r);\n            }\n\n            void main()\n            {\n                // DXBC uses signed fractional remainder for the path index.\n                float row = attr2.w * 3.0 / cb0[0].y;\n                row = (row >= 0.0 ? 1.0 : -1.0) * fract(abs(row));\n                vec3 rows = (row * cb0[0].y + vec3(0.5, 1.5, 2.5)) / cb0[0].y;\n                float phase = fract(attr3.y * cb0[0].z * cb1[33].x + attr3.w);\n                vec3 position = samplePosition(phase, rows);\n                ").concat(booster ? "\n                float previousPhase = fract(phase - sign(attr3.y) / cb0[0].x);\n                vec3 direction = normalize(samplePosition(previousPhase, rows) - position);\n                // Native quirk: this dot uses the local path direction directly.\n                float facing = clamp(dot(cb1[2].xyz, direction), 0.0, 1.0);\n                vec2 corner = facing * attr3.x * attr0.xy * cb0[1].zw;\n                " : "\n                vec2 corner = attr0.xy * attr3.x * cb0[1].xy;\n                ", "\n                vec4 local = vec4(position + cb0[0].w * attr2.xyz, 1.0);\n                vec4 world = vec4(dot(local, cb3[0]), dot(local, cb3[1]), dot(local, cb3[2]), dot(local, cb3[3]));\n                vec4 view = vec4(dot(world, cb1[8]), dot(world, cb1[9]), dot(world, cb1[10]), dot(world, cb1[11]));\n                float size = exp2(log2(abs(view.z)) * cb0[2].x) * cb0[2].y;\n                view.xy += corner * size;\n                gl_Position = vec4(dot(view, cb1[12]), dot(view, cb1[13]), dot(view, cb1[14]), dot(view, cb1[15]));\n                float fade = clamp(-cb0[2].z / view.z, 0.0, 1.0);\n                color = fade * ").concat(booster ? "cb0[3]" : "(cb0[3].xyzz + attr3.z * (cb0[4].xyzz - cb0[3].xyzz))", ";\n                texcoord = attr1;\n                ").concat(shadowFooter, "\n            }\n        ")
+	  };
+	}
+	var traffic = {
+	  name: "traffic",
+	  replaces: "graphics/effect.gles2/managed/space/spaceobject/fx/traffic/traffic",
+	  techniques: {
+	    Main: {
+	      passes: [{
+	        vs: vertex(false),
+	        ps: fragment
+	      }, {
+	        vs: vertex(true),
+	        ps: fragment
+	      }]
 	    }
 	  }
 	};
@@ -268970,6 +269096,7 @@
 		spotlightconepool: spotlightconepool,
 		spotlightglowpool: spotlightglowpool,
 		test_background: test_background,
+		traffic: traffic,
 		ubershaderdistortion: ubershaderdistortion,
 		volumetrictrails: volumetrictrails
 	};

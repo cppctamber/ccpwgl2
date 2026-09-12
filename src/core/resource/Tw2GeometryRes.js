@@ -476,7 +476,7 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {Number} instanceCount
      * @returns {Boolean}
      */
-    RenderAreasInstanced(meshIx, start, count, effect, technique = effect.defaultTechnique, instanceVB, instanceDecl, instanceStride, instanceCount)
+    RenderAreasInstanced(meshIx, start, count, effect, technique = effect.defaultTechnique, instanceVB, instanceDecl, instanceStride, instanceCount, usageOffset = 0)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
@@ -499,7 +499,7 @@ export class Tw2GeometryRes extends Tw2Resource
             mesh.declaration.SetPartialDeclaration(d, passInput, mesh.declaration.stride);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, instanceVB);
-            const resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 0, 1);
+            const resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, usageOffset, 1);
 
             d.ApplyShadowState();
 

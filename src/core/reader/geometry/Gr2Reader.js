@@ -1,3 +1,4 @@
+import { restoreGr2VertexChannels } from "./Gr2Preparation";
 import { CjsGr2Format } from "@carbonenginejs/runtime/resource/formats/gr2";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { Tw2Error } from "core/Tw2Error";
@@ -118,6 +119,8 @@ export class Gr2Reader
             unpackTangents: options.unpackTangents
         });
 
+        restoreGr2VertexChannels(raw, json);
+
         const t1 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
 
         Gr2Reader.BuildGeometryRes(json, res, options);
@@ -182,7 +185,7 @@ export class Gr2Reader
 
             if (srcM.vertex)
             {
-                // Establish the vertex count from POSITION (always 3-wide)
+                // Use the authored count for four-wide instance POSITION streams
                 // so other channels' widths can be inferred from their
                 // actual data rather than assumed from the VertexTypes
                 // table - e.g. tangent/binormal are 4-wide packed frames
@@ -190,7 +193,7 @@ export class Gr2Reader
                 // them (and normal) as 3-wide channels.
                 if (srcM.vertex.position && srcM.vertex.position.length)
                 {
-                    vertexCount = srcM.vertex.position.length / 3;
+                    vertexCount = srcM.vertexCount ?? srcM.vertex.position.length / 3;
                 }
 
                 for (const key in srcM.vertex)

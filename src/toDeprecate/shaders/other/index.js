@@ -9,3 +9,4 @@ export * from "./motionvector";
 export * from "./ubershaderdistortion";
 export * from "./volumetrictrails";
 export * from "./planeglow";
+export * from "./traffic";
