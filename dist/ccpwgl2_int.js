@@ -129871,7 +129871,9 @@
 	 * @param {Object} stage
 	 * @returns {String}
 	 */
-	Tw2CarbonShaderFactory.RENDER_STATE_PATHS = ["/decals/", "/space/planet/", "/space/specialfx/lines3d.", "/space/specialfx/lines3dpicking."];
+	Tw2CarbonShaderFactory.RENDER_STATE_PATHS = ["/decals/", "/space/planet/", "/space/specialfx/lines3d.", "/space/specialfx/lines3dpicking.",
+	// Temporary VFX allowlist: preserve authored culling and blending.
+	"/space/specialfx/ubershader.", "/space/specialfx/particles/dynamic/1layerdynv2.", "/space/spaceobject/v5/fx/quadsimpleinstancedlight."];
 	function stageKey(stage) {
 	  return "".concat(stage.techniqueName || "Main", ".pass").concat(stage.passIndex || 0, ".").concat(stage.stageName);
 	}
@@ -232986,7 +232988,7 @@
 	                  ImageMap
 	              }
 	          };
-	       bannerShader.Assign(effectSettings);
+	        bannerShader.Assign(effectSettings);
 	      set.effect.SetValues(effectSettings);
 	       */
 
@@ -234349,12 +234351,12 @@
 
 	      /*
 	      const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
-	       function onChildLoaded(child)
+	        function onChildLoaded(child)
 	      {
 	          return function(loaded)
 	          {
 	              loaded.name = child.name;
-	               if (loaded.isEffectChild)
+	                if (loaded.isEffectChild)
 	              {
 	                  obj.effectChildren.push(loaded);
 	              }
@@ -234362,17 +234364,17 @@
 	              {
 	                  obj.children.push(loaded);
 	              }
-	               vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
+	                vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
 	              quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
 	              vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
-	               const id = get(child, "id", -1);
+	                const id = get(child, "id", -1);
 	              if (id !== -1 && curves[id])
 	              {
 	                  EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
 	              }
 	          };
 	      }
-	       const { children = [] } = sof.hull;
+	        const { children = [] } = sof.hull;
 	      for (let i = 0; i < children.length; ++i)
 	      {
 	          const { redFilePath } = children[i];

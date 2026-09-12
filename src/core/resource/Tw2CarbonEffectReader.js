@@ -246,7 +246,11 @@ export class Tw2CarbonShaderFactory
         "/decals/",
         "/space/planet/",
         "/space/specialfx/lines3d.",
-        "/space/specialfx/lines3dpicking."
+        "/space/specialfx/lines3dpicking.",
+        // Temporary VFX allowlist: preserve authored culling and blending.
+        "/space/specialfx/ubershader.",
+        "/space/specialfx/particles/dynamic/1layerdynv2.",
+        "/space/spaceobject/v5/fx/quadsimpleinstancedlight."
     ];
 
     _createPass(group, path)
