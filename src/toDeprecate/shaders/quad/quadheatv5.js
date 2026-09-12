@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
@@ -65,7 +66,8 @@ export const quadHeatV5 = {
                     texture.PatternMask1Map,
                     texture.PatternMask2Map,
                     texture.HeatGlowNoiseMap,
-                    DustNoiseMap
+                    DustNoiseMap,
+                    SSAOMap
                 ],
                 shader: `
 
@@ -83,7 +85,7 @@ export const quadHeatV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s13; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0; // EveSpaceSceneEnvMap
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap
@@ -420,7 +422,7 @@ export const quadHeatV5 = {
                         r8.ywx=texture2D(s4,v0.xy).xyz;
 
                         // AoMap
-                        r8.z=lighting.x;
+                        r8.z=texture2D(s13, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r8.xy=r8.yw*c34.yy+c34.zz;
                         r9.xyz=r8.yyy*v3.xyz;
@@ -477,7 +479,7 @@ export const quadHeatV5 = {
                         r1.ywx=texture2D(s4,r3.xy).xyz;
 
                         // AoMap
-                        r1.z=lighting.x;
+                        r1.z=texture2D(s13, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r0.xyz=r0.xyz*r1.zzz+(-cb2[15].xyz);
                         r0.w=cb2[15].w*v4.w;

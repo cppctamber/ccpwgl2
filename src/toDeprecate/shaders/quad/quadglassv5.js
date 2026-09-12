@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
@@ -44,6 +45,7 @@ export const quadGlassV5Shared = {
             texture.DirtMap,
             texture.GlowMap,
             DustNoiseMap,
+            SSAOMap
         ],
         shader: `
 
@@ -58,7 +60,7 @@ export const quadGlassV5Shared = {
             varying vec4 texcoord7;
             varying vec4 texcoord8;
 
-            varying vec4 lighting;
+            uniform sampler2D s10; // SSAOMap (scene-owned screen-space AO)
 
             uniform samplerCube s0; // EveSpaceSceneEnvMap
             uniform sampler2D s1;   // EveSpaceSceneShadowMap
@@ -163,7 +165,7 @@ export const quadGlassV5Shared = {
                 r2.ywx=texture2D(s4,v0.xy).xyz;
 
                 // Ambient occlusion
-                r2.z=lighting.x;
+                r2.z=texture2D(s10, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                 r2.xy=r2.yw*c23.zz+c23.ww;
                 r3.xyz=r2.yyy*v3.xyz;
@@ -279,7 +281,7 @@ export const quadGlassV5Shared = {
                 r3.ywx=texture2D(s4,r1.xy).xyz;
 
                 // Ambient occlusion
-                r3.z=lighting.x;
+                r3.z=texture2D(s10, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                 r0.xyz=r0.xyz*r3.zzz+(-cb2[15].xyz);
                 r0.w=cb2[15].w*v4.w;

@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import * as d3d from "constant/d3d";
 import { texture, constant, vs, ps } from "./shared";
 import { clampToBorder } from "../shared/func";
@@ -24,7 +25,8 @@ export const decalCylindricV5 = {
                     texture.DecalTransparencyMap_SamplerBorder,
                     texture.DecalFresnelMap_SamplerBorder,
                     texture.DecalNormalMap_SamplerBorder,
-                    texture.DecalRoughnessMap_SamplerBorder
+                    texture.DecalRoughnessMap_SamplerBorder,
+                    SSAOMap
                 ],
                 shader: `
 
@@ -42,7 +44,7 @@ export const decalCylindricV5 = {
                     varying vec4 texcoord9;
                     varying vec4 texcoord10;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s8; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0; // EveSpaceSceneEnvMap,
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap,
@@ -263,7 +265,7 @@ export const decalCylindricV5 = {
                         r17.ywx=texture2D(s2,v0.xy).xyz;
 
                         // Ambient occlusion
-                        r17.z=lighting.x;
+                        r17.z=texture2D(s8, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r13.xw=r17.yw*c6.zz+c6.ww;
                         r17.xyz=r13.www*v3.xyz;

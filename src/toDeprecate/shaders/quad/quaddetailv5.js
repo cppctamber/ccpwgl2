@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { vs, ps, texture, constant } from "./shared";
@@ -72,7 +73,8 @@ export const quadDetailV5 = {
                     DustNoiseMap,
                     texture.Detail1Map,
                     texture.Detail2Map,
-                    texture.Detail3Map
+                    texture.Detail3Map,
+                    SSAOMap
                 ],
                 shader: `
 
@@ -90,7 +92,7 @@ export const quadDetailV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s15; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0;
                     uniform sampler2D s1;
@@ -389,7 +391,7 @@ export const quadDetailV5 = {
                         r10.ywx=texture2D(s4,v0.xy).xyz;
 
                         // Ambient Occlusion
-                        r10.z=lighting.x;
+                        r10.z=texture2D(s15, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r10.xy=r10.yw*c27.yy+c27.zz;
                         r1.w=saturate(dot(r10.xy,r10.xy)+c27.w);
@@ -448,7 +450,7 @@ export const quadDetailV5 = {
                         r1.ywx=texture2D(s4,r10.xy).xyz;
 
                         // Ambient Occlusion
-                        r1.z=lighting.x;
+                        r1.z=texture2D(s15, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r0.xyz=r0.xyz*r1.zzz+(-cb2[15].xyz);
                         r1.x=cb2[15].w*v4.w;

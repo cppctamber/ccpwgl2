@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { constant, texture, vs, ps } from "./shared";
 import { clampToBorder, emulatedAddressing, customMaskBlendModes } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
@@ -70,6 +71,7 @@ export const quadV5 = {
                     texture.PatternMask1Map,
                     texture.PatternMask2Map,
                     DustNoiseMap,
+                    SSAOMap
                 ],
                 shader: `
 
@@ -90,7 +92,7 @@ export const quadV5 = {
                         varying vec4 texcoord8;
 
                         // Pretend Ambient Occlusion
-                        varying vec4 lighting;
+                        uniform sampler2D s12; // SSAOMap (scene-owned screen-space AO)
 
                         uniform samplerCube s0; // EveSpaceSceneEnvMap
                         uniform sampler2D s1;   // EveSpaceSceneShadowMapSampler
@@ -208,7 +210,7 @@ export const quadV5 = {
 
                             //r1=texture2D(NoMapSampler,v0.xy);
                             r1.ywx=texture2D(s4,v0.xy).xyz;
-                            r1.z=lighting.x;
+                            r1.z=texture2D(s12, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                             r1.xy=r1.yw*c34.yy+c34.zz;
                             r2.xyz=r1.yyy*v3.xyz;
@@ -532,7 +534,7 @@ export const quadV5 = {
                             //r1=texture2D(NoMapSampler,r1.xy);
 
                             r1.ywx=texture2D(s4,r1.xy).xyz;
-                            r1.z=lighting.x;
+                            r1.z=texture2D(s12, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                             r0.xyz=r0.xyz*r1.zzz+(-cb2[15].xyz);
                             r1.x=cb2[15].w*v4.w;

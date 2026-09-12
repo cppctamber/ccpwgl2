@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { vs, ps, constant, texture } from "./shared";
 import { precision } from "../shared/func";
 import { ObjectID, AreaID } from "../shared/constant";
@@ -15,11 +16,9 @@ const quadTurretV5_PosBwtTexL01 = {
         attribute vec4 attr0;
         attribute vec4 attr1;
         attribute vec4 attr2;
-        attribute vec4 attr3;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
-        varying vec4 lighting;
 
         uniform vec4 cb1[8];
         uniform vec4 cb3[198];
@@ -50,8 +49,6 @@ const quadTurretV5_PosBwtTexL01 = {
             v1=attr1;
             v2=attr2;
 
-            // Ambient Occlusion
-            lighting.x=attr3.x;
 
             r0.x=v2.x;
             r0.x=cb3[1].x*r0.x+v1.x;
@@ -261,7 +258,6 @@ export const quadTurretV5 = {
                     attribute vec4 attr2;
                     attribute vec4 attr3;
                     attribute vec4 attr4;
-                    attribute vec4 attr5;
 
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -273,7 +269,6 @@ export const quadTurretV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
 
-                    varying vec4 lighting;
 
                     uniform vec4 cb1[24];
                     uniform vec4 cb3[198];
@@ -309,8 +304,6 @@ export const quadTurretV5 = {
                         v3=attr3;
                         v4=attr4;
 
-                        // Ambient Occlusion
-                        lighting.x=attr5.x;
 
                         r0.x=v4.x;
                         r0.x=cb3[1].x*r0.x+v1.x;
@@ -475,6 +468,7 @@ export const quadTurretV5 = {
                     texture.DirtMap,
                     texture.GlowMap,
                     DustNoiseMap,
+                    SSAOMap
                 ],
                 constants: [
                     constant.GeneralData,
@@ -509,7 +503,7 @@ export const quadTurretV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s10; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0; // EveSpaceSceneEnvMap
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap
@@ -687,7 +681,7 @@ export const quadTurretV5 = {
                         r10.ywx=texture2D(s4,v0.xy).xyz;
 
                         // AoMap
-                        r10.z=lighting.x;
+                        r10.z=texture2D(s10, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r10.xy=r10.yw*c15.yy+c15.zz;
                         r0.w=saturate(dot(r10.xy,r10.xy)+c15.w);

@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { WidgetType } from "../shared/util";
@@ -38,7 +39,6 @@ export const quadWreckV5 = {
                     attribute vec4 attr2;
                     attribute vec4 attr3;
                     attribute vec4 attr4;
-                    attribute vec4 attr5;
 
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -51,7 +51,6 @@ export const quadWreckV5 = {
                     varying vec4 texcoord8;
 
                     varying vec4 color;
-                    varying vec4 lighting;
 
                     uniform vec4 cb1[24];
                     uniform vec4 cb3[4];
@@ -80,7 +79,6 @@ export const quadWreckV5 = {
                         v3=attr3;
                         v4=attr4;
 
-                        lighting.x=attr5.x;
 
                         r0=v0.xyzx*c1.yyyx+c1.xxxy;
                         r1.w=dot(r0,cb3[3]);
@@ -173,7 +171,8 @@ export const quadWreckV5 = {
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
-                    texture.GlowMap
+                    texture.GlowMap,
+                    SSAOMap
                 ],
                 shader: `
 
@@ -189,7 +188,7 @@ export const quadWreckV5 = {
                     varying vec4 texcoord8;
                     varying vec4 color;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s10; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0;
                     uniform sampler2D s1;
@@ -372,7 +371,7 @@ export const quadWreckV5 = {
                         r10.ywx=texture2D(s5,v0.xy).xyz;
 
                         // Ambient Occlusion
-                        r10.z=lighting.x;
+                        r10.z=texture2D(s10, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r10.xy=r10.yw*c20.yy+c20.zz;
                         r11.xyz=r10.yyy*v3.xyz;
@@ -434,7 +433,7 @@ export const quadWreckV5 = {
                         else
                         {
                             // Ambient Occlusion
-                            r2.z=lighting.x;
+                            r2.z=texture2D(s10, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
                         }
 
                         r0.xzw=r0.xzw*r2.zzz+(-cb2[15].xyz);

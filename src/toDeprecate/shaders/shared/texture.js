@@ -1,3 +1,4 @@
+import { MipFilterMode } from "../../../global/constant";
 import { createTex, TEX_2D, TEX_CUBE_MAP, TEX_PROJECTION, WrapMode } from "./util";
 
 
@@ -110,4 +111,16 @@ export const Layer2Map = createTex("Layer2Map", TEX_2D, {
         description: "Layer map",
         components: [ "red", "green", "blue", "alpha" ]     // alpha?
     }
+});
+
+
+/** Existing scene AO output; the registered global defaults to neutral white. */
+export const SSAOMap = createTex("SSAOMap", TEX_2D, {
+    isAutoregister: 1,
+    sampler: {
+        addressUMode: WrapMode.CLAMP_TO_EDGE,
+        addressVMode: WrapMode.CLAMP_TO_EDGE,
+        mipFilterMode: MipFilterMode.NONE
+    },
+    ui: { display: 0 }
 });

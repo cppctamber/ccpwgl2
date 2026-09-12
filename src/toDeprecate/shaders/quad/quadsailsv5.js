@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { vs, ps, constant, texture } from "./shared";
 import { RS_ZWRITEENABLE } from "constant";
@@ -40,6 +41,7 @@ export const quadSailsV5 = {
                     texture.GlowMap,
                     DustNoiseMap,
                     texture.SailsDetailMap,
+                    SSAOMap
                 ],
                 constants: [
                     constant.GeneralData,
@@ -75,7 +77,7 @@ export const quadSailsV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s11; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0;
                     uniform sampler2D s1;
@@ -193,7 +195,7 @@ export const quadSailsV5 = {
                         r4.ywx=texture2D(s4,v0.xy).xyz;
 
                         // Ambient Occlusion
-                        r4.z=lighting.x;
+                        r4.z=texture2D(s11, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r0.zw=r4.yw*c25.zz+c25.xx;
                         r1.y=saturate(dot(r0.zw,r0.zw)+c25.w);
@@ -327,7 +329,7 @@ export const quadSailsV5 = {
                         r2.ywx=texture2D(s4,r1.zw).xyz;
 
                         // AoMap
-                        r2.z=lighting.x;
+                        r2.z=texture2D(s11, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r0.yzw=r0.yzw*r2.zzz+(-cb2[15].xyz);
                         r0.yzw=r1.yyy*r0.yzw+cb2[15].xyz;

@@ -11,7 +11,6 @@ export const decal_PosTexTanL01 = {
         attribute vec4 attr0;
         attribute vec4 attr1;
         attribute vec4 attr2;
-        attribute vec4 attr3;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
@@ -24,7 +23,6 @@ export const decal_PosTexTanL01 = {
         varying vec4 texcoord9;
         varying vec4 texcoord10;
 
-        varying vec4 lighting;
 
         uniform vec4 cb1[24];
         uniform vec4 cb3[20];
@@ -52,8 +50,6 @@ export const decal_PosTexTanL01 = {
             v1=attr1;
             v2=attr2;
 
-            // Ambient occlusion
-            lighting.x = attr3.x;
 
             r0=cb3[17];
             r1=r0*cb3[3].yyyy;

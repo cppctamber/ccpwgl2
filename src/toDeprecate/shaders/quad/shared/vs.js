@@ -1,6 +1,5 @@
 import { shadowHeader, shadowFooter } from "../../shared/vs";
 import * as input from "../../shared/input";
-import { DefAmbientOcclusion } from "../../shared/input";
 export { shadowHeader, shadowFooter };
 
 
@@ -14,7 +13,6 @@ export const quadV5_PosTexTanTexL01 = {
         attribute vec4 attr1;
         attribute vec4 attr2;
         attribute vec4 attr3;
-        attribute vec4 attr4;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
@@ -26,7 +24,6 @@ export const quadV5_PosTexTanTexL01 = {
         varying vec4 texcoord7;
         varying vec4 texcoord8;
 
-        varying vec4 lighting;
 
         uniform vec4 cb1[24];
         uniform vec4 cb3[26];
@@ -53,8 +50,6 @@ export const quadV5_PosTexTanTexL01 = {
             v2=attr2;
             v3=attr3;
 
-            // Ambient Occlusion
-            lighting.x=attr4.x;
 
             r0=v0.xyzx*c1.yyyx+c1.xxxy;
             r1.x=dot(r0,cb3[0]);
@@ -146,7 +141,6 @@ export const skinnedQuadV5_PosBwtTexTanTexL01 = {
         attribute vec4 attr2;
         attribute vec4 attr3;
         attribute vec4 attr4;
-        attribute vec4 attr5;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
@@ -158,7 +152,6 @@ export const skinnedQuadV5_PosBwtTexTanTexL01 = {
         varying vec4 texcoord7;
         varying vec4 texcoord8;
 
-        varying vec4 lighting;
 
         uniform vec4 cb1[24];
         uniform vec4 cb3[200];
@@ -192,7 +185,6 @@ export const skinnedQuadV5_PosBwtTexTanTexL01 = {
             v3=attr3;
             v4=attr4;
 
-            lighting.x=attr5.x;
 
             r0.x=c0.x*v1.x;
             a0.x=int(r0.x+0.5);
@@ -428,7 +420,6 @@ export const quadOilV5_PosTexTanTexL01 = {
         attribute vec4 attr1;
         attribute vec4 attr2;
         attribute vec4 attr3;
-        attribute vec4 attr4;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
@@ -440,7 +431,6 @@ export const quadOilV5_PosTexTanTexL01 = {
         varying vec4 texcoord7;
         varying vec4 texcoord8;
 
-        varying vec4 lighting;
 
         uniform vec4 cb1[24];
         uniform vec4 cb3[4];
@@ -466,8 +456,6 @@ export const quadOilV5_PosTexTanTexL01 = {
             v2=attr2;
             v3=attr3;
 
-            // Ambient Occlusion
-            lighting.x=attr4.x;
 
             r0=v0.xyzx*c1.yyyx+c1.xxxy;
             r1.w=dot(r0,cb3[3]);
@@ -856,7 +844,6 @@ export const skinnedQuadOilV5_PosBwtTexTanTexL01 = {
         attribute vec4 attr2;
         attribute vec4 attr3;
         attribute vec4 attr4;
-        attribute vec4 attr5;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
@@ -868,7 +855,6 @@ export const skinnedQuadOilV5_PosBwtTexTanTexL01 = {
         varying vec4 texcoord7;
         varying vec4 texcoord8;
 
-        varying vec4 lighting;
 
         uniform vec4 cb1[24];
         uniform vec4 cb3[200];
@@ -901,7 +887,6 @@ export const skinnedQuadOilV5_PosBwtTexTanTexL01 = {
             v3=attr3;
             v4=attr4;
 
-            lighting.x=attr5.x;
 
             r0.x=c0.x*v1.x;
             a0.x=int(r0.x+0.5);
@@ -1142,11 +1127,9 @@ export const skinnedQuadV5_PosBwtTexL01 = {
         attribute vec4 attr0;
         attribute vec4 attr1;
         attribute vec4 attr2;
-        attribute vec4 attr3;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
-        varying vec4 lighting;
 
         uniform vec4 cb1[8];
         uniform vec4 cb3[200];
@@ -1172,8 +1155,6 @@ export const skinnedQuadV5_PosBwtTexL01 = {
             v1=attr1;
             v2=attr2;
 
-            // Ambient occlusion
-            lighting.x=attr3.x;
 
             r0.x=c0.x*v1.x;
             a0.x=int(r0.x+0.5);
@@ -1309,7 +1290,6 @@ export const quadInstancedV5_PosTexTanTexTexTexTexL01 = {
         { usage: "TEXCOORD", usageIndex: 9 },
         { usage: "TEXCOORD", usageIndex: 10 },
         { usage: "TEXCOORD", usageIndex: 1 },
-        DefAmbientOcclusion
     ],
     shader: `
 
@@ -1322,7 +1302,6 @@ export const quadInstancedV5_PosTexTanTexTexTexTexL01 = {
         attribute vec4 attr4;
         attribute vec4 attr5;
         attribute vec4 attr6;
-        attribute vec4 attr7;
 
         varying vec4 texcoord;
         varying vec4 texcoord1;
@@ -1334,7 +1313,6 @@ export const quadInstancedV5_PosTexTanTexTexTexTexL01 = {
         varying vec4 texcoord7;
         varying vec4 texcoord8;
 
-        varying vec4 lighting;
 
         uniform vec4 cb1[24];
         uniform vec4 cb3[4];
@@ -1367,8 +1345,6 @@ export const quadInstancedV5_PosTexTanTexTexTexTexL01 = {
             v5=attr5;
             v6=attr6;
 
-            // Ambient Occlusion
-            lighting.x=attr7.x;
 
             r0.w=c1.y;
             r1=v0.xyzx*c1.yyyx+c1.xxxy;

@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { vs, ps, texture } from "./shared";
 import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
@@ -41,6 +42,7 @@ export const decalV5 = {
                     texture.DecalFresnelMap_SamplerBorder,
                     texture.DecalNormalMap_SamplerBorder,
                     texture.DecalRoughnessMap_SamplerBorder,
+                    SSAOMap
                 ],
                 shader: `
 
@@ -58,7 +60,7 @@ export const decalV5 = {
                     varying vec4 texcoord9;
                     varying vec4 texcoord10;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s8; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0;          // EveSpaceSceneEnvMap
                     uniform sampler2D s1;            // EveSpaceSceneShadowMap
@@ -248,7 +250,7 @@ export const decalV5 = {
                         r1.ywx=texture2D(s2,v0.xy).xyz;
 
                         // Ambient occlusion
-                        r1.z=lighting.x;
+                        r1.z=texture2D(s8, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r1.xy=r1.yw*c2.zz+c2.ww;
                         r2.xyz=r1.yyy*v3.xyz;

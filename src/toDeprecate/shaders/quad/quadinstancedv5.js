@@ -1,3 +1,4 @@
+import { SSAOMap } from "../shared/texture";
 import { constant, ps, texture, vs } from "./shared";
 import { quadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5 } from "./quadpickingv5";
@@ -39,7 +40,8 @@ export const quadInstancedV5 = {
                     texture.GlowMap,
                     texture.PatternMask1Map,
                     texture.PatternMask2Map,
-                    DustNoiseMap
+                    DustNoiseMap,
+                    SSAOMap
                 ],
                 constants: [
                     constant.GeneralGlowColor,
@@ -81,7 +83,7 @@ export const quadInstancedV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
 
-                    varying vec4 lighting;
+                    uniform sampler2D s12; // SSAOMap (scene-owned screen-space AO)
 
                     uniform samplerCube s0;
                     uniform sampler2D s1;
@@ -342,7 +344,7 @@ export const quadInstancedV5 = {
                         r9.ywx=texture2D(s4,v0.xy).xyz;
 
                         // Ambient occlusion
-                        r9.z=lighting.x;
+                        r9.z=texture2D(s12, (gl_FragCoord.xy - cb2[16].xy) / max(cb2[16].zw, vec2(1.0))).r;
 
                         r9.xy=r9.yw*c20.yy+c20.zz;
                         r10.xyz=r9.yyy*v3.xyz;
