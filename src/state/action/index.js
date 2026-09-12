@@ -17,3 +17,5 @@ export * from "./Tr2ActionSetShaderOption";
 export * from "./Tr2ActionSetValue";
 export * from "./Tr2ActionSpawnParticles";
 
+
+export * from "./Tw2Action";

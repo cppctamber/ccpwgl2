@@ -94,6 +94,10 @@ export class EveChildUpdateParams extends meta.Model
      * A parent that needs to change a field must own its own instance.
      * @type {EveChildUpdateParams}
      */
-    static DEFAULT = new EveChildUpdateParams();
+    static get DEFAULT()
+    {
+        // Decorators finish installing field initializers after the class body.
+        return this._defaultParams || (this._defaultParams = new this());
+    }
 
 }

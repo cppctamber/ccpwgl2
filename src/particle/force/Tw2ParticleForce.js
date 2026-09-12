@@ -3,6 +3,7 @@ import { meta } from "utils";
 import { vec3, vec4 } from "math";
 
 
+@meta.define("Tw2ParticleForce")
 export class Tw2ParticleForce extends meta.Model
 {
 

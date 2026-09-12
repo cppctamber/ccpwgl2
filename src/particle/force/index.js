@@ -6,3 +6,5 @@ export * from "./Tw2ParticleSpring";
 export * from "./Tw2ParticleTurbulenceForce";
 export * from "./Tr2ForceSphereVolume";
 export * from "./Tr2ParticleVortexForce";
+
+export * from "./Tw2ParticleForce";

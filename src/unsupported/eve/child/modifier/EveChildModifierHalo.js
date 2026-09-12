@@ -101,6 +101,28 @@ export function modifyHalo(worldTransform, parentTransform, rotation, translatio
 export class EveChildModifierHalo extends EveChildModifier
 {
 
+    _applyScale = vec3.create();
+    _applyDirection = vec3.create();
+    _applyForward = vec3.create();
+
+    /** Carbon ApplyTransform: camera-facing basis with squared facing falloff. */
+    ApplyTransform(transform, out = mat4.create())
+    {
+        mat4.getScaling(this._applyScale, transform);
+        vec3.set(this._applyDirection, device.eyePosition[0] - transform[12], device.eyePosition[1] - transform[13], device.eyePosition[2] - transform[14]);
+        vec3.normalize(this._applyDirection, this._applyDirection);
+        vec3.set(this._applyForward, transform[8], transform[9], transform[10]);
+        vec3.normalize(this._applyForward, this._applyForward);
+        const facing = Math.max(0, vec3.dot(this._applyDirection, this._applyForward));
+        vec3.scale(this._applyScale, this._applyScale, facing * facing);
+        mat4.copy(out, transform);
+        for (let column = 0; column < 3; column++)
+        {
+            for (let row = 0; row < 3; row++) out[column * 4 + row] = device.viewInverse[column * 4 + row] * this._applyScale[column];
+        }
+        return out;
+    }
+
     /**
      * Modifies a parent object
      * @param parent

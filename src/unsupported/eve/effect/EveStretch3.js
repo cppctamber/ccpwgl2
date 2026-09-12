@@ -582,6 +582,18 @@ export class EveStretch3 extends meta.Model
         }
     }
 
+    /** Submits the children whose world transforms were prepared above. */
+    GetBatches(mode, accumulator, perObjectData)
+    {
+        if (!this.display) return false;
+        let added = false;
+        for (const child of [ this.sourceObject, this.destObject, this.stretchObject, this.moveObject ])
+        {
+            if (child && child.GetBatches) added = child.GetBatches(mode, accumulator, perObjectData) || added;
+        }
+        return added;
+    }
+
     /**
      * Computes the "shortest arc" rotation quaternion from local -Z to a
      * (normalized) direction vector

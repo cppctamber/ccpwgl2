@@ -32,7 +32,7 @@ import { meta } from "utils";
  * a pixel. A sort added here would cost a pass and change nothing.
  */
 @meta.define("Tr2GpuParticleSystem", true)
-export class Tr2GpuParticleSystem
+export class Tr2GpuParticleSystem extends meta.Model
 {
 
     @meta.struct("Tw2Effect")

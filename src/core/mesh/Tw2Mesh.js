@@ -1,3 +1,4 @@
+import { Tw2MeshArea } from "./Tw2MeshArea";
 import { meta, isString, perArrayChild, assignIfExists, get, toArray, isArray } from "utils";
 import { tw2 } from "global";
 import {
@@ -544,17 +545,20 @@ export class Tw2Mesh extends meta.Model
         for (let i = 0; i < names.length; i++)
         {
             const name = names[i];
-            if (name in src && name in dest)
+            if (src[name] && name in dest)
             {
                 for (let i = 0; i < src[name].length; i++)
                 {
                     const
-                        type = src[name][i].__type || "Tw2MeshArea",
+                        value = src[name][i],
+                        type = value.__type || "Tw2MeshArea",
                         Constructor = tw2.GetClass(type);
 
                     // Why is index put in the object?
                     // src[name][i].index = i;
-                    dest[name].push(Constructor.from(src[name][i], { index: i }));
+                    // Graph cloning supplies already allocated area models; retain
+                    // their identity so controller/binding targets stay attached.
+                    dest[name].push(value instanceof Tw2MeshArea ? value : Constructor.from(value, { index: i }));
                 }
             }
         }

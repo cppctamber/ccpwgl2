@@ -9,6 +9,7 @@ export * from "./pi";
 export * from "./distribution";
 export * from "./lights";
 export * from "./smartLights";
+export * from "./volume";
 
 export * from "./EveMissile";
 export * from "./EveLODHelper";

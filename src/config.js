@@ -21,6 +21,9 @@ const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 // effect is reached through. See the `black.fx` handler below for why each
 // entry is here and when to remove it.
 const FX_TIER_PINS = [
+    // Drone booster volumes have no published GLES container; use the native
+    // high-tier program through the existing DXBC translator.
+    { match: "/booster/droneboostervolumetric.fx", dir: "/effect.dx11/", tier: "sm_hi" },
     { match: "/specialfx/flarequad.fx", tier: "sm_hi" },
     { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi" },
     // Not a tier pin - a PROFILE pin, on the same list because it is the same

@@ -3,6 +3,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
+@meta.define("Tw2ParticleAttributeGenerator")
 export class Tw2ParticleAttributeGenerator extends meta.Model
 {
 

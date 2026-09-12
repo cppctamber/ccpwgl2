@@ -9,3 +9,5 @@ export * from "./EveChildModifierSRT";
 export * from "./EveChildModifierStretch";
 export * from "./EveChildModifierTranslateWithCamera";
 
+
+export * from "./EveChildModifier";

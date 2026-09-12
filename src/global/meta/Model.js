@@ -825,9 +825,60 @@ export class Model
      * @param opt
      * @returns {{Initialize}}
      */
-    static clone(a, opt)
+    static clone(a, opt = {})
     {
-        return this.from(a.GetValues(), opt);
+        const values = a.GetValues({}, { cloneGraph: true, useObjectIds: true, _ids: new Map() });
+        if (!values.__type) return this.from(values, opt);
+        // Firing effects contain controller targets and shared states. Allocate
+        // their graph first, so serialized __ref records resolve to the same
+        // cloned object (never back into the source effect).
+        const records = [], objects = new Map(), ids = new Map();
+        const allocate = value =>
+        {
+            if (!value || typeof value !== "object" || ArrayBuffer.isView(value)) return;
+            if (value.__type)
+            {
+                const Constructor = tw2.GetClass(value.__type);
+                const item = new Constructor();
+                objects.set(value, item);
+                if (value.__id) ids.set(value.__id, item);
+                records.push({ value, item, Constructor });
+            }
+            for (const key of Object.keys(value)) allocate(value[key]);
+        };
+        allocate(values);
+        const resolve = value =>
+        {
+            if (!value || typeof value !== "object" || ArrayBuffer.isView(value)) return value;
+            if (value.__ref)
+            {
+                if (!ids.has(value.__ref)) throw new ReferenceError("Unknown clone reference " + value.__ref);
+                return ids.get(value.__ref);
+            }
+            if (objects.has(value)) return objects.get(value);
+            if (Array.isArray(value)) return value.map(resolve);
+            const out = {};
+            for (const key of Object.keys(value)) out[key] = resolve(value[key]);
+            return out;
+        };
+        for (let i = records.length - 1; i >= 0; i--)
+        {
+            const { value, item, Constructor } = records[i];
+            const fields = {};
+            for (const key of Object.keys(value)) if (key !== "__id") fields[key] = resolve(value[key]);
+            // Preserve custom from() implementations (mesh areas and effect
+            // parameter maps), then retain the preallocated graph identity.
+            if (Constructor.from === Model.from || Constructor.set !== Model.set)
+            {
+                item.SetValues(fields, { ...opt, skipUpdate: true });
+            }
+            else Object.assign(item, Constructor.from(fields, { ...opt, skipUpdate: true }));
+        }
+        if (!opt.skipUpdate)
+        {
+            for (let i = records.length - 1; i >= 0; i--) if (records[i].item.Initialize) records[i].item.Initialize();
+        }
+        return objects.get(values);
     }
 
     /**

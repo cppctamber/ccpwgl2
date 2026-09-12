@@ -2,6 +2,7 @@
 import { meta } from "utils";
 
 
+@meta.define("Tw2ParticleEmitter")
 export class Tw2ParticleEmitter extends meta.Model
 {
 

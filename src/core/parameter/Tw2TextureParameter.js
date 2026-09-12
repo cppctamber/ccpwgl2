@@ -16,7 +16,7 @@ export class Tw2TextureParameter extends Tw2Parameter
     resourcePath = "";
 
     @meta.struct("Tw2TextureRes")
-    @meta.todo("Make private")
+    @meta.isPrivate
     textureRes = null;
 
     @meta.struct("Tw2SamplerOverrides")

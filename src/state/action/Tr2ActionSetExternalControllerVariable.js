@@ -10,6 +10,8 @@ export class Tr2ActionSetExternalControllerVariable extends Tw2Action
     @meta.string
     destinationOwner = "";
 
+    // Resolved weak target is READ-only in Carbon, not persisted or cloned.
+    @meta.isPrivate
     @meta.notOwned
     @meta.struct()
     destination = null;

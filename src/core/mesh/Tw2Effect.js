@@ -1,3 +1,5 @@
+import { Tw2VectorParameter } from "../parameter/Tw2VectorParameter";
+import { Tw2Parameter } from "../parameter/Tw2Parameter";
 import { meta, assignIfExists, getKeyFromValue, getPathExtension, isPlain, isString } from "utils";
 import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
@@ -1821,8 +1823,19 @@ export class Tw2Effect extends meta.Model
      * @param {Object} [out={}]
      * @returns {Object} out
      */
-    static get(a, out = {})
+    static get(a, out = {}, opt = {})
     {
+        if (opt.cloneGraph)
+        {
+            const graph = super.get(a, out, opt);
+            if (graph.__ref) return graph;
+            graph.parameters = {};
+            for (const key of Object.keys(a.parameters)) graph.parameters[key] = a.parameters[key].GetValues({}, opt);
+            graph.overrides = a.GetOverrides();
+            graph.options = Object.assign({}, a.options);
+            graph.samplerOverrides = a.GetSamplerOverrides();
+            return graph;
+        }
         assignIfExists(out, a, [ "name", "display", "effectFilePath", "autoParameter" ]);
         out.parameters = a.GetParameters();
         out.textures = a.GetTextures();
@@ -2081,6 +2094,19 @@ export class Tw2Effect extends meta.Model
             if (src.hasOwnProperty(key) && src[key] !== undefined)
             {
                 const value = src[key];
+
+                // Graph clones supply the actual cloned parameter object, so
+                // bindings and the effect must retain this same instance.
+                if (value instanceof Tw2Parameter || value instanceof Tw2VectorParameter)
+                {
+                    const excluded = value instanceof Tw2TextureParameter ? excludeTextures : excludeParameters;
+                    if (!excluded && target[key] !== value)
+                    {
+                        target[key] = value;
+                        updated = true;
+                    }
+                    continue;
+                }
 
                 // Catch texture overrides
                 let isOverride = false;

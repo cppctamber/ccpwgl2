@@ -514,6 +514,8 @@ export class EveSpaceObject2 extends EveObject
      */
     GetLocatorCount(prefix)
     {
+        const set = this.GetLocatorsForSet(prefix);
+        if (set) return set.length;
         const locators = this.FindLocatorsByPrefix(prefix);
         return locators.length;
     }
@@ -1416,6 +1418,73 @@ export class EveSpaceObject2 extends EveObject
     GetLocatorsForSet(name)
     {
         return this._GetLocatorSetItems(name);
+    }
+
+    /** Carbon GetLocatorPosition: reads a named locator in object or world space. */
+    GetLocatorPosition(out, index, inWorldSpace = true, name = "damage")
+    {
+        const locators = this.GetLocatorsForSet(name);
+        if (!locators || index < 0 || index >= locators.length)
+        {
+            if (inWorldSpace) this.GetWorldTranslation(out);
+            else vec3.set(out, 0, 0, 0);
+            return false;
+        }
+        const transform = EveSpaceObject2.global.targetTransform;
+        this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
+        mat4.getTranslation(out, transform);
+        return true;
+    }
+
+    /** Carbon's value-returning locator-position wrapper, with reusable JS output. */
+    GetLocatorPositionFromSet(index, inWorldSpace = true, name = "damage", out = vec3.create())
+    {
+        this.GetLocatorPosition(out, index, inWorldSpace, name);
+        return out;
+    }
+
+    /** Reads a named locator's +Y direction, including its bone and parent pose. */
+    GetLocatorDirection(out, index, inWorldSpace = true, name = "damage")
+    {
+        const locators = this.GetLocatorsForSet(name);
+        if (!locators || index < 0 || index >= locators.length)
+        {
+            vec3.set(out, 0, 1, 0);
+            return false;
+        }
+        const transform = EveSpaceObject2.global.targetTransform;
+        this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
+        vec3.set(out, transform[4], transform[5], transform[6]);
+        vec3.normalize(out, out);
+        return true;
+    }
+
+    /** Carbon's direction-valued wrapper retains its historical Rotation name. */
+    GetLocatorRotationFromSet(index, inWorldSpace = true, name = "damage", out = vec3.create())
+    {
+        this.GetLocatorDirection(out, index, inWorldSpace, name);
+        return out;
+    }
+
+    /** Carbon GetShapeEllipsoid: authored shape or a sphere-enclosing local AABB. */
+    GetShapeEllipsoid(center, radius)
+    {
+        if (this.shapeEllipsoidRadius[0] > 0)
+        {
+            vec3.copy(center, this.shapeEllipsoidCenter);
+            vec3.copy(radius, this.shapeEllipsoidRadius);
+        }
+        else
+        {
+            const geometry = this.mesh && this.mesh.geometryResource;
+            for (let i = 0; i < 3; i++)
+            {
+                const min = geometry && geometry.IsGood() ? geometry.minBounds[i] : -1;
+                const max = geometry && geometry.IsGood() ? geometry.maxBounds[i] : 1;
+                center[i] = (min + max) * 0.5;
+                radius[i] = (max - min) * 0.5 * Math.sqrt(3);
+            }
+        }
     }
 
     /**

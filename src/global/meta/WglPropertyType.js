@@ -144,7 +144,7 @@ export default class WglPropertyType
 
             for (let i = 0; i < constructors.length; i++)
             {
-                if (value.constructor === constructors[i])
+                if (value instanceof constructors[i])
                 {
                     return true;
                 }
@@ -157,9 +157,12 @@ export default class WglPropertyType
             return true;
         }
 
+        // Typed Carbon lists are polymorphic: permit registered subclasses,
+        // while preserving rejection of unrelated model types.
+        const valueConstructor = valueType && tw2.HasClass(valueType) ? tw2.GetClass(valueType) : null;
         for (let i = 0; i < constructors.length; i++)
         {
-            if (getMetadata("type", constructors[i]) === valueType)
+            if (getMetadata("type", constructors[i]) === valueType || (valueConstructor && valueConstructor.prototype instanceof constructors[i]))
             {
                 return true;
             }

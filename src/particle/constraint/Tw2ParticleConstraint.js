@@ -2,6 +2,7 @@
 import { meta } from "utils";
 
 
+@meta.define("Tw2ParticleConstraint")
 export class Tw2ParticleConstraint extends meta.Model
 {
 

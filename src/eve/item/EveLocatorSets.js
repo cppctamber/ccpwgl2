@@ -182,6 +182,11 @@ export class EveLocatorSets extends meta.Model
     @meta.ui({ desc: "List of all the locators of this set" })
     locators = [];
 
+    /** Carbon locator-set accessors used by child behaviors. */
+    HasName(name) { return this.name === name; }
+    GetLocators() { return this.locators; }
+    SetName(name) { this.name = name; }
+
     /**
      * Per frame update
      * @param {mat4} parentTransform
