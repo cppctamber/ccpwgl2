@@ -3,6 +3,9 @@
 import { meta } from "utils";
 import { quat, vec3, vec4 } from "math";
 import { PerLightShadowSetting } from "../../core/lighting/Tw2CarbonLightMath";
+import { ComposeNoiseBrightness } from "../../core/lighting/Tw2CarbonLightMath";
+import { device } from "global";
+import { AsPerPointLightData, AsPerSpotLightData, CreateLightRecord } from "./lightConversion";
 
 
 /**
@@ -65,7 +68,8 @@ export class CjsLightData extends meta.Model
     flags = 1;
 
     @meta.float
-    startTime = 0;
+    // Before the first Tick, Tw2Device.currentTime is still an absolute millisecond value.
+    startTime = device.previousTime === null ? 0 : (device.currentTime || 0);
 
     @meta.enums(PerLightShadowSetting)
     castsShadows = 0;
@@ -74,6 +78,34 @@ export class CjsLightData extends meta.Model
     isVolumetric = false;
 
     static PerLightShadowSetting = PerLightShadowSetting;
+
+    /** Carbon LightData::AsPerPointLightData; frame time is supplied by the caller. */
+    AsPerPointLightData(transform, features, shadowQuality = 0)
+    {
+        const record = CreateLightRecord();
+        AsPerPointLightData(record, this, transform, {
+            ...features,
+            composedBrightness: ComposeNoiseBrightness(this.brightness, features.parentBrightness,
+                this.noiseAmplitude, this.noiseFrequency, this.noiseOctaves,
+                (features.animationTime ?? device.currentTime ?? 0) - this.startTime)
+        }, shadowQuality);
+        record.flags |= (features.profileIndex || 0) << 4;
+        return record;
+    }
+
+    /** Carbon LightData::AsPerSpotLightData. */
+    AsPerSpotLightData(transform, features, shadowQuality = 0)
+    {
+        const record = CreateLightRecord();
+        AsPerSpotLightData(record, this, transform, {
+            ...features,
+            composedBrightness: ComposeNoiseBrightness(this.brightness, features.parentBrightness,
+                this.noiseAmplitude, this.noiseFrequency, this.noiseOctaves,
+                (features.animationTime ?? device.currentTime ?? 0) - this.startTime)
+        }, shadowQuality);
+        record.flags |= (features.profileIndex || 0) << 4;
+        return record;
+    }
 }
 
 /**

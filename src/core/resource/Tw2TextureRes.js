@@ -26,12 +26,9 @@ export class Tw2TextureRes extends Tw2Resource
     GetAverageColor()
     {
         this.KeepAlive();
-        const video = this._runtime?.type === "video" ? this._runtime.el : null;
-        if (video && video.readyState >= 2 && video.currentTime !== this._averageVideoTime)
-        {
-            this.SetAverageColorFromImage(video);
-            this._averageVideoTime = video.currentTime;
-        }
+        // Return the shared cache immediately; video sampling is deferred and
+        // coalesced by its runtime, never repeated by individual light owners.
+        if (this._runtime?.type === "video") this._runtime.RequestAverageColor(this);
         return this._averageColor;
     }
 
@@ -456,14 +453,34 @@ export class Tw2TextureRes extends Tw2Resource
     {
         const gl = device.gl;
 
+        // Browser-only inspector/export utility: compressed and other
+        // sampleable textures are not necessarily framebuffer-renderable.
+        // Preserve both bindings because WebGL2 allows separate read/draw FBOs.
+        const webgl2 = device.glVersion > 1;
+        const previousRead = gl.getParameter(webgl2 ? gl.READ_FRAMEBUFFER_BINDING : gl.FRAMEBUFFER_BINDING);
+        const previousDraw = webgl2 ? gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING) : previousRead;
         const fb = gl.createFramebuffer();
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-
-        const data = new Uint8Array(width * height * 4);
-        gl.readPixels(0, 0, width, height, format, type, data);
-
-        gl.deleteFramebuffer(fb);
+        let data;
+        try
+        {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+            if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) return null;
+            // This PNG conversion consumes RGBA bytes, not float/integer pixels.
+            if (format !== gl.RGBA || type !== gl.UNSIGNED_BYTE) return null;
+            data = new Uint8Array(width * height * 4);
+            gl.readPixels(0, 0, width, height, format, type, data);
+        }
+        finally
+        {
+            if (webgl2)
+            {
+                gl.bindFramebuffer(gl.READ_FRAMEBUFFER, previousRead);
+                gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, previousDraw);
+            }
+            else gl.bindFramebuffer(gl.FRAMEBUFFER, previousRead);
+            gl.deleteFramebuffer(fb);
+        }
 
         const canvas = document.createElement("canvas");
         canvas.width = width;

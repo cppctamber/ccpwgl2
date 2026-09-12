@@ -5,7 +5,8 @@ import { device, resMan } from "global/tw2";
 import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from "core";
 
 
-@meta.notImplemented
+// Rendering is present; Update still uses the legacy parent-transform arguments.
+@meta.partialImplementation
 @meta.define("EveChildQuad", true)
 export class EveChildQuad extends EveChild
 {

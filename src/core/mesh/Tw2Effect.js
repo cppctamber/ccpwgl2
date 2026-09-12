@@ -102,10 +102,8 @@ export class Tw2Effect extends meta.Model
     @meta.isPrivate
     techniques = {};
 
-    @meta.notImplemented
     samplerOverrides = {};
 
-    @meta.notImplemented
     options = {};
 
     @meta.struct("Tw2Shader")

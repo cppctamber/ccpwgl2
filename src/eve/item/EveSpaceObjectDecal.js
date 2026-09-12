@@ -8,6 +8,12 @@ import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2ForwardingRenderB
 export class EveSpaceObjectDecal extends meta.Model
 {
 
+    /** Carbon EveSpaceObjectDecal::SetShaderOption changes only the decal material. */
+    SetShaderOption(name, value)
+    {
+        if (this.decalEffect) this.decalEffect.SetOption(name, value);
+    }
+
     @meta.string
     name = "";
 

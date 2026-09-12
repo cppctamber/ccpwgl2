@@ -105,7 +105,6 @@ export class Tr2ShLightingManager extends meta.Model
      */
     quality = 1;
 
-    @meta.notImplemented
     @meta.desc("Additional Tr2PointLight 'primary' sources treated as secondary-lighting sources (Carbon: PTr2PointLightVector m_lights, Be::READ|PERSIST).")
     @meta.list("Tr2PointLight")
     lights = [];

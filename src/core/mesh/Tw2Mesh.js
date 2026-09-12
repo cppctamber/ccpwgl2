@@ -31,11 +31,9 @@ export class Tw2Mesh extends meta.Model
     @meta.boolean
     deferGeometryLoad = false;
 
-    @meta.notImplemented
     @meta.list("Tw2MeshArea")
     depthAreas = [];
 
-    @meta.notImplemented
     @meta.list("Tw2MeshArea")
     depthNormalAreas = [];
 
@@ -163,6 +161,24 @@ export class Tw2Mesh extends meta.Model
         this.meshIndex = index;
     }
 
+    /** Carbon Tr2MeshBase::SetShaderOption: update materials in every area list. */
+    SetShaderOption(name, value)
+    {
+        const lists = [
+            this.additiveAreas, this.decalAreas, this.depthAreas,
+            this.depthNormalAreas, this.distortionAreas, this.opaqueAreas,
+            this.opaquePrepassAreas, this.pickableAreas, this.transparentAreas
+        ];
+        for (const areas of lists)
+        {
+            if (!areas) continue;
+            for (const area of areas)
+            {
+                if (area.effect) area.effect.SetOption(name, value);
+            }
+        }
+    }
+
     /**
      * Initializes the mesh
      */
@@ -187,19 +203,16 @@ export class Tw2Mesh extends meta.Model
 
         if (!resPath)
         {
+            const changed = !!(parent[resProperty] || parent[pathProperty]);
             if (parent[resProperty])
             {
-                parent[resProperty].RemoveNotification(this);
+                parent[resProperty].UnregisterNotification(parent);
                 parent[resProperty] = null;
             }
 
-            if (parent[pathProperty])
-            {
-                this[pathProperty] = "";
-                return true;
-            }
-
-            return false;
+            // Also invalidate a pending fetch, whose completion checks this path.
+            parent[pathProperty] = "";
+            return changed;
         }
 
         parent[pathProperty] = resPath;

@@ -44,7 +44,6 @@ export class EveStretch extends meta.Model
     @meta.struct()
     source = null;
 
-    @meta.notImplemented
     @meta.list("Tr2PointLight")
     sourceLights = [];
 
@@ -423,11 +422,9 @@ export class EveStretch extends meta.Model
     /**
      * Collects this stretch's owned `sourceLights` into a Tw2CarbonLightCollector
      *
-     * Additive hook: not called by any per-frame code yet (the render-loop /
-     * EveSpaceScene call site is separate scene-wiring work). `sourceLights`
-     * is `@meta.notImplemented` and has no destination-side counterpart in
-     * the deserialized data (see the property declaration above), so only
-     * the source endpoint is handled here.
+     * Called by scene light collection. There is no destination-side light
+     * list in this class's deserialized data, so only the source endpoint
+     * is handled here.
      *
      * SIMPLIFICATION: `UpdateViewDependentData` derives a full oriented
      * basis for the source endpoint (direction/up vectors composed with
@@ -440,8 +437,8 @@ export class EveStretch extends meta.Model
      * passed to `Update`.
      * @param {Tw2CarbonLightCollector} collector
      * @param {object} [parentContext]
-     * @param {number} [parentContext.dt=0] forwarded to `light.Update` - 0 until scene wiring threads a real per-frame delta through
-     * @param {Array} [parentContext.bones=null] forwarded to `light.Update` - null until scene wiring threads real bone matrices through
+     * @param {number} [parentContext.dt=0] frame delta forwarded to `light.Update`
+     * @param {Array} [parentContext.bones=null] optional bone matrices forwarded to `light.Update`
      * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCarbonLightData`
      */
     GetLights(collector, parentContext = {})

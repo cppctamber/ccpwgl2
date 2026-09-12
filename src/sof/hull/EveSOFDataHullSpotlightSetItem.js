@@ -24,7 +24,7 @@ export class EveSOFDataHullSpotlightSetItem extends meta.Model
     @meta.int32
     groupIndex = -1;
 
-    @meta.struct()
+    @meta.struct("EveSOFDataSpotLightAttachment")
     light = null;
 
     @meta.float

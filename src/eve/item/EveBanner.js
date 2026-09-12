@@ -3,10 +3,11 @@ import { quat, vec3, mat4, box3, sph3 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2GeometryBatch, Tw2Effect } from "core";
 import { resMan } from "global";
 import { RM_ADDITIVE } from "constant";
+import { EveBannerSet } from "./EveBannerSet";
 
 
 @meta.define("EveBanner", true)
-@meta.notImplemented
+@meta.partialImplementation
 export class EveBanner extends meta.Model
 {
 
@@ -63,6 +64,9 @@ export class EveBanner extends meta.Model
     }
 
     _bone = null;
+    // Adaptation: one legacy drawable stands in for one Carbon banner-set item.
+    // Keep its light records owned by EveBannerSet rather than flattening them.
+    _lightSet = new EveBannerSet();
     _boundsDirty = true;
     _perObjectData = Tw2PerObjectData.from(EveBanner.perObjectData);
     _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
@@ -298,6 +302,7 @@ export class EveBanner extends meta.Model
     GetResources(out = [])
     {
         if (this.effect) this.effect.GetResources(out);
+        this._lightSet.GetResources(out);
         if (this._geometryResource && !out.includes(this._geometryResource))
         {
             out.push(this._geometryResource);
@@ -392,10 +397,17 @@ export class EveBanner extends meta.Model
         this.isVisible = true;
     }
 
-    /** This legacy single-banner adapter owns no dynamic lights. */
+    /** Delegate the native light-owner behavior to the corresponding set. */
     GetLights(collector, parentContext)
     {
+        this._lightSet.display = this.display;
+        this._lightSet.SetPrimaryTextureParameter(this.effect && this.effect.parameters.ImageMap);
+        this._lightSet.GetLights(collector, parentContext);
+    }
 
+    UpdateLights(parentTransform, bones, boneCount, activationStrength, boosterGain)
+    {
+        this._lightSet.UpdateLights(parentTransform, bones, boneCount, activationStrength, boosterGain);
     }
 
     /**

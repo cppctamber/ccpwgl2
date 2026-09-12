@@ -5,7 +5,8 @@ import { Tw2VertexDeclaration, Tw2RenderBatch, Tw2Effect } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { CjsLightData } from "../lights/CjsLightData";
 import { Tr2Light } from "../lights/Tr2Light";
-import { CreateLightRecord, CreateLightDataScratch, CopyLightData, AsPerPointLightData } from "../lights/lightConversion";
+import { CopyLightData, MatrixCopyFrom3x4 } from "../lights/lightConversion";
+import { Tr2LightProfileRes } from "core/resource/Tr2LightProfileRes";
 import { Fade, FadeType, Saturate } from "./EveSpaceObjectAttachmentUtils";
 
 
@@ -242,6 +243,17 @@ export class EvePlaneLight extends meta.Model
     @meta.path
     lightProfilePath = "";
 
+    _resolvedProfilePath = "";
+
+    OnValueChanged()
+    {
+        if (this.lightProfilePath !== this._resolvedProfilePath)
+        {
+            this._resolvedProfilePath = this.lightProfilePath;
+            this.lightProfile = Tr2LightProfileRes.Resolve(this.lightProfilePath);
+        }
+    }
+
     static FadeType = FadeType;
 
 }
@@ -250,6 +262,12 @@ export class EvePlaneLight extends meta.Model
 @meta.define("EvePlaneSet", true)
 export class EvePlaneSet extends EveObjectSet
 {
+
+    /** Carbon EvePlaneSet::SetShaderOption. */
+    SetShaderOption(name, value)
+    {
+        if (this.effect) this.effect.SetOption(name, value);
+    }
 
     @meta.string
     name = "";
@@ -310,6 +328,11 @@ export class EvePlaneSet extends EveObjectSet
     GetResources(out = [])
     {
         if (this.effect) this.effect.GetResources(out);
+        for (const light of this.lights)
+        {
+            light.OnValueChanged();
+            if (light.lightProfile && !out.includes(light.lightProfile)) out.push(light.lightProfile);
+        }
         return out;
     }
 
@@ -561,6 +584,28 @@ export class EvePlaneSet extends EveObjectSet
     @meta.list("EvePlaneLight")
     lights = [];
 
+    _activationStrength = 1;
+
+    /** Carbon EvePlaneSet.cpp:248; light visibility is independent of the planes. */
+    UpdateLights(parentTransform, bones, boneCount, activationStrength, boosterGain)
+    {
+        for (const light of this.lights)
+        {
+            const index = light.lightData.boneIndex;
+            // Donor quirk: bone zero follows the parent only.
+            if (bones && index > 0 && index < boneCount)
+            {
+                if (typeof bones[0] === "number") MatrixCopyFrom3x4(light.boneMatrix, bones, index);
+                else mat4.copy(light.boneMatrix, bones[index].offsetTransform);
+                light.boneMatrix[3] = light.boneMatrix[7] = light.boneMatrix[11] = 0;
+                light.boneMatrix[15] = 1;
+                mat4.multiply(light.boneMatrix, parentTransform, light.boneMatrix);
+            }
+            else mat4.copy(light.boneMatrix, parentTransform);
+        }
+        this._activationStrength = activationStrength;
+    }
+
     /**
      * Carbon `EvePlaneSet::AddLightFromSOF` (`cpp`) - a plain push.
      * @param {EvePlaneLight|Object} light
@@ -568,7 +613,12 @@ export class EvePlaneSet extends EveObjectSet
     AddLightFromSOF(light)
     {
         if (!light) return;
-        this.lights.push(light instanceof EvePlaneLight ? light : EvePlaneLight.from(light));
+        const values = light.GetValues ? light.GetValues() : { ...light };
+        const data = values.lightData;
+        values.lightData = CjsLightData.from(data.GetValues ? data.GetValues() : data);
+        const record = EvePlaneLight.from(values);
+        record.lightProfile = light.lightProfile || null;
+        this.lights.push(record);
     }
 
     /**
@@ -578,19 +628,22 @@ export class EvePlaneSet extends EveObjectSet
      * product of the four texture parameters' average colours, each defaulting to
      * white when the map or its resource is missing.
      *
-     * ccpwgl has no average-colour readback on a texture resource yet (the same
-     * gap `Tr2TexturedPointLight` records), so every map answers white and the
-     * product is white - the light keeps its authored colour untinted. That is
-     * the honest degradation: it is the value Carbon itself uses for a missing
-     * map, so nothing is invented here, and wiring real averages later needs no
-     * change at this call site.
+     * Missing maps contribute white, as in Carbon; loaded images/videos expose
+     * their average through Tw2TextureRes.GetAverageColor.
      *
      * @param {vec4} [out]
      * @returns {vec4}
      */
     GetAverageColor(out = vec4.create())
     {
-        return vec4.set(out, 1, 1, 1, 1);
+        vec4.set(out, 1, 1, 1, 1);
+        for (const name of [ "Layer1Map", "Layer2Map", "ImageMap", "MaskMap" ])
+        {
+            const parameter = this.effect && this.effect.parameters[name];
+            const resource = parameter && parameter.textureRes;
+            if (resource) vec4.multiply(out, out, resource.GetAverageColor());
+        }
+        return out;
     }
 
     /**
@@ -612,32 +665,29 @@ export class EvePlaneSet extends EveObjectSet
      */
     GetLights(collector, parentContext = {})
     {
+        // ccpwgl editor adaptation: explicit display switches also hide emitted lights.
+        if (!this.display) return;
         if (!collector || !this.lights.length) return;
 
         const
             features = EvePlaneSet._features || (EvePlaneSet._features = { parentBrightness: 1, parentScale: 1, profileIndex: 0 }),
             averageColor = this.GetAverageColor(EvePlaneSet._averageColor || (EvePlaneSet._averageColor = vec4.create())),
-            dataCopy = EvePlaneSet._lightData || (EvePlaneSet._lightData = CreateLightDataScratch()),
-            animationTime = parentContext.animationTime || 0,
+            dataCopy = EvePlaneSet._lightData || (EvePlaneSet._lightData = new CjsLightData()),
+            animationTime = parentContext.animationTime ?? device.currentTime ?? 0,
             shadowQuality = parentContext.shadowQuality || 0;
 
-        // Carbon keeps activation strength on the set itself
-        // (`m_activationStrength`, EvePlaneSet::GetLights cpp:547). ccpwgl has no
-        // such field: activation strength lives on the ROOT object's per-object
-        // data, which is where `EveBoosterSet` reads it from too
-        // (`EveBoosterSet.js:495-515`, `parentData.activationStrength`). So it is
-        // passed down rather than stored, and either spelling is accepted -
-        // the value directly, or the per-object data it rides in.
-        const parentData = parentContext.parentData;
-        features.parentBrightness = parentContext.activationStrength !== undefined
-            ? parentContext.activationStrength
-            : (parentData && parentData.activationStrength !== undefined ? parentData.activationStrength : 1);
+        features.parentBrightness = this._activationStrength;
         features.parentScale = 1;
+        features.animationTime = animationTime;
 
         for (let i = 0; i < this.lights.length; i++)
         {
             const light = this.lights[i];
+            if (light && this.items[light.index] && !this.items[light.index].display) continue;
             if (!light || !light.lightData) continue;
+
+            light.OnValueChanged();
+            features.profileIndex = light.lightProfile ? light.lightProfile.GetTextureIndex() + 1 : 0;
 
             CopyLightData(dataCopy, light.lightData);
             dataCopy.color[0] *= averageColor[0];
@@ -652,9 +702,10 @@ export class EvePlaneSet extends EveObjectSet
             // reference it is given, so a shared scratch row would leave every
             // collected light as a copy of the last one. Carbon can reuse its own
             // because `Tr2LightManager::AddLight` takes the row by value.
-            const record = CreateLightRecord();
-            AsPerPointLightData(record, dataCopy, light.boneMatrix, features, shadowQuality);
+            const record = dataCopy.AsPerPointLightData(light.boneMatrix, features, shadowQuality);
             record.lightType = Tr2Light.POINT_LIGHT;
+            record.lightProfile = light.lightProfile;
+            record.owner = this;
             collector.Collect([ record ]);
         }
     }

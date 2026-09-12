@@ -14,6 +14,21 @@ import {
 export class EveMeshOverlayEffect extends meta.Model
 {
 
+    /** Carbon EveMeshOverlayEffect::SetShaderOption ignores render visibility. */
+    SetShaderOption(name, value)
+    {
+        for (const effects of [
+            this.opaqueEffects, this.decalEffects, this.transparentEffects,
+            this.additiveEffects, this.distortionEffects
+        ])
+        {
+            for (const effect of effects)
+            {
+                if (effect) effect.SetOption(name, value);
+            }
+        }
+    }
+
     @meta.string
     name = "";
 
@@ -29,7 +44,6 @@ export class EveMeshOverlayEffect extends meta.Model
     @meta.boolean
     display = true;
 
-    @meta.notImplemented
     @meta.list("Tw2Effect")
     distortionEffects = [];
 

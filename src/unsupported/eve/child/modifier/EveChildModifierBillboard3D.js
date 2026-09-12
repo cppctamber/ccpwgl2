@@ -30,7 +30,6 @@ function getScratch()
  * EveChildModifierBillboard3D.h/.cpp; persisted properties from
  * EveChildModifierBillboard3D_Blue.cpp's ExposeToBlue() (1 property: "fixed").
  */
-@meta.notImplemented
 @meta.define("EveChildModifierBillboard3D", true)
 export class EveChildModifierBillboard3D extends EveChildModifier
 {

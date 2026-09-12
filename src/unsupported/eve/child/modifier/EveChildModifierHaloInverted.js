@@ -31,7 +31,6 @@ function getScratch()
  * from `EveChildModifierHalo` (they're siblings with unrelated math), so this
  * extends `EveChildModifier` directly rather than `EveChildModifierHalo`.
  */
-@meta.notImplemented
 @meta.define("EveChildModifierHaloInverted", true)
 export class EveChildModifierHaloInverted extends EveChildModifier
 {

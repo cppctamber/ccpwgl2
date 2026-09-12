@@ -6,6 +6,13 @@ import { EvePlaneSet } from "eve";
 import { Tw2TextureParameter } from "core";
 import { Tr2Lod } from "constant/ccpwgl";
 
+// ccpwgl editor visibility groups also govern the lights emitted by each set.
+const attachmentLightVisibility = {
+    EveSpriteSet: "spriteSets", EveSpotlightSet: "spotlightSets",
+    EvePlaneSet: "planeSets", EveHazeSet: "hazeSets",
+    EveSpriteLineSet: "spriteLineSets", EveBanner: "banners", EveBannerSet: "banners"
+};
+
 
 export class EveObject extends WglTransform
 {
@@ -126,9 +133,17 @@ export class EveObject extends WglTransform
      * @param {Tw2CarbonLightCollector} collector
      * @param {Object} [parentContext]
      */
-    GetLights(collector, parentContext)
+    GetLights(collector, parentContext = {})
     {
         if (!this.display) return;
+
+        const bones = this._jointMatrices || parentContext.bones || null;
+        const context = {
+            ...parentContext,
+            bones,
+            activationStrength: this.activationStrength ?? parentContext.activationStrength ?? 1,
+            boosterGain: this.visible && this.visible.boosters === false ? 0 : (this.boosterGain ?? 0)
+        };
 
         // Effect children AND attachments. Carbon reaches attachment lights a
         // different way: a set that owns lights registers itself as an
@@ -148,11 +163,20 @@ export class EveObject extends WglTransform
         for (const list of [ this.effectChildren, this.attachments ])
         {
             if (!list) continue;
+            if (list === this.effectChildren && this.visible && this.visible.effectChildren === false) continue;
 
             for (let i = 0; i < list.length; i++)
             {
                 const child = list[i];
-                if (child) child.GetLights(collector, parentContext);
+                if (!child) continue;
+                const group = attachmentLightVisibility[child.GetClassName()];
+                if (group && this.visible && this.visible[group] === false) continue;
+                if (list === this.attachments && child.UpdateLights)
+                {
+                    const boneCount = bones ? (typeof bones[0] === "number" ? bones.length / 12 : bones.length) : 0;
+                    child.UpdateLights(this._worldTransform, bones, boneCount, context.activationStrength, context.boosterGain);
+                }
+                child.GetLights(collector, context);
             }
         }
     }

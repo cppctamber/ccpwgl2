@@ -1,4 +1,7 @@
 import { meta } from "utils";
+import { CjsLightData } from "eve/lights/CjsLightData";
+import { MatrixCopyFrom3x4 } from "eve/lights/lightConversion";
+import { Tr2LightProfileRes } from "core/resource/Tr2LightProfileRes";
 import { box3, quat, vec3, vec4, mat4 } from "math";
 import { Tw2Effect, Tw2RenderBatch, Tw2VertexDeclaration } from "core";
 import { EveObjectSet, EveObjectSetItem } from "eve";
@@ -45,7 +48,7 @@ export class EveHazeSetItem extends EveObjectSetItem
     @meta.boolean
     boosterGainInfluence = false;
 
-    @meta.uint
+    @meta.color
     color = vec4.fromValues(0, 0, 0, 1);
 
     @meta.float
@@ -112,10 +115,108 @@ export class EveHazeSetItem extends EveObjectSetItem
 }
 
 
-@meta.notImplemented
+/** Carbon EveHazeSetLight: runtime SOF light record, separate from drawable items. */
+@meta.define("EveHazeSetLight")
+export class EveHazeSetLight extends meta.Model
+{
+    @meta.struct("CjsLightData")
+    lightData = new CjsLightData();
+
+    @meta.uint
+    index = 0;
+
+    @meta.matrix4
+    boneMatrix = mat4.create();
+
+    @meta.path
+    lightProfilePath = "";
+
+    @meta.boolean
+    boosterGainInfluence = false;
+
+    lightProfile = null;
+    _resolvedProfilePath = "";
+
+    OnValueChanged()
+    {
+        if (this.lightProfilePath !== this._resolvedProfilePath)
+        {
+            this._resolvedProfilePath = this.lightProfilePath;
+            this.lightProfile = Tr2LightProfileRes.Resolve(this.lightProfilePath);
+        }
+    }
+}
+
+
 @meta.define("EveHazeSet", true)
+@meta.partialImplementation
 export class EveHazeSet extends EveObjectSet
 {
+
+    @meta.list("EveHazeSetLight")
+    lights = [];
+
+    _activationStrength = 1;
+    _boosterGain = 0;
+
+    /** Carbon EveHazeSet::AddLightFromSOF. */
+    AddLightFromSOF(light)
+    {
+        // Carbon pushes the record and its LightData by value, but keeps the profile shared.
+        const values = light.GetValues ? light.GetValues() : { ...light };
+        const data = values.lightData;
+        values.lightData = CjsLightData.from(data.GetValues ? data.GetValues() : data);
+        const record = EveHazeSetLight.from(values);
+        record.lightProfile = light.lightProfile || null;
+        this.lights.push(record);
+    }
+
+    /** Carbon EveHazeSet::UpdateLights; independent of drawable visibility. */
+    UpdateLights(parentTransform, bones, boneCount, activationStrength, boosterGain)
+    {
+        for (const light of this.lights)
+        {
+            const index = light.lightData.boneIndex;
+            // Donor quirk: bone zero takes the parent-only path (EveHazeSet.cpp).
+            if (bones && index > 0 && index < boneCount)
+            {
+                if (typeof bones[0] === "number") MatrixCopyFrom3x4(light.boneMatrix, bones, index);
+                else mat4.copy(light.boneMatrix, bones[index].offsetTransform);
+                light.boneMatrix[3] = light.boneMatrix[7] = light.boneMatrix[11] = 0;
+                light.boneMatrix[15] = 1;
+                // Carbon bone * parent: reverse operands for gl-matrix.
+                mat4.multiply(light.boneMatrix, parentTransform, light.boneMatrix);
+            }
+            else mat4.copy(light.boneMatrix, parentTransform);
+        }
+        this._activationStrength = activationStrength;
+        this._boosterGain = boosterGain;
+    }
+
+    /** Carbon EveHazeSet::GetLights. The collector owns the submitted records. */
+    GetLights(collector, parentContext = {})
+    {
+        // ccpwgl editor adaptation: explicit display switches also hide emitted lights.
+        if (!this.display) return;
+        for (const light of this.lights)
+        {
+            if (this.items[light.index] && !this.items[light.index].display) continue;
+            light.OnValueChanged();
+            const profile = light.lightProfile;
+            const features = {
+                parentBrightness: this._activationStrength * (light.boosterGainInfluence ? this._boosterGain : 1),
+                parentScale: 1,
+                profileIndex: profile ? profile.GetTextureIndex() + 1 : 0,
+                animationTime: parentContext.animationTime ?? device.currentTime ?? 0
+            };
+            const record = light.lightData.AsPerPointLightData(light.boneMatrix, features, parentContext.shadowQuality ?? 0);
+            record.lightType = 1;
+            record.lightProfile = profile;
+            record.owner = this;
+            collector.Collect([ record ]);
+        }
+    }
+
 
     /**
      * Whether haze sets draw at all, independent of the authored `display`.
@@ -176,7 +277,13 @@ export class EveHazeSet extends EveObjectSet
      */
     GetResources(out = [])
     {
-        return this.effect ? this.effect.GetResources(out) : out;
+        if (this.effect) this.effect.GetResources(out);
+        for (const light of this.lights)
+        {
+            light.OnValueChanged();
+            if (light.lightProfile && !out.includes(light.lightProfile)) out.push(light.lightProfile);
+        }
+        return out;
     }
 
     /**
@@ -223,6 +330,14 @@ export class EveHazeSet extends EveObjectSet
 
     Rebuild(opt)
     {
+        // SOF now creates these owners for lighting. Keep disabled haze geometry
+        // out of the GPU until the separate renderer implementation is usable.
+        if (!EveHazeSet.enabled)
+        {
+            this.RebuildItems();
+            super.Rebuild(opt);
+            return;
+        }
         this.Unload(true);
         this.RebuildItems();
         this._dirty = false;

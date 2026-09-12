@@ -34,7 +34,7 @@ export class EveSOFDataHullSpriteLineSetItem extends meta.Model
     @meta.boolean
     isCircle = false;
 
-    @meta.struct()
+    @meta.struct("EveSOFDataPointLightAttachment")
     light = null;
 
     @meta.float

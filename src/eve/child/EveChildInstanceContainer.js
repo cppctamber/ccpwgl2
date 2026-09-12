@@ -61,6 +61,15 @@ export class EveChildInstanceTransform extends meta.Model
 export class EveChildInstanceContainer extends EveChild
 {
 
+    /** Carbon EveChildInstanceContainer::SetShaderOption visits live instances. */
+    SetShaderOption(name, value)
+    {
+        for (const child of this.GetInstances())
+        {
+            if (child.SetShaderOption) child.SetShaderOption(name, value);
+        }
+    }
+
     @meta.string
     name = "";
 

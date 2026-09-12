@@ -221,6 +221,10 @@ export function CopyLightData(out, lightData)
     out.color[3] = lightData.color?.[3] ?? 1;
 
     out.brightness = lightData.brightness ?? 0;
+    out.noiseAmplitude = lightData.noiseAmplitude ?? 0;
+    out.noiseFrequency = lightData.noiseFrequency ?? 1;
+    out.noiseOctaves = lightData.noiseOctaves ?? 1;
+    out.startTime = lightData.startTime ?? 0;
     out.radius = lightData.radius ?? 0;
     out.innerRadius = lightData.innerRadius ?? 0;
 

@@ -36,7 +36,6 @@ function getScratch()
  * camera in the horizontal plane, leaving pitch/roll from the child's own transform
  * untouched - a billboard constrained to the Y axis.
  */
-@meta.notImplemented
 @meta.define("EveChildModifierCameraOrientedRotationConstrained", true)
 export class EveChildModifierCameraOrientedRotationConstrained extends EveChildModifier
 {

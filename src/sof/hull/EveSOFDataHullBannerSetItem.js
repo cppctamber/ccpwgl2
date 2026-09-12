@@ -18,7 +18,7 @@ export class EveSOFDataHullBannerSetItem extends meta.Model
     @meta.int32
     boneIndex = -1;
 
-    @meta.struct()
+    @meta.struct("EveSOFDataPointLightAttachment")
     light = null;
 
     @meta.vector3

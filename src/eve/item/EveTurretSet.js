@@ -116,7 +116,6 @@ export class EveTurretSet extends EveObjectSet
     @meta.string
     name = "";
 
-    @meta.notImplemented
     @meta.float
     bottomClipHeight = 0;
 
@@ -2116,4 +2115,3 @@ export class EveTurretSet extends EveObjectSet
     })();
 
 }
-

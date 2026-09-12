@@ -37,12 +37,14 @@ import {
 import { EveStation2 } from "../eve/object/EveStation2";
 import { EveMobile } from "../eve/object/EveMobile";
 import { ReflectionMode } from "../eve/EveComponentTypes";
-import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
+import { EveBoosterSet2, EveTrailsSet, EveHazeSet, EveSpriteLineSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
 import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
 import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
 import { EveSOFDataPointLightAttachment } from "sof/shared/EveSOFDataPointLightAttachment";
+import { EveSOFDataSpotLightAttachment } from "sof/shared/EveSOFDataSpotlightAttachment";
+import { CjsLightData } from "eve/lights/CjsLightData";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
 import { EveSOFDataHullLocatorSet } from "sof/hull/EveSOFDataHullLocatorSet";
@@ -1622,26 +1624,35 @@ export class EveSOFData extends meta.Model
             this.SetupSpriteSets(data, owner, sof, options);
             this.SetupSpotlightSets(data, owner, sof, options);
             this.SetupPlaneSets(data, owner, sof, options);
+            if (sof.hull.hazeSets && sof.hull.hazeSets.length) this.SetupHazeSets(data, owner, sof, options);
+            if (sof.hull.spriteLineSets && sof.hull.spriteLineSets.length) this.SetupSpriteLineSets(data, owner, sof, options);
+            if ((sof.hull.bannerSets && sof.hull.bannerSets.length) || (sof.hull.banners && sof.hull.banners.length))
+            {
+                this.SetupBanners(data, owner, sof, options);
+            }
 
             for (const set of owner.attachments)
             {
                 const sourceName = set.name;
                 this.TransformLayoutAttachment(set, placement.transform);
-                const type = set instanceof EveSpriteSet
-                    ? "sprite"
-                    : set instanceof EveSpotlightSet ? "spotlight" : "plane";
-                const key = `${type}:${sourceName}`;
+                // Legacy banners remain individual drawables; other sets can merge their items.
+                const key = `${set.GetClassName()}:${sourceName}${set instanceof EveBanner ? ":" + placement.key : ""}`;
 
                 if (emitted.has(key))
                 {
                     const target = emitted.get(key);
                     const items = set.items;
                     set.items = [];
+                    const itemOffset = target.items.length;
                     for (const item of items) target.AddItem(item, { skipEvents: true, skipUpdate: true });
 
-                    if (set instanceof EvePlaneSet)
+                    if (set.lights)
                     {
-                        target.lights.push(...set.lights);
+                        for (const light of set.lights)
+                        {
+                            light.index += itemOffset;
+                            target.lights.push(light);
+                        }
                         set.lights = [];
                     }
                     target._sofLayoutPlacementKeys.push(placement.key);
@@ -1695,7 +1706,14 @@ export class EveSOFData extends meta.Model
         const transformed = mat4.create();
 
         set.skinned = false;
-        for (const item of set.items)
+        if (set instanceof EveBanner)
+        {
+            mat4.fromRotationTranslationScale(local, set.rotation, set.position, set.scaling);
+            mat4.multiply(transformed, placementTransform, local);
+            mat4.decompose(transformed, set.rotation, set.position, set.scaling);
+            set.boneIndex = -1;
+        }
+        for (const item of set.items || [])
         {
             item.boneIndex = -1;
 
@@ -1717,9 +1735,10 @@ export class EveSOFData extends meta.Model
             item.UpdateValues();
         }
 
-        if (set instanceof EvePlaneSet)
+        const lights = set instanceof EveBanner ? set._lightSet.lights : set.lights;
+        if (lights)
         {
-            for (const light of set.lights)
+            for (const light of lights)
             {
                 const lightData = light.lightData;
                 lightData.boneIndex = -1;
@@ -1739,7 +1758,7 @@ export class EveSOFData extends meta.Model
         {
             const set = obj.attachments[index];
             if (!set._isSofLayoutAttachment) continue;
-            set.Unload();
+            if (!(set instanceof EveBanner)) set.Unload();
             set.Destroy();
             obj.attachments.splice(index, 1);
             count++;
@@ -2972,21 +2991,41 @@ export class EveSOFData extends meta.Model
             if (set)
             {
                 toRemove.splice(toRemove.indexOf(set), 1);
-                return;
             }
-
-            set = new EveBanner();
-            arr.push(set);
+            else
+            {
+                set = new EveBanner();
+                arr.push(set);
+            }
 
             // Setup base banner
             const { lightOverride, ...options } = srcSet;
             set.SetValues(options);
-            if (lightOverride)
+            set._lightSet.lights = [];
+            if (sof6 && srcSet.light)
             {
-                tw2.Debug({
-                    name: "Space object factor",
-                    message: "Banner light overrides not supported"
-                });
+                const light = srcSet.light.AsLightData ? srcSet.light : EveSOFDataPointLightAttachment.from(srcSet.light);
+                const lightData = light.AsLightData([ 0, 0, 0, 0 ], Math.max(...srcSet.scaling));
+                vec3.transformQuat(lightData.position, lightData.position, srcSet.rotation);
+                vec3.add(lightData.position, lightData.position, srcSet.position);
+                quat.multiply(lightData.rotation, srcSet.rotation, lightData.rotation);
+                quat.normalize(lightData.rotation, lightData.rotation);
+                lightData.boneIndex = srcSet.boneIndex;
+                set._lightSet.AddLightFromSOF({ lightData, saturation: light.saturation, lightProfilePath: light.lightProfilePath });
+            }
+            else if (!sof6 && lightOverride)
+            {
+                // Carbon EveSOF.cpp:1605-1625. The inner multiplier is relative
+                // to the computed outer radius, not directly to banner scale.
+                const lightData = new CjsLightData();
+                vec3.copy(lightData.position, srcSet.position);
+                lightData.radius = lightOverride.radiusMultiplier * Math.max(...srcSet.scaling);
+                lightData.innerRadius = lightData.radius * lightOverride.innerRadiusMultiplier;
+                lightData.brightness = lightOverride.brightness;
+                lightData.noiseAmplitude = lightOverride.noiseAmplitude;
+                lightData.noiseFrequency = lightOverride.noiseFrequency;
+                lightData.noiseOctaves = lightOverride.noiseOctaves;
+                set._lightSet.AddLightFromSOF({ lightData, saturation: lightOverride.saturation });
             }
 
             // This isn't a requirement of the space object factory
@@ -3107,6 +3146,7 @@ export class EveSOFData extends meta.Model
             set.useQuads = true;
             set.skinned = srcSet.skinned && isSkinned;
             set.effect = options.effect.sprite;
+            set.lights = [];
 
             const color = vec4.alloc();
             color[0] = color[1] = color[2] = 0;
@@ -3126,6 +3166,22 @@ export class EveSOFData extends meta.Model
                 spriteItem.minScale *= options.multiplier.spriteScale;
                 spriteItem.maxScale *= options.multiplier.spriteScale;
                 set.items.push(spriteItem);
+                if (sof6 && srcItem.light)
+                {
+                    // Carbon EveSOF.cpp:962-985: item intensity precedes both saturations.
+                    const light = srcItem.light.AsLightData ? srcItem.light : EveSOFDataPointLightAttachment.from(srcItem.light);
+                    const lightColor = vec4.scale(vec4.create(), color, srcItem.intensity);
+                    Saturate(lightColor, lightColor, srcItem.saturation);
+                    Saturate(lightColor, lightColor, light.saturation);
+                    const lightData = light.AsLightData(lightColor, 1);
+                    vec3.add(lightData.position, lightData.position, srcItem.position);
+                    lightData.boneIndex = srcItem.boneIndex;
+                    set.AddLightFromSOF({
+                        lightData, lightProfilePath: light.lightProfilePath,
+                        index: set.items.length - 1, blinkPhase: srcItem.blinkPhase,
+                        blinkRate: srcItem.blinkRate, minScale: srcItem.minScale, maxScale: srcItem.maxScale
+                    });
+                }
             });
 
             vec4.unalloc(color);
@@ -3227,11 +3283,12 @@ export class EveSOFData extends meta.Model
                 textures: { TextureMap: srcSet.glowTextureResPath }
             });
             srcSet.items.forEach(item => set.CreateItem(item));
+            set.lights = [];
 
             const color = vec4.alloc();
 
             // Update factions...
-            set.items.forEach(item =>
+            set.items.forEach((item, index) =>
             {
 
                 color[0] = color[1] = color[2] = 0;
@@ -3260,6 +3317,26 @@ export class EveSOFData extends meta.Model
                             spriteColor: faction.spriteColor
                         });
                     }
+                }
+
+                const srcItem = srcSet.items[index];
+                if (sof6 && srcItem.light)
+                {
+                    // Carbon EveSOF.cpp:1113-1140. Cone radii use absolute Z scale.
+                    const light = srcItem.light.AsLightData ? srcItem.light : EveSOFDataSpotLightAttachment.from(srcItem.light);
+                    const scaling = vec3.create(), rotation = quat.create(), position = vec3.create();
+                    mat4.decompose(item.transform, rotation, position, scaling);
+                    for (let axis = 0; axis < 3; axis++) scaling[axis] = Math.abs(scaling[axis]);
+                    const angle = scaling[2] > 0 ? Math.atan(Math.max(scaling[0], scaling[1]) / (2 * scaling[2])) * 180 / Math.PI : 0;
+                    const lightColor = Saturate(vec4.create(), color, srcItem.saturation * light.saturation);
+                    const lightData = light.AsLightData(lightColor, scaling[2], angle, angle);
+                    vec3.transformQuat(lightData.position, lightData.position, rotation);
+                    vec3.add(lightData.position, lightData.position, position);
+                    quat.copy(lightData.rotation, rotation);
+                    lightData.boneIndex = srcItem.boneIndex;
+                    lightData.brightness *= srcItem.coneIntensity;
+                    set.AddLightFromSOF({ lightData, index, lightProfilePath: light.lightProfilePath,
+                        boosterGainInfluence: srcItem.boosterGainInfluence });
                 }
 
                 // Disable lights which aren't visible
@@ -3518,7 +3595,7 @@ export class EveSOFData extends meta.Model
                 vec3.transformQuat(offset, lightData.position, src.rotation);
                 vec3.add(lightData.position, offset, src.position);
 
-                quat.multiply(rotation, lightData.rotation, src.rotation);
+                quat.multiply(rotation, src.rotation, lightData.rotation);
                 quat.normalize(lightData.rotation, rotation);
 
                 lightData.boneIndex = src.boneIndex;
@@ -4228,7 +4305,53 @@ export class EveSOFData extends meta.Model
      */
     static SetupHazeSets(data, obj, sof, options)
     {
-        tw2.Debug({ name: "Space object factory", message: "Haze sets not implemented" });
+        // Populate light owners while the known-broken haze renderer stays disabled.
+        const arr = obj.attachments;
+        const toRemove = EveSOFData.FindObjectsByConstructor(arr, EveHazeSet);
+        for (const srcSet of sof.hull.hazeSets)
+        {
+            if (!sof.faction.visibilityGroupSet.IsObjectVisible(srcSet)) continue;
+            let set = arr.find(item => item.constructor === EveHazeSet && item.name === srcSet.name);
+            if (!set)
+            {
+                set = new EveHazeSet();
+                set.name = srcSet.name;
+                arr.push(set);
+            }
+            else toRemove.splice(toRemove.indexOf(set), 1);
+            set.ClearItems();
+            set.lights = [];
+            set.skinned = srcSet.skinned && sof.hull.isSkinned;
+            for (let index = 0; index < srcSet.items.length; index++)
+            {
+                const src = srcSet.items[index];
+                const color = vec4.create();
+                sof.faction.GetColorType(src.colorType, color, 0);
+                const hazeColor = vec4.scale(vec4.create(), color, src.hazeBrightness);
+                Saturate(hazeColor, hazeColor, src.saturation);
+                set.CreateItem({ ...src, color: hazeColor });
+                if (!(sof.hull.sof6 && data.enableSof6)) continue;
+                for (const raw of src.lights)
+                {
+                    const light = raw.AsLightData ? raw : EveSOFDataPointLightAttachment.from(raw);
+                    const lightData = light.AsLightData(Saturate(vec4.create(), color, light.saturation),
+                        Math.max(src.scaling[0], src.scaling[1], src.scaling[2]));
+                    vec3.transformQuat(lightData.position, lightData.position, src.rotation);
+                    vec3.add(lightData.position, lightData.position, src.position);
+                    // Carbon light rotation * item rotation; reverse gl operands.
+                    quat.multiply(lightData.rotation, src.rotation, lightData.rotation);
+                    quat.normalize(lightData.rotation, lightData.rotation);
+                    lightData.boneIndex = src.boneIndex;
+                    set.AddLightFromSOF({ lightData, index, lightProfilePath: light.lightProfilePath,
+                        boosterGainInfluence: src.boosterGainInfluence });
+                }
+            }
+        }
+        for (const set of toRemove)
+        {
+            set.Destroy();
+            arr.splice(arr.indexOf(set), 1);
+        }
     }
 
     /**
@@ -4241,10 +4364,54 @@ export class EveSOFData extends meta.Model
      */
     static SetupSpriteLineSets(data, obj, sof, options)
     {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Sprite line sets not implemented"
-        });
+        const arr = obj.attachments;
+        const toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpriteLineSet);
+        for (const srcSet of sof.hull.spriteLineSets)
+        {
+            if (!sof.faction.visibilityGroupSet.IsObjectVisible(srcSet)) continue;
+            let set = arr.find(item => item.constructor === EveSpriteLineSet && item.name === srcSet.name);
+            if (!set)
+            {
+                set = new EveSpriteLineSet();
+                set.name = srcSet.name;
+                arr.push(set);
+            }
+            else toRemove.splice(toRemove.indexOf(set), 1);
+            set.ClearItems();
+            set.lights = [];
+            for (let index = 0; index < srcSet.items.length; index++)
+            {
+                const src = srcSet.items[index];
+                const item = set.CreateItem(src);
+                if (!(sof.hull.sof6 && data.enableSof6) || !src.light) continue;
+                const light = src.light.AsLightData ? src.light : EveSOFDataPointLightAttachment.from(src.light);
+                const color = vec4.create();
+                sof.faction.GetColorType(src.colorType, color, 0);
+                vec4.scale(color, color, src.intensity);
+                Saturate(color, color, src.saturation);
+                Saturate(color, color, light.saturation);
+                const lightData = light.AsLightData(color, 1);
+                lightData.boneIndex = src.boneIndex;
+                let sample = 0;
+                for (const position of item.GetPositions())
+                {
+                    // Donor quirks, EveSOF.cpp:1407-1408: GetPositions already
+                    // includes item position, and rotation accumulates per sample.
+                    vec3.add(lightData.position, light.translation, position);
+                    vec3.add(lightData.position, lightData.position, item.position);
+                    quat.multiply(lightData.rotation, item.rotation, lightData.rotation);
+                    quat.normalize(lightData.rotation, lightData.rotation);
+                    set.AddLightFromSOF({ lightData, index, lightProfilePath: light.lightProfilePath,
+                        blinkRate: src.blinkRate, blinkPhase: src.blinkPhase + src.blinkPhaseShift * sample++,
+                        minScale: src.minScale, maxScale: src.maxScale });
+                }
+            }
+        }
+        for (const set of toRemove)
+        {
+            set.Destroy();
+            arr.splice(arr.indexOf(set), 1);
+        }
     }
 
     /**

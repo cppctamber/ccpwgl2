@@ -11,7 +11,6 @@ import { device } from "global";
  * EveChildModifierTranslateWithCamera_Blue.cpp's ExposeToBlue() (1 property:
  * "attachedToCamera").
  */
-@meta.notImplemented
 @meta.define("EveChildModifierTranslateWithCamera", true)
 export class EveChildModifierTranslateWithCamera extends EveChildModifier
 {

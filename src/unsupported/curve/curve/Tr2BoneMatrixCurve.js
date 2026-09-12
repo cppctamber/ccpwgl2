@@ -11,7 +11,8 @@ export class Tr2MatrixKey extends Tw2CurveKey
 }
 
 
-@meta.notImplemented
+// Key sampling works; bone lookup and authored cycle/reversed playback are absent.
+@meta.partialImplementation
 @meta.define("Tr2BoneMatrixCurve", true)
 export class Tr2BoneMatrixCurve extends Tw2Curve
 {

@@ -1,4 +1,8 @@
 import { meta } from "utils";
+import { CjsLightData } from "../lights/CjsLightData";
+import { MatrixCopyFrom3x4 } from "../lights/lightConversion";
+import { Tr2LightProfileRes } from "core/resource/Tr2LightProfileRes";
+import { Blink } from "./EveSpaceObjectAttachmentUtils";
 import { device } from "global";
 import { mat4, num, vec3, vec4, sph3, box3 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
@@ -203,9 +207,125 @@ export class EveSpriteSetItem extends EveObjectSetItem
 }
 
 
+/** Carbon EveSpriteLight: runtime SOF light record, separate from drawable items. */
+@meta.define("EveSpriteLight")
+export class EveSpriteLight extends meta.Model
+{
+    @meta.struct("CjsLightData")
+    lightData = new CjsLightData();
+
+    @meta.uint
+    index = 0;
+
+    @meta.matrix4
+    boneMatrix = mat4.create();
+
+    @meta.path
+    lightProfilePath = "";
+
+    @meta.float
+    blinkPhase = 0;
+
+    @meta.float
+    blinkRate = 0;
+
+    @meta.float
+    minScale = 0;
+
+    @meta.float
+    maxScale = 0;
+
+    lightProfile = null;
+    _resolvedProfilePath = "";
+
+    OnValueChanged()
+    {
+        if (this.lightProfilePath !== this._resolvedProfilePath)
+        {
+            this._resolvedProfilePath = this.lightProfilePath;
+            this.lightProfile = Tr2LightProfileRes.Resolve(this.lightProfilePath);
+        }
+    }
+}
+
+
 @meta.define("EveSpriteSet", true)
 export class EveSpriteSet extends EveObjectSet
 {
+
+    @meta.list("EveSpriteLight")
+    lights = [];
+
+    _activationStrength = 1;
+    _boosterGain = 0;
+
+    /** Carbon EveSpriteSet::AddLightFromSOF. */
+    AddLightFromSOF(light)
+    {
+        // Carbon pushes the record and its LightData by value, but keeps the profile shared.
+        const values = light.GetValues ? light.GetValues() : { ...light };
+        const data = values.lightData;
+        values.lightData = CjsLightData.from(data.GetValues ? data.GetValues() : data);
+        const record = EveSpriteLight.from(values);
+        record.lightProfile = light.lightProfile || null;
+        this.lights.push(record);
+    }
+
+    /** Carbon EveSpriteSet::UpdateLights; independent of drawable visibility. */
+    UpdateLights(parentTransform, bones, boneCount, activationStrength, boosterGain)
+    {
+        for (const light of this.lights)
+        {
+            const index = light.lightData.boneIndex;
+            // Donor quirk: bone zero takes the parent-only path (EveSpriteSet.cpp).
+            if (bones && index > 0 && index < boneCount)
+            {
+                if (typeof bones[0] === "number") MatrixCopyFrom3x4(light.boneMatrix, bones, index);
+                else mat4.copy(light.boneMatrix, bones[index].offsetTransform);
+                light.boneMatrix[3] = light.boneMatrix[7] = light.boneMatrix[11] = 0;
+                light.boneMatrix[15] = 1;
+                // Carbon bone * parent: reverse operands for gl-matrix.
+                mat4.multiply(light.boneMatrix, parentTransform, light.boneMatrix);
+            }
+            else mat4.copy(light.boneMatrix, parentTransform);
+        }
+        this._activationStrength = activationStrength;
+        this._boosterGain = boosterGain;
+    }
+
+    /** Carbon EveSpriteSet::GetLights. The collector owns the submitted records. */
+    GetLights(collector, parentContext = {})
+    {
+        // ccpwgl editor adaptation: explicit display switches also hide emitted lights.
+        if (!this.display) return;
+        for (const light of this.lights)
+        {
+            if (this.items[light.index] && !this.items[light.index].display) continue;
+            light.OnValueChanged();
+            const profile = light.lightProfile;
+            const features = {
+                parentBrightness: this._activationStrength,
+                parentScale: 1,
+                profileIndex: profile ? profile.GetTextureIndex() + 1 : 0,
+                animationTime: parentContext.animationTime ?? device.currentTime ?? 0
+            };
+            const record = light.lightData.AsPerPointLightData(light.boneMatrix, features, parentContext.shadowQuality ?? 0);
+            const scale = Blink(features.animationTime, light.blinkRate, light.blinkPhase, light.minScale, light.maxScale);
+            record.radius *= scale;
+            record.innerRadius *= scale;
+            record.lightType = 1;
+            record.lightProfile = profile;
+            record.owner = this;
+            collector.Collect([ record ]);
+        }
+    }
+
+
+    /** Carbon EveSpriteSet::SetShaderOption; ccpwgl binds the effect directly. */
+    SetShaderOption(name, value)
+    {
+        if (this.effect) this.effect.SetOption(name, value);
+    }
 
     @meta.string
     name = "";
@@ -262,6 +382,11 @@ export class EveSpriteSet extends EveObjectSet
     GetResources(out = [])
     {
         if (this.effect) this.effect.GetResources(out);
+        for (const light of this.lights)
+        {
+            light.OnValueChanged();
+            if (light.lightProfile && !out.includes(light.lightProfile)) out.push(light.lightProfile);
+        }
         return out;
     }
 

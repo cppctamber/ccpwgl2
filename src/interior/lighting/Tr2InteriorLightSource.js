@@ -18,7 +18,7 @@ import { vec3, vec4 } from "math";
  * names" rule, but are flagged here as likely legacy/deprecated schema
  * drift rather than removed.
  */
-@meta.notImplemented
+@meta.partialImplementation
 @meta.define("Tr2InteriorLightSource", true)
 export class Tr2InteriorLightSource extends meta.Model
 {
@@ -62,7 +62,6 @@ export class Tr2InteriorLightSource extends meta.Model
     @meta.vector3
     position = vec3.create();
 
-    @meta.notImplemented
     @meta.boolean
     primaryLighting = true;
 

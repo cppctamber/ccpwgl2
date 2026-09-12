@@ -53,7 +53,6 @@ export class EveChildContainer extends EveChild
     @meta.int32
     displayFilter = -1;
 
-    @meta.notImplemented
     @meta.list()
     fxAttributes = [];
 
@@ -61,11 +60,10 @@ export class EveChildContainer extends EveChild
     @meta.boolean
     hideOnLowQuality = false;
 
-    @meta.notImplemented
+    @meta.partialImplementation
     @meta.struct("EveChildInheritProperties")
     inheritProperties = null;
 
-    @meta.notImplemented
     @meta.list("Tr2PointLight")
     lights = [];
 
@@ -95,7 +93,6 @@ export class EveChildContainer extends EveChild
     @meta.boolean
     useStaticScale = false;
 
-    @meta.notImplemented
     @meta.list("EveChildModifier")
     transformModifiers = [];
 
@@ -231,6 +228,15 @@ export class EveChildContainer extends EveChild
     SetControllerVariable(name, value)
     {
         SetControllerVariableOn(this, name, value, this.objects);
+    }
+
+    /** Carbon EveChildContainer::SetShaderOption; includes hidden children. */
+    SetShaderOption(name, value)
+    {
+        for (const child of this.objects)
+        {
+            if (child.SetShaderOption) child.SetShaderOption(name, value);
+        }
     }
 
     /**
@@ -829,7 +835,13 @@ export class EveChildContainer extends EveChild
         for (let i = 0; i < this.objects.length; i++)
         {
             const child = this.objects[i];
-            if (child) child.GetLights(collector, parentContext);
+            if (!child) continue;
+            if (child.UpdateLights)
+            {
+                const boneCount = bones ? (typeof bones[0] === "number" ? bones.length / 12 : bones.length) : 0;
+                child.UpdateLights(this._worldTransform, bones, boneCount, parentContext.activationStrength ?? 1, 0);
+            }
+            child.GetLights(collector, parentContext);
         }
     }
 

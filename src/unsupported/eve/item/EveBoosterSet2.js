@@ -373,12 +373,9 @@ export class EveBoosterSet2 extends EveObjectSet
         {
             const { name, transform, atlasIndex0, atlasIndex1, lightScale } = locators[i];
 
-            // ccpwgl's SOF reader does not populate either of these - the hull
-            // booster item's `functionality` is still marked not implemented and
-            // reads as four zeroes, which the shader takes as a dead booster, and
-            // `hasTrail` reads false on every ship hull even though they all
-            // trail. So an unset value falls back to Carbon's default rather
-            // than being believed.
+            // SOF supplies authored functionality through the locator. Preserve
+            // the existing fallback for unset/zero functionality and the
+            // trailAllBoosters override for hulls without authored trail flags.
             const
                 raw = locators[i].functionality,
                 functionality = raw && (raw[1] || raw[2] || raw[3]) ? raw : DEFAULT_FUNCTIONALITY,

@@ -49,7 +49,6 @@ export class EveSpaceScene extends meta.Model
     @meta.isPrivate
     backgroundRenderingEnabled = true;
 
-    @meta.notImplemented
     @meta.boolean
     enableShadows = true;
 

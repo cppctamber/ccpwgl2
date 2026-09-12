@@ -3,7 +3,8 @@ import { resMan } from "global";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.notImplemented
+// Loading and lifecycle work; redirecting an overlay still lacks Carbon's Rebind.
+@meta.partialImplementation
 @meta.define("Tr2ActionOverlay", true)
 export class Tr2ActionOverlay extends Tw2Action
 {

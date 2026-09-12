@@ -13,7 +13,6 @@ export class EveSOFDataHullBoosterItem extends meta.Model
     atlasIndex1 = 0;
 
     @meta.vector4
-    @meta.notImplemented
     functionality = vec4.create();
 
     @meta.boolean

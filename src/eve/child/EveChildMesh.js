@@ -10,6 +10,19 @@ import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 export class EveChildMesh extends EveChild
 {
 
+    /** Carbon EveChildMesh::SetShaderOption forwards through its owned materials. */
+    SetShaderOption(name, value)
+    {
+        if (this.mesh) this.mesh.SetShaderOption(name, value);
+        for (const children of [ this.overlayEffects, this.decals, this.attachments ])
+        {
+            for (const child of children)
+            {
+                if (child.SetShaderOption) child.SetShaderOption(name, value);
+            }
+        }
+    }
+
 
     @meta.string
     name = "";
@@ -94,7 +107,6 @@ export class EveChildMesh extends EveChild
     @meta.boolean
     staticTransform = false;
 
-    @meta.notImplemented
     @meta.list("EveChildModifier")
     transformModifiers = [];
 
@@ -280,6 +292,7 @@ export class EveChildMesh extends EveChild
     GetResources(out = [])
     {
         if (this.mesh) this.mesh.GetResources(out);
+        for (const attachment of this.attachments) attachment.GetResources(out);
         return out;
     }
 
@@ -696,6 +709,23 @@ export class EveChildMesh extends EveChild
             // its own signature and reads the bone array directly.
             light.Update(dt, this._worldTransform, bones);
             collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
+        }
+
+        // Carbon EveChildMesh::UpdateLights/GetLights reaches attachment owners
+        // independently of the mesh's drawable visibility. ccpwgl walks owners
+        // here instead of registering them with Carbon's component registry.
+        const meshIndex = this.mesh ? this.mesh.meshIndex : 0;
+        const ownBones = this.animationUpdater && this.animationUpdater.GetBoneMatrices
+            ? this.animationUpdater.GetBoneMatrices(meshIndex) : null;
+        const attachmentBones = ownBones && ownBones.length ? ownBones : bones;
+        const boneCount = attachmentBones ? (typeof attachmentBones[0] === "number" ? attachmentBones.length / 12 : attachmentBones.length) : 0;
+        for (const attachment of this.attachments)
+        {
+            if (attachment.UpdateLights)
+            {
+                attachment.UpdateLights(this._worldTransform, attachmentBones, boneCount, parentContext.activationStrength ?? 1, 0);
+            }
+            attachment.GetLights(collector, parentContext);
         }
     }
 

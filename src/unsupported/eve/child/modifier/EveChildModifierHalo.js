@@ -96,7 +96,6 @@ export function modifyHalo(worldTransform, parentTransform, rotation, translatio
     }
 }
 
-@meta.notImplemented
 @meta.define("EveChildModifierHalo", true)
 export class EveChildModifierHalo extends EveChildModifier
 {

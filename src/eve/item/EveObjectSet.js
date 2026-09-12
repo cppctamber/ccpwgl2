@@ -676,6 +676,12 @@ export class EveObjectSet extends meta.Model
 
     }
 
+    /** IEveSpaceObjectAttachment::UpdateLights; overridden by light-owning sets. */
+    UpdateLights(parentTransform, bones, boneCount, activationStrength, boosterGain)
+    {
+
+    }
+
     /**
      * Per frame update
      * @param {Number} dt

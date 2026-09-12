@@ -6,25 +6,25 @@ export class EveSOFDataHullBannerLight extends meta.Model
 {
 
     @meta.float
-    brightness = 0;
+    brightness = 1;
 
     @meta.float
-    innerRadiusMultiplier = 0;
+    innerRadiusMultiplier = 0.3;
 
     @meta.float
     noiseAmplitude = 0;
 
     @meta.float
-    noiseFrequency = 0;
+    noiseFrequency = 1;
 
     @meta.int32
-    noiseOctaves = 0;
+    noiseOctaves = 1;
 
     @meta.float
-    radiusMultiplier = 0;
+    radiusMultiplier = 1;
 
     @meta.float
-    saturation = 0;
+    saturation = 1;
 
 }
 

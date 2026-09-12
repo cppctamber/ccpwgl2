@@ -35,11 +35,9 @@ export class Tw2InstancedMesh extends meta.Model
     @meta.list("Tw2MeshArea")
     decalAreas = [];
 
-    @meta.notImplemented
     @meta.list("Tw2MeshArea")
     depthAreas = [];
 
-    @meta.notImplemented
     @meta.list("Tw2MeshArea")
     distortionAreas = [];
 
@@ -442,6 +440,12 @@ export class Tw2InstancedMesh extends meta.Model
         this.instanceGeometryResource = path ? tw2.GetResource(this.instanceGeometryResPath) : null;
     }
 
+    /** Shares Carbon's Tr2MeshBase material-option traversal with Tw2Mesh. */
+    SetShaderOption(name, value)
+    {
+        Tw2Mesh.prototype.SetShaderOption.call(this, name, value);
+    }
+
     /**
      * Gets mesh resources
      * @param {Array} [out=[]] - Optional receiving array
@@ -493,7 +497,7 @@ export class Tw2InstancedMesh extends meta.Model
                 break;
 
             case RM_DECAL:
-                if (this.visible.decalAreas) area = this.opaqueAreas;
+                if (this.visible.decalAreas) area = this.decalAreas;
                 break;
 
             case RM_DISTORTION:

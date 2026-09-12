@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { quat, vec3 } from "math";
+import { EveSOFDataHullBannerLight } from "./EveSOFDataHullBannerLight";
 
 
 @meta.define("EveSOFDataHullBanner", true)
@@ -21,8 +22,8 @@ export class EveSOFDataHullBanner extends meta.Model
     @meta.int32
     boneIndex = -1;
 
-    @meta.struct()
-    lightOverride = null;
+    @meta.struct("EveSOFDataHullBannerLight")
+    lightOverride = new EveSOFDataHullBannerLight();
 
     @meta.boolean
     maintainAspectRatio = false;

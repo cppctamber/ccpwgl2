@@ -33,7 +33,7 @@ function getScratch()
  * EveChildModifierStretch.h/.cpp; persisted properties from
  * EveChildModifierStretch_Blue.cpp's ExposeToBlue() (1 property: "dest").
  */
-@meta.notImplemented
+@meta.partialImplementation
 @meta.define("EveChildModifierStretch", true)
 export class EveChildModifierStretch extends EveChildModifier
 {

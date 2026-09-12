@@ -88,7 +88,6 @@ export class EveOldPlanet extends EveObject
     heightMapResPath2 = "";
 
     @meta.list("EveChild")
-    @meta.notImplemented
     effectChildren = [];
 
     @meta.float

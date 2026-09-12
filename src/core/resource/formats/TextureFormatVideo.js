@@ -54,6 +54,13 @@ export class VideoRuntime
         this.lastUploadedTime = -1;
         this.hasNewFrame = false;
         this.useVFC = false; // requestVideoFrameCallback supported
+        this.frameSerial = 0;
+        this.averageFrame = -1;
+        this.averageRequest = null;
+        this.averageCanvas = null;
+        this.averageContext = null;
+        this.averageColor = new Float32Array(4);
+        this.averageReadFailed = false;
 
         /** @type {null|function(*):void} */
         this.onPlaying = null;
@@ -75,6 +82,57 @@ export class VideoRuntime
     Update(res, gl)
     {
         this.format?.Update?.(res, gl, this);
+    }
+
+    /**
+     * Browser adaptation of the cached TriTextureRes::GetAverageColor contract.
+     * HTMLVideoElement does not expose decoded pixels: downsample to a reusable
+     * 16x16 canvas and read only 1 KiB. This intentionally approximates Carbon's
+     * HostBitmap sampling grid. The operator accepts previous-frame colour.
+     * Sampling stays outside light collection and is shared by all consumers.
+     */
+    RequestAverageColor(res)
+    {
+        const video = this.el;
+        if (!video || video.readyState < 2 || this.averageReadFailed || this.averageRequest !== null) return;
+        const frame = this.useVFC ? this.frameSerial : video.currentTime;
+        if (frame === this.averageFrame) return;
+        this.averageRequest = requestAnimationFrame(() =>
+        {
+            this.averageRequest = null;
+            if (res._runtime !== this || this.el !== video || video.readyState < 2) return;
+            const currentFrame = this.useVFC ? this.frameSerial : video.currentTime;
+            if (currentFrame === this.averageFrame) return;
+            if (!this.averageCanvas)
+            {
+                this.averageCanvas = document.createElement("canvas");
+                this.averageCanvas.width = this.averageCanvas.height = 16;
+                this.averageContext = this.averageCanvas.getContext("2d", { willReadFrequently: true });
+            }
+            try
+            {
+                const context = this.averageContext;
+                context.drawImage(video, 0, 0, 16, 16);
+                const pixels = context.getImageData(0, 0, 16, 16).data;
+                const color = this.averageColor;
+                color.fill(0);
+                for (let i = 0; i < pixels.length; i += 4)
+                {
+                    color[0] += pixels[i]; color[1] += pixels[i + 1];
+                    color[2] += pixels[i + 2]; color[3] += pixels[i + 3];
+                }
+                for (let i = 0; i < 4; i++) color[i] /= 256 * 255;
+                res.SetAverageColor(color);
+                this.averageFrame = currentFrame;
+            }
+            catch (error)
+            {
+                // A non-readable source must not break playback or throw once
+                // per light per frame. Retain the last valid colour until reload.
+                this.averageReadFailed = true;
+                console.warn("Video average colour unavailable", error);
+            }
+        });
     }
 
     /**
@@ -119,6 +177,12 @@ export class VideoRuntime
      */
     Unload()
     {
+        if (this.averageRequest !== null) cancelAnimationFrame(this.averageRequest);
+        this.averageRequest = null;
+        this.averageCanvas = this.averageContext = null;
+        this.averageFrame = -1;
+        this.frameSerial = 0;
+        this.averageReadFailed = false;
         if (this.el)
         {
             // Carbon playlistresource._destroy detaches callbacks before
@@ -238,6 +302,7 @@ export class TextureFormatVideo
                 if (!cur || cur.type !== "video" || cur.el !== v) return;
 
                 cur.hasNewFrame = true;
+                cur.frameSerial++;
                 v.requestVideoFrameCallback(onFrame);
             };
 

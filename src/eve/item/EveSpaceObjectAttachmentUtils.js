@@ -54,7 +54,8 @@ export function Blink(animationTime, blinkRate, blinkPhase, minScale, maxScale)
     }
 
     const value = animationTime * blinkRate + blinkPhase;
-    const f = value - Math.floor(value);
+    // Carbon modf keeps the sign of negative phases.
+    const f = value - Math.trunc(value);
 
     let peak = FLASH_PEAK_TIME * blinkRate;
     let result = 0;

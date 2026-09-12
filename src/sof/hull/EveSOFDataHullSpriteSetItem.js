@@ -27,7 +27,7 @@ export class EveSOFDataHullSpriteSetItem extends meta.Model
     @meta.float
     intensity = 1;
 
-    @meta.struct()
+    @meta.struct("EveSOFDataPointLightAttachment")
     light = null;
 
     @meta.float

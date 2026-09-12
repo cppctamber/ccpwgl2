@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec4 } from "math/vec4";
 
 
-@meta.notImplemented
+@meta.partialImplementation
 @meta.define("EveChildInheritProperties", true)
 export class EveChildInheritProperties extends meta.Model
 {
