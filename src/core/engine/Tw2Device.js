@@ -67,6 +67,18 @@ import {
 export class Tw2Device extends Tw2EventEmitter
 {
     /**
+     * Carbon's inverted depth compare table (Tr2EffectStateManager.cpp:834-856).
+     * EQUAL, NOTEQUAL, NEVER and ALWAYS are unchanged and absent here.
+     * @type {Object<Number, Number>}
+     */
+    static InvertedDepthFunc = {
+        [CMP_LESS]: CMP_GREATER,
+        [CMP_GREATER]: CMP_LESS,
+        [CMP_LEQUAL]: CMP_GREATEREQUAL,
+        [CMP_GREATEREQUAL]: CMP_LEQUAL
+    };
+
+    /**
      * Compiled-effect path profiles.
      *
      * Authored `.fx` resources below `/effect/` stay backend-neutral;
@@ -166,6 +178,82 @@ export class Tw2Device extends Tw2EventEmitter
     {
         return Tw2CarbonData.GetClipDepthRange();
     }
+
+    /**
+     * How the scene depth buffer is laid out.
+     *
+     * - "auto" (default): "reversed-buffer" for the dx11 profile, otherwise
+     *   "legacy" (whatever `clipDepthRange` says, into a forward buffer).
+     * - "reversed-buffer": Carbon's reverse-Z. The seam stays reversed, the
+     *   translator tail is `2z - w`, depth clears to 0 and every depth compare
+     *   is flipped (`SetInvertedDepthTest`). The buffer then holds exactly the
+     *   D32F values Carbon's shaders read back through `DepthMap` and
+     *   `gl_FragCoord.z`. Non-Carbon vertex stages get `z = -z` appended so
+     *   they land on the same axis (reversed depth is `1 - forward` for the
+     *   same near/far).
+     * - "legacy": the pre-2026-09-13 behaviour, kept as the A/B switch.
+     *
+     * Must be set BEFORE any effect loads, for the same reason as
+     * `clipDepthRange`. See `/docs/contracts/depth-convention.md`.
+     * @type {String}
+     */
+    depthMode = "auto";
+
+    /**
+     * Whether the depth buffer is reversed for this session.
+     * @returns {Boolean}
+     */
+    get reversedDepthBuffer()
+    {
+        if (this.depthMode === "reversed-buffer") return true;
+        if (this.depthMode === "legacy") return false;
+        return this.effectProfile === DeviceEffectProfile.DX11 && Tw2CarbonData.GetClipDepthRange() === "reversed";
+    }
+
+    /**
+     * The `depthRange` handed to the DXBC translator.
+     * @returns {String}
+     */
+    get emitterDepthRange()
+    {
+        return this.reversedDepthBuffer ? "forward" : Tw2EffectRes.DEPTH_RANGE;
+    }
+
+    /**
+     * The value depth is cleared to: 0 on a reversed buffer, 1 otherwise.
+     * @returns {Number}
+     */
+    get clearDepthValue()
+    {
+        return this.reversedDepthBuffer ? 0 : 1;
+    }
+
+    /**
+     * Carbon's `Tr2EffectStateManager::SetInvertedDepthTest`
+     * (Tr2EffectStateManager.cpp:834-856): while set, every RS_ZFUNC applied
+     * through {@link SetRenderState} swaps LESS/GREATER and
+     * LESSEQUAL/GREATEREQUAL. The scene turns it on for a reversed buffer; the
+     * sun shadow caster turns it off, as Carbon's does (EveSpaceScene.cpp:775).
+     * @param {Boolean} value
+     */
+    SetInvertedDepthTest(value)
+    {
+        value = !!value;
+        if (this._invertedDepthTest === value) return;
+        this._invertedDepthTest = value;
+        this.InvalidateStandardStates();
+    }
+
+    /**
+     * Applies the session's depth layout to GL: inverted test and clear value.
+     * Called on context creation and whenever the profile changes.
+     */
+    ApplyDepthMode()
+    {
+        this.SetInvertedDepthTest(this.reversedDepthBuffer);
+        Tw2CarbonData.SetDepthBufferReversed(this.reversedDepthBuffer);
+        if (this.gl) this.gl.clearDepth(this.clearDepthValue);
+    }
     enableAnisotropicFiltering = true;
     enableAntialiasing = true;
     enableWebgl2 = true;
@@ -199,6 +287,7 @@ export class Tw2Device extends Tw2EventEmitter
     _quadDecl = null;
     _cameraQuadBuffer = null;
     _currentRenderMode = RM_ANY;
+    _invertedDepthTest = false;
     _fallbackCube = null;
     _fallbackVolume = null;
     _fallbackArray = null;
@@ -621,6 +710,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
         this.antialiasing = this.msaaSamples > 1;
 
+        this.ApplyDepthMode();
         this.Resize(true);
 
         const vertices = [
@@ -731,6 +821,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         this.effectProfile = normalized;
         this.effectDir = this.constructor.EffectProfiles[normalized];
+        if (this.gl) this.ApplyDepthMode();
         return this.effectDir;
     }
 
@@ -1353,6 +1444,7 @@ export class Tw2Device extends Tw2EventEmitter
                 return;
 
             case RS_ZFUNC:
+                if (this._invertedDepthTest) value = Tw2Device.InvertedDepthFunc[value] || value;
                 gl.depthFunc(0x0200 + value - 1);
                 return;
 

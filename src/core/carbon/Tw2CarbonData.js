@@ -214,6 +214,77 @@ function PackPerFrameVSRaw(out, gles)
     return out;
 }
 
+/**
+ * Whether the device renders into a REVERSED depth buffer (`Tw2Device.depthMode`
+ * "reversed-buffer"). Gates the per-frame values that only mean anything on
+ * that buffer, so the legacy A/B modes pack exactly what they always did.
+ * @type {Boolean}
+ */
+let DEPTH_BUFFER_REVERSED = false;
+
+/** @param {Boolean} value */
+function SetDepthBufferReversed(value)
+{
+    DEPTH_BUFFER_REVERSED = !!value;
+}
+
+/** @returns {Boolean} */
+function GetDepthBufferReversed()
+{
+    return DEPTH_BUFFER_REVERSED;
+}
+
+/**
+ * `ProjectionInverseMat` for PerFramePSData 93-96, refreshed by
+ * {@link PackPerFrameVS} from the projection it has just packed, so the two
+ * cannot disagree. Rows, in register order.
+ * @type {Float32Array}
+ */
+const PROJECTION_INVERSE = new Float32Array(16);
+
+/**
+ * Inverts a 4x4 held as 16 floats (any consistent layout; the inverse keeps it).
+ * @param {Float32Array} out
+ * @param {Float32Array|Array} m
+ * @returns {Boolean} false when singular (out untouched)
+ */
+function invert4(out, m)
+{
+    const
+        a00 = m[0], a01 = m[1], a02 = m[2], a03 = m[3],
+        a10 = m[4], a11 = m[5], a12 = m[6], a13 = m[7],
+        a20 = m[8], a21 = m[9], a22 = m[10], a23 = m[11],
+        a30 = m[12], a31 = m[13], a32 = m[14], a33 = m[15],
+        b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10,
+        b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11,
+        b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12,
+        b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30,
+        b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31,
+        b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
+
+    let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+    if (!det) return false;
+    det = 1 / det;
+
+    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+    out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+    out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+    out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+    out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+    out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+    out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+    out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+    out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+    return true;
+}
+
 function PackPerFrameVS(out, gles)
 {
     PackPerFrameVSRaw(out, gles);
@@ -224,6 +295,15 @@ function PackPerFrameVS(out, gles)
     // emitter fixup and must stay exactly as Tw2CarbonShadowData built it.
     const convert = CLIP_DEPTH_RANGE === "forward" ? GlClipToForwardClip : GlClipToCarbonClip;
     for (const reg of CLIP_MATRIX_REGS) convert(out, reg);
+
+    // Carbon: `ProjectionInverseMat = Inverse(Transpose(reversedProjection))`
+    // beside `ProjectionMat = Transpose(reversedProjection)`
+    // (EveSpaceScene.cpp:3193). Registers 12-15 now hold the latter, so the
+    // inverse of those same registers is the former in the same layout.
+    if (DEPTH_BUFFER_REVERSED)
+    {
+        invert4(PROJECTION_INVERSE, out.subarray(12 * FLOATS_PER_REG, 16 * FLOATS_PER_REG));
+    }
     return out;
 }
 
@@ -250,7 +330,29 @@ function PackPerFramePS(out, gles)
     // 23: VolumetricSlices — GLES has it one register early (22).
     copyRegs(out, 23, gles, 22, 1);
     // 24-117: cascaded shadow maps, ProjectionInverseMat, cascade
-    // ranges, froxel fog — no ccpwgl sources yet; stays zero.
+    // ranges, froxel fog — no ccpwgl sources yet; stays zero, except below.
+
+    if (DEPTH_BUFFER_REVERSED)
+    {
+        // 17.z DepthMapSampleCount: Carbon writes 1 ("legacy",
+        // EveSpaceScene.cpp PopulatePerFramePSData). GLES carries FovXY there.
+        out[17 * FLOATS_PER_REG + 2] = 1;
+
+        // 93-96 ProjectionInverseMat, from the projection PackPerFrameVS packed.
+        out.set(PROJECTION_INVERSE, 93 * FLOATS_PER_REG);
+
+        // 113-115 FroxelFogData with no fog: Tr2VolumetricsRenderer::
+        // PopulatePerFrameData (.cpp:1047-1071) over the default settings
+        // (.h:28-53, all 0). Zeros would mean MaxDistance 0 and a visibility
+        // of 0 - fully fogged - rather than Carbon's "no fog".
+        const r113 = 113 * FLOATS_PER_REG;
+        out.fill(0, r113, r113 + 4);          // FogColor, BackgroundVisibility 0
+        out[r113 + 4] = 0;                    // BaseDensity = thickness / Far
+        out[r113 + 5] = 1e6;                  // MaxDistance = m_gameBackClip (:75)
+        out[r113 + 6] = 1;                    // MaxDistanceVisibility = exp(-0)
+        out[r113 + 7] = 0;                    // EnvironmentIntensity
+        out[r113 + 8] = -0.001;               // EnvironmentG = -clamp(0, .001, .999)
+    }
     return out;
 }
 
@@ -346,6 +448,8 @@ module.exports = {
     GlClipToCarbonClip,
     GlClipToForwardClip,
     SetClipDepthRange,
+    SetDepthBufferReversed,
+    GetDepthBufferReversed,
     GetClipDepthRange,
     D3DClipToCarbonClip,
     PackDecalPerObjectVS,

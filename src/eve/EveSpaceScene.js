@@ -1247,9 +1247,15 @@ export class EveSpaceScene extends meta.Model
 
         newProj[10] = zf / (zn - zf);
         newProj[14] = (zf * zn) / (zn - zf);
+        // The depthRange partition cannot survive a reversed buffer: every dx11
+        // consumer reads the raw depth as Carbon's `z/w`, and a 0.1..1 remap
+        // would sit inside all of it. Carbon draws planets under their own clip
+        // planes and then CLEARS depth before the scene (EveSpaceScene.cpp:2068);
+        // the planet z-only batches in the main pass restore planet occlusion.
+        const reversed = device.reversedDepthBuffer;
         device.SetProjection(newProj, true);
         this.UpdateViewProjectionFrameData();
-        device.gl.depthRange(0.9, 1);
+        if (!reversed) device.gl.depthRange(0.9, 1);
 
         this._frustum.Initialize(
             device.view,
@@ -1276,7 +1282,8 @@ export class EveSpaceScene extends meta.Model
         }
         device.SetProjection(tempProj, true);
         this.UpdateViewProjectionFrameData();
-        device.gl.depthRange(0, 0.9);
+        if (reversed) tw2.ClearBufferBits(false, true, false);
+        else device.gl.depthRange(0, 0.9);
         this._frustum.Initialize(
             device.view,
             device.projection,
@@ -2827,8 +2834,24 @@ export class EveSpaceScene extends meta.Model
         ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.Set("ViewInverseTransposeMat", d.viewInverse);
         ps.Set("ViewMat", d.viewTranspose);
-        ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
-        ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+        if (d.reversedDepthBuffer)
+        {
+            // Carbon's pair: `(_43, _33)` of the reversed D3D projection
+            // (EveSpaceScene.cpp:3143-3145). The seam's `z' = (w - z) / 2` turns
+            // our GL projection into exactly that matrix, so the pair is
+            // `(-P14 / 2, (-P10 - 1) / 2)` = `(nf/(f-n), n/(f-n))`. Shaders take
+            // `x / (depth + y)`, which on the reversed buffer gives n at 1 and f
+            // at 0. The branch below is twice this, which is not a distance in
+            // any convention; it is kept only for the "reversed"/"forward" A/B
+            // modes and the gles2 profile, which must not change.
+            ps.SetIndex("ProjectionToView", 0, -d.projection[14] / 2);
+            ps.SetIndex("ProjectionToView", 1, (-d.projection[10] - 1) / 2);
+        }
+        else
+        {
+            ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
+            ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+        }
 
         this.UpdateShadow();
     }

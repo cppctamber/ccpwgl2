@@ -409,6 +409,10 @@ export class Tw2CarbonShadowRenderer
 
             // Cleared to 1.0, and compared with LESSEQUAL - standard forward depth.
             // The surrounding scene may run otherwise; this pass does not inherit it.
+            // On a reversed scene buffer that includes Carbon's inverted compare,
+            // which the caster turns off exactly as Carbon's does
+            // (EveSpaceScene.cpp:775 SetInvertedDepthTest(false)).
+            device.SetInvertedDepthTest(false);
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
             gl.depthMask(true);
@@ -574,6 +578,9 @@ export class Tw2CarbonShadowRenderer
                 restoreOpaqueStates.dirty = true;
                 restoreOpaqueStates = null;
             }
+
+            device.SetInvertedDepthTest(device.reversedDepthBuffer);
+            gl.clearDepth(device.clearDepthValue);
 
             device.SetView(prevView);
             device.SetProjection(prevProjection);

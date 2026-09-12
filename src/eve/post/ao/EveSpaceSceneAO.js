@@ -196,8 +196,11 @@ export class EveSpaceSceneAO extends meta.Model
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._depth.fbo);
         gl.viewport(0, 0, this._width, this._height);
-        gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.depthMask(true);
-        gl.clearColor(0, 0, 0, 1); gl.clearDepth(1);
+        // Follows the scene's depth layout: the prepass renders the same
+        // translated shaders, so on a reversed buffer it must clear to 0 and
+        // keep the GREATER surface. The passes flip the sample back (uRev).
+        gl.enable(gl.DEPTH_TEST); gl.depthFunc(device.reversedDepthBuffer ? gl.GEQUAL : gl.LEQUAL); gl.depthMask(true);
+        gl.clearColor(0, 0, 0, 1); gl.clearDepth(device.clearDepthValue);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         ctx.Render("Main");
         gl.bindVertexArray(this._vao);
@@ -241,6 +244,7 @@ export class EveSpaceSceneAO extends meta.Model
             // camera / viewport uniforms
             EveSpaceSceneAO.setF2(pass, "uRes", this._width, this._height);
             EveSpaceSceneAO.setF2(pass, "uAB", P[10], P[14]);
+            EveSpaceSceneAO.setF1(pass, "uRev", device.reversedDepthBuffer ? 1 : 0);
             EveSpaceSceneAO.setF2(pass, "uTan", 1 / P[0], 1 / P[5]);
             EveSpaceSceneAO.setF1(pass, "uFocalPx", 0.5 * this._height * P[5]);
 
