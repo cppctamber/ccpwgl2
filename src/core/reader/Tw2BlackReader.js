@@ -92,8 +92,17 @@ export class Tw2BlackReader
      */
     Construct()
     {
+        // IDs describe references within one constructed graph, not a cache of instances.
+        this._ids.clear();
         this._reader.cursor = this._start;
-        return object(this._reader);
+        try
+        {
+            return object(this._reader);
+        }
+        finally
+        {
+            this._ids.clear();
+        }
     }
 
     /**

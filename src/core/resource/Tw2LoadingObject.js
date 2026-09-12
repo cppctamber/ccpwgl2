@@ -114,16 +114,18 @@ export class Tw2LoadingObject extends Tw2Resource
      */
     Prepare(response)
     {
+        const started = resMan.tw2.now;
+        const budget = Math.max(0, resMan._prepareBudget) * 1000;
         const dot = this.path.lastIndexOf(".");
         if (dot === -1) return null;
         const ext = this.path.substr(dot + 1);
         let first;
 
-        // Take the waiting list as this drain's work. Anything requested from
+        // Resume unfinished work before taking the waiting list. Requests from
         // here on lands on a fresh `_waiting` and is served by a later prepare,
         // so this walk has a fixed size no matter what construction asks for.
         this._requeued = false;
-        if (this._waiting.length)
+        if (!this._objects.length && this._waiting.length)
         {
             this._objects = this._waiting;
             this._waiting = [];
@@ -193,6 +195,19 @@ export class Tw2LoadingObject extends Tw2Resource
                 }
 
                 this.OnWarning({ err, message: "Error preparing child object" });
+            }
+
+            // A retained layout piece can have hundreds of waiting copies.
+            // Give the manager its budget check between constructions, keeping
+            // older consumers ahead of requests made during this slice.
+            if (this._objects.length && resMan.tw2.now - started > budget)
+            {
+                if (!this._requeued)
+                {
+                    this._requeued = true;
+                    resMan.Queue(this, this._view);
+                }
+                return;
             }
         }
 

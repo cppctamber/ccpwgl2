@@ -366,9 +366,11 @@ export class EveSpaceSceneAO extends meta.Model
     {
         const roots = [].concat(this.scene.objects || [], this.scene.backgroundObjects || []);
         const seen = new Set(), out = [], q = roots.map((r) => [ r, 0 ]);
-        while (q.length && seen.size < 8000)
+        let head = 0;
+        while (head < q.length && seen.size < 8000)
         {
-            const [ o, d ] = q.shift();
+            const [ o, d ] = q[head];
+            q[head++] = null;
             if (!o || typeof o !== "object" || seen.has(o) || d > 7) continue;
             seen.add(o);
             if (o.parameters && o.parameters.SSAOMap) out.push(o.parameters.SSAOMap);

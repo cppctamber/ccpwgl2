@@ -41525,8 +41525,14 @@
 	   * @returns {*}
 	   */
 	  Construct() {
+	    // IDs describe references within one constructed graph, not a cache of instances.
+	    this._ids.clear();
 	    this._reader.cursor = this._start;
-	    return object(this._reader);
+	    try {
+	      return object(this._reader);
+	    } finally {
+	      this._ids.clear();
+	    }
 	  }
 
 	  /**
@@ -41657,16 +41663,18 @@
 	   * @param response
 	   */
 	  Prepare(response) {
+	    var started = resMan.tw2.now;
+	    var budget = Math.max(0, resMan._prepareBudget) * 1000;
 	    var dot = this.path.lastIndexOf(".");
 	    if (dot === -1) return null;
 	    var ext = this.path.substr(dot + 1);
 	    var first;
 
-	    // Take the waiting list as this drain's work. Anything requested from
+	    // Resume unfinished work before taking the waiting list. Requests from
 	    // here on lands on a fresh `_waiting` and is served by a later prepare,
 	    // so this walk has a fixed size no matter what construction asks for.
 	    this._requeued = false;
-	    if (this._waiting.length) {
+	    if (!this._objects.length && this._waiting.length) {
 	      this._objects = this._waiting;
 	      this._waiting = [];
 	    }
@@ -41718,6 +41726,17 @@
 	          err,
 	          message: "Error preparing child object"
 	        });
+	      }
+
+	      // A retained layout piece can have hundreds of waiting copies.
+	      // Give the manager its budget check between constructions, keeping
+	      // older consumers ahead of requests made during this slice.
+	      if (this._objects.length && resMan.tw2.now - started > budget) {
+	        if (!this._requeued) {
+	          this._requeued = true;
+	          resMan.Queue(this, this._view);
+	        }
+	        return;
 	      }
 	    }
 
@@ -207674,11 +207693,12 @@
 	    var seen = new Set(),
 	      out = [],
 	      q = roots.map(r => [r, 0]);
-	    while (q.length && seen.size < 8000) {
-	      var _q$shift = q.shift(),
-	        _q$shift2 = _slicedToArray(_q$shift, 2),
-	        o = _q$shift2[0],
-	        d = _q$shift2[1];
+	    var head = 0;
+	    while (head < q.length && seen.size < 8000) {
+	      var _q$head = _slicedToArray(q[head], 2),
+	        o = _q$head[0],
+	        d = _q$head[1];
+	      q[head++] = null;
 	      if (!o || typeof o !== "object" || seen.has(o) || d > 7) continue;
 	      seen.add(o);
 	      if (o.parameters && o.parameters.SSAOMap) out.push(o.parameters.SSAOMap);

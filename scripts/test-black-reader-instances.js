@@ -1,0 +1,25 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const read=name=>fs.readFileSync(path.join(__dirname,'../src/core/reader',name),'utf8');
+const clean=s=>s.replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
+const Binary=Function('Tw2Error',clean(read('Tw2BlackBinaryReader.js'))+'; return Tw2BlackBinaryReader;')(Error);
+const propertySource=read('Tw2BlackPropertyReaders.js');
+const objectSource=propertySource.slice(propertySource.indexOf('export function object('),propertySource.indexOf('export function rawObject(')).replace('export function','function');
+let fail=false;
+const tw2={GetDebugMode(){return false;},HasClass(){return true;},GetClass(){return Fixture;}};
+const object=Function('tw2','isFunction','hasMetadata','ErrBinaryReaderReadError',objectSource+';return object;')(tw2,x=>typeof x==='function',()=>false,Error);
+class Fixture { static blackReaders={left:object,right:object,self:object,value:r=>r.ReadU32()}; Initialize(){if(fail)throw Error('fixture initialization');} }
+const Reader=Function('tw2','Tw2BlackBinaryReader','ErrBinaryFormat','ErrBinaryObjectTypeNotFound','object',clean(read('Tw2BlackReader.js'))+';return Tw2BlackReader;')(tw2,Binary,Error,Error,object);
+const u16=n=>{const b=Buffer.alloc(2);b.writeUInt16LE(n);return b;},u32=n=>{const b=Buffer.alloc(4);b.writeUInt32LE(n);return b;};
+const block=b=>Buffer.concat([u32(b.length),b]);
+const node=(id,...parts)=>Buffer.concat([u32(id),block(Buffer.concat([u16(0),...parts]))]);
+const strings=['Fixture','left','right','self','value'];
+const table=Buffer.concat([u16(strings.length),...strings.map(s=>Buffer.from(s+'\0'))]);
+const root=node(1,u16(1),node(2,u16(4),u32(77)),u16(2),u32(2),u16(3),u32(1));
+const bytes=Buffer.concat([u32(0xB1ACF11E),u32(1),block(table),block(u16(0)),root]);
+const reader=new Reader(new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength));
+const a=reader.Construct(),b=reader.Construct();
+assert.notEqual(a,b);assert.notEqual(a.left,b.left);assert.equal(a.left,a.right);assert.equal(b.left,b.right);assert.equal(a.self,a);assert.equal(b.self,b);assert.equal(b.left.value,77);
+a.left.value=999;assert.equal(b.left.value,77);assert.equal(reader._ids.size,0);
+fail=true;assert.throws(()=>reader.Construct());assert.equal(reader._ids.size,0);fail=false;
+const c=reader.Construct();assert.equal(c.left.value,77);assert.equal(c.self,c);
+console.log('Black reader: independent graphs, intra-graph aliases, cycles, mutation isolation and failed-read recovery passed.');
