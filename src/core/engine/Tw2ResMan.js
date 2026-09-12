@@ -35,6 +35,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     maxConcurrentLoads = 8;
     /** Whether to use worker loader for raw fetch/parse operations. */
     useWorkerLoading = false;
+    /** Decode GR2 data in a bounded worker pool when its script is available. */
+    useGeometryWorkers = true;
+    geometryWorkerUrl = undefined;
     /** Worker script URL used when worker loading is enabled. */
     workerLoaderUrl = null;
     /** RequestInit object or URL-scoped resolver used by all raw fetches. */
@@ -293,6 +296,8 @@ export class Tw2ResMan extends Tw2EventEmitter
             "maxPrepareTime",
             "maxConcurrentLoads",
             "workerLoaderUrl",
+            "useGeometryWorkers",
+            "geometryWorkerUrl",
             "fetchOptions",
             "autoPurgeResources",
             "purgeTime",

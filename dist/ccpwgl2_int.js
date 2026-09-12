@@ -39746,8 +39746,8 @@
 	}
 	Tw2Notifications.onNotification = null;
 
-	var _dec$8q, _class$8q, _Tw2Resource;
-	var Tw2Resource = (_dec$8q = define("Tw2Resource"), _dec$8q(_class$8q = (_Tw2Resource = class Tw2Resource extends Tw2Notifications {
+	var _dec$86, _class$86, _Tw2Resource;
+	var Tw2Resource = (_dec$86 = define("Tw2Resource"), _dec$86(_class$86 = (_Tw2Resource = class Tw2Resource extends Tw2Notifications {
 	  constructor() {
 	    super(...arguments);
 	    this.path = "";
@@ -40262,7 +40262,7 @@
 	  RES_PREPARED: "prepared",
 	  RES_REMOVED: "removed",
 	  RES_COMPLETED: "completed"
-	}, _Tw2Resource)) || _class$8q);
+	}, _Tw2Resource)) || _class$86);
 
 	/**
 	 * An optional function for when the resource handles it's own loading
@@ -40299,10 +40299,10 @@
 	  }
 	}
 
-	var _dec$8p, _class$8p, _Tr2LightProfileRes;
+	var _dec$85, _class$85, _Tr2LightProfileRes;
 
 	/** Carbon Tr2LightProfileRes: an IES distribution or a baked R16F strip. */
-	var Tr2LightProfileRes = (_dec$8p = define("Tr2LightProfileRes"), _dec$8p(_class$8p = (_Tr2LightProfileRes = class Tr2LightProfileRes extends Tw2Resource {
+	var Tr2LightProfileRes = (_dec$85 = define("Tr2LightProfileRes"), _dec$85(_class$85 = (_Tr2LightProfileRes = class Tr2LightProfileRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    this.sourcePath = "";
@@ -40412,7 +40412,7 @@
 	    }
 	    return samples;
 	  }
-	}, _Tr2LightProfileRes.profiles = [], _Tr2LightProfileRes.revision = 0, _Tr2LightProfileRes.TEXEL_BASE = 196608, _Tr2LightProfileRes.TEXELS_PER_PROFILE = 256, _Tr2LightProfileRes)) || _class$8p);
+	}, _Tr2LightProfileRes.profiles = [], _Tr2LightProfileRes.revision = 0, _Tr2LightProfileRes.TEXEL_BASE = 196608, _Tr2LightProfileRes.TEXELS_PER_PROFILE = 256, _Tr2LightProfileRes)) || _class$85);
 
 	class Tw2MotherLode {
 	  constructor() {
@@ -41859,35 +41859,6 @@
 	   */
 	}
 	Tw2LoadingObject.isLoadingObject = true;
-
-	/** Retains float4 instance channels omitted by runtime alpha.0 JSON projection. */
-	function restoreGr2VertexChannels(raw, json) {
-	  // Compatibility with runtime alpha.0: its JSON projector truncates
-	  // Position to xyz and UVs to xy. Traffic uses float4 streams; recover
-	  // their already-decoded floats from the same raw graph (no second read).
-	  for (var i = 0; i < (json.meshes || []).length; i++) {
-	    var _raw$fileInfo$Meshes$;
-	    var vertices = (_raw$fileInfo$Meshes$ = raw.fileInfo.Meshes[i].PrimaryVertexData) === null || _raw$fileInfo$Meshes$ === void 0 ? void 0 : _raw$fileInfo$Meshes$.Vertices;
-	    if (!(vertices !== null && vertices !== void 0 && vertices.length)) continue;
-	    var mesh = json.meshes[i];
-	    var _loop = function () {
-	        var _vertices$__type, _mesh$vertex$name;
-	        _ref2 = _slicedToArray(_ref3, 2);
-	        var name = _ref2[0];
-	        var member = _ref2[1];
-	        var type = (_vertices$__type = vertices.__type) === null || _vertices$__type === void 0 ? void 0 : _vertices$__type.find(x => x.name === member);
-	        if (!type || type.arrayWidth !== 4 || ((_mesh$vertex$name = mesh.vertex[name]) === null || _mesh$vertex$name === void 0 ? void 0 : _mesh$vertex$name.length) === vertices.length * 4) return 1; // continue
-	        // Granny Real32/Real16 are decoded to JS numbers by readRaw.
-	        if (type.type !== 10 && type.type !== 21) throw new Error("Unsupported four-component traffic channel: " + member);
-	        mesh.vertex[name] = vertices.flatMap(vertex => vertex[member].map(Math.fround));
-	        if (name === "position") mesh.vertexCount = vertices.length;
-	      },
-	      _ref2;
-	    for (var _ref3 of [["position", "Position"], ["texcoord0", "TextureCoordinates0"], ["texcoord1", "TextureCoordinates1"]]) {
-	      if (_loop()) continue;
-	    }
-	  }
-	}
 
 	/**
 	 * Granny animation-curve decompression helpers
@@ -52612,14 +52583,289 @@
 	  inspectRaw: inspectGsfRaw
 	});
 
-	var _dec$8o, _dec2$7H, _dec3$72, _dec4$69, _dec5$5t, _dec6$4M, _dec7$44, _class$8o, _class2$7C, _descriptor$7C, _descriptor2$6U, _descriptor3$5Y, _descriptor4$5a, _descriptor5$4q, _descriptor6$3I, _Tw2VertexElement;
-	var Tw2VertexElement = (_dec$8o = define("Tw2VertexElement"), _dec2$7H = uint, _dec3$72 = uint, _dec4$69 = uint, _dec5$5t = uint, _dec6$4M = int32$1, _dec7$44 = uint, _dec$8o(_class$8o = (_class2$7C = (_Tw2VertexElement = class Tw2VertexElement {
+	/** Pure data preparation shared by the worker and main-thread fallback. */
+	function prepareGr2(data) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var raw = CjsGr2Format.readRaw(data);
+	  if (CjsGr2Format.gsf.isRaw(raw)) throw Object.assign(new Error("Granny State files are not render geometry"), {
+	    name: "ErrGr2GeometryExpected"
+	  });
+	  var json = CjsGr2Format.read(raw, {
+	    emit: "json",
+	    unpackTangents: !!options.unpackTangents,
+	    decompressCurves: true
+	  });
+	  restoreGr2VertexChannels(raw, json);
+	  return prepareGr2JSON(json, options);
+	}
+	function normalizeGrannyKeys(obj) {
+	  if (!obj || typeof obj !== "object" || ArrayBuffer.isView(obj) || obj instanceof ArrayBuffer) return obj;
+	  var names = {
+	    controlscaleoffsets: "controlScaleOffsets",
+	    knotscontrols: "knotsControls",
+	    scaleshear: "scaleShear"
+	  };
+	  for (var key of Object.keys(obj)) {
+	    var name = names[key.toLowerCase()] || key;
+	    var value = normalizeGrannyKeys(obj[key]);
+	    if (name !== key) delete obj[key];
+	    obj[name] = value;
+	  }
+	  return obj;
+	}
+	function normalizeGr2Curve(curve, dimension) {
+	  var _curve$uncompressed, _curve$uncompressed2;
+	  if (!curve) throw new Error("Missing GR2 curve");
+	  if (((_curve$uncompressed = curve.uncompressed) === null || _curve$uncompressed === void 0 ? void 0 : _curve$uncompressed.knots) instanceof Float32Array && ((_curve$uncompressed2 = curve.uncompressed) === null || _curve$uncompressed2 === void 0 ? void 0 : _curve$uncompressed2.controls) instanceof Float32Array) return curve;
+	  var input = curve.source ? _objectSpread2(_objectSpread2({}, curve.source), curve.compressed) : curve;
+	  var decoded = curve.uncompressed || (curve.knots && curve.controls ? curve : CjsGr2Format.curves.decodeCurve(input, dimension));
+	  return {
+	    format: input.format,
+	    degree: input.degree || 0,
+	    uncompressed: {
+	      dimension: decoded.dimension || dimension,
+	      knots: Float32Array.from(decoded.knots),
+	      controls: Float32Array.from(decoded.controls)
+	    }
+	  };
+	}
+	function prepareGr2JSON(json) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  normalizeGrannyKeys(json);
+	  if (options.firstMeshOnly !== false) {
+	    var _json$meshes;
+	    (_json$meshes = json.meshes) === null || _json$meshes === void 0 || _json$meshes.splice(1);
+	    for (var model of json.models || []) model.meshBindings = (model.meshBindings || []).filter(index => index === 0);
+	  }
+	  for (var mesh of json.meshes || []) {
+	    var _mesh$vertexCount, _vertex$position;
+	    if (mesh._prepared) continue;
+	    var vertex = mesh.vertex || {},
+	      channels = [];
+	    var count = (_mesh$vertexCount = mesh.vertexCount) != null ? _mesh$vertexCount : (((_vertex$position = vertex.position) === null || _vertex$position === void 0 ? void 0 : _vertex$position.length) || 0) / 3;
+	    var size = 0;
+	    for (var key of Object.keys(vertex)) {
+	      var values = vertex[key];
+	      if (!(values !== null && values !== void 0 && values.length)) continue;
+	      var elements = values.length / count;
+	      if (!Number.isInteger(elements) || elements < 1 || elements > 4) throw new Error("Invalid GR2 vertex channel: " + key);
+	      channels.push({
+	        key,
+	        elements,
+	        offset: size * 4
+	      });
+	      size += elements;
+	    }
+	    // Preserve the legacy white stream until its remaining consumers are audited.
+	    var stride = size + 1,
+	      vertices = new Float32Array(count * stride);
+	    for (var v = 0; v < count; v++) {
+	      var _offset = v * stride;
+	      for (var channel of channels) {
+	        var _values = vertex[channel.key];
+	        for (var e = 0; e < channel.elements; e++) vertices[_offset++] = _values[v * channel.elements + e];
+	      }
+	      vertices[_offset] = 1;
+	    }
+	    var areas = mesh.indices || [];
+	    var indices = new Uint32Array(areas.reduce((n, area) => {
+	      var _area$faces;
+	      return n + (((_area$faces = area.faces) === null || _area$faces === void 0 ? void 0 : _area$faces.length) || 0);
+	    }, 0));
+	    var offset = 0;
+	    for (var area of areas) {
+	      var faces = area.faces || [];
+	      indices.set(faces, offset);
+	      area.faces = indices.subarray(offset, offset + faces.length);
+	      offset += faces.length;
+	    }
+	    mesh._prepared = {
+	      channels,
+	      vertexCount: count,
+	      vertexSize: stride,
+	      vertices,
+	      indices
+	    };
+	    delete mesh.vertex;
+	  }
+	  for (var animation of json.animations || []) {
+	    for (var group of animation.trackGroups || []) {
+	      for (var track of group.transformTracks || []) {
+	        track.orientation = normalizeGr2Curve(track.orientation, 4);
+	        track.position = normalizeGr2Curve(track.position, 3);
+	        track.scaleShear = normalizeGr2Curve(track.scaleShear, 9);
+	      }
+	      for (var _track of group.vectorTracks || []) _track.valueCurve = normalizeGr2Curve(_track.valueCurve, _track.dimension);
+	    }
+	  }
+	  return json;
+	}
+
+	/** Collect unique transferable buffers, preserving aliases between typed views. */
+	function gr2Transfers(value) {
+	  var buffers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Set();
+	  var seen = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Set();
+	  if (!value || typeof value !== "object" || seen.has(value)) return buffers;
+	  seen.add(value);
+	  if (ArrayBuffer.isView(value)) buffers.add(value.buffer);else if (value instanceof ArrayBuffer) buffers.add(value);else for (var child of Object.values(value)) gr2Transfers(child, buffers, seen);
+	  return buffers;
+	}
+
+	/** Retains float4 instance channels omitted by runtime alpha.0 JSON projection. */
+	function restoreGr2VertexChannels(raw, json) {
+	  // Compatibility with runtime alpha.0: its JSON projector truncates
+	  // Position to xyz and UVs to xy. Traffic uses float4 streams; recover
+	  // their already-decoded floats from the same raw graph (no second read).
+	  for (var i = 0; i < (json.meshes || []).length; i++) {
+	    var _raw$fileInfo$Meshes$;
+	    var vertices = (_raw$fileInfo$Meshes$ = raw.fileInfo.Meshes[i].PrimaryVertexData) === null || _raw$fileInfo$Meshes$ === void 0 ? void 0 : _raw$fileInfo$Meshes$.Vertices;
+	    if (!(vertices !== null && vertices !== void 0 && vertices.length)) continue;
+	    var mesh = json.meshes[i];
+	    var _loop = function () {
+	        var _vertices$__type, _mesh$vertex$name;
+	        _ref2 = _slicedToArray(_ref3, 2);
+	        var name = _ref2[0];
+	        var member = _ref2[1];
+	        var type = (_vertices$__type = vertices.__type) === null || _vertices$__type === void 0 ? void 0 : _vertices$__type.find(x => x.name === member);
+	        if (!type || type.arrayWidth !== 4 || ((_mesh$vertex$name = mesh.vertex[name]) === null || _mesh$vertex$name === void 0 ? void 0 : _mesh$vertex$name.length) === vertices.length * 4) return 1; // continue
+	        // Granny Real32/Real16 are decoded to JS numbers by readRaw.
+	        if (type.type !== 10 && type.type !== 21) throw new Error("Unsupported four-component traffic channel: " + member);
+	        mesh.vertex[name] = vertices.flatMap(vertex => vertex[member].map(Math.fround));
+	        if (name === "position") mesh.vertexCount = vertices.length;
+	      },
+	      _ref2;
+	    for (var _ref3 of [["position", "Position"], ["texcoord0", "TextureCoordinates0"], ["texcoord1", "TextureCoordinates1"]]) {
+	      if (_loop()) continue;
+	    }
+	  }
+	}
+
+	var _document$currentScri;
+	var script = typeof document !== "undefined" ? (_document$currentScri = document.currentScript) === null || _document$currentScri === void 0 ? void 0 : _document$currentScri.src : null;
+	var defaultUrl = script ? new URL("ccpwgl2_gr2.worker.js", script).href : null;
+
+	/** Two lazy workers; no decoded-result cache or resource references. */
+	class Gr2WorkerPool {
+	  constructor() {
+	    this.workers = [];
+	    this.queue = [];
+	    this.serial = 0;
+	    this.failed = false;
+	  }
+	  Decode(buffer, options) {
+	    var url = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultUrl;
+	    if (!url || typeof Worker === "undefined" || this.failed) return Promise.resolve().then(() => prepareGr2(buffer, options));
+	    var job;
+	    var promise = new Promise((resolve, reject) => {
+	      job = {
+	        id: ++this.serial,
+	        buffer,
+	        options,
+	        resolve,
+	        reject
+	      };
+	      this.queue.push(job);
+	      this.Pump(url);
+	    });
+	    promise.cancel = () => {
+	      var index = this.queue.indexOf(job);
+	      if (index !== -1) this.queue.splice(index, 1);else {
+	        var slot = this.workers.find(item => item.job === job);
+	        if (!slot) return;
+	        clearTimeout(slot.timer);
+	        slot.worker.terminate();
+	        this.workers.splice(this.workers.indexOf(slot), 1);
+	      }
+	      job.buffer = null;
+	      job.reject(new Error("GR2 decode cancelled"));
+	      this.Pump(url);
+	    };
+	    return promise;
+	  }
+	  Pump(url) {
+	    var _this = this;
+	    var _loop = function () {
+	      var worker;
+	      try {
+	        worker = new Worker(url);
+	      } catch (error) {
+	        _this.Fail(error);
+	        return 1; // break
+	      }
+	      var slot = {
+	        worker,
+	        ready: false,
+	        job: null,
+	        timer: null
+	      };
+	      _this.workers.push(slot);
+	      slot.timer = setTimeout(() => _this.Fail(new Error("GR2 worker startup timed out")), 10000);
+	      worker.onerror = event => _this.Fail(new Error(event.message || "GR2 worker failed"));
+	      worker.onmessageerror = () => _this.Fail(new Error("GR2 worker message failed"));
+	      worker.onmessage = _ref => {
+	        var data = _ref.data;
+	        if (data.ready) {
+	          clearTimeout(slot.timer);
+	          slot.ready = true;
+	        } else if (slot.job && data.id === slot.job.id) {
+	          clearTimeout(slot.timer);
+	          var _job = slot.job;
+	          slot.job = null;
+	          if (data.error) _job.reject(Object.assign(new Error(data.error.message), data.error));else _job.resolve(data.result);
+	        }
+	        _this.Pump(url);
+	      };
+	    };
+	    while (!this.failed && this.workers.length < 2 && this.workers.length < this.queue.length + this.workers.filter(slot => slot.job).length) {
+	      if (_loop()) break;
+	    }
+	    for (var slot of this.workers) {
+	      if (!slot.ready || slot.job || !this.queue.length) continue;
+	      var job = this.queue.shift();
+	      slot.job = job;
+	      try {
+	        slot.worker.postMessage({
+	          id: job.id,
+	          buffer: job.buffer,
+	          options: job.options
+	        }, [job.buffer]);
+	        // The worker owns the bytes now. Do not retain even the detached wrapper.
+	        job.buffer = null;
+	        slot.timer = setTimeout(() => this.Fail(new Error("GR2 worker decode timed out")), 180000);
+	      } catch (error) {
+	        slot.job = null;
+	        job.reject(error);
+	        Promise.resolve().then(() => this.Pump(url));
+	      }
+	    }
+	  }
+	  Fail(error) {
+	    this.failed = true;
+	    for (var slot of this.workers) {
+	      clearTimeout(slot.timer);
+	      slot.worker.terminate();
+	      if (slot.job) slot.job.reject(error);
+	    }
+	    this.workers.length = 0;
+	    // Startup failures leave queued input buffers intact, so fallback is safe.
+	    var _loop2 = function (job) {
+	      Promise.resolve().then(() => prepareGr2(job.buffer, job.options)).then(job.resolve, job.reject);
+	    };
+	    for (var job of this.queue.splice(0)) {
+	      _loop2(job);
+	    }
+	  }
+	}
+	var gr2WorkerPool = new Gr2WorkerPool();
+
+	var _dec$84, _dec2$7n, _dec3$6U, _dec4$61, _dec5$5p, _dec6$4M, _dec7$44, _class$84, _class2$7i, _descriptor$7i, _descriptor2$6K, _descriptor3$5R, _descriptor4$56, _descriptor5$4q, _descriptor6$3I, _Tw2VertexElement;
+	var Tw2VertexElement = (_dec$84 = define("Tw2VertexElement"), _dec2$7n = uint, _dec3$6U = uint, _dec4$61 = uint, _dec5$5p = uint, _dec6$4M = int32$1, _dec7$44 = uint, _dec$84(_class$84 = (_class2$7i = (_Tw2VertexElement = class Tw2VertexElement {
 	  constructor() {
 	    this.customSetter = null;
-	    _initializerDefineProperty(this, "elements", _descriptor$7C, this);
-	    _initializerDefineProperty(this, "location", _descriptor2$6U, this);
-	    _initializerDefineProperty(this, "offset", _descriptor3$5Y, this);
-	    _initializerDefineProperty(this, "type", _descriptor4$5a, this);
+	    _initializerDefineProperty(this, "elements", _descriptor$7i, this);
+	    _initializerDefineProperty(this, "location", _descriptor2$6K, this);
+	    _initializerDefineProperty(this, "offset", _descriptor3$5R, this);
+	    _initializerDefineProperty(this, "type", _descriptor4$56, this);
 	    _initializerDefineProperty(this, "usage", _descriptor5$4q, this);
 	    _initializerDefineProperty(this, "usageIndex", _descriptor6$3I, this);
 	    this._registerIndex = null;
@@ -52725,57 +52971,57 @@
 	  BINORMAL: 4,
 	  BLENDWEIGHT: 7,
 	  BLENDINDICE: 6
-	}, _Tw2VertexElement), _descriptor$7C = _applyDecoratedDescriptor(_class2$7C.prototype, "elements", [_dec2$7H], {
+	}, _Tw2VertexElement), _descriptor$7i = _applyDecoratedDescriptor(_class2$7i.prototype, "elements", [_dec2$7n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor2$6U = _applyDecoratedDescriptor(_class2$7C.prototype, "location", [_dec3$72], {
+	}), _descriptor2$6K = _applyDecoratedDescriptor(_class2$7i.prototype, "location", [_dec3$6U], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor3$5Y = _applyDecoratedDescriptor(_class2$7C.prototype, "offset", [_dec4$69], {
+	}), _descriptor3$5R = _applyDecoratedDescriptor(_class2$7i.prototype, "offset", [_dec4$61], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor4$5a = _applyDecoratedDescriptor(_class2$7C.prototype, "type", [_dec5$5t], {
+	}), _descriptor4$56 = _applyDecoratedDescriptor(_class2$7i.prototype, "type", [_dec5$5p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor5$4q = _applyDecoratedDescriptor(_class2$7C.prototype, "usage", [_dec6$4M], {
+	}), _descriptor5$4q = _applyDecoratedDescriptor(_class2$7i.prototype, "usage", [_dec6$4M], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor6$3I = _applyDecoratedDescriptor(_class2$7C.prototype, "usageIndex", [_dec7$44], {
+	}), _descriptor6$3I = _applyDecoratedDescriptor(_class2$7i.prototype, "usageIndex", [_dec7$44], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7C)) || _class$8o);
+	}), _class2$7i)) || _class$84);
 
-	var _dec$8n, _dec2$7G, _dec3$71, _dec4$68, _class$8n, _class2$7B, _descriptor$7B, _descriptor2$6T;
-	var Tw2VertexDeclaration = (_dec$8n = define("Tw2VertexDeclaration"), _dec2$7G = list("Tw2VertexElement"), _dec3$71 = list("Tw2VertexElement"), _dec4$68 = isPrivate, _dec$8n(_class$8n = (_class2$7B = class Tw2VertexDeclaration {
+	var _dec$83, _dec2$7m, _dec3$6T, _dec4$60, _class$83, _class2$7h, _descriptor$7h, _descriptor2$6J;
+	var Tw2VertexDeclaration = (_dec$83 = define("Tw2VertexDeclaration"), _dec2$7m = list("Tw2VertexElement"), _dec3$6T = list("Tw2VertexElement"), _dec4$60 = isPrivate, _dec$83(_class$83 = (_class2$7h = class Tw2VertexDeclaration {
 	  constructor() {
 	    /** Whether this geometry uses direct Trinity blend semantics. */
 	    this.swapBlendWeightsAndIndices = false;
-	    _initializerDefineProperty(this, "elements", _descriptor$7B, this);
-	    _initializerDefineProperty(this, "elementsSorted", _descriptor2$6T, this);
+	    _initializerDefineProperty(this, "elements", _descriptor$7h, this);
+	    _initializerDefineProperty(this, "elementsSorted", _descriptor2$6J, this);
 	  }
 	  //@meta.uint
 	  //stride = null;
@@ -53043,21 +53289,21 @@
 	    }
 	    return item;
 	  }
-	}, _descriptor$7B = _applyDecoratedDescriptor(_class2$7B.prototype, "elements", [_dec2$7G], {
+	}, _descriptor$7h = _applyDecoratedDescriptor(_class2$7h.prototype, "elements", [_dec2$7m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor2$6T = _applyDecoratedDescriptor(_class2$7B.prototype, "elementsSorted", [_dec3$71, _dec4$68], {
+	}), _descriptor2$6J = _applyDecoratedDescriptor(_class2$7h.prototype, "elementsSorted", [_dec3$6T, _dec4$60], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$7B)) || _class$8n);
+	}), _class2$7h)) || _class$83);
 
 	/**
 	 * Raw vertex element data
@@ -53076,89 +53322,89 @@
 	 * @typedef {Array<RawVertexData>} RawVertexDataArray
 	 */
 
-	var _dec$8m, _dec2$7F, _dec3$70, _dec4$67, _dec5$5s, _dec6$4L, _class$8m, _class2$7A, _descriptor$7A, _descriptor2$6S, _descriptor3$5X, _descriptor4$59, _descriptor5$4p;
-	var Tw2BlendShapeData = (_dec$8m = define("Tw2BlendShapeData"), _dec2$7F = string, _dec3$70 = struct("Tw2VertexDeclaration"), _dec4$67 = vector, _dec5$5s = unknown, _dec6$4L = unknown, _dec$8m(_class$8m = (_class2$7A = class Tw2BlendShapeData {
+	var _dec$82, _dec2$7l, _dec3$6S, _dec4$5$, _dec5$5o, _dec6$4L, _class$82, _class2$7g, _descriptor$7g, _descriptor2$6I, _descriptor3$5Q, _descriptor4$55, _descriptor5$4p;
+	var Tw2BlendShapeData = (_dec$82 = define("Tw2BlendShapeData"), _dec2$7l = string, _dec3$6S = struct("Tw2VertexDeclaration"), _dec4$5$ = vector, _dec5$5o = unknown, _dec6$4L = unknown, _dec$82(_class$82 = (_class2$7g = class Tw2BlendShapeData {
 	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7A, this);
-	    _initializerDefineProperty(this, "declaration", _descriptor2$6S, this);
-	    _initializerDefineProperty(this, "buffers", _descriptor3$5X, this);
-	    _initializerDefineProperty(this, "indexes", _descriptor4$59, this);
+	    _initializerDefineProperty(this, "name", _descriptor$7g, this);
+	    _initializerDefineProperty(this, "declaration", _descriptor2$6I, this);
+	    _initializerDefineProperty(this, "buffers", _descriptor3$5Q, this);
+	    _initializerDefineProperty(this, "indexes", _descriptor4$55, this);
 	    _initializerDefineProperty(this, "weightProxy", _descriptor5$4p, this);
 	  }
-	}, _descriptor$7A = _applyDecoratedDescriptor(_class2$7A.prototype, "name", [_dec2$7F], {
+	}, _descriptor$7g = _applyDecoratedDescriptor(_class2$7g.prototype, "name", [_dec2$7l], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$6S = _applyDecoratedDescriptor(_class2$7A.prototype, "declaration", [_dec3$70], {
+	}), _descriptor2$6I = _applyDecoratedDescriptor(_class2$7g.prototype, "declaration", [_dec3$6S], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return new Tw2VertexDeclaration();
 	  }
-	}), _descriptor3$5X = _applyDecoratedDescriptor(_class2$7A.prototype, "buffers", [_dec4$67], {
+	}), _descriptor3$5Q = _applyDecoratedDescriptor(_class2$7g.prototype, "buffers", [_dec4$5$], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor4$59 = _applyDecoratedDescriptor(_class2$7A.prototype, "indexes", [_dec5$5s], {
+	}), _descriptor4$55 = _applyDecoratedDescriptor(_class2$7g.prototype, "indexes", [_dec5$5o], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor5$4p = _applyDecoratedDescriptor(_class2$7A.prototype, "weightProxy", [_dec6$4L], {
+	}), _descriptor5$4p = _applyDecoratedDescriptor(_class2$7g.prototype, "weightProxy", [_dec6$4L], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7A)) || _class$8m);
+	}), _class2$7g)) || _class$82);
 
-	var _dec$8l, _dec2$7E, _dec3$6$, _dec4$66, _class$8l, _class2$7z, _descriptor$7z, _descriptor2$6R, _descriptor3$5W;
-	var Tw2GeometryAnimation = (_dec$8l = define("Tw2GeometryAnimation"), _dec2$7E = string, _dec3$6$ = float, _dec4$66 = list("Tw2GeometryTrackGroup"), _dec$8l(_class$8l = (_class2$7z = class Tw2GeometryAnimation {
+	var _dec$81, _dec2$7k, _dec3$6R, _dec4$5_, _class$81, _class2$7f, _descriptor$7f, _descriptor2$6H, _descriptor3$5P;
+	var Tw2GeometryAnimation = (_dec$81 = define("Tw2GeometryAnimation"), _dec2$7k = string, _dec3$6R = float, _dec4$5_ = list("Tw2GeometryTrackGroup"), _dec$81(_class$81 = (_class2$7f = class Tw2GeometryAnimation {
 	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7z, this);
-	    _initializerDefineProperty(this, "duration", _descriptor2$6R, this);
-	    _initializerDefineProperty(this, "trackGroups", _descriptor3$5W, this);
+	    _initializerDefineProperty(this, "name", _descriptor$7f, this);
+	    _initializerDefineProperty(this, "duration", _descriptor2$6H, this);
+	    _initializerDefineProperty(this, "trackGroups", _descriptor3$5P, this);
 	  }
-	}, _descriptor$7z = _applyDecoratedDescriptor(_class2$7z.prototype, "name", [_dec2$7E], {
+	}, _descriptor$7f = _applyDecoratedDescriptor(_class2$7f.prototype, "name", [_dec2$7k], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$6R = _applyDecoratedDescriptor(_class2$7z.prototype, "duration", [_dec3$6$], {
+	}), _descriptor2$6H = _applyDecoratedDescriptor(_class2$7f.prototype, "duration", [_dec3$6R], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor3$5W = _applyDecoratedDescriptor(_class2$7z.prototype, "trackGroups", [_dec4$66], {
+	}), _descriptor3$5P = _applyDecoratedDescriptor(_class2$7f.prototype, "trackGroups", [_dec4$5_], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$7z)) || _class$8l);
+	}), _class2$7f)) || _class$81);
 
-	var _dec$8k, _dec2$7D, _dec3$6_, _dec4$65, _dec5$5r, _dec6$4K, _dec7$43, _dec8$3w, _dec9$2$, _dec0$2O, _dec1$2z, _dec10$2d, _dec11$22, _class$8k, _class2$7y, _descriptor$7y, _descriptor2$6Q, _descriptor3$5V, _descriptor4$58, _descriptor5$4o, _descriptor6$3H, _descriptor7$36, _descriptor8$2I, _descriptor9$2t, _descriptor0$2d, _Tw2GeometryBone;
-	var Tw2GeometryBone = (_dec$8k = define("Tw2GeometryBone"), _dec2$7D = string, _dec3$6_ = int32$1, _dec4$65 = vector3, _dec5$5r = quaternion, _dec6$4K = matrix4, _dec7$43 = matrix4, _dec8$3w = matrix4, _dec9$2$ = matrix4, _dec0$2O = float32Array, _dec1$2z = isPrivate, _dec10$2d = plain, _dec11$22 = isPrivate, _dec$8k(_class$8k = (_class2$7y = (_Tw2GeometryBone = class Tw2GeometryBone {
+	var _dec$80, _dec2$7j, _dec3$6Q, _dec4$5Z, _dec5$5n, _dec6$4K, _dec7$43, _dec8$3w, _dec9$2$, _dec0$2O, _dec1$2z, _dec10$2d, _dec11$22, _class$80, _class2$7e, _descriptor$7e, _descriptor2$6G, _descriptor3$5O, _descriptor4$54, _descriptor5$4o, _descriptor6$3H, _descriptor7$36, _descriptor8$2I, _descriptor9$2t, _descriptor0$2d, _Tw2GeometryBone;
+	var Tw2GeometryBone = (_dec$80 = define("Tw2GeometryBone"), _dec2$7j = string, _dec3$6Q = int32$1, _dec4$5Z = vector3, _dec5$5n = quaternion, _dec6$4K = matrix4, _dec7$43 = matrix4, _dec8$3w = matrix4, _dec9$2$ = matrix4, _dec0$2O = float32Array, _dec1$2z = isPrivate, _dec10$2d = plain, _dec11$22 = isPrivate, _dec$80(_class$80 = (_class2$7e = (_Tw2GeometryBone = class Tw2GeometryBone {
 	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7y, this);
-	    _initializerDefineProperty(this, "parentIndex", _descriptor2$6Q, this);
-	    _initializerDefineProperty(this, "position", _descriptor3$5V, this);
-	    _initializerDefineProperty(this, "orientation", _descriptor4$58, this);
+	    _initializerDefineProperty(this, "name", _descriptor$7e, this);
+	    _initializerDefineProperty(this, "parentIndex", _descriptor2$6G, this);
+	    _initializerDefineProperty(this, "position", _descriptor3$5O, this);
+	    _initializerDefineProperty(this, "orientation", _descriptor4$54, this);
 	    _initializerDefineProperty(this, "scaleShear", _descriptor5$4o, this);
 	    _initializerDefineProperty(this, "localTransform", _descriptor6$3H, this);
 	    _initializerDefineProperty(this, "worldTransform", _descriptor7$36, this);
@@ -53252,123 +53498,123 @@
 	   */
 	}, _Tw2GeometryBone.global = {
 	  mat4_0: mat4$1.create()
-	}, _Tw2GeometryBone), _descriptor$7y = _applyDecoratedDescriptor(_class2$7y.prototype, "name", [_dec2$7D], {
+	}, _Tw2GeometryBone), _descriptor$7e = _applyDecoratedDescriptor(_class2$7e.prototype, "name", [_dec2$7j], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$6Q = _applyDecoratedDescriptor(_class2$7y.prototype, "parentIndex", [_dec3$6_], {
+	}), _descriptor2$6G = _applyDecoratedDescriptor(_class2$7e.prototype, "parentIndex", [_dec3$6Q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor3$5V = _applyDecoratedDescriptor(_class2$7y.prototype, "position", [_dec4$65], {
+	}), _descriptor3$5O = _applyDecoratedDescriptor(_class2$7e.prototype, "position", [_dec4$5Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.create();
 	  }
-	}), _descriptor4$58 = _applyDecoratedDescriptor(_class2$7y.prototype, "orientation", [_dec5$5r], {
+	}), _descriptor4$54 = _applyDecoratedDescriptor(_class2$7e.prototype, "orientation", [_dec5$5n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return quat$1.create();
 	  }
-	}), _descriptor5$4o = _applyDecoratedDescriptor(_class2$7y.prototype, "scaleShear", [_dec6$4K], {
+	}), _descriptor5$4o = _applyDecoratedDescriptor(_class2$7e.prototype, "scaleShear", [_dec6$4K], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat3.create();
 	  }
-	}), _descriptor6$3H = _applyDecoratedDescriptor(_class2$7y.prototype, "localTransform", [_dec7$43], {
+	}), _descriptor6$3H = _applyDecoratedDescriptor(_class2$7e.prototype, "localTransform", [_dec7$43], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor7$36 = _applyDecoratedDescriptor(_class2$7y.prototype, "worldTransform", [_dec8$3w], {
+	}), _descriptor7$36 = _applyDecoratedDescriptor(_class2$7e.prototype, "worldTransform", [_dec8$3w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor8$2I = _applyDecoratedDescriptor(_class2$7y.prototype, "worldTransformInv", [_dec9$2$], {
+	}), _descriptor8$2I = _applyDecoratedDescriptor(_class2$7e.prototype, "worldTransformInv", [_dec9$2$], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor9$2t = _applyDecoratedDescriptor(_class2$7y.prototype, "boundingBox", [_dec0$2O, _dec1$2z], {
+	}), _descriptor9$2t = _applyDecoratedDescriptor(_class2$7e.prototype, "boundingBox", [_dec0$2O, _dec1$2z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor0$2d = _applyDecoratedDescriptor(_class2$7y.prototype, "extendedData", [_dec10$2d, _dec11$22], {
+	}), _descriptor0$2d = _applyDecoratedDescriptor(_class2$7e.prototype, "extendedData", [_dec10$2d, _dec11$22], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7y)) || _class$8k);
+	}), _class2$7e)) || _class$80);
 
-	var _dec$8j, _dec2$7C, _dec3$6Z, _dec4$64, _dec5$5q, _class$8j, _class2$7x, _descriptor$7x, _descriptor2$6P, _descriptor3$5U, _descriptor4$57;
-	var Tw2GeometryCurve = (_dec$8j = define("Tw2GeometryCurve"), _dec2$7C = float, _dec3$6Z = float, _dec4$64 = vector, _dec5$5q = vector, _dec$8j(_class$8j = (_class2$7x = class Tw2GeometryCurve {
+	var _dec$7$, _dec2$7i, _dec3$6P, _dec4$5Y, _dec5$5m, _class$7$, _class2$7d, _descriptor$7d, _descriptor2$6F, _descriptor3$5N, _descriptor4$53;
+	var Tw2GeometryCurve = (_dec$7$ = define("Tw2GeometryCurve"), _dec2$7i = float, _dec3$6P = float, _dec4$5Y = vector, _dec5$5m = vector, _dec$7$(_class$7$ = (_class2$7d = class Tw2GeometryCurve {
 	  constructor() {
-	    _initializerDefineProperty(this, "dimension", _descriptor$7x, this);
-	    _initializerDefineProperty(this, "degree", _descriptor2$6P, this);
-	    _initializerDefineProperty(this, "knots", _descriptor3$5U, this);
-	    _initializerDefineProperty(this, "controls", _descriptor4$57, this);
+	    _initializerDefineProperty(this, "dimension", _descriptor$7d, this);
+	    _initializerDefineProperty(this, "degree", _descriptor2$6F, this);
+	    _initializerDefineProperty(this, "knots", _descriptor3$5N, this);
+	    _initializerDefineProperty(this, "controls", _descriptor4$53, this);
 	  }
-	}, _descriptor$7x = _applyDecoratedDescriptor(_class2$7x.prototype, "dimension", [_dec2$7C], {
+	}, _descriptor$7d = _applyDecoratedDescriptor(_class2$7d.prototype, "dimension", [_dec2$7i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor2$6P = _applyDecoratedDescriptor(_class2$7x.prototype, "degree", [_dec3$6Z], {
+	}), _descriptor2$6F = _applyDecoratedDescriptor(_class2$7d.prototype, "degree", [_dec3$6P], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor3$5U = _applyDecoratedDescriptor(_class2$7x.prototype, "knots", [_dec4$64], {
+	}), _descriptor3$5N = _applyDecoratedDescriptor(_class2$7d.prototype, "knots", [_dec4$5Y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor4$57 = _applyDecoratedDescriptor(_class2$7x.prototype, "controls", [_dec5$5q], {
+	}), _descriptor4$53 = _applyDecoratedDescriptor(_class2$7d.prototype, "controls", [_dec5$5m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7x)) || _class$8j);
+	}), _class2$7d)) || _class$7$);
 
-	var _dec$8i, _dec2$7B, _dec3$6Y, _dec4$63, _dec5$5p, _dec6$4J, _dec7$42, _dec8$3v, _class$8i, _class2$7w, _descriptor$7w, _descriptor2$6O, _descriptor3$5T, _descriptor4$56, _descriptor5$4n, _descriptor6$3G, _descriptor7$35;
-	var Tw2GeometryMeshArea = (_dec$8i = define("Tw2GeometryMeshArea"), _dec2$7B = string, _dec3$6Y = uint, _dec4$63 = uint, _dec5$5p = vector3, _dec6$4J = vector3, _dec7$42 = vector3, _dec8$3v = float, _dec$8i(_class$8i = (_class2$7w = class Tw2GeometryMeshArea {
+	var _dec$7_, _dec2$7h, _dec3$6O, _dec4$5X, _dec5$5l, _dec6$4J, _dec7$42, _dec8$3v, _class$7_, _class2$7c, _descriptor$7c, _descriptor2$6E, _descriptor3$5M, _descriptor4$52, _descriptor5$4n, _descriptor6$3G, _descriptor7$35;
+	var Tw2GeometryMeshArea = (_dec$7_ = define("Tw2GeometryMeshArea"), _dec2$7h = string, _dec3$6O = uint, _dec4$5X = uint, _dec5$5l = vector3, _dec6$4J = vector3, _dec7$42 = vector3, _dec8$3v = float, _dec$7_(_class$7_ = (_class2$7c = class Tw2GeometryMeshArea {
 	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7w, this);
-	    _initializerDefineProperty(this, "start", _descriptor2$6O, this);
-	    _initializerDefineProperty(this, "count", _descriptor3$5T, this);
-	    _initializerDefineProperty(this, "minBounds", _descriptor4$56, this);
+	    _initializerDefineProperty(this, "name", _descriptor$7c, this);
+	    _initializerDefineProperty(this, "start", _descriptor2$6E, this);
+	    _initializerDefineProperty(this, "count", _descriptor3$5M, this);
+	    _initializerDefineProperty(this, "minBounds", _descriptor4$52, this);
 	    _initializerDefineProperty(this, "maxBounds", _descriptor5$4n, this);
 	    _initializerDefineProperty(this, "boundsSpherePosition", _descriptor6$3G, this);
 	    _initializerDefineProperty(this, "boundsSphereRadius", _descriptor7$35, this);
@@ -53390,64 +53636,64 @@
 	  GetBoundingSphere(out) {
 	    return sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
 	  }
-	}, _descriptor$7w = _applyDecoratedDescriptor(_class2$7w.prototype, "name", [_dec2$7B], {
+	}, _descriptor$7c = _applyDecoratedDescriptor(_class2$7c.prototype, "name", [_dec2$7h], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$6O = _applyDecoratedDescriptor(_class2$7w.prototype, "start", [_dec3$6Y], {
+	}), _descriptor2$6E = _applyDecoratedDescriptor(_class2$7c.prototype, "start", [_dec3$6O], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor3$5T = _applyDecoratedDescriptor(_class2$7w.prototype, "count", [_dec4$63], {
+	}), _descriptor3$5M = _applyDecoratedDescriptor(_class2$7c.prototype, "count", [_dec4$5X], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor4$56 = _applyDecoratedDescriptor(_class2$7w.prototype, "minBounds", [_dec5$5p], {
+	}), _descriptor4$52 = _applyDecoratedDescriptor(_class2$7c.prototype, "minBounds", [_dec5$5l], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.fromValues(0, 0, 0);
 	  }
-	}), _descriptor5$4n = _applyDecoratedDescriptor(_class2$7w.prototype, "maxBounds", [_dec6$4J], {
+	}), _descriptor5$4n = _applyDecoratedDescriptor(_class2$7c.prototype, "maxBounds", [_dec6$4J], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.fromValues(0, 0, 0);
 	  }
-	}), _descriptor6$3G = _applyDecoratedDescriptor(_class2$7w.prototype, "boundsSpherePosition", [_dec7$42], {
+	}), _descriptor6$3G = _applyDecoratedDescriptor(_class2$7c.prototype, "boundsSpherePosition", [_dec7$42], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.create();
 	  }
-	}), _descriptor7$35 = _applyDecoratedDescriptor(_class2$7w.prototype, "boundsSphereRadius", [_dec8$3v], {
+	}), _descriptor7$35 = _applyDecoratedDescriptor(_class2$7c.prototype, "boundsSphereRadius", [_dec8$3v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _class2$7w)) || _class$8i);
+	}), _class2$7c)) || _class$7_);
 
-	var _dec$8h, _dec2$7A, _dec3$6X, _dec4$62, _dec5$5o, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$M, _dec20$J, _dec21$E, _dec22$B, _dec23$w, _dec24$v, _class$8h, _class2$7v, _descriptor$7v, _descriptor2$6N, _descriptor3$5S, _descriptor4$55, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
-	var Tw2GeometryMesh = (_dec$8h = define("Tw2GeometryMesh"), _dec2$7A = string, _dec3$6X = struct("Tw2VertexDeclaration"), _dec4$62 = list("Tw2GeometryMeshArea"), _dec5$5o = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$M = vector3, _dec20$J = float, _dec21$E = list("String"), _dec22$B = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$8h(_class$8h = (_class2$7v = (_Tw2GeometryMesh = class Tw2GeometryMesh {
+	var _dec$7Z, _dec2$7g, _dec3$6N, _dec4$5W, _dec5$5k, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$M, _dec20$J, _dec21$E, _dec22$B, _dec23$w, _dec24$v, _class$7Z, _class2$7b, _descriptor$7b, _descriptor2$6D, _descriptor3$5L, _descriptor4$51, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
+	var Tw2GeometryMesh = (_dec$7Z = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$M = vector3, _dec20$J = float, _dec21$E = list("String"), _dec22$B = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7Z(_class$7Z = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
 	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7v, this);
-	    _initializerDefineProperty(this, "declaration", _descriptor2$6N, this);
-	    _initializerDefineProperty(this, "areas", _descriptor3$5S, this);
-	    _initializerDefineProperty(this, "buffer", _descriptor4$55, this);
+	    _initializerDefineProperty(this, "name", _descriptor$7b, this);
+	    _initializerDefineProperty(this, "declaration", _descriptor2$6D, this);
+	    _initializerDefineProperty(this, "areas", _descriptor3$5L, this);
+	    _initializerDefineProperty(this, "buffer", _descriptor4$51, this);
 	    _initializerDefineProperty(this, "bufferLength", _descriptor5$4m, this);
 	    _initializerDefineProperty(this, "bufferData", _descriptor6$3F, this);
 	    _initializerDefineProperty(this, "indexes", _descriptor7$34, this);
@@ -54283,126 +54529,126 @@
 	  vec4_5: vec4.create(),
 	  box3_0: box3.create(),
 	  lne3_0: lne3.create()
-	}, _Tw2GeometryMesh), _descriptor$7v = _applyDecoratedDescriptor(_class2$7v.prototype, "name", [_dec2$7A], {
+	}, _Tw2GeometryMesh), _descriptor$7b = _applyDecoratedDescriptor(_class2$7b.prototype, "name", [_dec2$7g], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$6N = _applyDecoratedDescriptor(_class2$7v.prototype, "declaration", [_dec3$6X], {
+	}), _descriptor2$6D = _applyDecoratedDescriptor(_class2$7b.prototype, "declaration", [_dec3$6N], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return new Tw2VertexDeclaration();
 	  }
-	}), _descriptor3$5S = _applyDecoratedDescriptor(_class2$7v.prototype, "areas", [_dec4$62], {
+	}), _descriptor3$5L = _applyDecoratedDescriptor(_class2$7b.prototype, "areas", [_dec4$5W], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor4$55 = _applyDecoratedDescriptor(_class2$7v.prototype, "buffer", [_dec5$5o, _dec6$4I], {
+	}), _descriptor4$51 = _applyDecoratedDescriptor(_class2$7b.prototype, "buffer", [_dec5$5k, _dec6$4I], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor5$4m = _applyDecoratedDescriptor(_class2$7v.prototype, "bufferLength", [_dec7$41, _dec8$3u], {
+	}), _descriptor5$4m = _applyDecoratedDescriptor(_class2$7b.prototype, "bufferLength", [_dec7$41, _dec8$3u], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor6$3F = _applyDecoratedDescriptor(_class2$7v.prototype, "bufferData", [_dec9$2_, _dec0$2N, _dec1$2y], {
+	}), _descriptor6$3F = _applyDecoratedDescriptor(_class2$7b.prototype, "bufferData", [_dec9$2_, _dec0$2N, _dec1$2y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor7$34 = _applyDecoratedDescriptor(_class2$7v.prototype, "indexes", [_dec10$2c, _dec11$21], {
+	}), _descriptor7$34 = _applyDecoratedDescriptor(_class2$7b.prototype, "indexes", [_dec10$2c, _dec11$21], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor8$2H = _applyDecoratedDescriptor(_class2$7v.prototype, "indexData", [_dec12$1P, _dec13$1C, _dec14$1q], {
+	}), _descriptor8$2H = _applyDecoratedDescriptor(_class2$7b.prototype, "indexData", [_dec12$1P, _dec13$1C, _dec14$1q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor9$2s = _applyDecoratedDescriptor(_class2$7v.prototype, "indexType", [_dec15$1k, _dec16$19], {
+	}), _descriptor9$2s = _applyDecoratedDescriptor(_class2$7b.prototype, "indexType", [_dec15$1k, _dec16$19], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor0$2c = _applyDecoratedDescriptor(_class2$7v.prototype, "minBounds", [_dec17$12], {
+	}), _descriptor0$2c = _applyDecoratedDescriptor(_class2$7b.prototype, "minBounds", [_dec17$12], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.fromValues(0, 0, 0);
 	  }
-	}), _descriptor1$1S = _applyDecoratedDescriptor(_class2$7v.prototype, "maxBounds", [_dec18$X], {
+	}), _descriptor1$1S = _applyDecoratedDescriptor(_class2$7b.prototype, "maxBounds", [_dec18$X], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.fromValues(0, 0, 0);
 	  }
-	}), _descriptor10$1F = _applyDecoratedDescriptor(_class2$7v.prototype, "boundsSpherePosition", [_dec19$M], {
+	}), _descriptor10$1F = _applyDecoratedDescriptor(_class2$7b.prototype, "boundsSpherePosition", [_dec19$M], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$2.create();
 	  }
-	}), _descriptor11$1u = _applyDecoratedDescriptor(_class2$7v.prototype, "boundsSphereRadius", [_dec20$J], {
+	}), _descriptor11$1u = _applyDecoratedDescriptor(_class2$7b.prototype, "boundsSphereRadius", [_dec20$J], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor12$1m = _applyDecoratedDescriptor(_class2$7v.prototype, "boneBindings", [_dec21$E], {
+	}), _descriptor12$1m = _applyDecoratedDescriptor(_class2$7b.prototype, "boneBindings", [_dec21$E], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor13$1g = _applyDecoratedDescriptor(_class2$7v.prototype, "boneBounds", [_dec22$B], {
+	}), _descriptor13$1g = _applyDecoratedDescriptor(_class2$7b.prototype, "boneBounds", [_dec22$B], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor14$17 = _applyDecoratedDescriptor(_class2$7v.prototype, "blendShapes", [_dec23$w], {
+	}), _descriptor14$17 = _applyDecoratedDescriptor(_class2$7b.prototype, "blendShapes", [_dec23$w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor15$V = _applyDecoratedDescriptor(_class2$7v.prototype, "forceSystemMirror", [_dec24$v], {
+	}), _descriptor15$V = _applyDecoratedDescriptor(_class2$7b.prototype, "forceSystemMirror", [_dec24$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _class2$7v)) || _class$8h);
+	}), _class2$7b)) || _class$7Z);
 	class ErrSystemMirrorDisabled extends Tw2Error {
 	  constructor(data) {
 	    super(data, "System mirror is required but has been disabled");
@@ -54414,34 +54660,34 @@
 	  }
 	}
 
-	var _dec$8g, _dec2$7z, _dec3$6W, _class$8g, _class2$7u, _descriptor$7u, _descriptor2$6M;
-	var Tw2GeometryMeshBinding = (_dec$8g = define("Tw2GeometryMeshBinding"), _dec2$7z = struct("Tw2GeometryMesh"), _dec3$6W = list("Tw2GeometryBone"), _dec$8g(_class$8g = (_class2$7u = class Tw2GeometryMeshBinding {
+	var _dec$7Y, _dec2$7f, _dec3$6M, _class$7Y, _class2$7a, _descriptor$7a, _descriptor2$6C;
+	var Tw2GeometryMeshBinding = (_dec$7Y = define("Tw2GeometryMeshBinding"), _dec2$7f = struct("Tw2GeometryMesh"), _dec3$6M = list("Tw2GeometryBone"), _dec$7Y(_class$7Y = (_class2$7a = class Tw2GeometryMeshBinding {
 	  constructor() {
-	    _initializerDefineProperty(this, "mesh", _descriptor$7u, this);
-	    _initializerDefineProperty(this, "bones", _descriptor2$6M, this);
+	    _initializerDefineProperty(this, "mesh", _descriptor$7a, this);
+	    _initializerDefineProperty(this, "bones", _descriptor2$6C, this);
 	  }
-	}, _descriptor$7u = _applyDecoratedDescriptor(_class2$7u.prototype, "mesh", [_dec2$7z], {
+	}, _descriptor$7a = _applyDecoratedDescriptor(_class2$7a.prototype, "mesh", [_dec2$7f], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor2$6M = _applyDecoratedDescriptor(_class2$7u.prototype, "bones", [_dec3$6W], {
+	}), _descriptor2$6C = _applyDecoratedDescriptor(_class2$7a.prototype, "bones", [_dec3$6M], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$7u)) || _class$8g);
+	}), _class2$7a)) || _class$7Y);
 
-	var _dec$8f, _dec2$7y, _dec3$6V, _dec4$61, _class$8f, _class2$7t, _descriptor$7t, _descriptor2$6L, _descriptor3$5R;
-	var Tw2GeometryModel = (_dec$8f = define("Tw2GeometryModel"), _dec2$7y = string, _dec3$6V = list("Tw2GeometryMeshBinding"), _dec4$61 = struct("Tw2GeometrySkeleton"), _dec$8f(_class$8f = (_class2$7t = class Tw2GeometryModel {
+	var _dec$7X, _dec2$7e, _dec3$6L, _dec4$5V, _class$7X, _class2$79, _descriptor$79, _descriptor2$6B, _descriptor3$5K;
+	var Tw2GeometryModel = (_dec$7X = define("Tw2GeometryModel"), _dec2$7e = string, _dec3$6L = list("Tw2GeometryMeshBinding"), _dec4$5V = struct("Tw2GeometrySkeleton"), _dec$7X(_class$7X = (_class2$79 = class Tw2GeometryModel {
 	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7t, this);
-	    _initializerDefineProperty(this, "meshBindings", _descriptor2$6L, this);
-	    _initializerDefineProperty(this, "skeleton", _descriptor3$5R, this);
+	    _initializerDefineProperty(this, "name", _descriptor$79, this);
+	    _initializerDefineProperty(this, "meshBindings", _descriptor2$6B, this);
+	    _initializerDefineProperty(this, "skeleton", _descriptor3$5K, this);
 	  }
 	  /**
 	   * Finds a bone by it's name
@@ -54459,34 +54705,34 @@
 	    }
 	    return null;
 	  }
-	}, _descriptor$7t = _applyDecoratedDescriptor(_class2$7t.prototype, "name", [_dec2$7y], {
+	}, _descriptor$79 = _applyDecoratedDescriptor(_class2$79.prototype, "name", [_dec2$7e], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$6L = _applyDecoratedDescriptor(_class2$7t.prototype, "meshBindings", [_dec3$6V], {
+	}), _descriptor2$6B = _applyDecoratedDescriptor(_class2$79.prototype, "meshBindings", [_dec3$6L], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor3$5R = _applyDecoratedDescriptor(_class2$7t.prototype, "skeleton", [_dec4$61], {
+	}), _descriptor3$5K = _applyDecoratedDescriptor(_class2$79.prototype, "skeleton", [_dec4$5V], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7t)) || _class$8f);
+	}), _class2$79)) || _class$7X);
 
-	var _dec$8e, _dec2$7x, _dec3$6U, _dec4$60, _class$8e, _class2$7s, _descriptor$7s, _descriptor2$6K;
-	var Tw2GeometrySkeleton = (_dec$8e = define("Tw2GeometrySkeleton"), _dec2$7x = list("Tw2GeometryBone"), _dec3$6U = plain, _dec4$60 = isPrivate, _dec$8e(_class$8e = (_class2$7s = class Tw2GeometrySkeleton {
+	var _dec$7W, _dec2$7d, _dec3$6K, _dec4$5U, _class$7W, _class2$78, _descriptor$78, _descriptor2$6A;
+	var Tw2GeometrySkeleton = (_dec$7W = define("Tw2GeometrySkeleton"), _dec2$7d = list("Tw2GeometryBone"), _dec3$6K = plain, _dec4$5U = isPrivate, _dec$7W(_class$7W = (_class2$78 = class Tw2GeometrySkeleton {
 	  constructor() {
-	    _initializerDefineProperty(this, "bones", _descriptor$7s, this);
-	    _initializerDefineProperty(this, "trackMasks", _descriptor2$6K, this);
+	    _initializerDefineProperty(this, "bones", _descriptor$78, this);
+	    _initializerDefineProperty(this, "trackMasks", _descriptor2$6A, this);
 	  }
 	  /**
 	   * Builds named track masks from each bone's extendedData.
@@ -54518,1845 +54764,89 @@
 	    }
 	    return this.trackMasks;
 	  }
-	}, _descriptor$7s = _applyDecoratedDescriptor(_class2$7s.prototype, "bones", [_dec2$7x], {
+	}, _descriptor$78 = _applyDecoratedDescriptor(_class2$78.prototype, "bones", [_dec2$7d], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor2$6K = _applyDecoratedDescriptor(_class2$7s.prototype, "trackMasks", [_dec3$6U, _dec4$60], {
+	}), _descriptor2$6A = _applyDecoratedDescriptor(_class2$78.prototype, "trackMasks", [_dec3$6K, _dec4$5U], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
-	  }
-	}), _class2$7s)) || _class$8e);
-
-	var _dec$8d, _dec2$7w, _dec3$6T, _dec4$5$, _class$8d, _class2$7r, _descriptor$7r, _descriptor2$6J, _descriptor3$5Q;
-	var Tw2GeometryTrackGroup = (_dec$8d = define("Tw2GeometryTrackGroup"), _dec2$7w = string, _dec3$6T = struct("Tw2GeometryModel"), _dec4$5$ = list("Tw2GeometryTransformTrack"), _dec$8d(_class$8d = (_class2$7r = class Tw2GeometryTrackGroup {
-	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7r, this);
-	    _initializerDefineProperty(this, "model", _descriptor2$6J, this);
-	    _initializerDefineProperty(this, "transformTracks", _descriptor3$5Q, this);
-	  }
-	}, _descriptor$7r = _applyDecoratedDescriptor(_class2$7r.prototype, "name", [_dec2$7w], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return "";
-	  }
-	}), _descriptor2$6J = _applyDecoratedDescriptor(_class2$7r.prototype, "model", [_dec3$6T], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return null;
-	  }
-	}), _descriptor3$5Q = _applyDecoratedDescriptor(_class2$7r.prototype, "transformTracks", [_dec4$5$], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return [];
-	  }
-	}), _class2$7r)) || _class$8d);
-
-	var _dec$8c, _dec2$7v, _dec3$6S, _dec4$5_, _dec5$5n, _class$8c, _class2$7q, _descriptor$7q, _descriptor2$6I, _descriptor3$5P, _descriptor4$54;
-	var Tw2GeometryTransformTrack = (_dec$8c = define("Tw2GeometryTransformTrack"), _dec2$7v = string, _dec3$6S = struct("Tw2GeometryCurve"), _dec4$5_ = struct("Tw2GeometryCurve"), _dec5$5n = unknown, _dec$8c(_class$8c = (_class2$7q = class Tw2GeometryTransformTrack {
-	  constructor() {
-	    _initializerDefineProperty(this, "name", _descriptor$7q, this);
-	    _initializerDefineProperty(this, "position", _descriptor2$6I, this);
-	    _initializerDefineProperty(this, "orientation", _descriptor3$5P, this);
-	    _initializerDefineProperty(this, "scaleShear", _descriptor4$54, this);
-	  }
-	}, _descriptor$7q = _applyDecoratedDescriptor(_class2$7q.prototype, "name", [_dec2$7v], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return "";
-	  }
-	}), _descriptor2$6I = _applyDecoratedDescriptor(_class2$7q.prototype, "position", [_dec3$6S], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return null;
-	  }
-	}), _descriptor3$5P = _applyDecoratedDescriptor(_class2$7q.prototype, "orientation", [_dec4$5_], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return null;
-	  }
-	}), _descriptor4$54 = _applyDecoratedDescriptor(_class2$7q.prototype, "scaleShear", [_dec5$5n], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return null;
-	  }
-	}), _class2$7q)) || _class$8c);
-
-	var _dec$8b, _dec2$7u, _dec3$6R, _dec4$5Z, _class$8b, _class2$7p, _descriptor$7p, _descriptor2$6H, _Gr2Curve;
-	var Gr2Curve2 = (_dec$8b = define("Gr2Curve2"), _dec2$7u = int32$1, _dec3$6R = uint, _dec4$5Z = uint, _dec$8b(_class$8b = (_class2$7p = (_Gr2Curve = class Gr2Curve2 extends Model$1 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "dimension", _descriptor$7p, this);
-	    _initializerDefineProperty(this, "degree", _descriptor2$6H, this);
-	  }
-	  get format() {
-	    return this.constructor.format;
-	  }
-	  set format(v) {
-	    if (this.constructor.format !== v) {
-	      throw new ReferenceError("Invalid format id \"".concat(v, "\" for curve, expected \"").concat(this.constructor.format, "\""));
-	    }
-	  }
-
-	  /**
-	   * Gets the curve's duration
-	   * @return {Number}
-	   */
-	  GetDuration() {
-	    return this.GetKnots()[this.GetKnotCount() - 1];
-	  }
-
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    throw new ErrFeatureNotImplemented({
-	      feature: "GetKnotCount"
-	    });
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    throw new ErrFeatureNotImplemented({
-	      feature: "GetKnots"
-	    });
-	  }
-
-	  /**
-	   * Gets points
-	   * returns {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    throw new ErrGr2CurveDataVec3NotSupported();
-	  }
-
-	  /**
-	   * Gets quaternions
-	   * returns {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    throw new ErrGr2CurveDataQuatNotSupported();
-	  }
-
-	  /**
-	   * Gets matrices
-	   * returns {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    throw new ErrGr2CurveDataMat3NotSupported();
-	  }
-
-	  /**
-	   * Gets a Tw2GeometryCurve
-	   * @param {Number} dimension
-	   * @param {Boolean} [purge]
-	   * @return {Tw2GeometryCurve}
-	   */
-	  CreateTw2GeometryCurve(dimension, purge) {
-	    var controls;
-	    switch (dimension) {
-	      case 3:
-	        controls = this.GetVec3Buffer();
-	        break;
-	      case 4:
-	        controls = this.GetQuatBuffer();
-	        break;
-	      case 9:
-	        controls = this.GetMat3Buffer();
-	        break;
-	      default:
-	        throw new ErrGr2CurveDataDimensionInvalid({
-	          dimension
-	        });
-	    }
-	    var curve = new Tw2GeometryCurve();
-	    curve.format = this.format;
-	    curve.dimension = dimension;
-	    curve.degree = this.degree;
-	    curve.knots = Array.from(this.GetKnots());
-	    curve.controls = Array.from(controls);
-	    if (Gr2Curve2.VALIDATE) {
-	      var issues = Gr2Curve2.ValidateDecodedCurve(curve.knots, curve.controls, curve.dimension);
-
-	      // One control point per knot. This is not the B-spline relation
-	      // `knots - degree - 1`, and using that here warned on every curve
-	      // ever decoded: a decoded Granny curve carries one knot per control
-	      // point rather than a padded knot vector.
-	      //
-	      // Measured on one hull, 1,147 warnings across 50 shapes. 790 were
-	      // identity and constant curves (formats 2, 4 and 5), which hold
-	      // exactly one knot and one control by construction and were told to
-	      // hold none. The rest were real keyframed curves at degree 2, where
-	      // the count was over by exactly `degree + 1` — the padding the
-	      // formula assumed and the data does not have.
-	      //
-	      // The canonical decoder agrees: runtime-resource builds an identity
-	      // curve as `{ knots: [ 0 ], controls: identityControls(dim) }` and
-	      // has no count check at all. Every sampler here reads the two as
-	      // parallel arrays, so this is the invariant they actually rely on,
-	      // and a mismatch is real corruption rather than a convention clash.
-	      var controlPoints = curve.controls.length / curve.dimension;
-	      if (controlPoints !== curve.knots.length) {
-	        issues.push("Control point count mismatch: ".concat(controlPoints, " controls for ").concat(curve.knots.length, " knots"));
-	      }
-	      if (issues.length) {
-	        // Keep this cheap and explicit; only runs when VALIDATE is enabled
-	        // eslint-disable-next-line no-console
-	        console.warn("Granny curve validation issues", {
-	          format: curve.format,
-	          dimension: curve.dimension,
-	          degree: curve.degree,
-	          issues
-	        });
-	      }
-	    }
-	    if (purge) {
-	      var wasPurged = false;
-	      var arr = Array.from(curve.controls).reverse();
-	      var k = Array.from(curve.knots).reverse();
-	      var count = arr.length / dimension - dimension;
-	      for (var i = 0; i < count; i++) {
-	        var c = [],
-	          n = [];
-	        for (var x = 0; x < dimension; x++) {
-	          c[x] = arr[i * dimension + x];
-	          n[x] = arr[(i + 1) * dimension + x];
-	        }
-	        if (isVectorEqual$1(c, n)) {
-	          wasPurged = true;
-	          arr.splice(0, dimension);
-	          k.splice(0, 1);
-	          i--;
-	        }
-	      }
-	      if (wasPurged) {
-	        curve.knots = k.reverse();
-	        curve.controls = arr.reverse();
-	      }
-	    }
-	    return curve;
-	  }
-
-	  /**
-	   * Gets knots from controls
-	   * @param {TypedArray} controls
-	   * @param {Number} count
-	   * @param {Number} [scale=1]
-	   * @return {TypedArray}
-	   */
-	  static GetKnotsFromControl(controls, count) {
-	    var scale = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-	    var out = new Float32Array(count);
-	    for (var i = 0; i < count; i++) out[i] = controls[i] / scale;
-	    return out;
-	  }
-
-	  /**
-	   *
-	   * @param {TypedArray} controls
-	   * @param {Number} count
-	   * @param {Number} oneOverKnotScaleTrunc
-	   * @return {Float32Array}
-	   */
-	  static GetKnotsFromControlWithOneOverKnotScaleTrunc(controls, count, oneOverKnotScaleTrunc) {
-	    return this.GetKnotsFromControl(controls, count, this.ConvertOneOverKnotScaleTrunc(oneOverKnotScaleTrunc));
-	  }
-
-	  /**
-	   *
-	   * @param {Number} oneOverKnotScaleTrunc
-	   * @return {Number}
-	   */
-	  static ConvertOneOverKnotScaleTrunc(oneOverKnotScaleTrunc) {
-	    return new Float32Array(new Uint32Array([oneOverKnotScaleTrunc << 16]).buffer)[0];
-	  }
-
-	  /**
-	   * Enables lightweight curve validation (off by default)
-	   * Set true during debugging to catch exporter/decoder mismatches.
-	   * @type {boolean}
-	   */
-
-	  /**
-	   * Validates a decoded curve
-	   * @param {Array<number>} knots
-	   * @param {Array<number>} controls
-	   * @param {number} dimension
-	   * @return {string[]} issues
-	   */
-	  static ValidateDecodedCurve(knots, controls, dimension) {
-	    var issues = [];
-	    if (!Number.isFinite(dimension) || dimension <= 0) issues.push("Invalid dimension \"".concat(dimension, "\""));
-	    if (!Array.isArray(knots)) issues.push("Knots is not an array");
-	    if (!Array.isArray(controls)) issues.push("Controls is not an array");
-	    if (Array.isArray(knots)) {
-	      if (knots.length === 0) issues.push("Knots is empty");
-	      for (var i = 0; i < knots.length; i++) {
-	        var k = knots[i];
-	        if (!Number.isFinite(k)) {
-	          issues.push("Knot[".concat(i, "] is not finite"));
-	          break;
-	        }
-	        if (i > 0 && k < knots[i - 1]) {
-	          issues.push("Knots are not monotonic at index ".concat(i - 1, "->").concat(i));
-	          break;
-	        }
-	      }
-	    }
-	    if (Array.isArray(controls) && Number.isFinite(dimension) && dimension > 0) {
-	      if (controls.length % dimension !== 0) issues.push("Controls length (".concat(controls.length, ") is not divisible by dimension (").concat(dimension, ")"));
-
-	      // Expected control points: knotCount * dimension for degree 1, or (knotCount - degree - 1) * dimension for bsplines.
-	      // We can't know the exact expectation for every format here, but we can at least ensure we have enough controls.
-	      if (Array.isArray(knots) && knots.length && this.prototype && this.prototype.degree !== undefined) {
-	        // no-op: degree is per-instance, validation is done in CreateTw2GeometryCurve with instance degree
-	      }
-	    }
-	    return issues;
-	  }
-
-	  /**
-	   * Curve type
-	   * @type {{ROTATION: number, POSITION: number, SCALE_SHEAR: number}}
-	   */
-	}, _Gr2Curve.VALIDATE = true, _Gr2Curve.Type = {
-	  POSITION: 1,
-	  ROTATION: 2,
-	  SCALE_SHEAR: 3
-	}, _Gr2Curve), _descriptor$7p = _applyDecoratedDescriptor(_class2$7p.prototype, "dimension", [_dec2$7u], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return -1;
-	  }
-	}), _descriptor2$6H = _applyDecoratedDescriptor(_class2$7p.prototype, "degree", [_dec3$6R], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _applyDecoratedDescriptor(_class2$7p.prototype, "format", [_dec4$5Z], Object.getOwnPropertyDescriptor(_class2$7p.prototype, "format"), _class2$7p.prototype), _class2$7p)) || _class$8b);
-	class ErrGr2CurveDataNotSerialized extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Granny curve data not serialized");
-	  }
-	}
-	class ErrGr2CurveDataFormatInvalid extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Invalid granny curve data format");
-	  }
-	}
-	class ErrGr2CurveDataDimensionInvalid extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Invalid granny curve data dimension");
-	  }
-	}
-	class ErrGr2CurveDataVec3NotSupported extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Granny curve data does not support vec3");
-	  }
-	}
-	class ErrGr2CurveDataQuatNotSupported extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Granny curve data does not support quaternions");
-	  }
-	}
-	class ErrGr2CurveDataMat3NotSupported extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Granny curve data does not support matrices");
-	  }
-	}
-	class ErrGr2CurveDataRotationNotSupported extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Granny curve data does not support rotation");
-	  }
-	}
-	class ErrGr2CurveDataControlSizeInvalid extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Granny curve data has invalid control size");
-	  }
-	}
-
-	var _dec$8a, _dec2$7t, _dec3$6Q, _dec4$5Y, _class$8a, _class2$7o, _descriptor$7o, _descriptor2$6G, _descriptor3$5O, _Gr2CurveDataD3I1K32fC32f;
-	var Gr2CurveDataD3I1K32fC32f = (_dec$8a = define("Gr2CurveDataD3I1K32fC32f"), _dec2$7t = vector3, _dec3$6Q = vector3, _dec4$5Y = float32Array, _dec$8a(_class$8a = (_class2$7o = (_Gr2CurveDataD3I1K32fC32f = class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "controlOffsets", _descriptor$7o, this);
-	    _initializerDefineProperty(this, "controlScales", _descriptor2$6G, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor3$5O, this);
-	    this._knots = null;
-	    this._buffer = null;
-	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / 2;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets a vec3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    if (!this._buffer) this.RebuildVec3Buffer();
-	    return this._buffer;
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = new Float32Array(this.GetKnotCount());
-	    var out = this._knots;
-	    var count = this.GetKnotCount();
-	    var src = this.knotsControls;
-	    for (var i = 0; i < count; i++) {
-	      out[i] = src[i];
-	    }
-	  }
-
-	  /**
-	   * Rebuilds vec3 buffer
-	   */
-	  RebuildVec3Buffer() {
-	    this._buffer = rebuildBuffer$2(this.knotsControls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD3I1K32fC32f.format = 16, _Gr2CurveDataD3I1K32fC32f), _descriptor$7o = _applyDecoratedDescriptor(_class2$7o.prototype, "controlOffsets", [_dec2$7t], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return vec3$2.create();
-	  }
-	}), _descriptor2$6G = _applyDecoratedDescriptor(_class2$7o.prototype, "controlScales", [_dec3$6Q], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return vec3$2.create();
-	  }
-	}), _descriptor3$5O = _applyDecoratedDescriptor(_class2$7o.prototype, "knotsControls", [_dec4$5Y], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array(0);
-	  }
-	}), _class2$7o)) || _class$8a);
-
-	/**
-	 * Shared helper used by D3I1K32fC32f and D3I1k16uC16u
-	 * Controls are stored as: [knots...][scalarControls...]
-	 *
-	 * @param {TypedArray} knotsControls
-	 * @param {number} count
-	 * @param {Float32Array|Array<number>} controlScales vec3 scale
-	 * @param {Float32Array|Array<number>} controlOffsets vec3 offset
-	 * @return {Float32Array}
-	 */
-	function rebuildBuffer$2(knotsControls, count, controlScales, controlOffsets) {
-	  var out = new Float32Array(count * 3);
-	  for (var i = 0; i < count; i++) {
-	    var v = knotsControls[count + i];
-	    out[i * 3] = v * controlScales[0] + controlOffsets[0];
-	    out[i * 3 + 1] = v * controlScales[1] + controlOffsets[1];
-	    out[i * 3 + 2] = v * controlScales[2] + controlOffsets[2];
-	  }
-	  return out;
-	}
-
-	var _dec$89, _dec2$7s, _dec3$6P, _dec4$5X, _dec5$5m, _class$89, _class2$7n, _descriptor$7n, _descriptor2$6F, _descriptor3$5N, _descriptor4$53, _Gr2CurveDataD3I1K16uC16u;
-	var Gr2CurveDataD3I1K16uC16u = (_dec$89 = define("Gr2CurveDataD3I1K16uC16u"), _dec2$7s = vector3, _dec3$6P = vector3, _dec4$5X = uint16Array, _dec5$5m = uint, _dec$89(_class$89 = (_class2$7n = (_Gr2CurveDataD3I1K16uC16u = class Gr2CurveDataD3I1K16uC16u extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "controlOffsets", _descriptor$7n, this);
-	    _initializerDefineProperty(this, "controlScales", _descriptor2$6F, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor3$5N, this);
-	    _initializerDefineProperty(this, "oneOverKnotScaleTrunc", _descriptor4$53, this);
-	    this._knots = null;
-	    this._buffer = null;
-	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / 2;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {null}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets a vec3 buffer
-	   * @return {null}
-	   */
-	  GetVec3Buffer() {
-	    if (!this._buffer) this.RebuildVec3Buffer();
-	    return this._buffer;
-	  }
-
-	  /**
-	   * Rebuilds the knots and vec3 buffer
-	   */
-	  Rebuild() {
-	    this.RebuildKnots();
-	    this.RebuildVec3Buffer();
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = Gr2Curve2.GetKnotsFromControlWithOneOverKnotScaleTrunc(this.knotsControls, this.GetKnotCount(), this.oneOverKnotScaleTrunc);
-	  }
-
-	  /**
-	   * Rebuilds the vec3 buffer
-	   */
-	  RebuildVec3Buffer() {
-	    this._buffer = rebuildBuffer$2(this.knotsControls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD3I1K16uC16u.format = 17, _Gr2CurveDataD3I1K16uC16u), _descriptor$7n = _applyDecoratedDescriptor(_class2$7n.prototype, "controlOffsets", [_dec2$7s], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return vec3$2.create();
-	  }
-	}), _descriptor2$6F = _applyDecoratedDescriptor(_class2$7n.prototype, "controlScales", [_dec3$6P], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return vec3$2.create();
-	  }
-	}), _descriptor3$5N = _applyDecoratedDescriptor(_class2$7n.prototype, "knotsControls", [_dec4$5X], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint16Array(0);
-	  }
-	}), _descriptor4$53 = _applyDecoratedDescriptor(_class2$7n.prototype, "oneOverKnotScaleTrunc", [_dec5$5m], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _class2$7n)) || _class$89);
-
-	var _dec$88, _dec2$7r, _class$88, _class2$7m, _descriptor$7m, _Gr2CurveDataD3I1K8uC8u;
-	var Gr2CurveDataD3I1K8uC8u = (_dec$88 = define("Gr2CurveDataD3I1K8uC8u"), _dec2$7r = uint8Array, _dec$88(_class$88 = (_class2$7m = (_Gr2CurveDataD3I1K8uC8u = class Gr2CurveDataD3I1K8uC8u extends Gr2CurveDataD3I1K16uC16u {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor$7m, this);
-	  }
-	}, _Gr2CurveDataD3I1K8uC8u.format = 18, _Gr2CurveDataD3I1K8uC8u), _descriptor$7m = _applyDecoratedDescriptor(_class2$7m.prototype, "knotsControls", [_dec2$7r], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint8Array(0);
-	  }
-	}), _class2$7m)) || _class$88);
-
-	var _dec$87, _dec2$7q, _class$87, _class2$7l, _descriptor$7l, _Gr2CurveDataD3Constant32f;
-	var Gr2CurveDataD3Constant32f = (_dec$87 = define("Gr2CurveDataD3Constant32f"), _dec2$7q = float32Array, _dec$87(_class$87 = (_class2$7l = (_Gr2CurveDataD3Constant32f = class Gr2CurveDataD3Constant32f extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "controls", _descriptor$7l, this);
-	  }
-	  /**
-	   * Gets the knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return 1;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    return new Float32Array([0.0]);
-	  }
-
-	  /**
-	   * Gets points
-	   * @return {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    return this.controls;
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD3Constant32f.format = 4, _Gr2CurveDataD3Constant32f), _descriptor$7l = _applyDecoratedDescriptor(_class2$7l.prototype, "controls", [_dec2$7q], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array([0, 0, 0]);
-	  }
-	}), _class2$7l)) || _class$87);
-
-	var _dec$86, _dec2$7p, _dec3$6O, _dec4$5W, _dec5$5l, _class$86, _class2$7k, _descriptor$7k, _descriptor2$6E, _descriptor3$5M, _descriptor4$52, _Gr2CurveDataD3K16uC16u;
-	var Gr2CurveDataD3K16uC16u = (_dec$86 = define("Gr2CurveDataD3K16uC16u"), _dec2$7p = vector3, _dec3$6O = vector3, _dec4$5W = uint16Array, _dec5$5l = uint, _dec$86(_class$86 = (_class2$7k = (_Gr2CurveDataD3K16uC16u = class Gr2CurveDataD3K16uC16u extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "controlOffsets", _descriptor$7k, this);
-	    _initializerDefineProperty(this, "controlScales", _descriptor2$6E, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor3$5M, this);
-	    _initializerDefineProperty(this, "oneOverKnotScaleTrunc", _descriptor4$52, this);
-	    this._knots = null;
-	    this._buffer = null;
-	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / 4;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {null}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets a vec3 buffer
-	   * @return {null}
-	   */
-	  GetVec3Buffer() {
-	    if (!this._buffer) this.RebuildVec3Buffer();
-	    return this._buffer;
-	  }
-
-	  /**
-	   * Rebuilds the knots and vec3 buffer
-	   */
-	  Rebuild() {
-	    this.RebuildKnots();
-	    this.RebuildVec3Buffer();
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = Gr2Curve2.GetKnotsFromControlWithOneOverKnotScaleTrunc(this.knotsControls, this.GetKnotCount(), this.oneOverKnotScaleTrunc);
-	  }
-
-	  /**
-	   * Rebuilds the vec3 buffer
-	   */
-	  RebuildVec3Buffer() {
-	    this._buffer = rebuildBuffer$1(this.knotsControls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD3K16uC16u.format = 10, _Gr2CurveDataD3K16uC16u), _descriptor$7k = _applyDecoratedDescriptor(_class2$7k.prototype, "controlOffsets", [_dec2$7p], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return vec3$2.create();
-	  }
-	}), _descriptor2$6E = _applyDecoratedDescriptor(_class2$7k.prototype, "controlScales", [_dec3$6O], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return vec3$2.create();
-	  }
-	}), _descriptor3$5M = _applyDecoratedDescriptor(_class2$7k.prototype, "knotsControls", [_dec4$5W], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint16Array(0);
-	  }
-	}), _descriptor4$52 = _applyDecoratedDescriptor(_class2$7k.prototype, "oneOverKnotScaleTrunc", [_dec5$5l], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _class2$7k)) || _class$86);
-
-	/**
-	 * Gets a vec3 buffer from controls for D3K curves
-	 * @param {TypedArray} controls
-	 * @param {Number} count
-	 * @param {TypedArray} scale
-	 * @param {TypedArray} offset
-	 * @return {Float32Array}
-	 */
-	function rebuildBuffer$1(controls, count, scale, offset) {
-	  var out = new Float32Array(count * 3);
-	  for (var i = 0; i < count; i++) {
-	    for (var x = 0; x < 3; x++) {
-	      out[i * 3 + x] = controls[count + i * 3 + x] * scale[x] + offset[x];
-	    }
-	  }
-	  return out;
-	}
-
-	var _dec$85, _dec2$7o, _class$85, _class2$7j, _descriptor$7j, _Gr2CurveDataD3K8uC8u;
-	var Gr2CurveDataD3K8uC8u = (_dec$85 = define("Gr2CurveDataD3K8uC8u"), _dec2$7o = uint8Array, _dec$85(_class$85 = (_class2$7j = (_Gr2CurveDataD3K8uC8u = class Gr2CurveDataD3K8uC8u extends Gr2CurveDataD3K16uC16u {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor$7j, this);
-	  }
-	}, _Gr2CurveDataD3K8uC8u.format = 11, _Gr2CurveDataD3K8uC8u), _descriptor$7j = _applyDecoratedDescriptor(_class2$7j.prototype, "knotsControls", [_dec2$7o], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint8Array(0);
-	  }
-	}), _class2$7j)) || _class$85);
-
-	var _dec$84, _dec2$7n, _class$84, _class2$7i, _descriptor$7i, _Gr2CurveDataD4Constant32f;
-	var Gr2CurveDataD4Constant32f = (_dec$84 = define("Gr2CurveDataD4Constant32f"), _dec2$7n = float32Array, _dec$84(_class$84 = (_class2$7i = (_Gr2CurveDataD4Constant32f = class Gr2CurveDataD4Constant32f extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "controls", _descriptor$7i, this);
-	  }
-	  /**
-	   * Gets the knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return 1;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    return new Float32Array([0.0]);
-	  }
-
-	  /**
-	   * Gets the quat buffer
-	   * @returns {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    return this.controls;
-	  }
-
-	  /*
-	  _mat3Buffer = null;
-	  GetMat3Buffer()
-	  {
-	      if (!this._mat3Buffer) this.RebuildMat3Buffer();
-	      return this._mat3Buffer;
-	  }
-	  */
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD4Constant32f.format = 5, _Gr2CurveDataD4Constant32f), _descriptor$7i = _applyDecoratedDescriptor(_class2$7i.prototype, "controls", [_dec2$7n], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array([0, 0, 0, 1]);
-	  }
-	}), _class2$7i)) || _class$84);
-
-	var _dec$83, _dec2$7m, _dec3$6N, _dec4$5V, _class$83, _class2$7h, _descriptor$7h, _descriptor2$6D, _descriptor3$5L, _Gr2CurveDataD4nK16uC15u;
-	var Gr2CurveDataD4nK16uC15u = (_dec$83 = define("Gr2CurveDataD4nK16uC15u"), _dec2$7m = uint, _dec3$6N = float, _dec4$5V = uint16Array, _dec$83(_class$83 = (_class2$7h = (_Gr2CurveDataD4nK16uC15u = class Gr2CurveDataD4nK16uC15u extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "scaleOffsetTableEntries", _descriptor$7h, this);
-	    _initializerDefineProperty(this, "oneOverKnotScale", _descriptor2$6D, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor3$5L, this);
-	    this._knots = null;
-	    this._quatBuffer = null;
-	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / 4;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array|Float32Array}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets quat buffer
-	   * @return {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    if (!this._quatBuffer) this.RebuildQuatBuffer();
-	    return this._quatBuffer;
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = Gr2Curve2.GetKnotsFromControl(this.knotsControls, this.GetKnotCount(), this.oneOverKnotScale);
-	  }
-
-	  /**
-	   * Rebuilds the quat buffer
-	   */
-	  RebuildQuatBuffer() {
-	    this._quatBuffer = rebuildBuffers(this.knotsControls, this.GetKnotCount(), this.constructor.SCALE_TABLE_MULTIPLIER, this.scaleOffsetTableEntries, this.constructor.GetQuatFromControl);
-	  }
-
-	  /**
-	   * Gets a quaternion from scale and offset controls
-	   * @param {quat|Float32Array} out
-	   * @param {Number} a
-	   * @param {Number} b
-	   * @param {Number} c
-	   * @param {quat|Float32Array} scales
-	   * @param {quat|Float32Array} offsets
-	   * @return {quat|Float32Array} out
-	   */
-	  static GetQuatFromControl(out, a, b, c, scales, offsets) {
-	    var swizzle1 = (b & 0x8000) >> 14 | c >> 15,
-	      swizzle2 = swizzle1 + 1 & 3,
-	      swizzle3 = swizzle2 + 1 & 3,
-	      swizzle4 = swizzle3 + 1 & 3;
-	    var dataA = (a & 0x7fff) * scales[swizzle2] + offsets[swizzle2],
-	      dataB = (b & 0x7fff) * scales[swizzle3] + offsets[swizzle3],
-	      dataC = (c & 0x7fff) * scales[swizzle4] + offsets[swizzle4];
-	    var dataD = Math.sqrt(1 - (dataA * dataA + dataB * dataB + dataC * dataC));
-	    if ((a & 0x8000) !== 0) dataD = -dataD;
-	    out[swizzle2] = dataA;
-	    out[swizzle3] = dataB;
-	    out[swizzle4] = dataC;
-	    out[swizzle1] = dataD;
-	    return out;
-	  }
-
-	  /**
-	   * Scale table multiplier
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD4nK16uC15u.SCALE_TABLE_MULTIPLIER = 0.000030518509, _Gr2CurveDataD4nK16uC15u.format = 8, _Gr2CurveDataD4nK16uC15u), _descriptor$7h = _applyDecoratedDescriptor(_class2$7h.prototype, "scaleOffsetTableEntries", [_dec2$7m], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor2$6D = _applyDecoratedDescriptor(_class2$7h.prototype, "oneOverKnotScale", [_dec3$6N], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0.0;
-	  }
-	}), _descriptor3$5L = _applyDecoratedDescriptor(_class2$7h.prototype, "knotsControls", [_dec4$5V], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint8Array(0);
-	  }
-	}), _class2$7h)) || _class$83);
-
-	/**
-	 * Gets quat buffer from controls for D4n curves
-	 * @param {TypedArray} controls
-	 * @param {Number} count
-	 * @param {Number} scaleTableMultiplier
-	 * @param {Number} selector
-	 * @param {Function} getQuatFromControl
-	 * @return {Float32Array}
-	 */
-	function rebuildBuffers(controls, count, scaleTableMultiplier, selector, getQuatFromControl) {
-	  var D4N_SCALE_TABLE = new Float32Array([1.4142135, 0.70710677, 0.35355338, 0.35355338, 0.35355338, 0.17677669, 0.17677669, 0.17677669, -1.4142135, -0.70710677, -0.35355338, -0.35355338, -0.35355338, -0.17677669, -0.17677669, -0.17677669]);
-	  var D4N_OFFSET_TABLE = new Float32Array([-0.70710677, -0.35355338, -0.53033006, -0.17677669, 0.17677669, -0.17677669, -0.088388346, 0.0, 0.70710677, 0.35355338, 0.53033006, 0.17677669, -0.17677669, 0.17677669, 0.088388346, -0.0]);
-	  var scaleTable = new Float32Array([D4N_SCALE_TABLE[selector >> 0 & 0x0f] * scaleTableMultiplier, D4N_SCALE_TABLE[selector >> 4 & 0x0f] * scaleTableMultiplier, D4N_SCALE_TABLE[selector >> 8 & 0x0f] * scaleTableMultiplier, D4N_SCALE_TABLE[selector >> 12 & 0x0f] * scaleTableMultiplier]);
-	  var offsetTable = new Float32Array([D4N_OFFSET_TABLE[selector >> 0 & 0x0f], D4N_OFFSET_TABLE[selector >> 4 & 0x0f], D4N_OFFSET_TABLE[selector >> 8 & 0x0f], D4N_OFFSET_TABLE[selector >> 12 & 0x0f]]);
-	  var quat = new Float32Array([0, 0, 0, 1]),
-	    out = new Float32Array(count * 4);
-	  for (var i = 0; i < count; i++) {
-	    getQuatFromControl(quat, controls[count + i * 3], controls[count + i * 3 + 1], controls[count + i * 3 + 2], scaleTable, offsetTable);
-	    out[i * 4] = quat[0];
-	    out[i * 4 + 1] = quat[1];
-	    out[i * 4 + 2] = quat[2];
-	    out[i * 4 + 3] = quat[3];
-	  }
-	  return out;
-	}
-
-	var _dec$82, _dec2$7l, _class$82, _class2$7g, _descriptor$7g, _Gr2CurveDataD4nK8uC7u;
-	var Gr2CurveDataD4nK8uC7u = (_dec$82 = define("Gr2CurveDataD4nK8uC7u"), _dec2$7l = uint8Array, _dec$82(_class$82 = (_class2$7g = (_Gr2CurveDataD4nK8uC7u = class Gr2CurveDataD4nK8uC7u extends Gr2CurveDataD4nK16uC15u {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor$7g, this);
-	  }
-	  /**
-	   * Gets a quaternion from scale and offset controls
-	   * @param {quat|Float32Array} out
-	   * @param {Number} a
-	   * @param {Number} b
-	   * @param {Number} c
-	   * @param {quat|Float32Array} scales
-	   * @param {quat|Float32Array} offsets
-	   * @return {quat|Float32Array} out
-	   */
-	  static GetQuatFromControl(out, a, b, c, scales, offsets) {
-	    var swizzle1 = (b & 0x80) >> 6 | (c & 0x80) >> 7,
-	      swizzle2 = swizzle1 + 1 & 3,
-	      swizzle3 = swizzle2 + 1 & 3,
-	      swizzle4 = swizzle3 + 1 & 3;
-	    var dataA = (a & 0x7f) * scales[swizzle2] + offsets[swizzle2],
-	      dataB = (b & 0x7f) * scales[swizzle3] + offsets[swizzle3],
-	      dataC = (c & 0x7f) * scales[swizzle4] + offsets[swizzle4];
-	    var dataD = Math.sqrt(1 - (dataA * dataA + dataB * dataB + dataC * dataC));
-	    if ((a & 0x80) !== 0) dataD = -dataD;
-	    out[swizzle2] = dataA;
-	    out[swizzle3] = dataB;
-	    out[swizzle4] = dataC;
-	    out[swizzle1] = dataD;
-	    return out;
-	  }
-
-	  /**
-	   * Scale table multiplier
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD4nK8uC7u.SCALE_TABLE_MULTIPLIER = 0.0078740157, _Gr2CurveDataD4nK8uC7u.format = 9, _Gr2CurveDataD4nK8uC7u), _descriptor$7g = _applyDecoratedDescriptor(_class2$7g.prototype, "knotsControls", [_dec2$7l], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint8Array(0);
-	  }
-	}), _class2$7g)) || _class$82);
-
-	var _dec$81, _dec2$7k, _class$81, _class2$7f, _descriptor$7f, _Gr2CurveDataDaConstant32f;
-	var Gr2CurveDataDaConstant32f = (_dec$81 = define("Gr2CurveDataDaConstant32f"), _dec2$7k = float32Array, _dec$81(_class$81 = (_class2$7f = (_Gr2CurveDataDaConstant32f = class Gr2CurveDataDaConstant32f extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "controls", _descriptor$7f, this);
-	  }
-	  /**
-	   * Gets the knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return 1;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    return new Float32Array([0.0]);
-	  }
-
-	  /**
-	   * Gets the matrix 3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    return this.controls;
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataDaConstant32f.format = 3, _Gr2CurveDataDaConstant32f), _descriptor$7f = _applyDecoratedDescriptor(_class2$7f.prototype, "controls", [_dec2$7k], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
-	  }
-	}), _class2$7f)) || _class$81);
-
-	var _dec$80, _dec2$7j, _class$80, _class2$7e, _descriptor$7e, _Gr2CurveDataDaIdentity;
-	var Gr2CurveDataDaIdentity = (_dec$80 = define("Gr2CurveDataDaIdentity"), _dec2$7j = uint, _dec$80(_class$80 = (_class2$7e = (_Gr2CurveDataDaIdentity = class Gr2CurveDataDaIdentity extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "dimension", _descriptor$7e, this);
-	  }
-	  /**
-	   * Gets the knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return 1;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    return new Float32Array([0.0]);
-	  }
-
-	  /**
-	   * Gets the vec3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    return new Float32Array([0, 0, 0]);
-	  }
-
-	  /**
-	   * Gets quat buffer
-	   * @return {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    return new Float32Array([0, 0, 0, 1]);
-	  }
-
-	  /**
-	   * Gets mat3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    return new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataDaIdentity.format = 2, _Gr2CurveDataDaIdentity), _descriptor$7e = _applyDecoratedDescriptor(_class2$7e.prototype, "dimension", [_dec2$7j], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _class2$7e)) || _class$80);
-
-	var _dec$7$, _dec2$7i, _dec3$6M, _dec4$5U, _class$7$, _class2$7d, _descriptor$7d, _descriptor2$6C, _descriptor3$5K, _Gr2CurveDataDaK16uC16u;
-	var Gr2CurveDataDaK16uC16u = (_dec$7$ = define("Gr2CurveDataDaK16uC16u"), _dec2$7i = uint, _dec3$6M = float32Array, _dec4$5U = uint16Array, _dec$7$(_class$7$ = (_class2$7d = (_Gr2CurveDataDaK16uC16u = class Gr2CurveDataDaK16uC16u extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "oneOverKnotScaleTrunc", _descriptor$7d, this);
-	    _initializerDefineProperty(this, "controlScaleOffsets", _descriptor2$6C, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor3$5K, this);
-	    this._knots = null;
-	    this._buffer = null;
-	  }
-	  /**
-	   * Gets control size
-	   * @return {number}
-	   */
-	  GetControlSize() {
-	    return this.controlScaleOffsets.length / 2;
-	  }
-
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / (this.GetControlSize() + 1);
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets a vec3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    if (this.GetControlSize() !== 3) throw new ErrGr2CurveDataControlSizeInvalid({
-	      size: this.GetControlSize(),
-	      expected: 3
-	    });
-	    if (!this._buffer) this.RebuildBuffer();
-	    return this._buffer;
-	  }
-
-	  /**
-	   * Gets a quat buffer
-	   * @return {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    if (this.GetControlSize() !== 4) throw new ErrGr2CurveDataControlSizeInvalid({
-	      size: this.GetControlSize(),
-	      expected: 4
-	    });
-	    if (!this._buffer) this.RebuildBuffer();
-	    return this._buffer;
-	  }
-
-	  /**
-	   * Gets a mat3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    if (this.GetControlSize() !== 9) throw new ErrGr2CurveDataControlSizeInvalid({
-	      size: this.GetControlSize(),
-	      expected: 9
-	    });
-	    if (!this._buffer) this.RebuildBuffer();
-	    return this._buffer;
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = Gr2Curve2.GetKnotsFromControlWithOneOverKnotScaleTrunc(this.knotsControls, this.GetKnotCount(), this.oneOverKnotScaleTrunc);
-	  }
-
-	  /**
-	   * Rebuilds the buffer
-	   */
-	  RebuildBuffer() {
-	    var dim = this.GetControlSize();
-	    this._buffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), dim, this.controlScaleOffsets);
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataDaK16uC16u.format = 6, _Gr2CurveDataDaK16uC16u), _descriptor$7d = _applyDecoratedDescriptor(_class2$7d.prototype, "oneOverKnotScaleTrunc", [_dec2$7i], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor2$6C = _applyDecoratedDescriptor(_class2$7d.prototype, "controlScaleOffsets", [_dec3$6M], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array(0);
-	  }
-	}), _descriptor3$5K = _applyDecoratedDescriptor(_class2$7d.prototype, "knotsControls", [_dec4$5U], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint16Array(0);
-	  }
-	}), _class2$7d)) || _class$7$);
-
-	/**
-	 * Gets a buffer from controls for DaK curves
-	 * @param {TypedArray} controls
-	 * @param {Number} count
-	 * @param {Number} dimension
-	 * @param {Float32Array} scaleOffsets
-	 * @return {Float32Array}
-	 */
-	function rebuildBuffer(controls, count, dimension, scaleOffsets) {
-	  var out = new Float32Array(count * dimension);
-	  for (var i = 0; i < count; i++) {
-	    for (var x = 0; x < dimension; x++) {
-	      out[i * dimension + x] = controls[count + i * dimension + x] * scaleOffsets[x] + scaleOffsets[dimension + x];
-	    }
-	  }
-	  return out;
-	}
-
-	var _dec$7_, _dec2$7h, _class$7_, _class2$7c, _descriptor$7c, _Gr2CurveDataDaK8uC8u;
-	var Gr2CurveDataDaK8uC8u = (_dec$7_ = define("Gr2CurveDataDaK8uC8u"), _dec2$7h = uint8Array, _dec$7_(_class$7_ = (_class2$7c = (_Gr2CurveDataDaK8uC8u = class Gr2CurveDataDaK8uC8u extends Gr2CurveDataDaK16uC16u {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor$7c, this);
-	  }
-	  get KnotsControls() {
-	    return this.knotsControls;
-	  }
-
-	  /**
-	   * GR2 curve data format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataDaK8uC8u.format = 18, _Gr2CurveDataDaK8uC8u), _descriptor$7c = _applyDecoratedDescriptor(_class2$7c.prototype, "knotsControls", [_dec2$7h], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint8Array(0);
-	  }
-	}), _class2$7c)) || _class$7_);
-
-	var _dec$7Z, _dec2$7g, _dec3$6L, _class$7Z, _class2$7b, _descriptor$7b, _descriptor2$6B, _Gr2CurveDataDaK32fC32f;
-	var Gr2CurveDataDaK32fC32f = (_dec$7Z = define("Gr2CurveDataDaK32fC32f"), _dec2$7g = float32Array, _dec3$6L = float32Array, _dec$7Z(_class$7Z = (_class2$7b = (_Gr2CurveDataDaK32fC32f = class Gr2CurveDataDaK32fC32f extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knots", _descriptor$7b, this);
-	    _initializerDefineProperty(this, "controls", _descriptor2$6B, this);
-	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knots.length;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    return this.knots;
-	  }
-
-	  /**
-	   * Gets the curve type
-	   * @return {number}
-	   */
-	  GetCurveType() {
-	    var size = this.controls.length;
-	    if (this.knots.length * 3 === size) return Gr2Curve2.Type.POSITION;
-	    if (this.knots.length * 4 === size) return Gr2Curve2.Type.ROTATION;
-	    if (this.knots.length * 9 === size) return Gr2Curve2.Type.SCALE_SHEAR;
-	    throw new ErrGr2CurveDataControlSizeInvalid({
-	      size
-	    });
-	  }
-
-	  /**
-	   * Gets the vec3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    if (this.knots.length * 3 === this.controls.length) return this.controls;
-	    super.GetVec3Buffer();
-	  }
-
-	  /**
-	   * Gets the quat buffer
-	   * @return {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    if (this.knots.length * 4 === this.controls.length) return this.controls;
-	    super.GetQuatBuffer();
-	  }
-
-	  /**
-	   * Gets the mat3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    if (this.knots.length * 9 === this.controls.length) return this.controls;
-	    super.GetMat3Buffer();
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataDaK32fC32f.format = 1, _Gr2CurveDataDaK32fC32f), _descriptor$7b = _applyDecoratedDescriptor(_class2$7b.prototype, "knots", [_dec2$7g], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array(0);
-	  }
-	}), _descriptor2$6B = _applyDecoratedDescriptor(_class2$7b.prototype, "controls", [_dec3$6L], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array(0);
-	  }
-	}), _class2$7b)) || _class$7Z);
-
-	var _dec$7Y, _dec2$7f, _dec3$6K, _class$7Y, _class2$7a, _descriptor$7a, _descriptor2$6A, _Gr2CurveDataDaKeyframes32f;
-	var Gr2CurveDataDaKeyframes32f = (_dec$7Y = define("Gr2CurveDataDaKeyframes32f"), _dec2$7f = uint, _dec3$6K = float32Array, _dec$7Y(_class$7Y = (_class2$7a = (_Gr2CurveDataDaKeyframes32f = class Gr2CurveDataDaKeyframes32f extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "dimension", _descriptor$7a, this);
-	    _initializerDefineProperty(this, "controls", _descriptor2$6A, this);
-	  }
-	  /**
-	   * Gets the curve type
-	   * @return {number}
-	   */
-	  GetType() {
-	    switch (this.dimension) {
-	      case 3:
-	        return Gr2Curve2.Type.POSITION;
-	      case 4:
-	        return Gr2Curve2.Type.ROTATION;
-	      case 9:
-	        return Gr2Curve2.Type.SCALE_SHEAR;
-	      default:
-	        throw new ReferenceError("Invalid dimension (".concat(this.dimension, ")"));
-	    }
-	  }
-
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.controls.length / this.dimension;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets vec3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetVec3Buffer() {
-	    if (this.GetType() === Gr2Curve2.Type.POSITION) {
-	      if (!this._vec3Buffer) this.RebuildVec3Buffer();
-	      return this._vec3Buffer;
-	    }
-	    super.GetVec3Buffer();
-	  }
-
-	  /**
-	   * Gets quat buffer
-	   * @return {Float32Array}
-	   */
-	  GetQuatBuffer() {
-	    if (this.GetType() === Gr2Curve2.Type.ROTATION) {
-	      if (!this._quatBuffer) this.RebuildQuatBuffer();
-	      return this._quatBuffer;
-	    }
-	    super.GetQuatBuffer();
-	  }
-
-	  /**
-	   * Gets mat3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    if (this.GetType() === Gr2Curve2.Type.SCALE_SHEAR) {
-	      if (!this._mat3Buffer) this.RebuildMat3Buffer();
-	      return this._mat3Buffer;
-	    }
-	    super.GetMat3Buffer();
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    var count = this.GetKnotCount();
-	    this._knots = new Float32Array(count);
-	    for (var i = 0; i < count; i++) this._knots[i] = i;
-	  }
-
-	  /**
-	   * Rebuilds vec3 buffer
-	   */
-	  RebuildVec3Buffer() {
-	    if (this.GetType() !== Gr2Curve2.Type.POSITION) {
-	      this._vec3Buffer = null;
-	      return;
-	    }
-	    this._vec3Buffer = this.constructor.GetBufferFromControls(this.controls, this.GetKnotCount(), 3);
-	  }
-
-	  /**
-	   * Rebuilds quat buffer
-	   */
-	  RebuildQuatBuffer() {
-	    if (this.GetType() !== Gr2Curve2.Type.ROTATION) {
-	      this._quatBuffer = null;
-	      return;
-	    }
-	    this._quatBuffer = this.constructor.GetBufferFromControls(this.controls, this.GetKnotCount(), 4);
-	  }
-
-	  /**
-	   * Rebuilds mat3 buffer
-	   */
-	  RebuildMat3Buffer() {
-	    if (this.GetType() !== Gr2Curve2.Type.ROTATION) {
-	      this._mat3Buffer = null;
-	      return;
-	    }
-	    this._mat3Buffer = this.constructor.GetBufferFromControls(this.controls, this.GetKnotCount(), 9);
-	  }
-
-	  /**
-	   * Rebuilds a buffer
-	   * @param controls
-	   * @param count
-	   * @param size
-	   */
-	  static GetBufferFromControls(controls, count, size) {
-	    var out = new Float32Array(count * size);
-	    for (var i = 0; i < count; i++) {
-	      for (var x = 0; x < size; x++) {
-	        out[i * size + x] = controls[i * size + x];
-	      }
-	    }
-	  }
-
-	  /**
-	   * Gr2 curve data format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataDaKeyframes32f.format = 0, _Gr2CurveDataDaKeyframes32f), _descriptor$7a = _applyDecoratedDescriptor(_class2$7a.prototype, "dimension", [_dec2$7f], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor2$6A = _applyDecoratedDescriptor(_class2$7a.prototype, "controls", [_dec3$6K], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Float32Array(0);
-	  }
-	}), _class2$7a)) || _class$7Y);
-
-	var _dec$7X, _dec2$7e, _dec3$6J, _dec4$5T, _dec5$5k, _class$7X, _class2$79, _descriptor$79, _descriptor2$6z, _descriptor3$5J, _descriptor4$51, _Gr2CurveDataD9I1K16uC16u;
-	var Gr2CurveDataD9I1K16uC16u = (_dec$7X = define("Gr2CurveDataD9I1K16uC16u"), _dec2$7e = uint, _dec3$6J = float, _dec4$5T = float, _dec5$5k = uint16Array, _dec$7X(_class$7X = (_class2$79 = (_Gr2CurveDataD9I1K16uC16u = class Gr2CurveDataD9I1K16uC16u extends Gr2Curve2 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "oneOverKnotScaleTrunc", _descriptor$79, this);
-	    _initializerDefineProperty(this, "controlScale", _descriptor2$6z, this);
-	    _initializerDefineProperty(this, "controlOffset", _descriptor3$5J, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor4$51, this);
-	    this._knots = null;
-	    this._mat3Buffer = null;
-	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / 2;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets quat buffer
-	   */
-	  GetQuatBuffer() {
-	    throw new ErrGr2CurveDataRotationNotSupported();
-	  }
-
-	  /**
-	   * Gets mat3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    if (!this._mat3Buffer) this.RebuildMat3Buffer();
-	    return this._mat3Buffer;
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = Gr2Curve2.GetKnotsFromControlWithOneOverKnotScaleTrunc(this.knotsControls, this.GetKnotCount(), this.oneOverKnotScaleTrunc);
-	  }
-
-	  /**
-	   * Rebuilds mat3 buffer
-	   */
-	  RebuildMat3Buffer() {
-	    var count = this.GetKnotCount(),
-	      controls = this.knotsControls,
-	      scale = this.controlScale,
-	      offset = this.controlOffset;
-	    this._mat3Buffer = new Float32Array(count * 9);
-	    var out = this._mat3Buffer;
-	    for (var i = 0; i < count; i++) {
-	      var s = controls[count + i] * scale + offset;
-	      out[i * 9] = s;
-	      out[i * 9 + 1] = 0;
-	      out[i * 9 + 2] = 0;
-	      out[i * 9 + 3] = 0;
-	      out[i * 9 + 4] = s;
-	      out[i * 9 + 5] = 0;
-	      out[i * 9 + 6] = 0;
-	      out[i * 9 + 7] = 0;
-	      out[i * 9 + 8] = s;
-	    }
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD9I1K16uC16u.format = 12, _Gr2CurveDataD9I1K16uC16u), _descriptor$79 = _applyDecoratedDescriptor(_class2$79.prototype, "oneOverKnotScaleTrunc", [_dec2$7e], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor2$6z = _applyDecoratedDescriptor(_class2$79.prototype, "controlScale", [_dec3$6J], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0.0;
-	  }
-	}), _descriptor3$5J = _applyDecoratedDescriptor(_class2$79.prototype, "controlOffset", [_dec4$5T], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0.0;
-	  }
-	}), _descriptor4$51 = _applyDecoratedDescriptor(_class2$79.prototype, "knotsControls", [_dec5$5k], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint16Array(0);
-	  }
-	}), _class2$79)) || _class$7X);
-
-	var _dec$7W, _dec2$7d, _class$7W, _class2$78, _descriptor$78, _Gr2CurveDataD9I1K8uC8u;
-	var Gr2CurveDataD9I1K8uC8u = (_dec$7W = define("Gr2CurveDataD9I1K8uC8u"), _dec2$7d = uint8Array, _dec$7W(_class$7W = (_class2$78 = (_Gr2CurveDataD9I1K8uC8u = class Gr2CurveDataD9I1K8uC8u extends Gr2CurveDataD9I1K16uC16u {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor$78, this);
-	  }
-	}, _Gr2CurveDataD9I1K8uC8u.format = 14, _Gr2CurveDataD9I1K8uC8u), _descriptor$78 = _applyDecoratedDescriptor(_class2$78.prototype, "knotsControls", [_dec2$7d], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint8Array(0);
 	  }
 	}), _class2$78)) || _class$7W);
 
-	var _dec$7V, _dec2$7c, _dec3$6I, _dec4$5S, _dec5$5j, _class$7V, _class2$77, _descriptor$77, _descriptor2$6y, _descriptor3$5I, _descriptor4$50, _Gr2CurveDataD9I3K16uC16u;
-	var Gr2CurveDataD9I3K16uC16u = (_dec$7V = define("Gr2CurveDataD9I3K16uC16u"), _dec2$7c = uint, _dec3$6I = float32Array, _dec4$5S = float32Array, _dec5$5j = uint16Array, _dec$7V(_class$7V = (_class2$77 = (_Gr2CurveDataD9I3K16uC16u = class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2 {
+	var _dec$7V, _dec2$7c, _dec3$6J, _dec4$5T, _class$7V, _class2$77, _descriptor$77, _descriptor2$6z, _descriptor3$5J;
+	var Tw2GeometryTrackGroup = (_dec$7V = define("Tw2GeometryTrackGroup"), _dec2$7c = string, _dec3$6J = struct("Tw2GeometryModel"), _dec4$5T = list("Tw2GeometryTransformTrack"), _dec$7V(_class$7V = (_class2$77 = class Tw2GeometryTrackGroup {
 	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "oneOverKnotScaleTrunc", _descriptor$77, this);
-	    _initializerDefineProperty(this, "controlScales", _descriptor2$6y, this);
-	    _initializerDefineProperty(this, "controlOffsets", _descriptor3$5I, this);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor4$50, this);
-	    this._knots = null;
-	    this._mat3Buffer = null;
+	    _initializerDefineProperty(this, "name", _descriptor$77, this);
+	    _initializerDefineProperty(this, "model", _descriptor2$6z, this);
+	    _initializerDefineProperty(this, "transformTracks", _descriptor3$5J, this);
 	  }
-	  /**
-	   * Gets knot count
-	   * @return {number}
-	   */
-	  GetKnotCount() {
-	    return this.knotsControls.length / 4;
-	  }
-
-	  /**
-	   * Gets knots
-	   * @return {Float32Array}
-	   */
-	  GetKnots() {
-	    if (!this._knots) this.RebuildKnots();
-	    return this._knots;
-	  }
-
-	  /**
-	   * Gets quat buffer
-	   */
-	  GetQuatBuffer() {
-	    throw new ErrGr2CurveDataRotationNotSupported();
-	  }
-
-	  /**
-	   * Gets mat3 buffer
-	   * @return {Float32Array}
-	   */
-	  GetMat3Buffer() {
-	    if (!this._mat3Buffer) this.RebuildMat3Buffer();
-	    return this._mat3Buffer;
-	  }
-
-	  /**
-	   * Rebuilds knots
-	   */
-	  RebuildKnots() {
-	    this._knots = Gr2Curve2.GetKnotsFromControlWithOneOverKnotScaleTrunc(this.knotsControls, this.GetKnotCount(), this.oneOverKnotScaleTrunc);
-	  }
-
-	  /**
-	   * Rebuilds mat3 buffer
-	   */
-	  RebuildMat3Buffer() {
-	    var count = this.GetKnotCount(),
-	      controls = this.knotsControls,
-	      scale = this.controlScales,
-	      offset = this.controlOffsets;
-	    this._mat3Buffer = new Float32Array(count * 9);
-	    var out = this._mat3Buffer;
-	    for (var i = 0; i < count; i++) {
-	      out[i * 9] = controls[count + i * 3] * scale[0] + offset[0];
-	      out[i * 9 + 1] = 0;
-	      out[i * 9 + 2] = 0;
-	      out[i * 9 + 3] = 0;
-	      out[i * 9 + 4] = controls[count + i * 3 + 1] * scale[1] + offset[1];
-	      out[i * 9 + 5] = 0;
-	      out[i * 9 + 6] = 0;
-	      out[i * 9 + 7] = 0;
-	      out[i * 9 + 8] = controls[count + i * 3 + 2] * scale[2] + offset[2];
-	    }
-	  }
-
-	  /**
-	   * Gr2 format
-	   * @type {number}
-	   */
-	}, _Gr2CurveDataD9I3K16uC16u.format = 13, _Gr2CurveDataD9I3K16uC16u), _descriptor$77 = _applyDecoratedDescriptor(_class2$77.prototype, "oneOverKnotScaleTrunc", [_dec2$7c], {
+	}, _descriptor$77 = _applyDecoratedDescriptor(_class2$77.prototype, "name", [_dec2$7c], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return "";
 	  }
-	}), _descriptor2$6y = _applyDecoratedDescriptor(_class2$77.prototype, "controlScales", [_dec3$6I], {
+	}), _descriptor2$6z = _applyDecoratedDescriptor(_class2$77.prototype, "model", [_dec3$6J], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return new Float32Array(3);
+	    return null;
 	  }
-	}), _descriptor3$5I = _applyDecoratedDescriptor(_class2$77.prototype, "controlOffsets", [_dec4$5S], {
+	}), _descriptor3$5J = _applyDecoratedDescriptor(_class2$77.prototype, "transformTracks", [_dec4$5T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return new Float32Array(3);
-	  }
-	}), _descriptor4$50 = _applyDecoratedDescriptor(_class2$77.prototype, "knotsControls", [_dec5$5j], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return new Uint16Array(0);
+	    return [];
 	  }
 	}), _class2$77)) || _class$7V);
 
-	var _dec$7U, _dec2$7b, _class$7U, _class2$76, _descriptor$76, _Gr2CurveDataD9I3K8uC8u;
-	var Gr2CurveDataD9I3K8uC8u = (_dec$7U = define("Gr2CurveDataD9I3K8uC8u"), _dec2$7b = uint8Array, _dec$7U(_class$7U = (_class2$76 = (_Gr2CurveDataD9I3K8uC8u = class Gr2CurveDataD9I3K8uC8u extends Gr2CurveDataD9I3K16uC16u {
+	var _dec$7U, _dec2$7b, _dec3$6I, _dec4$5S, _dec5$5j, _class$7U, _class2$76, _descriptor$76, _descriptor2$6y, _descriptor3$5I, _descriptor4$50;
+	var Tw2GeometryTransformTrack = (_dec$7U = define("Tw2GeometryTransformTrack"), _dec2$7b = string, _dec3$6I = struct("Tw2GeometryCurve"), _dec4$5S = struct("Tw2GeometryCurve"), _dec5$5j = unknown, _dec$7U(_class$7U = (_class2$76 = class Tw2GeometryTransformTrack {
 	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "knotsControls", _descriptor$76, this);
+	    _initializerDefineProperty(this, "name", _descriptor$76, this);
+	    _initializerDefineProperty(this, "position", _descriptor2$6y, this);
+	    _initializerDefineProperty(this, "orientation", _descriptor3$5I, this);
+	    _initializerDefineProperty(this, "scaleShear", _descriptor4$50, this);
 	  }
-	}, _Gr2CurveDataD9I3K8uC8u.format = 15, _Gr2CurveDataD9I3K8uC8u), _descriptor$76 = _applyDecoratedDescriptor(_class2$76.prototype, "knotsControls", [_dec2$7b], {
+	}, _descriptor$76 = _applyDecoratedDescriptor(_class2$76.prototype, "name", [_dec2$7b], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return new Uint8Array(0);
+	    return "";
+	  }
+	}), _descriptor2$6y = _applyDecoratedDescriptor(_class2$76.prototype, "position", [_dec3$6I], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return null;
+	  }
+	}), _descriptor3$5I = _applyDecoratedDescriptor(_class2$76.prototype, "orientation", [_dec4$5S], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return null;
+	  }
+	}), _descriptor4$50 = _applyDecoratedDescriptor(_class2$76.prototype, "scaleShear", [_dec5$5j], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return null;
 	  }
 	}), _class2$76)) || _class$7U);
-
-	//export { Gr2CurveDataOld } from "./Gr2CurveDataOld";
-
-	/**
-	 * Todo: Replace with Tw2Store
-	 */
-	class Gr2CurveReader {
-	  /**
-	   * Constructor
-	   */
-	  constructor() {
-	    this.formats = new Map();
-	    this.formats.set(0, Gr2CurveDataDaKeyframes32f);
-	    this.formats.set(1, Gr2CurveDataDaK32fC32f);
-	    this.formats.set(2, Gr2CurveDataDaIdentity);
-	    this.formats.set(3, Gr2CurveDataDaConstant32f);
-	    this.formats.set(4, Gr2CurveDataD3Constant32f);
-	    this.formats.set(5, Gr2CurveDataD4Constant32f);
-	    this.formats.set(6, Gr2CurveDataDaK16uC16u);
-	    this.formats.set(7, Gr2CurveDataDaK8uC8u);
-	    this.formats.set(8, Gr2CurveDataD4nK16uC15u);
-	    this.formats.set(9, Gr2CurveDataD4nK8uC7u);
-	    this.formats.set(10, Gr2CurveDataD3K16uC16u);
-	    this.formats.set(11, Gr2CurveDataD3K8uC8u);
-	    this.formats.set(12, Gr2CurveDataD9I1K16uC16u);
-	    this.formats.set(13, Gr2CurveDataD9I3K16uC16u);
-	    this.formats.set(14, Gr2CurveDataD9I1K8uC8u);
-	    this.formats.set(15, Gr2CurveDataD9I3K8uC8u);
-	    this.formats.set(16, Gr2CurveDataD3I1K32fC32f);
-	    this.formats.set(17, Gr2CurveDataD3I1K16uC16u);
-	    this.formats.set(18, Gr2CurveDataD3I1K8uC8u);
-	  }
-	  /**
-	   * Sets a format
-	   * @param {Number} format
-	   * @param {Function} Ctor
-	   */
-	  Register(format, Ctor) {
-	    this.formats.set(format, Ctor);
-	  }
-
-	  /**
-	   * Gets a format
-	   * @param {Number} format
-	   * @return {Gr2Curve}
-	   */
-	  Get(format) {
-	    var Ctor = this.formats.get(format);
-	    if (Gr2CurveReader.LOGGING) console.dir({
-	      format
-	    });
-	    if (Ctor) return Ctor;
-	    throw new ErrGr2CurveDataFormatUnsupported({
-	      format
-	    });
-	  }
-
-	  /**
-	   * Creates a granny curve from json
-	   * @param {Object} json
-	   * @return {Gr2Curve}
-	   */
-	  _CreateCurveFromJSON(json) {
-	    var Ctor = this.Get(json.format);
-	    return Ctor.from(json);
-	  }
-
-	  /**
-	   * Creates a Tw2GeometryCurve from granny curve data in json format
-	   * @param {Object} json
-	   * @param {Number} dimension
-	   * @param {Boolean} [purge]
-	   * @return {Tw2GeometryCurve}
-	   */
-	  CreateTw2GeometryCurveFromJSON(json, dimension, purge) {
-	    var item = this.CreateCurveFromJSON(json);
-	    return item.CreateTw2GeometryCurve(dimension, purge);
-	  }
-	  CreateCurveFromJSON(json) {
-	    var _ref, _ref2, _curve$GetKnots$lengt, _curve$GetKnots, _curve$_knots, _curve$knots, _curve$GetKnots3, _curve$GetKnots4;
-	    var Ctor = this.Get(json.format);
-	    var curve = Ctor.from(json);
-
-	    // quick sanity checks
-	    if (curve.GetKnotCount && curve.GetKnotCount() !== ((_ref = (_ref2 = (_curve$GetKnots$lengt = (_curve$GetKnots = curve.GetKnots) === null || _curve$GetKnots === void 0 || (_curve$GetKnots = _curve$GetKnots.call(curve)) === null || _curve$GetKnots === void 0 ? void 0 : _curve$GetKnots.length) != null ? _curve$GetKnots$lengt : (_curve$_knots = curve._knots) === null || _curve$_knots === void 0 ? void 0 : _curve$_knots.length) != null ? _ref2 : (_curve$knots = curve.knots) === null || _curve$knots === void 0 ? void 0 : _curve$knots.length) != null ? _ref : 0)) {
-	      var _curve$GetKnots2;
-	      console.warn("KnotCount mismatch", json.format, curve.GetKnotCount(), (_curve$GetKnots2 = curve.GetKnots) === null || _curve$GetKnots2 === void 0 || (_curve$GetKnots2 = _curve$GetKnots2.call(curve)) === null || _curve$GetKnots2 === void 0 ? void 0 : _curve$GetKnots2.length);
-	    }
-	    var k = (_curve$GetKnots3 = (_curve$GetKnots4 = curve.GetKnots) === null || _curve$GetKnots4 === void 0 ? void 0 : _curve$GetKnots4.call(curve)) != null ? _curve$GetKnots3 : curve.knots;
-	    if (k && k.length) {
-	      var last = k[k.length - 1];
-	      if (!Number.isFinite(last)) console.warn("Non-finite duration", json.format, last);
-	    }
-	    return curve;
-	  }
-	}
-	Gr2CurveReader.LOGGING = false;
-	class ErrGr2CurveDataFormatUnsupported extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Unsupported granny curve data format (%format%)");
-	  }
-	}
 
 	class ErrCurveDataInvalid extends Tw2Error {
 	  constructor(data) {
@@ -56456,15 +54946,13 @@
 	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	    var t0 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
 	    options = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
-	    var raw = CjsGr2Format.readRaw(data);
-	    if (CjsGr2Format.gsf.isRaw(raw)) {
-	      throw new ErrGr2GeometryExpected();
+	    var json;
+	    try {
+	      json = prepareGr2(data, options);
+	    } catch (error) {
+	      if (error.name === "ErrGr2GeometryExpected") throw new ErrGr2GeometryExpected();
+	      throw error;
 	    }
-	    var json = CjsGr2Format.read(raw, {
-	      emit: "json",
-	      unpackTangents: options.unpackTangents
-	    });
-	    restoreGr2VertexChannels(raw, json);
 	    var t1 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
 	    Gr2Reader.BuildGeometryRes(json, res, options);
 	    if (Gr2Reader.DEBUG_TIMING) {
@@ -56481,6 +54969,9 @@
 	   * @param {Object} [options]
 	   */
 	  static BuildGeometryRes(data, res, options) {
+	    for (var step of this.BuildGeometryResSteps(data, res, options)) {/* Synchronous compatibility path. */}
+	  }
+	  static *BuildGeometryResSteps(data, res, options) {
 	    data = Gr2Reader.NormalizeGrannyKeys(data);
 	    var _data = data,
 	      _data$models = _data.models,
@@ -56513,7 +55004,25 @@
 	      var vertexCount = 0,
 	        vertexSize = 0,
 	        vertexElements = [];
-	      if (srcM.vertex) {
+	      if (srcM._prepared) {
+	        vertexCount = srcM._prepared.vertexCount;
+	        vertexSize = srcM._prepared.vertexSize - 1;
+	        vertexElements = srcM._prepared.channels.map(channel => {
+	          var type = VertexTypes[channel.key.toUpperCase()];
+	          if (!type) throw new Error("Unsupported vertex type: ".concat(channel.key));
+	          var usage = type.usage;
+	          if (options.swapBlendWeightsAndIndices) {
+	            if (usage === Tw2VertexElement.Type.BLENDINDICES) usage = Tw2VertexElement.Type.BLENDWEIGHT;else if (usage === Tw2VertexElement.Type.BLENDWEIGHT) usage = Tw2VertexElement.Type.BLENDINDICES;
+	          }
+	          return {
+	            usage,
+	            usageIndex: type.usageIndex,
+	            offset: channel.offset,
+	            elements: channel.elements,
+	            type: GL_FLOAT$1
+	          };
+	        });
+	      } else if (srcM.vertex) {
 	        // Use the authored count for four-wide instance POSITION streams
 	        // so other channels' widths can be inferred from their
 	        // actual data rather than assumed from the VertexTypes
@@ -56573,7 +55082,7 @@
 	      }
 	      var ArrayType = Uint32Array,
 	        // bytes === 2 ? Uint16Array : Uint32Array,
-	        indexData = new ArrayType(indexLength),
+	        indexData = srcM._prepared ? srcM._prepared.indices : new ArrayType(indexLength),
 	        boundsEmpty = false;
 	      if (indexData.length) {
 	        var index = 0;
@@ -56588,7 +55097,7 @@
 	          area.count = _faces.length;
 	          if (srcA.minBounds) vec3$2.copy(area.minBounds, srcA.minBounds);
 	          if (srcA.maxBounds) vec3$2.copy(area.maxBounds, srcA.maxBounds);
-	          for (var ix = 0; ix < _faces.length; ix++) indexData[index++] = _faces[ix];
+	          if (!srcM._prepared) for (var ix = 0; ix < _faces.length; ix++) indexData[index++] = _faces[ix];
 	          mesh.areas.push(area);
 	          if (box3.bounds.isEmpty(area.minBounds, area.maxBounds)) boundsEmpty = true;
 	          startCount += _faces.length;
@@ -56612,7 +55121,7 @@
 	      // is emitted as it always was when the baker was off.
 	      {
 	        var _data3 = [];
-	        for (var _i = 0; _i < vertexCount; _i++) _data3[_i] = 1;
+	        if (!srcM._prepared) for (var _i = 0; _i < vertexCount; _i++) _data3[_i] = 1;
 	        vertexElements.push({
 	          usage: Tw2VertexElement.Type.TEXCOORD,
 	          usageIndex: 20,
@@ -56637,8 +55146,8 @@
 	      mesh.declaration = declaration;
 
 	      // Buffer data
-	      var bufferData = new Float32Array(vertexSize * vertexCount);
-	      if (bufferData.length) {
+	      var bufferData = srcM._prepared ? srcM._prepared.vertices : new Float32Array(vertexSize * vertexCount);
+	      if (!srcM._prepared && bufferData.length) {
 	        var _index = 0;
 	        for (var vs = 0; vs < vertexCount; vs++) {
 	          for (var v = 0; v < vertexElements.length; v++) {
@@ -56691,6 +55200,7 @@
 	      if (boundsEmpty) mesh.RecalculateAreaBounds(bufferData, indexData);
 	      mesh.RebuildBounds();
 	      res.meshes.push(mesh);
+	      yield;
 	    }
 	    for (var iModel = 0; iModel < models.length; iModel++) {
 	      var _srcM = models[iModel];
@@ -56745,7 +55255,6 @@
 	        }
 	      }
 	    }
-	    var curveReader = new Gr2CurveReader();
 
 	    /**
 	     * Handles different gr2_json curve variants
@@ -56755,36 +55264,14 @@
 	     * @returns {Tw2GeometryCurve}
 	     */
 	    function CreateCurve(json, dimension, name) {
-	      if (!json) throw new ErrCurveDataInvalid({
-	        name
-	      });
-	      if (json.uncompressed) {
-	        var _json$source$format, _json$source, _json$uncompressed$di, _ref, _json$source$degree, _json$source2;
-	        var _json$uncompressed = json.uncompressed,
-	          knots = _json$uncompressed.knots,
-	          controls = _json$uncompressed.controls;
-	        if (!Array.isArray(knots) || !Array.isArray(controls)) {
-	          throw new ErrCurveDataInvalid({
-	            name
-	          });
-	        }
-	        var curve = new Tw2GeometryCurve();
-	        curve.format = (_json$source$format = (_json$source = json.source) === null || _json$source === void 0 ? void 0 : _json$source.format) != null ? _json$source$format : json.format;
-	        curve.dimension = (_json$uncompressed$di = json.uncompressed.dimension) != null ? _json$uncompressed$di : dimension;
-	        curve.degree = (_ref = (_json$source$degree = (_json$source2 = json.source) === null || _json$source2 === void 0 ? void 0 : _json$source2.degree) != null ? _json$source$degree : json.degree) != null ? _ref : 0;
-	        curve.knots = Array.from(knots);
-	        curve.controls = Array.from(controls);
-	        return curve;
-	      }
-	      if (json.format !== undefined) {
-	        return curveReader.CreateTw2GeometryCurveFromJSON(json, dimension);
-	      }
-	      if (json.source && json.compressed) {
-	        return curveReader.CreateTw2GeometryCurveFromJSON(_objectSpread2(_objectSpread2({}, json.source), json.compressed), dimension);
-	      }
-	      throw new ErrCurveDataInvalid({
-	        name
-	      });
+	      var normalized = normalizeGr2Curve(json, dimension);
+	      var curve = new Tw2GeometryCurve();
+	      curve.format = normalized.format;
+	      curve.degree = normalized.degree;
+	      curve.dimension = normalized.uncompressed.dimension;
+	      curve.knots = normalized.uncompressed.knots;
+	      curve.controls = normalized.uncompressed.controls;
+	      return curve;
 	    }
 	    for (var iA = 0; iA < animations.length; iA++) {
 	      var _srcA = animations[iA];
@@ -56838,6 +55325,7 @@
 	        animation.trackGroups.push(trackGroup);
 	      }
 	      res.animations.push(animation);
+	      yield;
 	    }
 	  }
 
@@ -56879,30 +55367,7 @@
 	   * @returns {*}
 	   */
 	  static NormalizeGrannyKeys(obj) {
-	    if (!obj || typeof obj !== "object") return obj;
-	    if (Array.isArray(obj)) {
-	      for (var i = 0; i < obj.length; i++) {
-	        obj[i] = Gr2Reader.NormalizeGrannyKeys(obj[i]);
-	      }
-	      return obj;
-	    }
-	    var keyMap = {
-	      controlscaleoffsets: "controlScaleOffsets",
-	      knotscontrols: "knotsControls",
-	      scaleshear: "scaleShear"
-	    };
-	    for (var key of Object.keys(obj)) {
-	      var value = obj[key];
-	      var normalizedKey = keyMap[key.toLowerCase()];
-	      if (normalizedKey && normalizedKey !== key) {
-	        obj[normalizedKey] = value;
-	        delete obj[key];
-	      }
-	    }
-	    for (var _key of Object.keys(obj)) {
-	      obj[_key] = Gr2Reader.NormalizeGrannyKeys(obj[_key]);
-	    }
-	    return obj;
+	    return normalizeGrannyKeys(obj);
 	  }
 
 	  /**
@@ -61150,6 +59615,7 @@
 	    this._requestResponseType = null;
 	    this._extension = null;
 	    this._boundsDirty = true;
+	    this._gr2Task = null;
 	  }
 	  /**
 	   * Sets system mirror
@@ -61370,6 +59836,7 @@
 	   * Clears the geometry data
 	   */
 	  Clear() {
+	    this.CancelPreparation();
 	    for (var i = 0; i < this.meshes.length; i++) this.meshes[i].Clear();
 	    this.meshes.splice(0);
 	    this.models.splice(0);
@@ -61386,8 +59853,76 @@
 	   * @param {*} data
 	   * @param {Object} [options]
 	   */
+	  CancelPreparation() {
+	    var task = this._gr2Task;
+	    this._gr2Task = null;
+	    if (task) {
+	      var _task$cancel, _task$iterator;
+	      (_task$cancel = task.cancel) === null || _task$cancel === void 0 || _task$cancel.call(task);
+	      task.release();
+	      (_task$iterator = task.iterator) === null || _task$iterator === void 0 || _task$iterator.return();
+	    }
+	  }
+	  OnRequested(log) {
+	    this.CancelPreparation();
+	    return super.OnRequested(log);
+	  }
+	  OnError(error) {
+	    this.CancelPreparation();
+	    return super.OnError(error);
+	  }
 	  Prepare(data, options) {
+	    if (options !== null && options !== void 0 && options._gr2Task) {
+	      var task = options._gr2Task;
+	      if (task !== this._gr2Task) return;
+	      var started = resMan.tw2.now;
+	      var budget = Math.max(0, resMan._prepareBudget) * 1000;
+	      while (!task.iterator.next().done) {
+	        if (resMan.tw2.now - started >= budget) {
+	          resMan.Queue(this, null, options);
+	          return;
+	        }
+	      }
+	      this._gr2Task = null;
+	      this.RebuildBounds();
+	      this._custom = null;
+	      if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
+	      this.OnPrepared();
+	      return;
+	    }
 	    this.Clear();
+	    if (this._extension === "gr2") {
+	      var decodeOptions = {
+	        firstMeshOnly: (options === null || options === void 0 ? void 0 : options.firstMeshOnly) !== false,
+	        unpackTangents: !!(options !== null && options !== void 0 && options.unpackTangents)
+	      };
+	      var _task = {
+	        iterator: null,
+	        cancel: null,
+	        pending: true,
+	        release: () => {
+	          if (_task.pending) {
+	            _task.pending = false;
+	            resMan.RemovePendingLoad(this.path);
+	          }
+	        }
+	      };
+	      this._gr2Task = _task;
+	      resMan.AddPendingLoad(this.path);
+	      var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
+	      _task.cancel = decoded.cancel;
+	      decoded.then(json => {
+	        if (this._gr2Task !== _task) return;
+	        _task.iterator = Gr2Reader.BuildGeometryResSteps(json, this, options);
+	        resMan.Queue(this, null, {
+	          _gr2Task: _task
+	        });
+	        _task.release();
+	      }, error => {
+	        if (this._gr2Task === _task) this.OnError(error);
+	      });
+	      return;
+	    }
 	    var Reader = readers[this._extension];
 	    if (!Reader) throw new ErrResourceFormatUnsupported({
 	      format: this._extension
@@ -61707,6 +60242,7 @@
 	   * @returns {Boolean}
 	   */
 	  Unload(eventLog) {
+	    this.CancelPreparation();
 	    for (var i = 0; i < this.meshes.length; ++i) {
 	      var gl = device.gl;
 	      if (this.meshes[i].buffer) {
@@ -66689,6 +65225,9 @@
 	    this.maxConcurrentLoads = 8;
 	    /** Whether to use worker loader for raw fetch/parse operations. */
 	    this.useWorkerLoading = false;
+	    /** Decode GR2 data in a bounded worker pool when its script is available. */
+	    this.useGeometryWorkers = true;
+	    this.geometryWorkerUrl = undefined;
 	    /** Worker script URL used when worker loading is enabled. */
 	    this.workerLoaderUrl = null;
 	    /** RequestInit object or URL-scoped resolver used by all raw fetches. */
@@ -66871,7 +65410,7 @@
 	  Register(opt) {
 	    if (!opt) return;
 	    if ("events" in opt) this.AddEvents(opt.events);
-	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
+	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "useGeometryWorkers", "geometryWorkerUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
 	    if (opt.useWorkerLoading !== undefined) {
 	      this.UseWorkerLoading(opt.useWorkerLoading);
 	    } else if (opt.workerLoading !== undefined) {
@@ -156120,7 +154659,6 @@
 		ErrGeometryMeshEffectBinding: ErrGeometryMeshEffectBinding,
 		ErrGeometryMeshElementComponentsMissing: ErrGeometryMeshElementComponentsMissing,
 		ErrGeometryMeshMissingParticleElement: ErrGeometryMeshMissingParticleElement,
-		ErrGr2CurveDataFormatUnsupported: ErrGr2CurveDataFormatUnsupported,
 		ErrIndexBounds: ErrIndexBounds,
 		ErrRawDataElementNotFound: ErrRawDataElementNotFound,
 		ErrResourceFormatInvalid: ErrResourceFormatInvalid,
@@ -156143,26 +154681,6 @@
 		GLESPerObjectDataEveSpaceObject: GLESPerObjectDataEveSpaceObject,
 		GR2JsonReader: GR2JsonReader,
 		GltfReader: GltfReader,
-		Gr2CurveDataD3Constant32f: Gr2CurveDataD3Constant32f,
-		Gr2CurveDataD3I1K16uC16u: Gr2CurveDataD3I1K16uC16u,
-		Gr2CurveDataD3I1K32fC32f: Gr2CurveDataD3I1K32fC32f,
-		Gr2CurveDataD3I1K8uC8u: Gr2CurveDataD3I1K8uC8u,
-		Gr2CurveDataD3K16uC16u: Gr2CurveDataD3K16uC16u,
-		Gr2CurveDataD3K8uC8u: Gr2CurveDataD3K8uC8u,
-		Gr2CurveDataD4Constant32f: Gr2CurveDataD4Constant32f,
-		Gr2CurveDataD4nK16uC15u: Gr2CurveDataD4nK16uC15u,
-		Gr2CurveDataD4nK8uC7u: Gr2CurveDataD4nK8uC7u,
-		Gr2CurveDataD9I1K16uC16u: Gr2CurveDataD9I1K16uC16u,
-		Gr2CurveDataD9I1K8uC8u: Gr2CurveDataD9I1K8uC8u,
-		Gr2CurveDataD9I3K16uC16u: Gr2CurveDataD9I3K16uC16u,
-		Gr2CurveDataD9I3K8uC8u: Gr2CurveDataD9I3K8uC8u,
-		Gr2CurveDataDaConstant32f: Gr2CurveDataDaConstant32f,
-		Gr2CurveDataDaIdentity: Gr2CurveDataDaIdentity,
-		Gr2CurveDataDaK16uC16u: Gr2CurveDataDaK16uC16u,
-		Gr2CurveDataDaK32fC32f: Gr2CurveDataDaK32fC32f,
-		Gr2CurveDataDaK8uC8u: Gr2CurveDataDaK8uC8u,
-		Gr2CurveDataDaKeyframes32f: Gr2CurveDataDaKeyframes32f,
-		Gr2CurveReader: Gr2CurveReader,
 		Gr2Reader: Gr2Reader,
 		GsfReader: GsfReader,
 		OBJReader: OBJReader,

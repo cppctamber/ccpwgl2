@@ -1,3 +1,5 @@
+import { gr2WorkerPool } from "../reader/geometry/Gr2WorkerPool";
+import { prepareGr2 } from "../reader/geometry/Gr2Preparation";
 import { meta } from "utils";
 import { resMan, device } from "global";
 import { box3, sph3, vec3, vertex } from "math";
@@ -55,6 +57,7 @@ export class Tw2GeometryRes extends Tw2Resource
     _requestResponseType = null;
     _extension = null;
     _boundsDirty = true;
+    _gr2Task = null;
 
     /**
      * Sets system mirror
@@ -315,6 +318,7 @@ export class Tw2GeometryRes extends Tw2Resource
      */
     Clear()
     {
+        this.CancelPreparation();
         for (let i = 0; i < this.meshes.length; i++) this.meshes[i].Clear();
         this.meshes.splice(0);
         this.models.splice(0);
@@ -331,9 +335,83 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {*} data
      * @param {Object} [options]
      */
+    CancelPreparation()
+    {
+        const task = this._gr2Task;
+        this._gr2Task = null;
+        if (task)
+        {
+            task.cancel?.();
+            task.release();
+            task.iterator?.return();
+        }
+    }
+
+    OnRequested(log)
+    {
+        this.CancelPreparation();
+        return super.OnRequested(log);
+    }
+
+    OnError(error)
+    {
+        this.CancelPreparation();
+        return super.OnError(error);
+    }
+
     Prepare(data, options)
     {
+        if (options?._gr2Task)
+        {
+            const task = options._gr2Task;
+            if (task !== this._gr2Task) return;
+            const started = resMan.tw2.now;
+            const budget = Math.max(0, resMan._prepareBudget) * 1000;
+            while (!task.iterator.next().done)
+            {
+                if (resMan.tw2.now - started >= budget)
+                {
+                    resMan.Queue(this, null, options);
+                    return;
+                }
+            }
+            this._gr2Task = null;
+            this.RebuildBounds();
+            this._custom = null;
+            if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
+            this.OnPrepared();
+            return;
+        }
+
         this.Clear();
+        if (this._extension === "gr2")
+        {
+            const decodeOptions = {
+                firstMeshOnly: options?.firstMeshOnly !== false,
+                unpackTangents: !!options?.unpackTangents
+            };
+            const task = { iterator: null, cancel: null, pending: true, release: () =>
+            {
+                if (task.pending) { task.pending = false; resMan.RemovePendingLoad(this.path); }
+            } };
+            this._gr2Task = task;
+            resMan.AddPendingLoad(this.path);
+            const decoded = resMan.useGeometryWorkers
+                ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl)
+                : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
+            task.cancel = decoded.cancel;
+            decoded.then(json =>
+            {
+                if (this._gr2Task !== task) return;
+                task.iterator = Gr2Reader.BuildGeometryResSteps(json, this, options);
+                resMan.Queue(this, null, { _gr2Task: task });
+                task.release();
+            }, error =>
+            {
+                if (this._gr2Task === task) this.OnError(error);
+            });
+            return;
+        }
 
         const Reader = readers[this._extension];
         if (!Reader) throw new ErrResourceFormatUnsupported({ format: this._extension });
@@ -729,6 +807,7 @@ export class Tw2GeometryRes extends Tw2Resource
      */
     Unload(eventLog)
     {
+        this.CancelPreparation();
         for (let i = 0; i < this.meshes.length; ++i)
         {
             const gl = device.gl;

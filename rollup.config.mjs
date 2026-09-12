@@ -188,6 +188,11 @@ function output(file, extra = {})
 
 export default [
     {
+        input: "src/core/reader/geometry/gr2.worker.js",
+        output: { file: "dist/ccpwgl2_gr2.worker.js", format: "iife", inlineDynamicImports: true, sourcemap: false },
+        plugins: plugins()
+    },
+    {
         input: "src/index.js",
         output: output("dist/ccpwgl2_int.js"),
         plugins: plugins(),

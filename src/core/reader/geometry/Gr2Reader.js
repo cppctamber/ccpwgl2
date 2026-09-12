@@ -1,8 +1,7 @@
-import { restoreGr2VertexChannels } from "./Gr2Preparation";
 import { CjsGr2Format } from "@carbonenginejs/runtime/resource/formats/gr2";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { Tw2Error } from "core/Tw2Error";
-import { Gr2CurveReader } from "core/reader/granny";
+import { prepareGr2, normalizeGr2Curve, normalizeGrannyKeys } from "./Gr2Preparation";
 import { vec3, quat, mat4, box3, mat3 } from "math";
 import { GL_FLOAT } from "constant/gl";
 import { device } from "global/tw2";
@@ -108,18 +107,13 @@ export class Gr2Reader
 
         options = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
 
-        const raw = CjsGr2Format.readRaw(data);
-        if (CjsGr2Format.gsf.isRaw(raw))
+        let json;
+        try { json = prepareGr2(data, options); }
+        catch (error)
         {
-            throw new ErrGr2GeometryExpected();
+            if (error.name === "ErrGr2GeometryExpected") throw new ErrGr2GeometryExpected();
+            throw error;
         }
-
-        const json = CjsGr2Format.read(raw, {
-            emit: "json",
-            unpackTangents: options.unpackTangents
-        });
-
-        restoreGr2VertexChannels(raw, json);
 
         const t1 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
 
@@ -143,6 +137,11 @@ export class Gr2Reader
      * @param {Object} [options]
      */
     static BuildGeometryRes(data, res, options)
+    {
+        for (const step of this.BuildGeometryResSteps(data, res, options)) { /* Synchronous compatibility path. */ }
+    }
+
+    static * BuildGeometryResSteps(data, res, options)
     {
         data = Gr2Reader.NormalizeGrannyKeys(data);
 
@@ -183,7 +182,24 @@ export class Gr2Reader
                 vertexSize = 0,
                 vertexElements = [];
 
-            if (srcM.vertex)
+            if (srcM._prepared)
+            {
+                vertexCount = srcM._prepared.vertexCount;
+                vertexSize = srcM._prepared.vertexSize - 1;
+                vertexElements = srcM._prepared.channels.map(channel =>
+                {
+                    const type = VertexTypes[channel.key.toUpperCase()];
+                    if (!type) throw new Error(`Unsupported vertex type: ${channel.key}`);
+                    let usage = type.usage;
+                    if (options.swapBlendWeightsAndIndices)
+                    {
+                        if (usage === Tw2VertexElement.Type.BLENDINDICES) usage = Tw2VertexElement.Type.BLENDWEIGHT;
+                        else if (usage === Tw2VertexElement.Type.BLENDWEIGHT) usage = Tw2VertexElement.Type.BLENDINDICES;
+                    }
+                    return { usage, usageIndex: type.usageIndex, offset: channel.offset, elements: channel.elements, type: GL_FLOAT };
+                });
+            }
+            else if (srcM.vertex)
             {
                 // Use the authored count for four-wide instance POSITION streams
                 // so other channels' widths can be inferred from their
@@ -261,7 +277,7 @@ export class Gr2Reader
             }
 
             let ArrayType = Uint32Array, // bytes === 2 ? Uint16Array : Uint32Array,
-                indexData = new ArrayType(indexLength),
+                indexData = srcM._prepared ? srcM._prepared.indices : new ArrayType(indexLength),
                 boundsEmpty = false;
 
             if (indexData.length)
@@ -278,7 +294,7 @@ export class Gr2Reader
                     area.count = faces.length;
                     if (srcA.minBounds) vec3.copy(area.minBounds, srcA.minBounds);
                     if (srcA.maxBounds) vec3.copy(area.maxBounds, srcA.maxBounds);
-                    for (let ix = 0; ix < faces.length; ix++) indexData[index++] = faces[ix];
+                    if (!srcM._prepared) for (let ix = 0; ix < faces.length; ix++) indexData[index++] = faces[ix];
                     mesh.areas.push(area);
                     if (box3.bounds.isEmpty(area.minBounds, area.maxBounds)) boundsEmpty = true;
 
@@ -304,7 +320,7 @@ export class Gr2Reader
             // is emitted as it always was when the baker was off.
             {
                 const data = [];
-                for (let i = 0; i < vertexCount; i++) data[i] = 1;
+                if (!srcM._prepared) for (let i = 0; i < vertexCount; i++) data[i] = 1;
                 vertexElements.push({
                     usage: Tw2VertexElement.Type.TEXCOORD,
                     usageIndex: 20,
@@ -330,8 +346,8 @@ export class Gr2Reader
             mesh.declaration = declaration;
 
             // Buffer data
-            let bufferData = new Float32Array(vertexSize * vertexCount);
-            if (bufferData.length)
+            let bufferData = srcM._prepared ? srcM._prepared.vertices : new Float32Array(vertexSize * vertexCount);
+            if (!srcM._prepared && bufferData.length)
             {
                 let index = 0;
                 for (let vs = 0; vs < vertexCount; vs++)
@@ -390,6 +406,7 @@ export class Gr2Reader
             mesh.RebuildBounds();
 
             res.meshes.push(mesh);
+            yield;
         }
 
         for (let iModel = 0; iModel < models.length; iModel++)
@@ -470,7 +487,7 @@ export class Gr2Reader
             }
         }
 
-        const curveReader = new Gr2CurveReader();
+
 
         /**
          * Handles different gr2_json curve variants
@@ -481,42 +498,14 @@ export class Gr2Reader
          */
         function CreateCurve(json, dimension, name)
         {
-            if (!json) throw new ErrCurveDataInvalid({ name });
-
-            if (json.uncompressed)
-            {
-                const { knots, controls } = json.uncompressed;
-                if (!Array.isArray(knots) || !Array.isArray(controls))
-                {
-                    throw new ErrCurveDataInvalid({ name });
-                }
-
-                const curve = new Tw2GeometryCurve();
-                curve.format = json.source?.format ?? json.format;
-                curve.dimension = json.uncompressed.dimension ?? dimension;
-                curve.degree = json.source?.degree ?? json.degree ?? 0;
-                curve.knots = Array.from(knots);
-                curve.controls = Array.from(controls);
-                return curve;
-            }
-
-            if (json.format !== undefined)
-            {
-                return curveReader.CreateTw2GeometryCurveFromJSON(json, dimension);
-            }
-
-            if (json.source && json.compressed)
-            {
-                return curveReader.CreateTw2GeometryCurveFromJSON(
-                    {
-                        ...json.source,
-                        ...json.compressed
-                    },
-                    dimension
-                );
-            }
-
-            throw new ErrCurveDataInvalid({ name });
+            const normalized = normalizeGr2Curve(json, dimension);
+            const curve = new Tw2GeometryCurve();
+            curve.format = normalized.format;
+            curve.degree = normalized.degree;
+            curve.dimension = normalized.uncompressed.dimension;
+            curve.knots = normalized.uncompressed.knots;
+            curve.controls = normalized.uncompressed.controls;
+            return curve;
         }
 
 
@@ -587,6 +576,7 @@ export class Gr2Reader
                 animation.trackGroups.push(trackGroup);
             }
             res.animations.push(animation);
+            yield;
         }
     }
 
@@ -640,41 +630,7 @@ export class Gr2Reader
      */
     static NormalizeGrannyKeys(obj)
     {
-        if (!obj || typeof obj !== "object") return obj;
-
-        if (Array.isArray(obj))
-        {
-            for (let i = 0; i < obj.length; i++)
-            {
-                obj[i] = Gr2Reader.NormalizeGrannyKeys(obj[i]);
-            }
-            return obj;
-        }
-
-        const keyMap = {
-            controlscaleoffsets: "controlScaleOffsets",
-            knotscontrols: "knotsControls",
-            scaleshear: "scaleShear"
-        };
-
-        for (const key of Object.keys(obj))
-        {
-            const value = obj[key];
-            const normalizedKey = keyMap[key.toLowerCase()];
-
-            if (normalizedKey && normalizedKey !== key)
-            {
-                obj[normalizedKey] = value;
-                delete obj[key];
-            }
-        }
-
-        for (const key of Object.keys(obj))
-        {
-            obj[key] = Gr2Reader.NormalizeGrannyKeys(obj[key]);
-        }
-
-        return obj;
+        return normalizeGrannyKeys(obj);
     }
 
     /**
