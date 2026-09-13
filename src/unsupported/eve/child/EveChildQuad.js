@@ -1,11 +1,12 @@
 import { meta } from "utils";
 import { mat4, quat, sph3, vec2, vec3, vec4 } from "math";
 import { EveChild } from "eve/child";
+import { EveChildUpdateParams } from "../../../eve/EveChildUpdateParams";
 import { device, resMan } from "global/tw2";
 import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from "core";
 
 
-// Rendering is present; Update still uses the legacy parent-transform arguments.
+// Rendering is present; Update takes EveChildUpdateParams like its siblings.
 @meta.partialImplementation
 @meta.define("EveChildQuad", true)
 export class EveChildQuad extends EveChild
@@ -193,13 +194,20 @@ export class EveChildQuad extends EveChild
 
     /**
      * Per frame update
+     *
+     * Takes the params block, as every child has since a6f779be. This class was
+     * missed by that change and kept `(dt, parentTransform, perObjectData)`, so
+     * `EveChildContainer` handed it an EveChildUpdateParams where a matrix was
+     * expected: the copy read no numeric indices, the world transform went NaN
+     * every frame, and the flare quads drew almost nothing.
      * @param {Number} dt
-     * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} perObjectData
+     * @param {EveChildUpdateParams} [params]
      */
-    Update(dt, parentTransform = EveChild.IDENTITY, perObjectData)
+    Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
         if (!this.display) return;
+
+        const parentTransform = params.localToWorldTransform;
 
         if (this._dirty)
         {
