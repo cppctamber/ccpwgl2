@@ -208,6 +208,10 @@ export class Tw2CarbonShadowProducer
                 index: i,
                 cellsX: this._activeCellsX,
                 cellsY: this._activeCellsY,
+                // Y-flipped sessions store the atlas top-down, as D3D does, so
+                // the lookup takes Carbon's own (0.5, -0.5) again. Same switch
+                // as the reversed depth buffer (`Tw2Device.clipYFlip`).
+                yFlipped: Tw2CarbonData.GetDepthBufferReversed(),
                 tileSize: this.tileSize,
                 disableShimmer: this.disableShimmer
             });
@@ -384,8 +388,15 @@ export class Tw2CarbonShadowProducer
         out[splitInfo + 2] = 0;
         out[splitInfo + 3] = 0;
 
-        mat4.transpose(_transposed, this._projectionInverse);
-        out.set(_transposed, projInv);
+        // On a reversed depth buffer `Tw2CarbonData.PackPerFramePS` has already
+        // written Carbon's own `Inverse(Transpose(reversedProjection))` here, and
+        // the rendering is Y-flipped like D3D, so `BuildProjectionInverse`'s GL
+        // depth remap and Y negation would each be one conversion too many.
+        if (!Tw2CarbonData.GetDepthBufferReversed())
+        {
+            mat4.transpose(_transposed, this._projectionInverse);
+            out.set(_transposed, projInv);
+        }
 
         return out;
     }
