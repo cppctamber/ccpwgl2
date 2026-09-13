@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { tw2 } from "global";
 import { Tr2PPEffect } from "./Tr2PPEffect";
 
 
@@ -15,10 +16,11 @@ const Shape = Object.freeze({
 /**
  * Depth of field, a separate bokeh chain rather than part of the composite
  *
- * NOT IMPLEMENTED. 21 shipped assets populate it.
+ * Drawn by `Tw2DepthOfFieldRenderer`. 21 shipped assets populate it.
  *
- * Note Carbon gates this on a process-wide switch as well as the effect's own
- * scale, so a populated slot does not mean the effect ran even in Carbon.
+ * Carbon gates this on a process-wide switch as well as the effect's own
+ * scale (the `postprocessDofEnabled` setting in `tw2.settings`, off by default),
+ * so a populated slot does not mean the effect runs - in Carbon or here.
  *
  * @ccp Tr2PPDepthOfFieldEffect
  */
@@ -55,7 +57,9 @@ export class Tr2PPDepthOfFieldEffect extends Tr2PPEffect
      */
     IsActive()
     {
-        return this.display && this.scale > 0;
+        // Tr2PPDepthOfFieldEffect.cpp:25-28; the setting is registered at
+        // Tr2PPDepthOfFieldEffect.cpp:7-8.
+        return tw2.settings.GetValue("postprocessDofEnabled") && this.display && this.scale > 0;
     }
 
 }

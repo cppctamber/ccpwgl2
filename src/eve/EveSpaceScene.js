@@ -18,7 +18,7 @@ import {
     Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
+    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
     RM_DECAL,
@@ -533,6 +533,7 @@ export class EveSpaceScene extends meta.Model
     _sceneTarget = null;
     _postProcessRenderer = null;
     _godRaysRenderer = null;
+    _depthOfFieldRenderer = null;
     _depthAccumulator = null;
     _depthContext = null;
     _depthContextReport = null;
@@ -1599,6 +1600,10 @@ export class EveSpaceScene extends meta.Model
         // thing Carbon does to its own scene image.
         this.RenderGodRays(sceneTarget);
 
+        // After god rays, before the composite - Carbon's order
+        // (Tr2PostProcessRenderer.cpp:715-724).
+        this.RenderDepthOfField(sceneTarget);
+
         this.EndSceneTarget(sceneTarget);
 
         if (this.starfield)
@@ -2059,6 +2064,39 @@ export class EveSpaceScene extends meta.Model
         {
             this.visible.post = false;
             if (tw2.Warning) tw2.Warning({ name: "God rays", description: String(err && err.message || err) });
+            return false;
+        }
+    }
+
+    /**
+     * Renders Carbon's depth of field over the scene image.
+     *
+     * Needs an offscreen scene target (it reads and writes the image), the
+     * Carbon depth prepass, the `postprocessDofEnabled` setting and an active
+     * `postProcess2.depthOfField`. Self-disables on error like god rays.
+     * @param {Tw2RenderTarget|null} sceneTarget
+     * @returns {Boolean}
+     */
+    RenderDepthOfField(sceneTarget)
+    {
+        if (!sceneTarget || !this.visible.post || !this.postProcess2) return false;
+
+        const depthOfField = this.postProcess2.GetIfAvailable("depthOfField");
+        if (!depthOfField) return false;
+
+        if (!this._depthOfFieldRenderer) this._depthOfFieldRenderer = new Tw2DepthOfFieldRenderer();
+
+        const depthHandler = this.GetDepthHandler(false);
+        const depth = depthHandler && depthHandler.rendered ? depthHandler.depthTextureRes : null;
+
+        try
+        {
+            return this._depthOfFieldRenderer.Render(depthOfField, depth, sceneTarget);
+        }
+        catch (err)
+        {
+            this.visible.post = false;
+            if (tw2.Warning) tw2.Warning({ name: "Depth of field", description: String(err && err.message || err) });
             return false;
         }
     }

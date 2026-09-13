@@ -4,6 +4,7 @@ import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";
 import { Tw2InputMan } from "./Tw2InputMan";
 import { Tw2AudioMan } from "./Tw2AudioMan";
+import { TriSettings } from "@carbonenginejs/runtime/trinity/core";
 import { path } from "../reader/Tw2BlackPropertyReaders";
 import { ErrSingletonInstantiation } from "../Tw2Error";
 import * as consts from "constant";
@@ -49,6 +50,21 @@ export class Tw2Library extends Tw2EventEmitter
      * @type {Tw2VariableStore}
      */
     variables = new stores.Tw2VariableStore(this.variableTypes);
+
+    /**
+     * Named render settings - Carbon's `Tr2Renderer::GetSettings()` registry,
+     * filled at file scope there by `TRI_REGISTER_SETTING`
+     * (`TriSettingsRegistrar.h`). The one home for engine switches: a Carbon
+     * setting keeps Carbon's name; a ccpwgl-only switch registered here must say
+     * so where it is registered.
+     *
+     * Read with `settings.GetValue(name)`, write with `settings.SetValue(name,
+     * value)` (type-checked), or pass `{ settings: { name: value } }` to Register.
+     * @type {TriSettings}
+     */
+    settings = new TriSettings()
+        // Tr2PPDepthOfFieldEffect.cpp:7-8 - required by its IsActive.
+        .RegisterSetting("postprocessDofEnabled", false);
 
     /**
      * Model property type store
@@ -196,9 +212,13 @@ export class Tw2Library extends Tw2EventEmitter
      * the size dimming, to the colour only - it changes no light's radius,
      * position or falloff, so it cannot alter which surfaces a light reaches,
      * only how strongly.
+     *
+     * Default 0.1 (operator, 2026-09-13): dx11 local lights read far too bright
+     * after the reversed-buffer / clip-Y flip work. The cause is not established.
      * @type {Number}
      */
-    localLightBrightness = 1;
+    localLightBrightness = 0.1;
+
 
     /**
      * Enables experimental Carbon-shaped render batch context
@@ -698,6 +718,13 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.forceUberDepthOff !== undefined) this.forceUberDepthOff = !!opt.forceUberDepthOff;
         if (opt.carbonRenderStates !== undefined) this.carbonRenderStates = String(opt.carbonRenderStates);
         if (opt.localLightBrightness !== undefined) this.localLightBrightness = Number(opt.localLightBrightness);
+        if (opt.settings !== undefined)
+        {
+            for (const name in opt.settings)
+            {
+                if (opt.settings.hasOwnProperty(name)) this.settings.SetValue(name, opt.settings[name]);
+            }
+        }
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.enableControllerLodThrottling !== undefined) this.enableControllerLodThrottling = !!opt.enableControllerLodThrottling;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
