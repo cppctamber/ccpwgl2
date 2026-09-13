@@ -203101,7 +203101,7 @@
 
 	var _dec$4m, _dec2$3Y, _dec3$3A, _dec4$34, _dec5$2F, _dec6$2k, _dec7$1W, _dec8$1H, _dec9$1q, _dec0$1h, _dec1$19, _dec10$Z, _dec11$U, _dec12$L, _dec13$F, _dec14$B, _dec15$x, _class$4m, _class2$3X, _descriptor$3T, _descriptor2$3r, _descriptor3$2W, _descriptor4$2x, _descriptor5$2d, _descriptor6$1M, _descriptor7$1r, _descriptor8$1g, _descriptor9$18, _descriptor0$14, _descriptor1$S, _descriptor10$M, _descriptor11$D, _descriptor12$A, _descriptor13$w, _EveChildQuad;
 
-	// Rendering is present; Update still uses the legacy parent-transform arguments.
+	// Rendering is present; Update takes EveChildUpdateParams like its siblings.
 	var EveChildQuad = (_dec$4m = partialImplementation, _dec2$3Y = define("EveChildQuad", true), _dec3$3A = boolean, _dec4$34 = string, _dec5$2F = float, _dec6$2k = color, _dec7$1W = float, _dec8$1H = float, _dec9$1q = boolean, _dec0$1h = struct(), _dec1$19 = matrix4, _dec10$Z = boolean, _dec11$U = float, _dec12$L = quaternion, _dec13$F = vector3, _dec14$B = vector3, _dec15$x = boolean, _dec$4m(_class$4m = _dec2$3Y(_class$4m = (_class2$3X = (_EveChildQuad = class EveChildQuad extends EveChild {
 	  constructor() {
 	    super(...arguments);
@@ -203235,14 +203235,19 @@
 
 	  /**
 	   * Per frame update
+	   *
+	   * Takes the params block, as every child has since a6f779be. This class was
+	   * missed by that change and kept `(dt, parentTransform, perObjectData)`, so
+	   * `EveChildContainer` handed it an EveChildUpdateParams where a matrix was
+	   * expected: the copy read no numeric indices, the world transform went NaN
+	   * every frame, and the flare quads drew almost nothing.
 	   * @param {Number} dt
-	   * @param {mat4} parentTransform
-	   * @param {Tw2PerObjectData} perObjectData
+	   * @param {EveChildUpdateParams} [params]
 	   */
 	  Update(dt) {
-	    var parentTransform = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChild.IDENTITY;
-	    var perObjectData = arguments.length > 2 ? arguments[2] : undefined;
+	    var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : EveChildUpdateParams.DEFAULT;
 	    if (!this.display) return;
+	    var parentTransform = params.localToWorldTransform;
 	    if (this._dirty) {
 	      mat4$1.copy(this._parentTransform, parentTransform);
 	    } else if (!mat4$1.equals(this._parentTransform, parentTransform)) {
