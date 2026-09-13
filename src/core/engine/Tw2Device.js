@@ -205,9 +205,14 @@ export class Tw2Device extends Tw2EventEmitter
      *
      * Must be set BEFORE any effect loads, for the same reason as
      * `clipDepthRange`. See `/docs/contracts/depth-convention.md`.
-     * @type {String}
+     *
+     * Read from `tw2.settings` ("depthMode"); set it there.
+     * @returns {String}
      */
-    depthMode = "auto";
+    get depthMode()
+    {
+        return this.tw2.settings.GetValue("depthMode");
+    }
 
     /**
      * Whether the depth buffer is reversed for this session.
@@ -240,9 +245,14 @@ export class Tw2Device extends Tw2EventEmitter
      * precision. Without it GL maps NDC [-1, 1] to [0, 1] in float, and the
      * reversed values near 0 (distant surfaces) lose most of their bits in the
      * `2z - w` / `(ndc + 1) / 2` round trip.
-     * @type {Boolean}
+     *
+     * Read from `tw2.settings` ("clipControl"); set it there.
+     * @returns {Boolean}
      */
-    clipControl = true;
+    get clipControl()
+    {
+        return this.tw2.settings.GetValue("clipControl");
+    }
 
     /**
      * True when the clip range is ZERO_TO_ONE for this session.

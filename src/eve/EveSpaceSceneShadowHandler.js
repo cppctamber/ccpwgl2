@@ -135,7 +135,7 @@ export class EveSpaceSceneShadowHandler
             return report;
         }
 
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
         const accumulator = useBatchContext
             ? this.GetBatchContext()
             : (this._accumulator || (this._accumulator = new Tw2BatchAccumulator()));

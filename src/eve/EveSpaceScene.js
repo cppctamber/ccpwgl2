@@ -976,7 +976,7 @@ export class EveSpaceScene extends meta.Model
         // fallback for the pixel-size measure the frustum now provides.
         const projScaleY = d.projection[5] || 1;
         collector.Resolve({
-            brightness: tw2.localLightBrightness,
+            brightness: tw2.settings.GetValue("localLightBrightness"),
             frustum: this._frustum,
             frustumPlanes: this._frustum.GetPlanes(),
             viewportHeight: d.viewportHeight || 0,
@@ -1336,7 +1336,7 @@ export class EveSpaceScene extends meta.Model
         this.PrepareLod(dt, show);
 
         this._accumulator.Clear();
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
         const mainAccumulator = useBatchContext ? this.GetBatchContext() : this._accumulator;
         if (mainAccumulator !== this._accumulator) mainAccumulator.Clear();
 
@@ -1728,7 +1728,7 @@ export class EveSpaceScene extends meta.Model
      */
     GetShadowHandler(create = true)
     {
-        if (!tw2.enableExperimentalShadows)
+        if (!tw2.settings.GetValue("enableExperimentalShadows"))
         {
             return null;
         }
@@ -2186,7 +2186,7 @@ export class EveSpaceScene extends meta.Model
      */
     RenderDepth(dt, force)
     {
-        if (tw2.enableExperimentalBatchContext)
+        if (tw2.settings.GetValue("enableExperimentalBatchContext"))
         {
             return this.RenderDepthWithBatchContext(dt, force);
         }
@@ -2196,7 +2196,7 @@ export class EveSpaceScene extends meta.Model
             return false;
         }
 
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
 
         const depthContext = useBatchContext ? this.GetDepthContext() : null;
 
@@ -2568,7 +2568,7 @@ export class EveSpaceScene extends meta.Model
      */
     RenderDistortion(dt)
     {
-        if (tw2.enableExperimentalBatchContext)
+        if (tw2.settings.GetValue("enableExperimentalBatchContext"))
         {
             return this.RenderDistortionWithBatchContext(dt);
         }
@@ -2610,7 +2610,7 @@ export class EveSpaceScene extends meta.Model
 
         this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
 
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
         const distortionContext = useBatchContext ? this.GetDistortionContext() : null;
 
         if (distortionContext)
@@ -2911,7 +2911,7 @@ export class EveSpaceScene extends meta.Model
             return handler.ApplyPerFrameData(this);
         }
 
-        if (this.enableShadows || !tw2.enableExperimentalShadows)
+        if (this.enableShadows || !tw2.settings.GetValue("enableExperimentalShadows"))
         {
             device.perFrameShadowPSData = this._perFrameShadowPS;
             device.perFrameShadowVSData = this._perFrameShadowVS;

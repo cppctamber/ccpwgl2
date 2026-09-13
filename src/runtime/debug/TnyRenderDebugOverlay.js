@@ -923,7 +923,7 @@ export class TnyRenderDebugOverlay
         const distortion = scene.GetDistortionContextReport?.();
 
         return [
-            `experimental: ${!!tw2.enableExperimentalBatchContext}`,
+            `experimental: ${!!tw2.settings.GetValue("enableExperimentalBatchContext")}`,
             `depth: ${TnyRenderDebugOverlay.FormatPassReport(depth, scene._depthAccumulator?.length)}`,
             `dist: ${TnyRenderDebugOverlay.FormatPassReport(distortion, scene._distortionAccumulator?.length)}`
         ];
@@ -938,7 +938,7 @@ export class TnyRenderDebugOverlay
     {
         const report = TnyRenderDebugOverlay.GetSceneShadowHandler(scene)?.GetReport?.();
         return [
-            `enabled: ${!!tw2.enableExperimentalShadows}`,
+            `enabled: ${!!tw2.settings.GetValue("enableExperimentalShadows")}`,
             `status: ${report?.status || "none"}`,
             `rendered: ${report?.rendered ?? 0}/${report?.collected ?? 0}`
         ];

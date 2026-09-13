@@ -4,7 +4,7 @@ import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";
 import { Tw2InputMan } from "./Tw2InputMan";
 import { Tw2AudioMan } from "./Tw2AudioMan";
-import { TriSettings } from "@carbonenginejs/runtime/trinity/core";
+import { Tw2Settings } from "./Tw2Settings";
 import { path } from "../reader/Tw2BlackPropertyReaders";
 import { ErrSingletonInstantiation } from "../Tw2Error";
 import * as consts from "constant";
@@ -58,13 +58,52 @@ export class Tw2Library extends Tw2EventEmitter
      * setting keeps Carbon's name; a ccpwgl-only switch registered here must say
      * so where it is registered.
      *
-     * Read with `settings.GetValue(name)`, write with `settings.SetValue(name,
-     * value)` (type-checked), or pass `{ settings: { name: value } }` to Register.
-     * @type {TriSettings}
+     * Registration below sets the defaults. Change values with
+     * `settings.SetValues({ name: value })` and read them with
+     * `settings.GetValues()` (ccpwgl's model convention), or pass
+     * `{ settings: { name: value } }` to Register. `GetValue(name)` stays for
+     * single per-frame reads. See Tw2Settings.
+     * @type {Tw2Settings}
      */
-    settings = new TriSettings()
-        // Tr2PPDepthOfFieldEffect.cpp:7-8 - required by its IsActive.
-        .RegisterSetting("postprocessDofEnabled", false);
+    settings = new Tw2Settings()
+        // Carbon: Tr2PPDepthOfFieldEffect.cpp:7-8 - required by its IsActive.
+        .RegisterSetting("postprocessDofEnabled", false)
+
+        // ccpwgl-only - not Carbon settings.
+        //
+        // enableExperimentalShadows: the experimental EveSpaceSceneShadowHandler
+        // path (untrusted scaffolding; Carbon shadows are `scene.carbonShadows`).
+        .RegisterSetting("enableExperimentalShadows", false)
+        // enableExperimentalBatchContext: the Carbon-shaped render batch context.
+        .RegisterSetting("enableExperimentalBatchContext", false)
+        // forceUberDepthOff: TEMPORARY. Forces every UBER_DEPTH permutation OFF.
+        // UBER_DEPTH_ON fades a surface against DepthMap; without a published
+        // DepthMap the fade resolves to zero and the surface contributes no
+        // pixels (smart light beams on ac2_t2a: 0 px on, 882/40/170 off). A
+        // permutation OPTION, so config.js path/tier pins cannot reach it. Also
+        // gates the flarequad tier pins. Remove with them once DepthMap work is
+        // verified - a forced option holds surfaces below what was authored.
+        .RegisterSetting("forceUberDepthOff", true)
+        // carbonRenderStates: which Carbon passes apply their declared render
+        // states. "allowlist": Tw2CarbonShaderFactory.RENDER_STATE_PATHS only;
+        // "all": every pass, the A/B switch for re-enabling families. Read when
+        // an effect is prepared, so set it before anything loads.
+        .RegisterSetting("carbonRenderStates", "allowlist")
+        // localLightBrightness: a blanket multiplier on every collected local
+        // light's colour - a KNOB, not a fix. Tr2LightManager::AddLight scales
+        // colour by RADIUS (cpp:342-346), neutral only if the shader falloff
+        // divides it back out; whether every path of ours does is unverified,
+        // and radii of 10-100 make a mismatch an order-of-magnitude error. A
+        // value other than 1 means the attenuation still owes an explanation.
+        // Applied to colour only, after premultiply and size dimming. Default
+        // 0.1 (operator, 2026-09-13): dx11 local lights read far too bright
+        // after the reversed-buffer / clip-Y flip work; cause not established.
+        .RegisterSetting("localLightBrightness", 0.1)
+        // depthMode: "auto" | "reversed-buffer" | "legacy" - see Tw2Device.depthMode.
+        .RegisterSetting("depthMode", "auto")
+        // clipControl: use EXT_clip_control ZERO_TO_ONE on a reversed buffer
+        // when available - see Tw2Device.clipControl.
+        .RegisterSetting("clipControl", true);
 
     /**
      * Model property type store
@@ -152,79 +191,22 @@ export class Tw2Library extends Tw2EventEmitter
     _debugMode = false;
 
     /**
-     * Enables experimental EveSpaceScene shadow rendering path
-     * @type {boolean}
-     */
-    enableExperimentalShadows = false;
-
-    /**
-     * TEMPORARY. Forces every effect's UBER_DEPTH permutation to UBER_DEPTH_OFF.
+     * Forwards to the `localLightBrightness` setting (see `settings`).
      *
-     * UBER_DEPTH_ON fades a surface against `DepthMap`, which nothing publishes
-     * (`EveSpaceSceneDepthHandler.publishGlobal` is false). The fade therefore
-     * resolves to zero and the surface renders fully transparent - it draws
-     * perfectly, passes every check, and contributes no pixels. That is what
-     * kept smart light beams invisible: measured on ac2_t2a, the beam draws
-     * wrote 0 pixels with the option on and 882/40/170 with it off.
-     *
-     * This is a permutation OPTION, so `config.js`'s path and tier pins cannot
-     * reach it - hence a flag rather than another entry there.
-     *
-     * REMOVE THIS once DepthMap is published, together with the `flarequad` and
-     * `flarequadsoft` tier pins in `config.js`, which exist for the same missing
-     * input. A forced option left in place after the real input arrives silently
-     * holds every surface a permutation below what was authored.
-     * @type {boolean}
-     */
-    forceUberDepthOff = true;
-
-    /**
-     * Which Carbon passes apply the render states they declare.
-     *
-     * "allowlist" (default): only paths in
-     * `Tw2CarbonShaderFactory.RENDER_STATE_PATHS`. "all": every Carbon pass -
-     * the A/B switch for re-enabling states family by family. Read when an
-     * effect is prepared, so set it before anything loads.
-     * @type {String}
-     */
-    carbonRenderStates = "allowlist";
-
-    /**
-     * A blanket multiplier on every collected local light's colour.
-     *
-     * NON-CARBON. Carbon has no such control: its lights are authored against
-     * an attenuation and an exposure pipeline that agree with each other, so
-     * there is nothing to correct. This exists because ours do not yet agree,
-     * and it is a KNOB, not a fix - see below.
-     *
-     * `Tr2LightManager::AddLight` scales a light's colour by its RADIUS
-     * (`data.color.x *= data.radius * dimming`, cpp:342-346), which is only
-     * neutral if the shader's falloff divides that radius back out. Carbon's
-     * does. Whether every path of ours does is unverified - the local-light
-     * loop lives only in the dx11 `.sm_depth` containers, which are DXBC and
-     * have to be translated before they can be read - and with radii between
-     * 10 and 100 in a typical scene, a mismatch is a one-to-two order of
-     * magnitude error rather than a subtle one.
-     *
-     * So: turn it down to make a scene usable, and do not read a working value
-     * as evidence that anything is correct. A value other than 1 means the
-     * attenuation still owes an explanation. Applied after the premultiply and
-     * the size dimming, to the colour only - it changes no light's radius,
-     * position or falloff, so it cannot alter which surfaces a light reaches,
-     * only how strongly.
-     *
-     * Default 0.1 (operator, 2026-09-13): dx11 local lights read far too bright
-     * after the reversed-buffer / clip-Y flip work. The cause is not established.
+     * Kept ONLY for skindr, which assigns `tw2.localLightBrightness` in five
+     * places against a vendored copy of this bundle. Remove once skindr
+     * re-vendors and writes `tw2.settings.SetValue("localLightBrightness", v)`.
      * @type {Number}
      */
-    localLightBrightness = 0.1;
+    get localLightBrightness()
+    {
+        return this.settings.GetValue("localLightBrightness");
+    }
 
-
-    /**
-     * Enables experimental Carbon-shaped render batch context
-     * @type {boolean}
-     */
-    enableExperimentalBatchContext = false;
+    set localLightBrightness(value)
+    {
+        this.settings.SetValue("localLightBrightness", Number(value));
+    }
 
     /**
      * Enables Carbon-style LOD throttling for state controllers.
@@ -691,8 +673,7 @@ export class Tw2Library extends Tw2EventEmitter
      * A future decorator/metadata system may annotate values that are not safe to mutate after init.
      * @param {*} opt
      * @param {Boolean} opt.debug
-     * @param {Boolean} opt.enableExperimentalShadows
-     * @param {Boolean} opt.enableExperimentalBatchContext
+     * @param {Object} opt.settings - `{ name: value }` for registered `settings`
      * @param {Boolean} opt.enableControllerLodThrottling
      * @param {Function} opt.resourceHandler
      * @param {Object} opt.black
@@ -714,18 +695,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.events) this.AddEvents(opt.events);
         if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
         if (opt.audioEnabled !== undefined) this.audioEnabled = !!opt.audioEnabled;
-        if (opt.enableExperimentalShadows !== undefined) this.enableExperimentalShadows = !!opt.enableExperimentalShadows;
-        if (opt.forceUberDepthOff !== undefined) this.forceUberDepthOff = !!opt.forceUberDepthOff;
-        if (opt.carbonRenderStates !== undefined) this.carbonRenderStates = String(opt.carbonRenderStates);
-        if (opt.localLightBrightness !== undefined) this.localLightBrightness = Number(opt.localLightBrightness);
-        if (opt.settings !== undefined)
-        {
-            for (const name in opt.settings)
-            {
-                if (opt.settings.hasOwnProperty(name)) this.settings.SetValue(name, opt.settings[name]);
-            }
-        }
-        if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
+        if (opt.settings !== undefined) this.settings.SetValues(opt.settings);
         if (opt.enableControllerLodThrottling !== undefined) this.enableControllerLodThrottling = !!opt.enableControllerLodThrottling;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
