@@ -640,6 +640,10 @@ export class Tw2ShaderStage
      * NDC z after the shader's own tail produces that. `main` is renamed and
      * called first, so an early `return` cannot skip the flip - the same wrap
      * the DXBC emitter uses for its own tail.
+     *
+     * Under EXT_clip_control ZERO_TO_ONE (`device.clipZeroToOne`) the window
+     * depth is z/w rather than (z/w + 1)/2, so the same `1 - d` is
+     * `(w - z) / 2` instead of `-z`.
      * @param {String} source
      * @returns {String}
      */
@@ -647,8 +651,11 @@ export class Tw2ShaderStage
     {
         const main = /\bvoid\s+main\s*\(\s*(?:void)?\s*\)/;
         if (!main.test(source)) return source;
+        const tail = device.clipZeroToOne
+            ? "gl_Position.z = (gl_Position.w - gl_Position.z) * 0.5;"
+            : "gl_Position.z = -gl_Position.z;";
         return source.replace(main, "void ccpwgl_forward_main()")
-            + "\nvoid main()\n{\n    ccpwgl_forward_main();\n    gl_Position.z = -gl_Position.z;\n}\n";
+            + `\nvoid main()\n{\n    ccpwgl_forward_main();\n    ${tail}\n}\n`;
     }
 
     static compileShader(stageType, prefix, shaderCode, path, skipError)

@@ -226,7 +226,42 @@ export class Tw2Device extends Tw2EventEmitter
      */
     get emitterDepthRange()
     {
-        return this.reversedDepthBuffer ? "forward" : Tw2EffectRes.DEPTH_RANGE;
+        if (!this.reversedDepthBuffer) return Tw2EffectRes.DEPTH_RANGE;
+        // Under EXT_clip_control ZERO_TO_ONE the seam's reversed clip z already
+        // is the window depth, so the translated stage adds nothing.
+        return this.clipZeroToOne ? "none" : "forward";
+    }
+
+    /**
+     * Use EXT_clip_control's ZERO_TO_ONE depth range on a reversed buffer when
+     * the browser has it. Decided before effects load, like `depthMode`.
+     *
+     * Every window depth written is the same value either way; what changes is
+     * precision. Without it GL maps NDC [-1, 1] to [0, 1] in float, and the
+     * reversed values near 0 (distant surfaces) lose most of their bits in the
+     * `2z - w` / `(ndc + 1) / 2` round trip.
+     * @type {Boolean}
+     */
+    clipControl = true;
+
+    /**
+     * True when the clip range is ZERO_TO_ONE for this session.
+     * @returns {Boolean}
+     */
+    get clipZeroToOne()
+    {
+        return !!(this.clipControl && this.reversedDepthBuffer && this.gl && this.GetExtension("EXT_clip_control"));
+    }
+
+    /**
+     * Sets the GL clip range to match {@link clipZeroToOne}. Origin stays
+     * LOWER_LEFT: the Y flip is CCP's `ssyf`, not the extension's origin.
+     */
+    ApplyClipControl()
+    {
+        const ext = this.gl ? this.GetExtension("EXT_clip_control") : null;
+        if (!ext) return;
+        ext.clipControlEXT(ext.LOWER_LEFT_EXT, this.clipZeroToOne ? ext.ZERO_TO_ONE_EXT : ext.NEGATIVE_ONE_TO_ONE_EXT);
     }
 
     /**
@@ -258,6 +293,15 @@ export class Tw2Device extends Tw2EventEmitter
     _frontFaceFlipped = null;
 
     /**
+     * True while offscreen draws with an `ssyf` tail are flipped.
+     * @returns {Boolean}
+     */
+    get clipYFlipActive()
+    {
+        return this.clipYFlip && this._offscreen;
+    }
+
+    /**
      * Uploads this draw's `ssyf` to a just-bound program and matches the
      * front-face winding to it. Call immediately after `gl.useProgram`.
      * @param {Tw2ShaderProgram} program
@@ -267,7 +311,7 @@ export class Tw2Device extends Tw2EventEmitter
         // Only a program that HAS the `ssyf` tail is actually flipped. Hand-written
         // stages without it (picking, GPU particles, some utility shaders) still
         // draw GL-oriented, so their winding must not be swapped either.
-        const flipped = this.clipYFlip && this._offscreen && !!(program && program.shadowStateYFlip);
+        const flipped = this.clipYFlipActive && !!(program && program.shadowStateYFlip);
         const sign = flipped ? -1 : 1;
         if (program && program.shadowStateYFlip && program.ssyfSign !== sign)
         {
@@ -282,7 +326,7 @@ export class Tw2Device extends Tw2EventEmitter
      * with it: CW normally (ccpwgl's convention), CCW while flipped.
      * @param {Boolean} [flipped]
      */
-    ApplyFrontFace(flipped = this.clipYFlip && this._offscreen)
+    ApplyFrontFace(flipped = this.clipYFlipActive)
     {
         if (this._frontFaceFlipped === flipped) return;
         this.gl.frontFace(flipped ? this.gl.CCW : this.gl.CW);
@@ -322,7 +366,11 @@ export class Tw2Device extends Tw2EventEmitter
     {
         this.SetInvertedDepthTest(this.reversedDepthBuffer);
         Tw2CarbonData.SetDepthBufferReversed(this.reversedDepthBuffer);
-        if (this.gl) this.gl.clearDepth(this.clearDepthValue);
+        if (this.gl)
+        {
+            this.gl.clearDepth(this.clearDepthValue);
+            this.ApplyClipControl();
+        }
     }
     enableAnisotropicFiltering = true;
     enableAntialiasing = true;
