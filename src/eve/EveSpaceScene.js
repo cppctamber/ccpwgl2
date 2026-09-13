@@ -1968,18 +1968,24 @@ export class EveSpaceScene extends meta.Model
      */
     BeginSceneTarget()
     {
-        if (!this.hdr || !device.canRenderToHalfFloat) return null;
+        // A Y-flipped session must draw the scene offscreen even without HDR:
+        // its screen-space maps (DepthMap, shadow visibility, SSAO) are stored
+        // top-down, and a main pass on the canvas would read them mirrored. The
+        // present then flips once. RGBA8 when half float is not wanted/available.
+        const hdr = !!(this.hdr && device.canRenderToHalfFloat);
+        if (!hdr && !device.clipYFlip) return null;
+        const format = hdr ? "rgba16f" : null;
 
         const { width, height } = tw2;
         if (!width || !height) return null;
 
         if (!this._sceneTarget)
         {
-            this._sceneTarget = new Tw2RenderTarget("EveSpaceSceneHDR", width, height, true, "rgba16f");
+            this._sceneTarget = new Tw2RenderTarget("EveSpaceSceneHDR", width, height, true, format);
         }
         else
         {
-            this._sceneTarget.Update(width, height, true, "rgba16f");
+            this._sceneTarget.Update(width, height, true, format);
         }
 
         if (!this._sceneTarget.IsGood()) return null;

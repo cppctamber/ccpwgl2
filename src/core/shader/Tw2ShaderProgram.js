@@ -184,6 +184,8 @@ export class Tw2ShaderProgram
         program.shadowStateFloat = gl.getUniformLocation(program.program, "ssf");
         program.shadowStateYFlip = gl.getUniformLocation(program.program, "ssyf");
         gl.uniform3f(program.shadowStateYFlip, 0, 0, 1);
+        // What was just uploaded, so `Tw2Device.ApplyClipYFlip` only re-sends on change.
+        program.ssyfSign = 1;
 
         const psConstants = pass.stages[1] && pass.stages[1].constants || [];
         for (let j = 0; j < psConstants.length; ++j)

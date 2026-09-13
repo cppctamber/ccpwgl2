@@ -71,6 +71,16 @@ export class Tw2Device extends Tw2EventEmitter
      * EQUAL, NOTEQUAL, NEVER and ALWAYS are unchanged and absent here.
      * @type {Object<Number, Number>}
      */
+    /**
+     * Full-screen quad as (x, y, z, w, u, v) triangle strip with D3D texture
+     * coordinates: v = 0 at the top (clip y = +1). See `clipYFlip`.
+     * @type {Array<Number>}
+     */
+    static QuadVerticesD3D = [
+        1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+        1.0, -1.0, 0.0, 1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, 1.0
+    ];
+
     static InvertedDepthFunc = {
         [CMP_LESS]: CMP_GREATER,
         [CMP_GREATER]: CMP_LESS,
@@ -220,6 +230,66 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Whether render targets are drawn Y-flipped (top-down, as D3D stores them).
+     *
+     * On for the same sessions as {@link reversedDepthBuffer}: both are D3D
+     * conventions the dx11 shaders were compiled against, and gles2 sessions keep
+     * neither. While on, every draw into an offscreen framebuffer sets CCP's
+     * `ssyf` uniform to (0, 0, -1) and swaps the front-face winding; the canvas
+     * stays unflipped, so the scene is presented exactly once. Translated dx11
+     * stages get the `ssyf` tail from the emitter (`clipYFlip`).
+     * See `.agents/AUDIT-screen-y-convention-2026-09-13.md`.
+     * @returns {Boolean}
+     */
+    get clipYFlip()
+    {
+        return this.reversedDepthBuffer;
+    }
+
+    /**
+     * True while an offscreen framebuffer is bound. Maintained by the
+     * `bindFramebuffer` wrapper installed in {@link Create}, because render
+     * targets and raw passes bind framebuffers directly in many places.
+     * @type {Boolean}
+     */
+    _offscreen = false;
+
+    /** Last `ssyf.z` / front-face winding sent, so each is only set on change. */
+    _frontFaceFlipped = null;
+
+    /**
+     * Uploads this draw's `ssyf` to a just-bound program and matches the
+     * front-face winding to it. Call immediately after `gl.useProgram`.
+     * @param {Tw2ShaderProgram} program
+     */
+    ApplyClipYFlip(program)
+    {
+        // Only a program that HAS the `ssyf` tail is actually flipped. Hand-written
+        // stages without it (picking, GPU particles, some utility shaders) still
+        // draw GL-oriented, so their winding must not be swapped either.
+        const flipped = this.clipYFlip && this._offscreen && !!(program && program.shadowStateYFlip);
+        const sign = flipped ? -1 : 1;
+        if (program && program.shadowStateYFlip && program.ssyfSign !== sign)
+        {
+            this.gl.uniform3f(program.shadowStateYFlip, 0, 0, sign);
+            program.ssyfSign = sign;
+        }
+        this.ApplyFrontFace(flipped);
+    }
+
+    /**
+     * A clip-space Y flip reverses screen-space winding, so the front face flips
+     * with it: CW normally (ccpwgl's convention), CCW while flipped.
+     * @param {Boolean} [flipped]
+     */
+    ApplyFrontFace(flipped = this.clipYFlip && this._offscreen)
+    {
+        if (this._frontFaceFlipped === flipped) return;
+        this.gl.frontFace(flipped ? this.gl.CCW : this.gl.CW);
+        this._frontFaceFlipped = flipped;
+    }
+
+    /**
      * The value depth is cleared to: 0 on a reversed buffer, 1 otherwise.
      * @returns {Number}
      */
@@ -284,6 +354,7 @@ export class Tw2Device extends Tw2EventEmitter
     _shadowStateBuffer = null;
     _shadowHandles = null;
     _quadBuffer = null;
+    _quadBufferD3D = null;
     _quadDecl = null;
     _cameraQuadBuffer = null;
     _currentRenderMode = RM_ANY;
@@ -621,6 +692,16 @@ export class Tw2Device extends Tw2EventEmitter
 
         const { gl } = this;
 
+        // Track whether an offscreen framebuffer is bound, for `clipYFlip`.
+        // Wrapped once here rather than at each call site: render targets, AO,
+        // the depth handler, shadows, god rays and picking all bind directly.
+        const bindFramebuffer = gl.bindFramebuffer.bind(gl);
+        gl.bindFramebuffer = (target, framebuffer) =>
+        {
+            if (target === gl.FRAMEBUFFER || target === gl.DRAW_FRAMEBUFFER) this._offscreen = !!framebuffer;
+            return bindFramebuffer(target, framebuffer);
+        };
+
         this.tw2.Debug({
             name: "Device",
             message: `Webgl${this.glVersion} context created`
@@ -721,6 +802,12 @@ export class Tw2Device extends Tw2EventEmitter
         this._quadBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        // D3D texture coordinates (v = 0 at clip y = +1), for `clipYFlip`
+        // sessions: render targets are stored top-down there, so a GL-oriented
+        // quad would mirror the image once per render-target hop.
+        this._quadBufferD3D = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBufferD3D);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Tw2Device.QuadVerticesD3D), gl.STATIC_DRAW);
         this._cameraQuadBuffer = gl.createBuffer();
         this._quadDecl = Tw2VertexDeclaration.from([
             { usage: "POSITION", usageIndex: 0, elements: 4 },
@@ -1297,7 +1384,7 @@ export class Tw2Device extends Tw2EventEmitter
         if (!effect || !effect.IsGood()) return false;
 
         const gl = this.gl;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.clipYFlip ? this._quadBufferD3D : this._quadBuffer);
         for (let pass = 0; pass < effect.GetPassCount(technique); ++pass)
         {
             effect.ApplyPass(technique, pass);
@@ -1344,7 +1431,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         if (!effect || !effect.IsGood()) return false;
 
-        const vertices = new Float32Array([
+        const vertices = new Float32Array(this.clipYFlip ? Tw2Device.QuadVerticesD3D : [
             1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0,
             1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0
         ]);
@@ -1693,7 +1780,9 @@ export class Tw2Device extends Tw2EventEmitter
             if (renderMode === RM_ANY || !this._renderStates[renderMode].dirty) return;
         }
 
-        this.gl.frontFace(this.gl.CW);
+        // CW, or CCW while drawing Y-flipped offscreen (see `clipYFlip`).
+        this._frontFaceFlipped = null;
+        this.ApplyFrontFace();
 
         const mode = this._renderStates[renderMode];
         if (mode)

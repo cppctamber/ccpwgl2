@@ -113,11 +113,13 @@ export class Tw2ShaderPass
         {
             gl.useProgram(this.shadowShaderProgram.program);
             device.SetShadowHandles(this.shadowShaderProgram);
+            device.ApplyClipYFlip(this.shadowShaderProgram);
         }
         else
         {
             gl.useProgram(this.shaderProgram.program);
             device.SetShadowHandles(null);
+            device.ApplyClipYFlip(this.shaderProgram);
         }
     }
 
