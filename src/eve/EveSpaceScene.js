@@ -2542,7 +2542,10 @@ export class EveSpaceScene extends meta.Model
 
             this._distortionEffect = this._distortionEffect || Tw2Effect.from({
                 name: "Distortion",
-                effectFilePath: "res:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+                // Profile-neutral: dx11 and gles2 distortion.fx take the same
+                // inputs (BlitCurrent, TexDistortion, one offset constant), so the
+                // session profile chooses instead of forcing a gles2 body into dx11.
+                effectFilePath: "res:/graphics/effect/managed/space/postprocess/distortion.fx",
                 parameters: {
                     MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
                 },
@@ -2655,7 +2658,7 @@ export class EveSpaceScene extends meta.Model
 
         this._distortionEffect = this._distortionEffect || Tw2Effect.from({
             name: "Distortion",
-            effectFilePath: "res:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+            effectFilePath: "res:/graphics/effect/managed/space/postprocess/distortion.fx",
             parameters: {
                 MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
             },
