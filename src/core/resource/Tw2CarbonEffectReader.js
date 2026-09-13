@@ -1,4 +1,4 @@
-import { device } from "global";
+import { device, tw2 } from "global";
 import {
     GL_TEXTURE_2D,
     GL_TEXTURE_2D_ARRAY,
@@ -305,7 +305,8 @@ export class Tw2CarbonShaderFactory
         // and `SetStandardStates` re-establishes blend and cull at each batch
         // mode change. Blend and cull are recoverable that way; a depth-state
         // leak would not be, and the planet family declares none.
-        if (this.constructor.RENDER_STATE_PATHS.some(part => path.includes(part)))
+        // `tw2.carbonRenderStates = "all"` lifts the allowlist for A/B testing.
+        if (tw2.carbonRenderStates === "all" || this.constructor.RENDER_STATE_PATHS.some(part => path.includes(part)))
         {
             pass.SetStates(group.states);
         }

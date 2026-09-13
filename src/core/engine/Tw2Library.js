@@ -163,6 +163,17 @@ export class Tw2Library extends Tw2EventEmitter
     forceUberDepthOff = true;
 
     /**
+     * Which Carbon passes apply the render states they declare.
+     *
+     * "allowlist" (default): only paths in
+     * `Tw2CarbonShaderFactory.RENDER_STATE_PATHS`. "all": every Carbon pass -
+     * the A/B switch for re-enabling states family by family. Read when an
+     * effect is prepared, so set it before anything loads.
+     * @type {String}
+     */
+    carbonRenderStates = "allowlist";
+
+    /**
      * A blanket multiplier on every collected local light's colour.
      *
      * NON-CARBON. Carbon has no such control: its lights are authored against
@@ -685,6 +696,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.audioEnabled !== undefined) this.audioEnabled = !!opt.audioEnabled;
         if (opt.enableExperimentalShadows !== undefined) this.enableExperimentalShadows = !!opt.enableExperimentalShadows;
         if (opt.forceUberDepthOff !== undefined) this.forceUberDepthOff = !!opt.forceUberDepthOff;
+        if (opt.carbonRenderStates !== undefined) this.carbonRenderStates = String(opt.carbonRenderStates);
         if (opt.localLightBrightness !== undefined) this.localLightBrightness = Number(opt.localLightBrightness);
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.enableControllerLodThrottling !== undefined) this.enableControllerLodThrottling = !!opt.enableControllerLodThrottling;

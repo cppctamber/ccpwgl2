@@ -541,8 +541,7 @@ export class Tw2Effect extends meta.Model
         // the shader's real axes and values are known, so a shader without
         // UBER_DEPTH, or one whose off-value is spelled differently, is left
         // alone instead of being given an option it cannot compile.
-        // Not on a reversed depth buffer, where `DepthMap` is published.
-        if (tw2.forceUberDepthOff && !device.reversedDepthBuffer && Array.isArray(res.permutations))
+        if (tw2.forceUberDepthOff && Array.isArray(res.permutations))
         {
             for (let i = 0; i < res.permutations.length; i++)
             {

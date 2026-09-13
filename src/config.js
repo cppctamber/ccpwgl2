@@ -24,10 +24,11 @@ const FX_TIER_PINS = [
     // Drone booster volumes have no published GLES container; use the native
     // high-tier program through the existing DXBC translator.
     { match: "/booster/droneboostervolumetric.fx", dir: "/effect.dx11/", tier: "sm_hi" },
-    // Forward-depth sessions only: on a reversed buffer `DepthMap` is published
-    // with Carbon's values, which is what their High bodies were waiting for.
-    { match: "/specialfx/flarequad.fx", tier: "sm_hi", forwardDepthOnly: true },
-    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi", forwardDepthOnly: true },
+    // Tied to `tw2.forceUberDepthOff`: the same missing-DepthMap workaround, so
+    // one switch lifts both. Lifting them on a reversed buffer hid VFX
+    // (operator, 2026-09-13) - kept until that is understood.
+    { match: "/specialfx/flarequad.fx", tier: "sm_hi", depthMapWorkaround: true },
+    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi", depthMapWorkaround: true },
     // Not a tier pin - a PROFILE pin, on the same list because it is the same
     // substitution. `ubershaderinstanced` is the beam material on smart light
     // sets (EveSmartLightMesh, mesh name "Beam"), and it is ABSENT from the
@@ -205,7 +206,7 @@ export const config = {
             for (let i = 0; i < FX_TIER_PINS.length; i++)
             {
                 const pin = FX_TIER_PINS[i];
-                if (pin.forwardDepthOnly && device.reversedDepthBuffer) continue;
+                if (pin.depthMapWorkaround && !device.tw2.forceUberDepthOff) continue;
                 if (path.includes(pin.match))
                 {
                     // Either axis may be pinned; the other follows the session,
