@@ -193,6 +193,11 @@ export default [
         plugins: plugins()
     },
     {
+        input: "src/core/engine/resman.worker.js",
+        output: { file: "dist/ccpwgl2_resman.worker.js", format: "iife", inlineDynamicImports: true, sourcemap: false },
+        plugins: plugins()
+    },
+    {
         input: "src/index.js",
         output: output("dist/ccpwgl2_int.js"),
         plugins: plugins(),
