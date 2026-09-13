@@ -231,21 +231,21 @@
     /** Inspect with the instance's normalized options when available. */
     Inspect(input) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var values = typeof this.GetValues === "function" ? this.GetValues(options || {}) : options || {};
+      var values = this.GetValues(options || {});
       return this.constructor.inspect(input, values);
     }
 
     /** Return the cheap, unverified support report for this instance profile. */
     GetSupport(input) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var values = typeof this.GetValues === "function" ? this.GetValues(options || {}) : options || {};
+      var values = this.GetValues(options || {});
       return this.constructor.getSupport(input, values);
     }
 
     /** Exercise one exact output through the real asynchronous read path. */
     VerifySupport(input) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      var values = typeof this.GetValues === "function" ? this.GetValues(options || {}) : options || {};
+      var values = this.GetValues(options || {});
       return this.constructor.verifySupport(input, values);
     }
 
@@ -620,7 +620,7 @@
   CjsFormat.requestResponseType = "arraybuffer";
   CjsFormat.worker = null;
   function normalizeSupportReport(Format, rawReport, options) {
-    var _options$emit, _outputs$find, _outputs$find2, _raw$metadata;
+    var _options$emit, _outputs$find, _outputs$find2, _outputs$find3, _raw$metadata;
     var raw = typeof rawReport === "boolean" ? {
       recognized: rawReport,
       supported: rawReport
@@ -642,7 +642,14 @@
       });
     });
     var selected = capability ? outputs.find(entry => entry.output === capability.output) || null : null;
-    var preferredOutput = resolvePreferredOutput(raw.preferredOutput, outputs) || ((_outputs$find = outputs.find(entry => entry.supported && entry.role === OUTPUT_ROLE_RUNTIME)) === null || _outputs$find === void 0 ? void 0 : _outputs$find.output) || ((_outputs$find2 = outputs.find(entry => entry.supported)) === null || _outputs$find2 === void 0 ? void 0 : _outputs$find2.output) || "";
+    // The declared default is consulted BEFORE falling back to declaration
+    // order. `default: true` is the format stating which output it wants asked
+    // for, so ignoring it here meant a probe had to repeat that choice by hand as
+    // `preferredOutput` — and a format whose outputs are all `role: "debug"`
+    // (webp, gif) otherwise resolved to whichever happened to be declared first.
+    // An explicit `raw.preferredOutput` still wins, because that is the probe
+    // reporting a per-input decision rather than a standing preference.
+    var preferredOutput = resolvePreferredOutput(raw.preferredOutput, outputs) || ((_outputs$find = outputs.find(entry => entry.supported && entry.role === OUTPUT_ROLE_RUNTIME)) === null || _outputs$find === void 0 ? void 0 : _outputs$find.output) || ((_outputs$find2 = outputs.find(entry => entry.supported && entry.default)) === null || _outputs$find2 === void 0 ? void 0 : _outputs$find2.output) || ((_outputs$find3 = outputs.find(entry => entry.supported)) === null || _outputs$find3 === void 0 ? void 0 : _outputs$find3.output) || "";
     return {
       format: Format.id || raw.format || Format.name,
       source: raw.source || options.source || "buffer",
@@ -3961,176 +3968,211 @@
   });
 
   /**
-   * Small mesh rebuild helpers for shared CarbonEngineJS mesh JSON.
-   *
-   * These helpers are deliberately framework-free and browser-safe. They accept
-   * plain arrays or typed arrays and return plain arrays unless otherwise noted.
+   * Returns the scaling factor component of a transformation
+   *  matrix. If a matrix is built with fromRotationTranslationScale
+   *  with a normalized Quaternion parameter, the returned vector will be
+   *  the same as the scaling vector
+   *  originally supplied.
+   * @param  {vec3} out Vector to receive scaling factor component
+   * @param  {ReadonlyMat4} mat Matrix to be decomposed (input)
+   * @return {vec3} out
    */
-
-  function validatePositions(positions) {
-    if (!positions || positions.length % 3 !== 0) {
-      throw new Error("Positions must contain complete xyz vertices");
-    }
-  }
-  function validateIndices(indices, vertexCount) {
-    if (!indices || indices.length % 3 !== 0) {
-      throw new Error("Indices must contain complete triangles");
-    }
-    for (var i = 0; i < indices.length; i++) {
-      if (!Number.isInteger(indices[i]) || indices[i] < 0 || indices[i] >= vertexCount) {
-        throw new Error("Invalid vertex index at ".concat(i));
-      }
-    }
-  }
-
-  /**
-   * Generate area-weighted vertex normals from positions and triangle indices.
-   *
-   * @param {ArrayLike<number>} positions Flat xyz positions.
-   * @param {ArrayLike<number>} indices Flat triangle indices.
-   * @returns {Float32Array} Flat xyz normals.
-   */
-  function generateNormals(positions, indices) {
-    validatePositions(positions);
-    validateIndices(indices, positions.length / 3);
-    var vertexCount = positions.length / 3,
-      normals = new Float32Array(positions.length);
-    for (var t = 0; t < indices.length; t += 3) {
-      var ia = indices[t] * 3,
-        ib = indices[t + 1] * 3,
-        ic = indices[t + 2] * 3,
-        ax = positions[ia],
-        ay = positions[ia + 1],
-        az = positions[ia + 2],
-        faceNormal = [0, 0, 0];
-      cross$2(faceNormal, [positions[ib] - ax, positions[ib + 1] - ay, positions[ib + 2] - az], [positions[ic] - ax, positions[ic + 1] - ay, positions[ic + 2] - az]);
-      for (var offset of [ia, ib, ic]) {
-        normals[offset] += faceNormal[0];
-        normals[offset + 1] += faceNormal[1];
-        normals[offset + 2] += faceNormal[2];
-      }
-    }
-    for (var i = 0; i < vertexCount; i++) {
-      var _offset = i * 3,
-        _length = Math.hypot(normals[_offset], normals[_offset + 1], normals[_offset + 2]) || 1;
-      normals[_offset] /= _length;
-      normals[_offset + 1] /= _length;
-      normals[_offset + 2] /= _length;
-    }
-    return normals;
+  function getScaling(out, mat) {
+    var m11 = mat[0];
+    var m12 = mat[1];
+    var m13 = mat[2];
+    var m21 = mat[4];
+    var m22 = mat[5];
+    var m23 = mat[6];
+    var m31 = mat[8];
+    var m32 = mat[9];
+    var m33 = mat[10];
+    out[0] = Math.sqrt(m11 * m11 + m12 * m12 + m13 * m13);
+    out[1] = Math.sqrt(m21 * m21 + m22 * m22 + m23 * m23);
+    out[2] = Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33);
+    return out;
   }
 
   /**
-   * Generate per-vertex tangents from positions, normals, UVs and indices.
-   *
-   * @param {ArrayLike<number>} positions Flat xyz positions.
-   * @param {ArrayLike<number>} normals Flat xyz normals.
-   * @param {ArrayLike<number>} uvs Flat uv coordinates.
-   * @param {ArrayLike<number>} indices Flat triangle indices.
-   * @returns {Float32Array} Flat xyz tangents.
+   * Returns a quaternion representing the rotational component
+   *  of a transformation matrix. If a matrix is built with
+   *  fromRotationTranslation, the returned quaternion will be the
+   *  same as the quaternion originally supplied.
+   * @param {quat} out Quaternion to receive the rotation component
+   * @param {ReadonlyMat4} mat Matrix to be decomposed (input)
+   * @return {quat} out
    */
-  function generateTangents(positions, normals, uvs, indices) {
-    validatePositions(positions);
-    var vertexCount = positions.length / 3,
-      tan1 = new Float32Array(vertexCount * 3),
-      tan2 = new Float32Array(vertexCount * 3);
-    if (!normals || normals.length !== positions.length || !uvs || uvs.length !== vertexCount * 2) {
-      throw new Error("Tangent channels do not match the vertex count");
+  function getRotation(out, mat) {
+    var scaling = new ARRAY_TYPE(3);
+    getScaling(scaling, mat);
+    var is1 = 1 / scaling[0];
+    var is2 = 1 / scaling[1];
+    var is3 = 1 / scaling[2];
+    var sm11 = mat[0] * is1;
+    var sm12 = mat[1] * is2;
+    var sm13 = mat[2] * is3;
+    var sm21 = mat[4] * is1;
+    var sm22 = mat[5] * is2;
+    var sm23 = mat[6] * is3;
+    var sm31 = mat[8] * is1;
+    var sm32 = mat[9] * is2;
+    var sm33 = mat[10] * is3;
+    var trace = sm11 + sm22 + sm33;
+    var S = 0;
+    if (trace > 0) {
+      S = Math.sqrt(trace + 1.0) * 2;
+      out[3] = 0.25 * S;
+      out[0] = (sm23 - sm32) / S;
+      out[1] = (sm31 - sm13) / S;
+      out[2] = (sm12 - sm21) / S;
+    } else if (sm11 > sm22 && sm11 > sm33) {
+      S = Math.sqrt(1.0 + sm11 - sm22 - sm33) * 2;
+      out[3] = (sm23 - sm32) / S;
+      out[0] = 0.25 * S;
+      out[1] = (sm12 + sm21) / S;
+      out[2] = (sm31 + sm13) / S;
+    } else if (sm22 > sm33) {
+      S = Math.sqrt(1.0 + sm22 - sm11 - sm33) * 2;
+      out[3] = (sm31 - sm13) / S;
+      out[0] = (sm12 + sm21) / S;
+      out[1] = 0.25 * S;
+      out[2] = (sm23 + sm32) / S;
+    } else {
+      S = Math.sqrt(1.0 + sm33 - sm11 - sm22) * 2;
+      out[3] = (sm12 - sm21) / S;
+      out[0] = (sm31 + sm13) / S;
+      out[1] = (sm23 + sm32) / S;
+      out[2] = 0.25 * S;
     }
-    validateIndices(indices, vertexCount);
-    for (var t = 0; t < indices.length; t += 3) {
-      var i0 = indices[t],
-        i1 = indices[t + 1],
-        i2 = indices[t + 2],
-        p0 = i0 * 3,
-        p1 = i1 * 3,
-        p2 = i2 * 3,
-        t0 = i0 * 2,
-        t1 = i1 * 2,
-        t2 = i2 * 2,
-        x1 = positions[p1] - positions[p0],
-        y1 = positions[p1 + 1] - positions[p0 + 1],
-        z1 = positions[p1 + 2] - positions[p0 + 2],
-        x2 = positions[p2] - positions[p0],
-        y2 = positions[p2 + 1] - positions[p0 + 1],
-        z2 = positions[p2 + 2] - positions[p0 + 2],
-        s1 = uvs[t1] - uvs[t0],
-        v1 = uvs[t1 + 1] - uvs[t0 + 1],
-        s2 = uvs[t2] - uvs[t0],
-        v2 = uvs[t2 + 1] - uvs[t0 + 1],
-        divisor = s1 * v2 - s2 * v1,
-        scale = divisor ? 1 / divisor : 0,
-        sx = (v2 * x1 - v1 * x2) * scale,
-        sy = (v2 * y1 - v1 * y2) * scale,
-        sz = (v2 * z1 - v1 * z2) * scale,
-        tx = (s1 * x2 - s2 * x1) * scale,
-        ty = (s1 * y2 - s2 * y1) * scale,
-        tz = (s1 * z2 - s2 * z1) * scale;
-      for (var offset of [p0, p1, p2]) {
-        tan1[offset] += sx;
-        tan1[offset + 1] += sy;
-        tan1[offset + 2] += sz;
-        tan2[offset] += tx;
-        tan2[offset + 1] += ty;
-        tan2[offset + 2] += tz;
-      }
-    }
-    var tangents = new Float32Array(vertexCount * 3),
-      handedness = new Float32Array(vertexCount);
-    for (var i = 0; i < vertexCount; i++) {
-      var _offset2 = i * 3,
-        nx = normals[_offset2],
-        ny = normals[_offset2 + 1],
-        nz = normals[_offset2 + 2],
-        _tx = tan1[_offset2],
-        _ty = tan1[_offset2 + 1],
-        _tz = tan1[_offset2 + 2],
-        normalDotTangent = nx * _tx + ny * _ty + nz * _tz;
-      var ox = _tx - nx * normalDotTangent,
-        oy = _ty - ny * normalDotTangent,
-        oz = _tz - nz * normalDotTangent;
-      var _length2 = Math.hypot(ox, oy, oz) || 1;
-      ox /= _length2;
-      oy /= _length2;
-      oz /= _length2;
-      tangents[_offset2] = ox;
-      tangents[_offset2 + 1] = oy;
-      tangents[_offset2 + 2] = oz;
-      handedness[i] = (ny * oz - nz * oy) * tan2[_offset2] + (nz * ox - nx * oz) * tan2[_offset2 + 1] + (nx * oy - ny * ox) * tan2[_offset2 + 2] < 0 ? -1 : 1;
-    }
-    Object.defineProperty(tangents, "handedness", {
-      value: handedness
-    });
-    return tangents;
+    return out;
   }
 
   /**
-   * Generate binormals as normalized `normal x tangent`.
+   * Calculates a 4x4 matrix from the given quaternion
    *
-   * @param {ArrayLike<number>} normals Flat xyz normals.
-   * @param {ArrayLike<number>} tangents Flat xyz tangents.
-   * @param {object} [options] Generation options.
-   * @param {"right"|"left"} [options.uvHandedness] Handedness of generated basis.
-   * @returns {number[]} Flat xyz binormals.
+   * @param {mat4} out mat4 receiving operation result
+   * @param {ReadonlyQuat} q Quaternion to create matrix from
+   *
+   * @returns {mat4} out
    */
-  function generateBiNormals(normals, tangents) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    if (normals.length !== tangents.length || normals.length % 3 !== 0) {
-      throw new Error("generateBiNormals requires matching complete xyz channels");
-    }
-    var conventionSign = options.uvHandedness === "left" ? -1 : 1,
-      binormals = new Array(normals.length);
-    for (var i = 0; i < normals.length; i += 3) {
-      var _ref, _options$handedness, _options$handedness2, _tangents$handedness;
-      var vertexSign = (_ref = (_options$handedness = (_options$handedness2 = options.handedness) === null || _options$handedness2 === void 0 ? void 0 : _options$handedness2[i / 3]) != null ? _options$handedness : (_tangents$handedness = tangents.handedness) === null || _tangents$handedness === void 0 ? void 0 : _tangents$handedness[i / 3]) != null ? _ref : 1,
-        sign = conventionSign * vertexSign;
-      var b = normalize([0, 0, 0], [normals[i + 1] * tangents[i + 2] - normals[i + 2] * tangents[i + 1], normals[i + 2] * tangents[i] - normals[i] * tangents[i + 2], normals[i] * tangents[i + 1] - normals[i + 1] * tangents[i]]);
-      binormals[i] = b[0] * sign;
-      binormals[i + 1] = b[1] * sign;
-      binormals[i + 2] = b[2] * sign;
-    }
-    return binormals;
+  function fromQuat(out, q) {
+    var x = q[0],
+      y = q[1],
+      z = q[2],
+      w = q[3];
+    var x2 = x + x;
+    var y2 = y + y;
+    var z2 = z + z;
+    var xx = x * x2;
+    var yx = y * x2;
+    var yy = y * y2;
+    var zx = z * x2;
+    var zy = z * y2;
+    var zz = z * z2;
+    var wx = w * x2;
+    var wy = w * y2;
+    var wz = w * z2;
+    out[0] = 1 - yy - zz;
+    out[1] = yx + wz;
+    out[2] = zx - wy;
+    out[3] = 0;
+    out[4] = yx - wz;
+    out[5] = 1 - xx - zz;
+    out[6] = zy + wx;
+    out[7] = 0;
+    out[8] = zx + wy;
+    out[9] = zy - wx;
+    out[10] = 1 - xx - yy;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
+    return out;
   }
+
+  /**
+   * 4 Dimensional Vector
+   * @module vec4
+   */
+
+  /**
+   * Creates a new, empty vec4
+   *
+   * @returns {vec4} a new 4D vector
+   */
+  function create() {
+    var out = new ARRAY_TYPE(4);
+    if (ARRAY_TYPE != Float32Array) {
+      out[0] = 0;
+      out[1] = 0;
+      out[2] = 0;
+      out[3] = 0;
+    }
+    return out;
+  }
+
+  /**
+   * Transforms the vec4 with a mat4.
+   *
+   * @param {vec4} out the receiving vector
+   * @param {ReadonlyVec4} a the vector to transform
+   * @param {ReadonlyMat4} m matrix to transform with
+   * @returns {vec4} out
+   */
+  function transformMat4(out, a, m) {
+    var x = a[0],
+      y = a[1],
+      z = a[2],
+      w = a[3];
+    out[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
+    out[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
+    out[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
+    out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+    return out;
+  }
+
+  /**
+   * Perform some operation over an array of vec4s.
+   *
+   * @param {Array} a the array of vectors to iterate over
+   * @param {Number} stride Number of elements between the start of each vec4. If 0 assumes tightly packed
+   * @param {Number} offset Number of elements to skip at the beginning of the array
+   * @param {Number} count Number of vec4s to iterate over. If 0 iterates over entire array
+   * @param {Function} fn Function to call for each vector in the array
+   * @param {Object} [arg] additional argument to pass to fn
+   * @returns {Array} a
+   * @function
+   */
+  (function () {
+    var vec = create();
+    return function (a, stride, offset, count, fn, arg) {
+      var i, l;
+      if (!stride) {
+        stride = 4;
+      }
+      if (!offset) {
+        offset = 0;
+      }
+      if (count) {
+        l = Math.min(count * stride + offset, a.length);
+      } else {
+        l = a.length;
+      }
+      for (i = offset; i < l; i += stride) {
+        vec[0] = a[i];
+        vec[1] = a[i + 1];
+        vec[2] = a[i + 2];
+        vec[3] = a[i + 3];
+        fn(vec, vec, arg);
+        a[i] = vec[0];
+        a[i + 1] = vec[1];
+        a[i + 2] = vec[2];
+        a[i + 3] = vec[3];
+      }
+      return a;
+    };
+  })();
 
   var num = {};
   num.EPSILON = 0.000001;
@@ -4856,412 +4898,6 @@
     num.srgbFromLinear;
 
   /**
-   * Packed tangent-frame helpers for CarbonEngineJS/GR2-style mesh data.
-   *
-   * The packed-frame constants and decode/encode behavior are based on observed
-   * Fenris Creations (CCP Games) shader behavior for EVE/Carbon packed tangent
-   * frames. No shader source is included here.
-   */
-
-  /** Full-turn float32 constant used by the CCP tangent-frame shader. */
-  var TANGENT_TAU = 6.28318548;
-
-  /** Half-turn float32 constant used by the CCP tangent-frame shader. */
-  var TANGENT_PI = 3.14159274;
-  var TAU = TANGENT_TAU,
-    PI = TANGENT_PI,
-    POLAR_EPSILON = 1e-6;
-
-  /**
-   * Packed UNorm sentinel used for vertices with no authored tangent frame.
-   *
-   * @type {number[]}
-   */
-  var NULL_TANGENT_UNORM = Object.freeze([0, 1, 0, 1]);
-
-  /**
-   * Test whether a packed tangent payload is the null-frame sentinel.
-   *
-   * @param {ArrayLike<number>} u Four UNorm values.
-   * @returns {boolean} Whether the payload marks a missing authored frame.
-   */
-  function isNullTangent(u) {
-    var e1 = u[1],
-      e3 = u[3];
-    return (e1 <= 1e-3 || e1 >= 1 - 1e-3) && (e3 <= 1e-3 || e3 >= 1 - 1e-3);
-  }
-  var scratchT = new Float64Array(3),
-    scratchB = new Float64Array(3),
-    scratchN = new Float64Array(3);
-  function decodeTangentFrameInto(u0, u1, u2, u3, outT, outB, outN) {
-    var a0 = u0 * TAU - PI,
-      a1 = u1 * TAU - PI,
-      a2 = u2 * TAU - PI,
-      a3 = u3 * TAU - PI,
-      s1 = Math.abs(Math.sin(a1)),
-      s3 = Math.abs(Math.sin(a3));
-    outT[0] = s1 * Math.cos(a0);
-    outT[1] = s1 * Math.sin(a0);
-    outT[2] = Math.cos(a1);
-    outB[0] = s3 * Math.cos(a2);
-    outB[1] = s3 * Math.sin(a2);
-    outB[2] = Math.cos(a3);
-    var sign = a1 > 0 && a3 > 0 ? 1 : -1;
-    outN[0] = (outT[1] * outB[2] - outT[2] * outB[1]) * sign;
-    outN[1] = (outT[2] * outB[0] - outT[0] * outB[2]) * sign;
-    outN[2] = (outT[0] * outB[1] - outT[1] * outB[0]) * sign;
-    return s1 < 1e-6 && s3 < 1e-6;
-  }
-
-  /**
-   * Decode a packed tangent frame.
-   *
-   * @param {ArrayLike<number>} u Four UNorm values in `[0, 1]`.
-   * @returns {{T: number[], B: number[], N: number[], null: boolean}} Decoded basis.
-   */
-  function decodeTangentFrame(u) {
-    var isNull = decodeTangentFrameInto(u[0], u[1], u[2], u[3], scratchT, scratchB, scratchN);
-    return {
-      T: Array.from(scratchT),
-      B: Array.from(scratchB),
-      N: Array.from(scratchN),
-      null: isNull
-    };
-  }
-
-  /**
-   * Encode a tangent frame back to four UNorm angles.
-   *
-   * @param {ArrayLike<number>} T Unit tangent.
-   * @param {ArrayLike<number>} B Unit binormal.
-   * @param {ArrayLike<number>} [N] Unit normal; only handedness is used.
-   * @returns {number[]} Four UNorm values in `[0, 1]`.
-   */
-  function encodeTangentFrame(T, B, N) {
-    var a0 = Math.atan2(T[1], T[0]),
-      a1 = Math.acos(clamp(T[2], -1, 1));
-    var a2 = Math.atan2(B[1], B[0]);
-    var a3 = Math.acos(clamp(B[2], -1, 1));
-    var negativeHandedness = N && dot$1(N, cross$2([0, 0, 0], T, B)) < 0;
-    if (negativeHandedness) {
-      a1 = a1 === 0 ? -POLAR_EPSILON : -a1;
-    } else {
-      if (a1 === 0) a1 = POLAR_EPSILON;
-      if (a3 === 0) a3 = POLAR_EPSILON;
-    }
-    var enc = angle => clamp((angle + PI) / TAU, 0, 1);
-    return [enc(a0), enc(a1), enc(a2), enc(a3)];
-  }
-  function vertexCount(mesh, count) {
-    if (count !== undefined) return count;
-    var p = mesh.vertex && mesh.vertex.position;
-    return p ? p.length / 3 | 0 : 0;
-  }
-
-  /**
-   * Is this shared mesh's tangent frame packed?
-   *
-   * @param {object} mesh Shared mesh.
-   * @param {number} [count] Vertex count when the payload has no position channel.
-   * @returns {boolean} Whether the mesh has packed tangent frames.
-   */
-  function isPacked(mesh, count) {
-    var v = mesh.vertex;
-    if (!v || !v.tangent || !v.tangent.length) return false;
-    var n = vertexCount(mesh, count);
-    if (!n) return false;
-    var comps = v.tangent.length / n,
-      empty = value => !value || value.length === 0;
-    return comps === 4 && empty(v.normal) && empty(v.binormal);
-  }
-
-  /**
-   * Unpack a packed shared mesh in place.
-   *
-   * @param {object} mesh Shared mesh to mutate.
-   * @param {number} [count] Vertex count when the payload has no position channel.
-   * @returns {boolean} Whether unpacking happened.
-   */
-  function unpackMeshTangents$1(mesh, count) {
-    if (!isPacked(mesh, count)) return false;
-    var v = mesh.vertex,
-      n = vertexCount(mesh, count),
-      src = v.tangent,
-      normal = new Array(n * 3),
-      tangent = new Array(n * 3),
-      binormal = new Array(n * 3);
-    for (var i = 0; i < n; i++) {
-      var s = i * 4,
-        o = i * 3,
-        isNull = decodeTangentFrameInto(src[s], src[s + 1], src[s + 2], src[s + 3], scratchT, scratchB, scratchN);
-      if (isNull) {
-        normal[o] = normal[o + 1] = normal[o + 2] = 0;
-        tangent[o] = tangent[o + 1] = tangent[o + 2] = 0;
-        binormal[o] = binormal[o + 1] = binormal[o + 2] = 0;
-      } else {
-        normal[o] = scratchN[0];
-        normal[o + 1] = scratchN[1];
-        normal[o + 2] = scratchN[2];
-        tangent[o] = scratchT[0];
-        tangent[o + 1] = scratchT[1];
-        tangent[o + 2] = scratchT[2];
-        binormal[o] = scratchB[0];
-        binormal[o + 1] = scratchB[1];
-        binormal[o + 2] = scratchB[2];
-      }
-    }
-    v.normal = normal;
-    v.tangent = tangent;
-    v.binormal = binormal;
-    return true;
-  }
-
-  /**
-   * Pack explicit tangent frames into GR2-style four-component tangent data.
-   *
-   * @param {ArrayLike<number>} normals Flat xyz normals.
-   * @param {ArrayLike<number>} tangents Flat xyz tangents.
-   * @param {ArrayLike<number>} binormals Flat xyz binormals.
-   * @returns {number[]} Flat xyzw packed tangent-frame values.
-   */
-  function packTangentFrames(normals, tangents, binormals) {
-    if (normals.length !== tangents.length || normals.length !== binormals.length || normals.length % 3 !== 0) {
-      throw new Error("packTangentFrames requires matching complete xyz channels");
-    }
-    var packed = new Array(normals.length / 3 * 4);
-    for (var i = 0, o = 0; i < normals.length; i += 3, o += 4) {
-      var components = [normals[i], normals[i + 1], normals[i + 2], tangents[i], tangents[i + 1], tangents[i + 2], binormals[i], binormals[i + 1], binormals[i + 2]];
-      if (!components.every(Number.isFinite)) {
-        throw new Error("packTangentFrames received non-finite data at vertex ".concat(i / 3));
-      }
-      var normal = normalize([0, 0, 0], components.slice(0, 3)),
-        _tangent = normalize([0, 0, 0], components.slice(3, 6)),
-        binormal = normalize([0, 0, 0], components.slice(6, 9)),
-        frameNormalLength = length(cross$2([0, 0, 0], _tangent, binormal));
-      if (length(normal) <= EPSILON || length(_tangent) <= EPSILON || length(binormal) <= EPSILON || frameNormalLength <= EPSILON) {
-        packed[o] = NULL_TANGENT_UNORM[0];
-        packed[o + 1] = NULL_TANGENT_UNORM[1];
-        packed[o + 2] = NULL_TANGENT_UNORM[2];
-        packed[o + 3] = NULL_TANGENT_UNORM[3];
-        continue;
-      }
-      var encoded = encodeTangentFrame(_tangent, binormal, normal);
-      packed[o] = encoded[0];
-      packed[o + 1] = encoded[1];
-      packed[o + 2] = encoded[2];
-      packed[o + 3] = encoded[3];
-    }
-    return packed;
-  }
-
-  /**
-   * Returns the scaling factor component of a transformation
-   *  matrix. If a matrix is built with fromRotationTranslationScale
-   *  with a normalized Quaternion parameter, the returned vector will be
-   *  the same as the scaling vector
-   *  originally supplied.
-   * @param  {vec3} out Vector to receive scaling factor component
-   * @param  {ReadonlyMat4} mat Matrix to be decomposed (input)
-   * @return {vec3} out
-   */
-  function getScaling(out, mat) {
-    var m11 = mat[0];
-    var m12 = mat[1];
-    var m13 = mat[2];
-    var m21 = mat[4];
-    var m22 = mat[5];
-    var m23 = mat[6];
-    var m31 = mat[8];
-    var m32 = mat[9];
-    var m33 = mat[10];
-    out[0] = Math.sqrt(m11 * m11 + m12 * m12 + m13 * m13);
-    out[1] = Math.sqrt(m21 * m21 + m22 * m22 + m23 * m23);
-    out[2] = Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33);
-    return out;
-  }
-
-  /**
-   * Returns a quaternion representing the rotational component
-   *  of a transformation matrix. If a matrix is built with
-   *  fromRotationTranslation, the returned quaternion will be the
-   *  same as the quaternion originally supplied.
-   * @param {quat} out Quaternion to receive the rotation component
-   * @param {ReadonlyMat4} mat Matrix to be decomposed (input)
-   * @return {quat} out
-   */
-  function getRotation(out, mat) {
-    var scaling = new ARRAY_TYPE(3);
-    getScaling(scaling, mat);
-    var is1 = 1 / scaling[0];
-    var is2 = 1 / scaling[1];
-    var is3 = 1 / scaling[2];
-    var sm11 = mat[0] * is1;
-    var sm12 = mat[1] * is2;
-    var sm13 = mat[2] * is3;
-    var sm21 = mat[4] * is1;
-    var sm22 = mat[5] * is2;
-    var sm23 = mat[6] * is3;
-    var sm31 = mat[8] * is1;
-    var sm32 = mat[9] * is2;
-    var sm33 = mat[10] * is3;
-    var trace = sm11 + sm22 + sm33;
-    var S = 0;
-    if (trace > 0) {
-      S = Math.sqrt(trace + 1.0) * 2;
-      out[3] = 0.25 * S;
-      out[0] = (sm23 - sm32) / S;
-      out[1] = (sm31 - sm13) / S;
-      out[2] = (sm12 - sm21) / S;
-    } else if (sm11 > sm22 && sm11 > sm33) {
-      S = Math.sqrt(1.0 + sm11 - sm22 - sm33) * 2;
-      out[3] = (sm23 - sm32) / S;
-      out[0] = 0.25 * S;
-      out[1] = (sm12 + sm21) / S;
-      out[2] = (sm31 + sm13) / S;
-    } else if (sm22 > sm33) {
-      S = Math.sqrt(1.0 + sm22 - sm11 - sm33) * 2;
-      out[3] = (sm31 - sm13) / S;
-      out[0] = (sm12 + sm21) / S;
-      out[1] = 0.25 * S;
-      out[2] = (sm23 + sm32) / S;
-    } else {
-      S = Math.sqrt(1.0 + sm33 - sm11 - sm22) * 2;
-      out[3] = (sm12 - sm21) / S;
-      out[0] = (sm31 + sm13) / S;
-      out[1] = (sm23 + sm32) / S;
-      out[2] = 0.25 * S;
-    }
-    return out;
-  }
-
-  /**
-   * Calculates a 4x4 matrix from the given quaternion
-   *
-   * @param {mat4} out mat4 receiving operation result
-   * @param {ReadonlyQuat} q Quaternion to create matrix from
-   *
-   * @returns {mat4} out
-   */
-  function fromQuat(out, q) {
-    var x = q[0],
-      y = q[1],
-      z = q[2],
-      w = q[3];
-    var x2 = x + x;
-    var y2 = y + y;
-    var z2 = z + z;
-    var xx = x * x2;
-    var yx = y * x2;
-    var yy = y * y2;
-    var zx = z * x2;
-    var zy = z * y2;
-    var zz = z * z2;
-    var wx = w * x2;
-    var wy = w * y2;
-    var wz = w * z2;
-    out[0] = 1 - yy - zz;
-    out[1] = yx + wz;
-    out[2] = zx - wy;
-    out[3] = 0;
-    out[4] = yx - wz;
-    out[5] = 1 - xx - zz;
-    out[6] = zy + wx;
-    out[7] = 0;
-    out[8] = zx + wy;
-    out[9] = zy - wx;
-    out[10] = 1 - xx - yy;
-    out[11] = 0;
-    out[12] = 0;
-    out[13] = 0;
-    out[14] = 0;
-    out[15] = 1;
-    return out;
-  }
-
-  /**
-   * 4 Dimensional Vector
-   * @module vec4
-   */
-
-  /**
-   * Creates a new, empty vec4
-   *
-   * @returns {vec4} a new 4D vector
-   */
-  function create() {
-    var out = new ARRAY_TYPE(4);
-    if (ARRAY_TYPE != Float32Array) {
-      out[0] = 0;
-      out[1] = 0;
-      out[2] = 0;
-      out[3] = 0;
-    }
-    return out;
-  }
-
-  /**
-   * Transforms the vec4 with a mat4.
-   *
-   * @param {vec4} out the receiving vector
-   * @param {ReadonlyVec4} a the vector to transform
-   * @param {ReadonlyMat4} m matrix to transform with
-   * @returns {vec4} out
-   */
-  function transformMat4(out, a, m) {
-    var x = a[0],
-      y = a[1],
-      z = a[2],
-      w = a[3];
-    out[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
-    out[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
-    out[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
-    out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
-    return out;
-  }
-
-  /**
-   * Perform some operation over an array of vec4s.
-   *
-   * @param {Array} a the array of vectors to iterate over
-   * @param {Number} stride Number of elements between the start of each vec4. If 0 assumes tightly packed
-   * @param {Number} offset Number of elements to skip at the beginning of the array
-   * @param {Number} count Number of vec4s to iterate over. If 0 iterates over entire array
-   * @param {Function} fn Function to call for each vector in the array
-   * @param {Object} [arg] additional argument to pass to fn
-   * @returns {Array} a
-   * @function
-   */
-  (function () {
-    var vec = create();
-    return function (a, stride, offset, count, fn, arg) {
-      var i, l;
-      if (!stride) {
-        stride = 4;
-      }
-      if (!offset) {
-        offset = 0;
-      }
-      if (count) {
-        l = Math.min(count * stride + offset, a.length);
-      } else {
-        l = a.length;
-      }
-      for (i = offset; i < l; i += stride) {
-        vec[0] = a[i];
-        vec[1] = a[i + 1];
-        vec[2] = a[i + 2];
-        vec[3] = a[i + 3];
-        fn(vec, vec, arg);
-        a[i] = vec[0];
-        a[i + 1] = vec[1];
-        a[i + 2] = vec[2];
-        a[i + 3] = vec[3];
-      }
-      return a;
-    };
-  })();
-
-  /**
    * Small WebGL numeric constants used by the typed-array pool helpers.
    *
    * These stay local to keep the math subpaths independently browser-friendly:
@@ -5320,12 +4956,26 @@
     }
 
     /**
-     * Shortcut to allocating a float 32 array
+     * Shortcut to allocating an array of gl-matrix's own scalar type.
+     *
+     * The name says F32 and in every environment we ship it IS Float32Array,
+     * because that is what `glMatrix.ARRAY_TYPE` defaults to. But gl-matrix owns
+     * that choice and exposes `setMatrixArrayType` to change it, so hardcoding
+     * the type here is a real defect: `vec3.alloc()` would hand back a narrower
+     * array than `vec3.create()` the moment anything overrode it, and every
+     * pooled temporary in the math tree would silently round. Following
+     * `ARRAY_TYPE` is what makes a pooled vector interchangeable with a created
+     * one. Inherited from ccpwgl, where the same hardcoding is still present.
+     *
      * @param {Number} length
-     * @returns {Float32Array}
+     * @returns {Float32Array|Float64Array} gl-matrix's scalar type.
      */
     function allocF32(length) {
-      var result = new Float32Array(alloc(4 * length), 0, length);
+      // gl-matrix falls back to plain `Array` only where Float32Array does not
+      // exist, which cannot happen anywhere this runs; the pool hands out views
+      // over a shared ArrayBuffer, so it needs a real typed array either way.
+      var ScalarArray = ARRAY_TYPE.BYTES_PER_ELEMENT ? ARRAY_TYPE : Float32Array,
+        result = new ScalarArray(alloc(ScalarArray.BYTES_PER_ELEMENT * length), 0, length);
       return result.length !== length ? result.subarray(0, length) : result;
     }
 
@@ -6190,6 +5840,430 @@
     vec3.fromMat4Column;
     vec3.fromMat3Column;
     vec3.applyQuaternion;
+
+  /**
+   * Small mesh rebuild helpers for shared CarbonEngineJS mesh JSON.
+   *
+   * These helpers are deliberately framework-free and browser-safe. They accept
+   * plain arrays or typed arrays and return plain arrays unless otherwise noted.
+   */
+
+  function validatePositions(positions) {
+    if (!positions || positions.length % 3 !== 0) {
+      throw new Error("Positions must contain complete xyz vertices");
+    }
+  }
+  function validateIndices(indices, vertexCount) {
+    if (!indices || indices.length % 3 !== 0) {
+      throw new Error("Indices must contain complete triangles");
+    }
+    for (var i = 0; i < indices.length; i++) {
+      if (!Number.isInteger(indices[i]) || indices[i] < 0 || indices[i] >= vertexCount) {
+        throw new Error("Invalid vertex index at ".concat(i));
+      }
+    }
+  }
+
+  // Double-precision scratch for generateNormals. Plain Arrays deliberately: see
+  // the note at their use for why the element type is not the math namespace's.
+  var NORMAL_SCRATCH = [0, 0, 0];
+  var EDGE_B_SCRATCH = [0, 0, 0];
+  var EDGE_C_SCRATCH = [0, 0, 0];
+
+  /**
+   * Generate area-weighted vertex normals from positions and triangle indices.
+   *
+   * @param {ArrayLike<number>} positions Flat xyz positions.
+   * @param {ArrayLike<number>} indices Flat triangle indices.
+   * @returns {Float32Array} Flat xyz normals.
+   */
+  function generateNormals(positions, indices) {
+    validatePositions(positions);
+    validateIndices(indices, positions.length / 3);
+    var vertexCount = positions.length / 3,
+      normals = new Float32Array(positions.length);
+
+    // Module scratch, not pooled, and the element type is the point. The
+    // previous form cost FOUR array literals per triangle; these cost none. But
+    // vec3.alloc() would hand back a Float32Array, and the literals it replaced
+    // were plain Arrays - float64. Rounding each edge vector and face normal to
+    // f32 BEFORE accumulating changes the result: ~1e-7 relative at world scale,
+    // and far worse wherever a cross product nearly cancels.
+    //
+    // THE RULE: a scratch's element type follows its DESTINATION, not whatever
+    // the math namespace hands out. Here the arithmetic is double and only the
+    // final store is f32, so the scratch is double.
+    //
+    // Reused across calls, which is safe because this runs to completion without
+    // yielding and never re-enters. Every component is written before it is read:
+    // `cross` fills its whole destination and only reads its operands.
+    var faceNormal = NORMAL_SCRATCH,
+      edgeB = EDGE_B_SCRATCH,
+      edgeC = EDGE_C_SCRATCH;
+    for (var t = 0; t < indices.length; t += 3) {
+      var ia = indices[t] * 3,
+        ib = indices[t + 1] * 3,
+        ic = indices[t + 2] * 3,
+        ax = positions[ia],
+        ay = positions[ia + 1],
+        az = positions[ia + 2];
+      edgeB[0] = positions[ib] - ax;
+      edgeB[1] = positions[ib + 1] - ay;
+      edgeB[2] = positions[ib + 2] - az;
+      edgeC[0] = positions[ic] - ax;
+      edgeC[1] = positions[ic + 1] - ay;
+      edgeC[2] = positions[ic + 2] - az;
+      cross$2(faceNormal, edgeB, edgeC);
+      var nx = faceNormal[0],
+        ny = faceNormal[1],
+        nz = faceNormal[2];
+
+      // Unrolled over the triangle's three vertices, which is what the
+      // `for (const offset of [ ia, ib, ic ])` form allocated for.
+      normals[ia] += nx;
+      normals[ia + 1] += ny;
+      normals[ia + 2] += nz;
+      normals[ib] += nx;
+      normals[ib + 1] += ny;
+      normals[ib + 2] += nz;
+      normals[ic] += nx;
+      normals[ic + 1] += ny;
+      normals[ic + 2] += nz;
+    }
+    for (var i = 0; i < vertexCount; i++) {
+      var offset = i * 3,
+        _length = Math.hypot(normals[offset], normals[offset + 1], normals[offset + 2]) || 1;
+      normals[offset] /= _length;
+      normals[offset + 1] /= _length;
+      normals[offset + 2] /= _length;
+    }
+    return normals;
+  }
+
+  /**
+   * Generate per-vertex tangents from positions, normals, UVs and indices.
+   *
+   * @param {ArrayLike<number>} positions Flat xyz positions.
+   * @param {ArrayLike<number>} normals Flat xyz normals.
+   * @param {ArrayLike<number>} uvs Flat uv coordinates.
+   * @param {ArrayLike<number>} indices Flat triangle indices.
+   * @returns {Float32Array} Flat xyz tangents.
+   */
+  function generateTangents(positions, normals, uvs, indices) {
+    validatePositions(positions);
+    var vertexCount = positions.length / 3,
+      tan1 = new Float32Array(vertexCount * 3),
+      tan2 = new Float32Array(vertexCount * 3);
+    if (!normals || normals.length !== positions.length || !uvs || uvs.length !== vertexCount * 2) {
+      throw new Error("Tangent channels do not match the vertex count");
+    }
+    validateIndices(indices, vertexCount);
+    for (var t = 0; t < indices.length; t += 3) {
+      var i0 = indices[t],
+        i1 = indices[t + 1],
+        i2 = indices[t + 2],
+        p0 = i0 * 3,
+        p1 = i1 * 3,
+        p2 = i2 * 3,
+        t0 = i0 * 2,
+        t1 = i1 * 2,
+        t2 = i2 * 2,
+        x1 = positions[p1] - positions[p0],
+        y1 = positions[p1 + 1] - positions[p0 + 1],
+        z1 = positions[p1 + 2] - positions[p0 + 2],
+        x2 = positions[p2] - positions[p0],
+        y2 = positions[p2 + 1] - positions[p0 + 1],
+        z2 = positions[p2 + 2] - positions[p0 + 2],
+        s1 = uvs[t1] - uvs[t0],
+        v1 = uvs[t1 + 1] - uvs[t0 + 1],
+        s2 = uvs[t2] - uvs[t0],
+        v2 = uvs[t2 + 1] - uvs[t0 + 1],
+        divisor = s1 * v2 - s2 * v1,
+        scale = divisor ? 1 / divisor : 0,
+        sx = (v2 * x1 - v1 * x2) * scale,
+        sy = (v2 * y1 - v1 * y2) * scale,
+        sz = (v2 * z1 - v1 * z2) * scale,
+        tx = (s1 * x2 - s2 * x1) * scale,
+        ty = (s1 * y2 - s2 * y1) * scale,
+        tz = (s1 * z2 - s2 * z1) * scale;
+
+      // Unrolled over the triangle's three vertices: the
+      // `for (const offset of [ p0, p1, p2 ])` form allocated an array literal
+      // and an iterator per triangle.
+      tan1[p0] += sx;
+      tan1[p0 + 1] += sy;
+      tan1[p0 + 2] += sz;
+      tan2[p0] += tx;
+      tan2[p0 + 1] += ty;
+      tan2[p0 + 2] += tz;
+      tan1[p1] += sx;
+      tan1[p1 + 1] += sy;
+      tan1[p1 + 2] += sz;
+      tan2[p1] += tx;
+      tan2[p1 + 1] += ty;
+      tan2[p1 + 2] += tz;
+      tan1[p2] += sx;
+      tan1[p2 + 1] += sy;
+      tan1[p2 + 2] += sz;
+      tan2[p2] += tx;
+      tan2[p2 + 1] += ty;
+      tan2[p2 + 2] += tz;
+    }
+    var tangents = new Float32Array(vertexCount * 3),
+      handedness = new Float32Array(vertexCount);
+    for (var i = 0; i < vertexCount; i++) {
+      var offset = i * 3,
+        nx = normals[offset],
+        ny = normals[offset + 1],
+        nz = normals[offset + 2],
+        _tx = tan1[offset],
+        _ty = tan1[offset + 1],
+        _tz = tan1[offset + 2],
+        normalDotTangent = nx * _tx + ny * _ty + nz * _tz;
+      var ox = _tx - nx * normalDotTangent,
+        oy = _ty - ny * normalDotTangent,
+        oz = _tz - nz * normalDotTangent;
+      var _length2 = Math.hypot(ox, oy, oz) || 1;
+      ox /= _length2;
+      oy /= _length2;
+      oz /= _length2;
+      tangents[offset] = ox;
+      tangents[offset + 1] = oy;
+      tangents[offset + 2] = oz;
+      handedness[i] = (ny * oz - nz * oy) * tan2[offset] + (nz * ox - nx * oz) * tan2[offset + 1] + (nx * oy - ny * ox) * tan2[offset + 2] < 0 ? -1 : 1;
+    }
+    Object.defineProperty(tangents, "handedness", {
+      value: handedness
+    });
+    return tangents;
+  }
+
+  /**
+   * Generate binormals as normalized `normal x tangent`.
+   *
+   * @param {ArrayLike<number>} normals Flat xyz normals.
+   * @param {ArrayLike<number>} tangents Flat xyz tangents.
+   * @param {object} [options] Generation options.
+   * @param {"right"|"left"} [options.uvHandedness] Handedness of generated basis.
+   * @returns {number[]} Flat xyz binormals.
+   */
+  function generateBiNormals(normals, tangents) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (normals.length !== tangents.length || normals.length % 3 !== 0) {
+      throw new Error("generateBiNormals requires matching complete xyz channels");
+    }
+    var conventionSign = options.uvHandedness === "left" ? -1 : 1,
+      binormals = new Array(normals.length);
+    for (var i = 0; i < normals.length; i += 3) {
+      var _ref, _options$handedness, _options$handedness2, _tangents$handedness;
+      var vertexSign = (_ref = (_options$handedness = (_options$handedness2 = options.handedness) === null || _options$handedness2 === void 0 ? void 0 : _options$handedness2[i / 3]) != null ? _options$handedness : (_tangents$handedness = tangents.handedness) === null || _tangents$handedness === void 0 ? void 0 : _tangents$handedness[i / 3]) != null ? _ref : 1,
+        sign = conventionSign * vertexSign;
+      var b = normalize([0, 0, 0], [normals[i + 1] * tangents[i + 2] - normals[i + 2] * tangents[i + 1], normals[i + 2] * tangents[i] - normals[i] * tangents[i + 2], normals[i] * tangents[i + 1] - normals[i + 1] * tangents[i]]);
+      binormals[i] = b[0] * sign;
+      binormals[i + 1] = b[1] * sign;
+      binormals[i + 2] = b[2] * sign;
+    }
+    return binormals;
+  }
+
+  /**
+   * Packed tangent-frame helpers for CarbonEngineJS/GR2-style mesh data.
+   *
+   * The packed-frame constants and decode/encode behavior are based on observed
+   * Fenris Creations (CCP Games) shader behavior for EVE/Carbon packed tangent
+   * frames. No shader source is included here.
+   */
+
+  /** Full-turn float32 constant used by the CCP tangent-frame shader. */
+  var TANGENT_TAU = 6.28318548;
+
+  /** Half-turn float32 constant used by the CCP tangent-frame shader. */
+  var TANGENT_PI = 3.14159274;
+  var TAU = TANGENT_TAU,
+    PI = TANGENT_PI,
+    POLAR_EPSILON = 1e-6;
+
+  /**
+   * Packed UNorm sentinel used for vertices with no authored tangent frame.
+   *
+   * @type {number[]}
+   */
+  var NULL_TANGENT_UNORM = Object.freeze([0, 1, 0, 1]);
+
+  /**
+   * Test whether a packed tangent payload is the null-frame sentinel.
+   *
+   * @param {ArrayLike<number>} u Four UNorm values.
+   * @returns {boolean} Whether the payload marks a missing authored frame.
+   */
+  function isNullTangent(u) {
+    var e1 = u[1],
+      e3 = u[3];
+    return (e1 <= 1e-3 || e1 >= 1 - 1e-3) && (e3 <= 1e-3 || e3 >= 1 - 1e-3);
+  }
+  var scratchT = new Float64Array(3),
+    scratchB = new Float64Array(3),
+    scratchN = new Float64Array(3);
+  function decodeTangentFrameInto(u0, u1, u2, u3, outT, outB, outN) {
+    var a0 = u0 * TAU - PI,
+      a1 = u1 * TAU - PI,
+      a2 = u2 * TAU - PI,
+      a3 = u3 * TAU - PI,
+      s1 = Math.abs(Math.sin(a1)),
+      s3 = Math.abs(Math.sin(a3));
+    outT[0] = s1 * Math.cos(a0);
+    outT[1] = s1 * Math.sin(a0);
+    outT[2] = Math.cos(a1);
+    outB[0] = s3 * Math.cos(a2);
+    outB[1] = s3 * Math.sin(a2);
+    outB[2] = Math.cos(a3);
+    var sign = a1 > 0 && a3 > 0 ? 1 : -1;
+    outN[0] = (outT[1] * outB[2] - outT[2] * outB[1]) * sign;
+    outN[1] = (outT[2] * outB[0] - outT[0] * outB[2]) * sign;
+    outN[2] = (outT[0] * outB[1] - outT[1] * outB[0]) * sign;
+    return s1 < 1e-6 && s3 < 1e-6;
+  }
+
+  /**
+   * Decode a packed tangent frame.
+   *
+   * @param {ArrayLike<number>} u Four UNorm values in `[0, 1]`.
+   * @returns {{T: number[], B: number[], N: number[], null: boolean}} Decoded basis.
+   */
+  function decodeTangentFrame(u) {
+    var isNull = decodeTangentFrameInto(u[0], u[1], u[2], u[3], scratchT, scratchB, scratchN);
+    return {
+      T: Array.from(scratchT),
+      B: Array.from(scratchB),
+      N: Array.from(scratchN),
+      null: isNull
+    };
+  }
+
+  /**
+   * Encode a tangent frame back to four UNorm angles.
+   *
+   * @param {ArrayLike<number>} T Unit tangent.
+   * @param {ArrayLike<number>} B Unit binormal.
+   * @param {ArrayLike<number>} [N] Unit normal; only handedness is used.
+   * @returns {number[]} Four UNorm values in `[0, 1]`.
+   */
+  function encodeTangentFrame(T, B, N) {
+    var a0 = Math.atan2(T[1], T[0]),
+      a1 = Math.acos(clamp(T[2], -1, 1));
+    var a2 = Math.atan2(B[1], B[0]);
+    var a3 = Math.acos(clamp(B[2], -1, 1));
+    var negativeHandedness = N && dot$1(N, cross$2([0, 0, 0], T, B)) < 0;
+    if (negativeHandedness) {
+      a1 = a1 === 0 ? -POLAR_EPSILON : -a1;
+    } else {
+      if (a1 === 0) a1 = POLAR_EPSILON;
+      if (a3 === 0) a3 = POLAR_EPSILON;
+    }
+    var enc = angle => clamp((angle + PI) / TAU, 0, 1);
+    return [enc(a0), enc(a1), enc(a2), enc(a3)];
+  }
+  function vertexCount(mesh, count) {
+    if (count !== undefined) return count;
+    var p = mesh.vertex && mesh.vertex.position;
+    return p ? p.length / 3 | 0 : 0;
+  }
+
+  /**
+   * Is this shared mesh's tangent frame packed?
+   *
+   * @param {object} mesh Shared mesh.
+   * @param {number} [count] Vertex count when the payload has no position channel.
+   * @returns {boolean} Whether the mesh has packed tangent frames.
+   */
+  function isPacked(mesh, count) {
+    var v = mesh.vertex;
+    if (!v || !v.tangent || !v.tangent.length) return false;
+    var n = vertexCount(mesh, count);
+    if (!n) return false;
+    var comps = v.tangent.length / n,
+      empty = value => !value || value.length === 0;
+    return comps === 4 && empty(v.normal) && empty(v.binormal);
+  }
+
+  /**
+   * Unpack a packed shared mesh in place.
+   *
+   * @param {object} mesh Shared mesh to mutate.
+   * @param {number} [count] Vertex count when the payload has no position channel.
+   * @returns {boolean} Whether unpacking happened.
+   */
+  function unpackMeshTangents$1(mesh, count) {
+    if (!isPacked(mesh, count)) return false;
+    var v = mesh.vertex,
+      n = vertexCount(mesh, count),
+      src = v.tangent,
+      normal = new Array(n * 3),
+      tangent = new Array(n * 3),
+      binormal = new Array(n * 3);
+    for (var i = 0; i < n; i++) {
+      var s = i * 4,
+        o = i * 3,
+        isNull = decodeTangentFrameInto(src[s], src[s + 1], src[s + 2], src[s + 3], scratchT, scratchB, scratchN);
+      if (isNull) {
+        normal[o] = normal[o + 1] = normal[o + 2] = 0;
+        tangent[o] = tangent[o + 1] = tangent[o + 2] = 0;
+        binormal[o] = binormal[o + 1] = binormal[o + 2] = 0;
+      } else {
+        normal[o] = scratchN[0];
+        normal[o + 1] = scratchN[1];
+        normal[o + 2] = scratchN[2];
+        tangent[o] = scratchT[0];
+        tangent[o + 1] = scratchT[1];
+        tangent[o + 2] = scratchT[2];
+        binormal[o] = scratchB[0];
+        binormal[o + 1] = scratchB[1];
+        binormal[o + 2] = scratchB[2];
+      }
+    }
+    v.normal = normal;
+    v.tangent = tangent;
+    v.binormal = binormal;
+    return true;
+  }
+
+  /**
+   * Pack explicit tangent frames into GR2-style four-component tangent data.
+   *
+   * @param {ArrayLike<number>} normals Flat xyz normals.
+   * @param {ArrayLike<number>} tangents Flat xyz tangents.
+   * @param {ArrayLike<number>} binormals Flat xyz binormals.
+   * @returns {number[]} Flat xyzw packed tangent-frame values.
+   */
+  function packTangentFrames(normals, tangents, binormals) {
+    if (normals.length !== tangents.length || normals.length !== binormals.length || normals.length % 3 !== 0) {
+      throw new Error("packTangentFrames requires matching complete xyz channels");
+    }
+    var packed = new Array(normals.length / 3 * 4);
+    for (var i = 0, o = 0; i < normals.length; i += 3, o += 4) {
+      var components = [normals[i], normals[i + 1], normals[i + 2], tangents[i], tangents[i + 1], tangents[i + 2], binormals[i], binormals[i + 1], binormals[i + 2]];
+      if (!components.every(Number.isFinite)) {
+        throw new Error("packTangentFrames received non-finite data at vertex ".concat(i / 3));
+      }
+      var normal = normalize([0, 0, 0], components.slice(0, 3)),
+        _tangent = normalize([0, 0, 0], components.slice(3, 6)),
+        binormal = normalize([0, 0, 0], components.slice(6, 9)),
+        frameNormalLength = length(cross$2([0, 0, 0], _tangent, binormal));
+      if (length(normal) <= EPSILON || length(_tangent) <= EPSILON || length(binormal) <= EPSILON || frameNormalLength <= EPSILON) {
+        packed[o] = NULL_TANGENT_UNORM[0];
+        packed[o + 1] = NULL_TANGENT_UNORM[1];
+        packed[o + 2] = NULL_TANGENT_UNORM[2];
+        packed[o + 3] = NULL_TANGENT_UNORM[3];
+        continue;
+      }
+      var encoded = encodeTangentFrame(_tangent, binormal, normal);
+      packed[o] = encoded[0];
+      packed[o + 1] = encoded[1];
+      packed[o + 2] = encoded[2];
+      packed[o + 3] = encoded[3];
+    }
+    return packed;
+  }
 
   /**
    * Tangent-frame helpers backed by @carbonenginejs/runtime/math.
@@ -8978,6 +9052,65 @@
     return selectSmallestCandidate(source, [encodeDaK(source, dimension, UINT8_MAX, FORMAT_DA_K8U_C8U), encodeDaK(source, dimension, UINT16_MAX, FORMAT_DA_K16U_C16U)], dimension, tolerance, options.duration);
   }
 
+  // The two integrity checksums this runtime computes, in one module named for
+  // what they are. Sibling of `hash.js`, and the split between them is the job,
+  // not the width: FNV hashes address and identify, these two verify that bytes
+  // survived a round trip.
+  //
+  // ONE IMPLEMENTATION EACH, BECAUSE THERE WAS ONE ALGORITHM EACH. Standard
+  // CRC-32 was written three times — `cmf/core/binary.js`, `gr2/core/container.js`
+  // and `png/core/writer.js` — with the same reflected polynomial, the same
+  // initial value and the same final xor, differing only in whether the table was
+  // precomputed and how many range arguments the signature took. Adler-32 was
+  // written twice, in `png/core/writer.js` and `fbx/core/helpers.js`.
+  //
+  // WHAT DOES NOT BELONG HERE, and the distinction `hash.js` already draws:
+  // a checksum whose POLYNOMIAL or direction is part of a format's wire contract
+  // stays with that format. `wem/core/bitStream.js` computes the Ogg page
+  // checksum — forward CRC-32 over polynomial 0x04c11db7, zero initial value, no
+  // final xor. It shares a name with the function below and nothing else, and its
+  // own comment says so.
+  //
+  // Nor does the independent copy in `test/.../gr2/writer.test.mjs` belong here.
+  // A test that verifies a checksum by importing the implementation it is testing
+  // proves only that the function equals itself; that copy is a deliberate oracle
+  // and is meant to stay separate.
+
+  /** Reflected CRC-32 polynomial, as used by zlib, PNG, GZIP and Carbon's containers. */
+  var CRC32_POLYNOMIAL = 0xedb88320;
+  var CRC32_TABLE = (() => {
+    var table = new Uint32Array(256);
+    for (var index = 0; index < 256; index++) {
+      var value = index;
+      for (var bit = 0; bit < 8; bit++) {
+        value = value & 1 ? CRC32_POLYNOMIAL ^ value >>> 1 : value >>> 1;
+      }
+      table[index] = value >>> 0;
+    }
+    return table;
+  })();
+
+  /**
+   * Standard CRC-32 over a byte range.
+   *
+   * Reflected polynomial, initial value all ones, final one's complement — the
+   * variant PNG chunks, zlib streams, CMF containers and GR2 sections all use.
+   *
+   * @param {Uint8Array} bytes Source bytes.
+   * @param {number} [start] First byte offset, inclusive.
+   * @param {number} [end] Last byte offset, exclusive.
+   * @returns {number} Unsigned 32-bit checksum.
+   */
+  function crc32(bytes) {
+    var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var end = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : bytes.length;
+    var crc = 0xffffffff;
+    for (var index = start; index < end; index++) {
+      crc = crc >>> 8 ^ CRC32_TABLE[(crc ^ bytes[index]) & 0xff];
+    }
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+
   var textEncoder = new TextEncoder();
 
   /**
@@ -9290,17 +9423,6 @@
     var bytes = new Uint8Array(size);
     write(new DataView(bytes.buffer));
     return bytes;
-  }
-  function crc32(bytes) {
-    var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var crc = 0xffffffff;
-    for (var index = start; index < bytes.length; index++) {
-      crc ^= bytes[index];
-      for (var bit = 0; bit < 8; bit++) {
-        crc = crc >>> 1 ^ (crc & 1 ? 0xedb88320 : 0);
-      }
-    }
-    return (crc ^ 0xffffffff) >>> 0;
   }
   function primitiveSize(type) {
     switch (type) {
@@ -10459,6 +10581,65 @@
     return writeGr2(cmf, options);
   }
 
+  /**
+   * Convert a decoded record to JSON, refusing a cycle.
+   *
+   * For the Blue graph transports, whose documents legitimately contain object
+   * references and can therefore contain a loop. A cycle THROWS rather than being
+   * pruned, because a silently truncated graph is indistinguishable from a graph
+   * that was genuinely that shape.
+   *
+   * The guard is released on the way back out, so a node reachable twice by
+   * different paths is not mistaken for a cycle.
+   *
+   * @param {*} value Any decoded value.
+   * @param {string} [label] Name used in the cycle error, identifying the reader.
+   * @param {WeakSet} [seen] Ancestors on the current path; supplied by recursion.
+   * @returns {*} A JSON-safe value.
+   * @throws {TypeError} The value contains a cycle.
+   */
+  function toJsonAcyclic(value) {
+    var label = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Reader";
+    var seen = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new WeakSet();
+    if (value === null || typeof value !== "object") return value;
+
+    // A typed array cannot hold a reference, so it cannot take part in a cycle
+    // and needs no guard. It is tested before the guard for that reason only.
+    if (ArrayBuffer.isView(value)) return Array.from(value, item => toJsonAcyclic(item, label, seen));
+
+    // THE CYCLE CHECK MUST PRECEDE THE ARRAY BRANCH. It did not in the three
+    // readers this policy replaced (black, red and gr2 were identical here): the
+    // array branch returned before `seen` was ever consulted, so a cycle reached
+    // through an array — `list.push(list)` — recursed until the stack overflowed
+    // and raised `RangeError: Maximum call stack size exceeded` instead of the
+    // intended `TypeError`. Fixed here rather than reproduced: this policy is
+    // CarbonEngineJS's own (Carbon persists through Blue, not JSON), so there is
+    // no donor behaviour to stay faithful to, and nothing can depend on the shape
+    // of a stack overflow.
+    if (seen.has(value)) {
+      throw new TypeError("".concat(label, ".toJSON cannot convert circular data"));
+    }
+    if (Array.isArray(value)) {
+      seen.add(value);
+      var _out2 = value.map(item => toJsonAcyclic(item, label, seen));
+      seen.delete(value);
+      return _out2;
+    }
+    if (typeof value.toJSON === "function") {
+      seen.add(value);
+      var json = toJsonAcyclic(value.toJSON(), label, seen);
+      seen.delete(value);
+      return json;
+    }
+    seen.add(value);
+    var out = {};
+    for (var key of Object.keys(value)) {
+      out[key] = toJsonAcyclic(value[key], label, seen);
+    }
+    seen.delete(value);
+    return out;
+  }
+
   var _excluded = ["classes", "rebuildMissingBounds"];
   /**
    * GR2 shared projection.
@@ -10625,7 +10806,7 @@
     }
     return out;
   }
-  var VERTEX_CHANNELS = Object.freeze([["position", "Position", 3], ["blendIndice", "BoneIndices", 4], ["tangent", "Tangent", 4, true], ["normal", "Normal", 3], ["texcoord0", "TextureCoordinates0", 2], ["texcoord1", "TextureCoordinates1", 2], ["binormal", "Binormal", 4, true], ["blendWeight", "BoneWeights", 4]]);
+  var VERTEX_CHANNELS = Object.freeze([["position", "Position", 3, true], ["blendIndice", "BoneIndices", 4], ["tangent", "Tangent", 4, true], ["normal", "Normal", 3], ["texcoord0", "TextureCoordinates0", 2, true], ["texcoord1", "TextureCoordinates1", 2, true], ["binormal", "Binormal", 4, true], ["blendWeight", "BoneWeights", 4]]);
   function emitVertexChannels(vertices) {
     var channels = {};
     for (var _ref3 of VERTEX_CHANNELS) {
@@ -10941,6 +11122,10 @@
     var vd = mesh.PrimaryVertexData,
       verts = vd && vd.Vertices || [];
     o.vertex = emitVertexChannels(verts);
+    // Traffic instance meshes store path IDs in Position.w and animation
+    // controls in four-wide texture coordinates. Preserve the authored stream
+    // width; its vertex count cannot be inferred by dividing positions by three.
+    if (verts.length && o.vertex.position.length !== verts.length * 3) o.vertexCount = verts.length;
     o.morphTargets = (mesh.MorphTargets || []).map(mt => emitMorphTarget(mt, classes));
     o.morphTargets.push(...((vd === null || vd === void 0 ? void 0 : vd.VertexAnnotationSets) || []).map(set => emitVertexAnnotationTarget(set, verts.length, classes)).filter(Boolean));
     var topo = mesh.PrimaryTopology || {},
@@ -10971,7 +11156,7 @@
           faces
         };
         if (rebuildMissingBounds) {
-          var bounds = boundsFromFaces(o.vertex.position, faces);
+          var bounds = boundsFromFaces(o.vertex.position, faces, o.vertex.position.length / verts.length);
           if (bounds) {
             group.minBounds = bounds.min;
             group.maxBounds = bounds.max;
@@ -11006,11 +11191,12 @@
    * @returns {{min: number[], max: number[]}|null} Bounds, or null without data.
    */
   function boundsFromFaces(positions, faces) {
+    var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3;
     if (!positions || !positions.length || !faces.length) return null;
     var min = [Infinity, Infinity, Infinity],
       max = [-Infinity, -Infinity, -Infinity];
     for (var i = 0; i < faces.length; i++) {
-      var base = faces[i] * 3;
+      var base = faces[i] * width;
       for (var k = 0; k < 3; k++) {
         var v = positions[base + k];
         if (v < min[k]) min[k] = v;
@@ -11760,27 +11946,14 @@
   }
 
   /** Converts a parsed payload into a JSON-safe value for the GR2 format reader. */
+  /**
+   * Convert to JSON, refusing a cycle, naming this reader in the error.
+   *
+   * @param {*} value Any decoded value.
+   * @returns {*} A JSON-safe value.
+   */
   function toJsonValue(value) {
-    var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
-    if (value === null || typeof value !== "object") return value;
-    if (ArrayBuffer.isView(value)) return Array.from(value, item => toJsonValue(item, seen));
-    if (Array.isArray(value)) return value.map(item => toJsonValue(item, seen));
-    if (seen.has(value)) {
-      throw new TypeError("CjsGr2Format.toJSON cannot convert circular data");
-    }
-    if (typeof value.toJSON === "function") {
-      seen.add(value);
-      var json = toJsonValue(value.toJSON(), seen);
-      seen.delete(value);
-      return json;
-    }
-    seen.add(value);
-    var out = {};
-    for (var key of Object.keys(value)) {
-      out[key] = toJsonValue(value[key], seen);
-    }
-    seen.delete(value);
-    return out;
+    return toJsonAcyclic(value, "CjsGr2Format");
   }
 
   /**
@@ -12165,6 +12338,19 @@
   CjsGr2Format.CLASS_KEYS = CLASS_KEYS;
   CjsGr2Format.id = "gr2";
   CjsGr2Format.mediaTypes = Object.freeze(["geometry"]);
+  // Same shape as the other geometry writers: a native CMF v1 graph is the
+  // default input, and `writeShared` adapts a shared or GR2-shaped root.
+  CjsGr2Format.inputs = CjsFormat.defineInputs({
+    cmf: {
+      default: true,
+      payloadType: "geometry",
+      options: ["tangents", "packCurves", "sectionStorage"]
+    },
+    shared: {
+      payloadType: "geometry",
+      options: ["tangents", "packCurves", "sectionStorage"]
+    }
+  });
   CjsGr2Format.outputs = CjsFormat.defineOutputs({
     gr2: {
       decoded: true

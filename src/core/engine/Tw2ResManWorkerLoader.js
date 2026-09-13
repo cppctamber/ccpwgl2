@@ -1,5 +1,13 @@
 import { isString } from "utils";
 import { ErrHTTPStatus } from "./Tw2ResMan";
+import { Tw2ResourceLoaderWorker } from "./Tw2ResourceLoaderWorker";
+
+// The worker file ships beside the bundle as `ccpwgl2_resman.worker.js`, like
+// `ccpwgl2_gr2.worker.js`. Resolved at bundle evaluation, the only time
+// `document.currentScript` is the bundle's own <script>; null when the bundle
+// is imported as a module, in which case the blob fallback is used.
+const script = typeof document !== "undefined" ? document.currentScript?.src : null;
+const defaultWorkerUrl = script ? new URL("ccpwgl2_resman.worker.js", script).href : null;
 
 
 export class Tw2ResManWorkerLoader
@@ -16,6 +24,7 @@ export class Tw2ResManWorkerLoader
         this._nextId = 1;
         this._pending = new Map();
         this._failed = false;
+        this._usedFallback = false;
     }
 
     /**
@@ -31,7 +40,7 @@ export class Tw2ResManWorkerLoader
 
         try
         {
-            this.url = workerUrl || this.constructor.CreateObjectUrl();
+            this.url = workerUrl || defaultWorkerUrl || this.constructor.CreateObjectUrl();
             this.worker = new Worker(this.url);
             this.worker.onmessage = event => this.OnMessage(event.data);
             this.worker.onerror = err => this.OnWorkerError(err);
@@ -98,16 +107,13 @@ export class Tw2ResManWorkerLoader
         return new Promise((resolve, reject) =>
         {
             const id = this._nextId++;
-            this._pending.set(id, { url, resolve, reject });
+            // Kept with the request so a fallback worker can be sent it again.
+            const message = { url, responseType, fetchOptions: this.resMan.GetFetchOptions(url) };
+            this._pending.set(id, { url, resolve, reject, message });
 
             try
             {
-                this.worker.postMessage({
-                    id,
-                    url,
-                    responseType,
-                    fetchOptions: this.resMan.GetFetchOptions(url)
-                });
+                this.worker.postMessage({ id, ...message });
             }
             catch (err)
             {
@@ -157,6 +163,29 @@ export class Tw2ResManWorkerLoader
      */
     OnWorkerError(err)
     {
+        // A worker FILE can fail to load - a deployment without
+        // ccpwgl2_resman.worker.js, or a wrong workerLoaderUrl. The same body is
+        // inlined, so switch to a blob worker once and resend what is in flight
+        // rather than dropping worker loading altogether.
+        if (!this._usedFallback && this.url && this.url.indexOf("blob:") !== 0)
+        {
+            this._usedFallback = true;
+            try
+            {
+                if (this.worker) this.worker.terminate();
+                this.url = this.constructor.CreateObjectUrl();
+                this.worker = new Worker(this.url);
+                this.worker.onmessage = event => this.OnMessage(event.data);
+                this.worker.onerror = error => this.OnWorkerError(error);
+                this._pending.forEach((request, id) => this.worker.postMessage({ id, ...request.message }));
+                return;
+            }
+            catch (fallbackError)
+            {
+                err = fallbackError;
+            }
+        }
+
         this.Disable(err);
         this.resMan.UseWorkerLoading(false);
     }
@@ -208,88 +237,7 @@ export class Tw2ResManWorkerLoader
     }
 
     static ResponseTypes = [ "arraybuffer", "text", "json", "blob" ];
-}
 
-
-/**
- * Data-only worker body for resource fetches
- */
-function Tw2ResourceLoaderWorker()
-{
-    self.onmessage = function(event)
-    {
-        const data = event.data;
-
-        fetch(data.url, data.fetchOptions)
-            .then(function(response)
-            {
-                if (!response.ok)
-                {
-                    return response.text()
-                        .then(function(text)
-                        {
-                            let statusText = response.statusText;
-                            let json = null;
-
-                            try
-                            {
-                                json = JSON.parse(text);
-                                statusText = json.message || json.msg || json.error || json.err || statusText;
-                            }
-                            catch (err)
-                            {
-                                statusText = statusText || "Failed to fetch resource";
-                            }
-
-                            throw {
-                                name: "ErrHTTPStatus",
-                                message: statusText,
-                                status: response.status,
-                                statusText,
-                                json
-                            };
-                        });
-                }
-
-                switch (data.responseType)
-                {
-                    case "arraybuffer":
-                        return response.arrayBuffer();
-
-                    case "text":
-                        return response.text();
-
-                    case "json":
-                        return response.json();
-
-                    case "blob":
-                        return response.blob();
-
-                    default:
-                        throw {
-                            name: "ErrResourceLoaderType",
-                            message: "Invalid fetch type: " + data.responseType
-                        };
-                }
-            })
-            .then(function(result)
-            {
-                const transfer = result instanceof ArrayBuffer ? [ result ] : [];
-                self.postMessage({ id: data.id, ok: true, result }, transfer);
-            })
-            .catch(function(err)
-            {
-                self.postMessage({
-                    id: data.id,
-                    ok: false,
-                    error: {
-                        name: err && err.name || "WorkerResourceLoadError",
-                        message: err && err.message || String(err),
-                        status: err && err.status,
-                        statusText: err && err.statusText,
-                        json: err && err.json
-                    }
-                });
-            });
-    };
+    /** The worker file URL resolved beside the bundle, or null. */
+    static defaultWorkerUrl = defaultWorkerUrl;
 }
