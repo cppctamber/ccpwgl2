@@ -209,8 +209,8 @@ export class Tw2CarbonShadowProducer
                 cellsX: this._activeCellsX,
                 cellsY: this._activeCellsY,
                 // Y-flipped sessions store the atlas top-down, as D3D does, so
-                // the lookup takes Carbon's own (0.5, -0.5) again. Same switch
-                // as the reversed depth buffer (`Tw2Device.clipYFlip`).
+                // the lookup takes Carbon's own (0.5, -0.5). Same switch as the
+                // reversed depth buffer (`Tw2Device.clipYFlip`).
                 yFlipped: Tw2CarbonData.GetDepthBufferReversed(),
                 tileSize: this.tileSize,
                 disableShimmer: this.disableShimmer
@@ -335,9 +335,22 @@ export class Tw2CarbonShadowProducer
         if (!this.packingCasterFrame) return Tw2CarbonData.PackPerFrameVS(out, gles);
 
         Tw2CarbonData.PackPerFrameVSRaw(out, gles);
-        for (const reg of Tw2CarbonData.CLIP_MATRIX_REGS)
+
+        // The caster atlas must hold FORWARD depth: Carbon's caster clears to 1,
+        // tests LEQUAL with the inverted test off (EveSpaceScene.cpp:775,
+        // Tr2ShadowMap.cpp:246). Under the legacy "reversed" shader tail
+        // (w - 2z) the z' = w - z flip here cancels back to forward. On a
+        // reversed buffer the tail is "forward" (2z - w) or none (clip control),
+        // which keep the cascade's own 0..w forward z - so the flip must NOT run,
+        // or the atlas stores 1 - d and LEQUAL keeps the FARTHEST caster.
+        // Measured: probe-shadow-visibility mask IoU vs master 0.076 with the
+        // flip, 0.865 without it (with Carbon's -0.5 lookup).
+        if (!Tw2CarbonData.GetDepthBufferReversed())
         {
-            Tw2CarbonData.D3DClipToCarbonClip(out, reg);
+            for (const reg of Tw2CarbonData.CLIP_MATRIX_REGS)
+            {
+                Tw2CarbonData.D3DClipToCarbonClip(out, reg);
+            }
         }
         return out;
     }

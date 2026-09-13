@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { RM_OPAQUE, RM_DECAL } from "constant";
+import { RM_OPAQUE, RM_DECAL, RM_FULLSCREEN } from "constant";
 import { Tw2DepthRenderTarget, Tw2RenderTarget } from "core";
 
 /**
@@ -454,8 +454,10 @@ export class EveSpaceSceneDepthHandler extends meta.Model
         gl.bindFramebuffer(gl.FRAMEBUFFER, probe.fbo);
         gl.viewport(0, 0, size, size);
         gl.bindVertexArray(probe.vao);
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
+        // Raw pass: reset to the full-screen state so leftover culling, colour
+        // writes or depth state from the previous draw cannot drop this triangle.
+        device.InvalidateStandardStates();
+        device.SetStandardStates(RM_FULLSCREEN);
         gl.useProgram(probe.program);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.depthTextureGL);
@@ -650,10 +652,10 @@ export class EveSpaceSceneDepthHandler extends meta.Model
 
         this._debugTarget.SetCallUnset(() =>
         {
+            // See Probe. Scissor is not in the full-screen table, so it stays.
+            device.InvalidateStandardStates();
+            device.SetStandardStates(RM_FULLSCREEN);
             gl.disable(gl.SCISSOR_TEST);
-            gl.disable(gl.DEPTH_TEST);
-            gl.disable(gl.BLEND);
-            gl.depthMask(false);
 
             gl.bindVertexArray(view.vao);
             gl.useProgram(view.program);

@@ -182,8 +182,9 @@ function composeCascadeMatrix(out, options, ortho)
     //
     // UNLESS the caster drew Y-flipped (`options.yFlipped`, the dx11 clip-Y flip
     // convention): then the atlas is stored top-down exactly as D3D stores it,
-    // and Carbon's negation is correct again - keeping +0.5 there would sample
-    // the mirror this comment describes.
+    // and Carbon's negation is correct again. (A false band seen with it on
+    // 2026-09-13 was the caster storing reversed depth - see
+    // Tw2CarbonShadowProducer.PackPerFrameVS - not this sign.)
     mat4.fromScaling(_scratch, [ 0.5, options.yFlipped ? -0.5 : 0.5, 1 ]);
     mat4.multiply(out, out, _scratch);
 

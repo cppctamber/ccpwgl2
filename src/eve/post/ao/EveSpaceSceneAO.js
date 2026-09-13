@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { RM_OPAQUE, RM_DECAL } from "constant";
+import { RM_OPAQUE, RM_DECAL, RM_FULLSCREEN } from "constant";
 import { Tw2TextureRes } from "core/resource";
 import { DEFAULT_AO_POST_EFFECT } from "./ssaoPostEffect.js";
 
@@ -215,8 +215,14 @@ export class EveSpaceSceneAO extends meta.Model
         const { gl } = device;
         const P = device.projection;
 
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
+        // Raw passes inherit whatever the previous draw left. After the Carbon
+        // shadow caster that was front-face culling under the flipped winding
+        // (these triangles were culled) and, with carbonRenderStates "all", the
+        // authored colour writes off - AO drew nothing and froze. The standard
+        // full-screen table resets culling, depth, blend, bias and colour
+        // writes; invalidating first defeats SetStandardStates' early-out.
+        device.InvalidateStandardStates();
+        device.SetStandardStates(RM_FULLSCREEN);
 
         for (const pass of this._passes)
         {
