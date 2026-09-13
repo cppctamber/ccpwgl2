@@ -6,7 +6,7 @@ import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2RenderBatchContext } from "../batch/Tw2RenderBatchContext";
 import { Tw2CarbonResourceBinder } from "./Tw2CarbonResourceBinder";
 import { Tw2CarbonShadowProducer } from "./Tw2CarbonShadowProducer";
-import { RM_OPAQUE, RS_SLOPESCALEDEPTHBIAS, RS_DEPTHBIAS } from "constant";
+import { RM_OPAQUE, RM_FULLSCREEN, RS_SLOPESCALEDEPTHBIAS, RS_DEPTHBIAS } from "constant";
 
 
 // Camera transforms saved across the caster pass, which rebinds them to the light.
@@ -409,6 +409,10 @@ export class Tw2CarbonShadowRenderer
 
             // Cleared to 1.0, and compared with LESSEQUAL - standard forward depth.
             // The surrounding scene may run otherwise; this pass does not inherit it.
+            // On a reversed scene buffer that includes Carbon's inverted compare,
+            // which the caster turns off exactly as Carbon's does
+            // (EveSpaceScene.cpp:775 SetInvertedDepthTest(false)).
+            device.SetInvertedDepthTest(false);
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
             gl.depthMask(true);
@@ -575,6 +579,9 @@ export class Tw2CarbonShadowRenderer
                 restoreOpaqueStates = null;
             }
 
+            device.SetInvertedDepthTest(device.reversedDepthBuffer);
+            gl.clearDepth(device.clearDepthValue);
+
             device.SetView(prevView);
             device.SetProjection(prevProjection);
             // Runs with packingCasterFrame already false, so the camera
@@ -639,6 +646,12 @@ export class Tw2CarbonShadowRenderer
         device.perObjectData = null;
 
         this._resolve.Set();
+        // A full-screen state of its own, as Tw2GodRaysRenderer does. Without it
+        // the quad inherits the caster pass: with `carbonRenderStates` "all" the
+        // authored Shadow CULL_CCW leaves back-face culling on, the resolve quad
+        // is culled, and the visibility buffer stays 0 - everything shadowed
+        // (probe-shadow-resolve-states, 2026-09-13).
+        device.SetStandardStates(RM_FULLSCREEN);
         gl.disable(gl.DEPTH_TEST);
         device.RenderFullScreenQuad(effect);
         gl.enable(gl.DEPTH_TEST);
@@ -750,8 +763,9 @@ export class Tw2CarbonShadowRenderer
             prevDepth = gl.isEnabled(gl.DEPTH_TEST),
             prevBlend = gl.isEnabled(gl.BLEND);
 
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
+        // Raw pass: take a known full-screen state - see _BlurVisibility.
+        device.InvalidateStandardStates();
+        device.SetStandardStates(RM_FULLSCREEN);
 
         // Preserve the atlas aspect so the tiles are not squashed into squares.
         // One tile is square, so the preview is sized from the ACTIVE tiles.
@@ -808,8 +822,14 @@ export class Tw2CarbonShadowRenderer
             width = this._resolve.width,
             height = this._resolve.height;
 
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
+        // Raw GL passes inherit whatever the last draw left: the flipped
+        // winding with front-face culling culled this triangle (the blur drew
+        // nothing, probe-shadow-blur 2026-09-13), and a Carbon pass's authored
+        // states (colour writes off, culling) are never restored. The standard
+        // full-screen table resets all of them; invalidating first defeats
+        // SetStandardStates' early-out when the mode already looks current.
+        device.InvalidateStandardStates();
+        device.SetStandardStates(RM_FULLSCREEN);
         gl.bindVertexArray(view.vao);
         gl.useProgram(view.program);
         gl.activeTexture(gl.TEXTURE0);

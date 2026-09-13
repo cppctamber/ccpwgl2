@@ -536,12 +536,12 @@ export class Tw2Effect extends meta.Model
             }
         }
 
-        // TEMPORARY, see tw2.forceUberDepthOff. Applied HERE rather than to the
+        // TEMPORARY, see the forceUberDepthOff setting. Applied HERE rather than to the
         // authored data: the option surface above is the first point at which
         // the shader's real axes and values are known, so a shader without
         // UBER_DEPTH, or one whose off-value is spelled differently, is left
         // alone instead of being given an option it cannot compile.
-        if (tw2.forceUberDepthOff && Array.isArray(res.permutations))
+        if (tw2.settings.GetValue("forceUberDepthOff") && Array.isArray(res.permutations))
         {
             for (let i = 0; i < res.permutations.length; i++)
             {

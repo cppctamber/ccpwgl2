@@ -67,6 +67,28 @@ import {
 export class Tw2Device extends Tw2EventEmitter
 {
     /**
+     * Carbon's inverted depth compare table (Tr2EffectStateManager.cpp:834-856).
+     * EQUAL, NOTEQUAL, NEVER and ALWAYS are unchanged and absent here.
+     * @type {Object<Number, Number>}
+     */
+    /**
+     * Full-screen quad as (x, y, z, w, u, v) triangle strip with D3D texture
+     * coordinates: v = 0 at the top (clip y = +1). See `clipYFlip`.
+     * @type {Array<Number>}
+     */
+    static QuadVerticesD3D = [
+        1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+        1.0, -1.0, 0.0, 1.0, 1.0, 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, 1.0
+    ];
+
+    static InvertedDepthFunc = {
+        [CMP_LESS]: CMP_GREATER,
+        [CMP_GREATER]: CMP_LESS,
+        [CMP_LEQUAL]: CMP_GREATEREQUAL,
+        [CMP_GREATEREQUAL]: CMP_LEQUAL
+    };
+
+    /**
      * Compiled-effect path profiles.
      *
      * Authored `.fx` resources below `/effect/` stay backend-neutral;
@@ -166,6 +188,200 @@ export class Tw2Device extends Tw2EventEmitter
     {
         return Tw2CarbonData.GetClipDepthRange();
     }
+
+    /**
+     * How the scene depth buffer is laid out.
+     *
+     * - "auto" (default): "reversed-buffer" for the dx11 profile, otherwise
+     *   "legacy" (whatever `clipDepthRange` says, into a forward buffer).
+     * - "reversed-buffer": Carbon's reverse-Z. The seam stays reversed, the
+     *   translator tail is `2z - w`, depth clears to 0 and every depth compare
+     *   is flipped (`SetInvertedDepthTest`). The buffer then holds exactly the
+     *   D32F values Carbon's shaders read back through `DepthMap` and
+     *   `gl_FragCoord.z`. Non-Carbon vertex stages get `z = -z` appended so
+     *   they land on the same axis (reversed depth is `1 - forward` for the
+     *   same near/far).
+     * - "legacy": the pre-2026-09-13 behaviour, kept as the A/B switch.
+     *
+     * Must be set BEFORE any effect loads, for the same reason as
+     * `clipDepthRange`. See `/docs/contracts/depth-convention.md`.
+     *
+     * Read from `tw2.settings` ("depthMode"); set it there.
+     * @returns {String}
+     */
+    get depthMode()
+    {
+        return this.tw2.settings.GetValue("depthMode");
+    }
+
+    /**
+     * Whether the depth buffer is reversed for this session.
+     * @returns {Boolean}
+     */
+    get reversedDepthBuffer()
+    {
+        if (this.depthMode === "reversed-buffer") return true;
+        if (this.depthMode === "legacy") return false;
+        return this.effectProfile === DeviceEffectProfile.DX11 && Tw2CarbonData.GetClipDepthRange() === "reversed";
+    }
+
+    /**
+     * The `depthRange` handed to the DXBC translator.
+     * @returns {String}
+     */
+    get emitterDepthRange()
+    {
+        if (!this.reversedDepthBuffer) return Tw2EffectRes.DEPTH_RANGE;
+        // Under EXT_clip_control ZERO_TO_ONE the seam's reversed clip z already
+        // is the window depth, so the translated stage adds nothing.
+        return this.clipZeroToOne ? "none" : "forward";
+    }
+
+    /**
+     * Use EXT_clip_control's ZERO_TO_ONE depth range on a reversed buffer when
+     * the browser has it. Decided before effects load, like `depthMode`.
+     *
+     * Every window depth written is the same value either way; what changes is
+     * precision. Without it GL maps NDC [-1, 1] to [0, 1] in float, and the
+     * reversed values near 0 (distant surfaces) lose most of their bits in the
+     * `2z - w` / `(ndc + 1) / 2` round trip.
+     *
+     * Read from `tw2.settings` ("clipControl"); set it there.
+     * @returns {Boolean}
+     */
+    get clipControl()
+    {
+        return this.tw2.settings.GetValue("clipControl");
+    }
+
+    /**
+     * True when the clip range is ZERO_TO_ONE for this session.
+     * @returns {Boolean}
+     */
+    get clipZeroToOne()
+    {
+        return !!(this.clipControl && this.reversedDepthBuffer && this.gl && this.GetExtension("EXT_clip_control"));
+    }
+
+    /**
+     * Sets the GL clip range to match {@link clipZeroToOne}. Origin stays
+     * LOWER_LEFT: the Y flip is CCP's `ssyf`, not the extension's origin.
+     */
+    ApplyClipControl()
+    {
+        const ext = this.gl ? this.GetExtension("EXT_clip_control") : null;
+        if (!ext) return;
+        ext.clipControlEXT(ext.LOWER_LEFT_EXT, this.clipZeroToOne ? ext.ZERO_TO_ONE_EXT : ext.NEGATIVE_ONE_TO_ONE_EXT);
+    }
+
+    /**
+     * Whether render targets are drawn Y-flipped (top-down, as D3D stores them).
+     *
+     * On for the same sessions as {@link reversedDepthBuffer}: both are D3D
+     * conventions the dx11 shaders were compiled against, and gles2 sessions keep
+     * neither. While on, every draw into an offscreen framebuffer sets CCP's
+     * `ssyf` uniform to (0, 0, -1) and swaps the front-face winding; the canvas
+     * stays unflipped, so the scene is presented exactly once. Translated dx11
+     * stages get the `ssyf` tail from the emitter (`clipYFlip`).
+     * See `.agents/AUDIT-screen-y-convention-2026-09-13.md`.
+     * @returns {Boolean}
+     */
+    get clipYFlip()
+    {
+        return this.reversedDepthBuffer;
+    }
+
+    /**
+     * True while an offscreen framebuffer is bound. Maintained by the
+     * `bindFramebuffer` wrapper installed in {@link Create}, because render
+     * targets and raw passes bind framebuffers directly in many places.
+     * @type {Boolean}
+     */
+    _offscreen = false;
+
+    /** Last `ssyf.z` / front-face winding sent, so each is only set on change. */
+    _frontFaceFlipped = null;
+
+    /**
+     * True while offscreen draws with an `ssyf` tail are flipped.
+     * @returns {Boolean}
+     */
+    get clipYFlipActive()
+    {
+        return this.clipYFlip && this._offscreen;
+    }
+
+    /**
+     * Uploads this draw's `ssyf` to a just-bound program and matches the
+     * front-face winding to it. Call immediately after `gl.useProgram`.
+     * @param {Tw2ShaderProgram} program
+     */
+    ApplyClipYFlip(program)
+    {
+        // Only a program that HAS the `ssyf` tail is actually flipped. Hand-written
+        // stages without it (picking, GPU particles, some utility shaders) still
+        // draw GL-oriented, so their winding must not be swapped either.
+        const flipped = this.clipYFlipActive && !!(program && program.shadowStateYFlip);
+        const sign = flipped ? -1 : 1;
+        if (program && program.shadowStateYFlip && program.ssyfSign !== sign)
+        {
+            this.gl.uniform3f(program.shadowStateYFlip, 0, 0, sign);
+            program.ssyfSign = sign;
+        }
+        this.ApplyFrontFace(flipped);
+    }
+
+    /**
+     * A clip-space Y flip reverses screen-space winding, so the front face flips
+     * with it: CW normally (ccpwgl's convention), CCW while flipped.
+     * @param {Boolean} [flipped]
+     */
+    ApplyFrontFace(flipped = this.clipYFlipActive)
+    {
+        if (this._frontFaceFlipped === flipped) return;
+        this.gl.frontFace(flipped ? this.gl.CCW : this.gl.CW);
+        this._frontFaceFlipped = flipped;
+    }
+
+    /**
+     * The value depth is cleared to: 0 on a reversed buffer, 1 otherwise.
+     * @returns {Number}
+     */
+    get clearDepthValue()
+    {
+        return this.reversedDepthBuffer ? 0 : 1;
+    }
+
+    /**
+     * Carbon's `Tr2EffectStateManager::SetInvertedDepthTest`
+     * (Tr2EffectStateManager.cpp:834-856): while set, every RS_ZFUNC applied
+     * through {@link SetRenderState} swaps LESS/GREATER and
+     * LESSEQUAL/GREATEREQUAL. The scene turns it on for a reversed buffer; the
+     * sun shadow caster turns it off, as Carbon's does (EveSpaceScene.cpp:775).
+     * @param {Boolean} value
+     */
+    SetInvertedDepthTest(value)
+    {
+        value = !!value;
+        if (this._invertedDepthTest === value) return;
+        this._invertedDepthTest = value;
+        this.InvalidateStandardStates();
+    }
+
+    /**
+     * Applies the session's depth layout to GL: inverted test and clear value.
+     * Called on context creation and whenever the profile changes.
+     */
+    ApplyDepthMode()
+    {
+        this.SetInvertedDepthTest(this.reversedDepthBuffer);
+        Tw2CarbonData.SetDepthBufferReversed(this.reversedDepthBuffer);
+        if (this.gl)
+        {
+            this.gl.clearDepth(this.clearDepthValue);
+            this.ApplyClipControl();
+        }
+    }
     enableAnisotropicFiltering = true;
     enableAntialiasing = true;
     enableWebgl2 = true;
@@ -196,9 +412,11 @@ export class Tw2Device extends Tw2EventEmitter
     _shadowStateBuffer = null;
     _shadowHandles = null;
     _quadBuffer = null;
+    _quadBufferD3D = null;
     _quadDecl = null;
     _cameraQuadBuffer = null;
     _currentRenderMode = RM_ANY;
+    _invertedDepthTest = false;
     _fallbackCube = null;
     _fallbackVolume = null;
     _fallbackArray = null;
@@ -532,6 +750,16 @@ export class Tw2Device extends Tw2EventEmitter
 
         const { gl } = this;
 
+        // Track whether an offscreen framebuffer is bound, for `clipYFlip`.
+        // Wrapped once here rather than at each call site: render targets, AO,
+        // the depth handler, shadows, god rays and picking all bind directly.
+        const bindFramebuffer = gl.bindFramebuffer.bind(gl);
+        gl.bindFramebuffer = (target, framebuffer) =>
+        {
+            if (target === gl.FRAMEBUFFER || target === gl.DRAW_FRAMEBUFFER) this._offscreen = !!framebuffer;
+            return bindFramebuffer(target, framebuffer);
+        };
+
         this.tw2.Debug({
             name: "Device",
             message: `Webgl${this.glVersion} context created`
@@ -621,6 +849,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
         this.antialiasing = this.msaaSamples > 1;
 
+        this.ApplyDepthMode();
         this.Resize(true);
 
         const vertices = [
@@ -631,6 +860,12 @@ export class Tw2Device extends Tw2EventEmitter
         this._quadBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        // D3D texture coordinates (v = 0 at clip y = +1), for `clipYFlip`
+        // sessions: render targets are stored top-down there, so a GL-oriented
+        // quad would mirror the image once per render-target hop.
+        this._quadBufferD3D = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBufferD3D);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(Tw2Device.QuadVerticesD3D), gl.STATIC_DRAW);
         this._cameraQuadBuffer = gl.createBuffer();
         this._quadDecl = Tw2VertexDeclaration.from([
             { usage: "POSITION", usageIndex: 0, elements: 4 },
@@ -731,6 +966,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         this.effectProfile = normalized;
         this.effectDir = this.constructor.EffectProfiles[normalized];
+        if (this.gl) this.ApplyDepthMode();
         return this.effectDir;
     }
 
@@ -1206,7 +1442,7 @@ export class Tw2Device extends Tw2EventEmitter
         if (!effect || !effect.IsGood()) return false;
 
         const gl = this.gl;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.clipYFlip ? this._quadBufferD3D : this._quadBuffer);
         for (let pass = 0; pass < effect.GetPassCount(technique); ++pass)
         {
             effect.ApplyPass(technique, pass);
@@ -1253,7 +1489,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         if (!effect || !effect.IsGood()) return false;
 
-        const vertices = new Float32Array([
+        const vertices = new Float32Array(this.clipYFlip ? Tw2Device.QuadVerticesD3D : [
             1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0,
             1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0
         ]);
@@ -1353,6 +1589,7 @@ export class Tw2Device extends Tw2EventEmitter
                 return;
 
             case RS_ZFUNC:
+                if (this._invertedDepthTest) value = Tw2Device.InvertedDepthFunc[value] || value;
                 gl.depthFunc(0x0200 + value - 1);
                 return;
 
@@ -1601,7 +1838,9 @@ export class Tw2Device extends Tw2EventEmitter
             if (renderMode === RM_ANY || !this._renderStates[renderMode].dirty) return;
         }
 
-        this.gl.frontFace(this.gl.CW);
+        // CW, or CCW while drawing Y-flipped offscreen (see `clipYFlip`).
+        this._frontFaceFlipped = null;
+        this.ApplyFrontFace();
 
         const mode = this._renderStates[renderMode];
         if (mode)

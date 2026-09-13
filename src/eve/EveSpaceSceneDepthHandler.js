@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { RM_OPAQUE, RM_DECAL } from "constant";
+import { RM_OPAQUE, RM_DECAL, RM_FULLSCREEN } from "constant";
 import { Tw2DepthRenderTarget, Tw2RenderTarget } from "core";
 
 /**
@@ -264,9 +264,10 @@ export class EveSpaceSceneDepthHandler extends meta.Model
             // sun. EveSpaceSceneAO sets the same three states for the same
             // reason.
             gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
+            gl.depthFunc(device.reversedDepthBuffer ? gl.GEQUAL : gl.LEQUAL);
             gl.depthMask(true);
 
+            gl.clearDepth(device.clearDepthValue);
             tw2.ClearBufferBits(true, true, true);
             context.Render("Main");
             this._rendered = true;
@@ -317,7 +318,12 @@ export class EveSpaceSceneDepthHandler extends meta.Model
     {
         // Opt-in; see the field note. When off, anything already bound is put
         // back rather than left pointing at our texture.
-        if (!this.publishGlobal)
+        //
+        // A reversed buffer publishes regardless. The note's objection was that
+        // the buffer and the constants disagreed; on a reversed buffer the
+        // buffer holds Carbon's own values and cb2[20] carries Carbon's own pair
+        // (`EveSpaceScene.UpdateViewProjectionFrameData`), so they no longer do.
+        if (!this.publishGlobal && !device.reversedDepthBuffer)
         {
             this.ResetOutput();
             return;
@@ -343,11 +349,34 @@ export class EveSpaceSceneDepthHandler extends meta.Model
      */
     ResetOutput()
     {
-        if (!this._bound) return;
+        if (this._bound)
+        {
+            const parameter = this._GetGlobal();
+            if (parameter && this._placeholderRes) parameter.textureRes = this._placeholderRes;
+            this._bound = false;
+        }
 
-        const parameter = this._GetGlobal();
-        if (parameter && this._placeholderRes) parameter.textureRes = this._placeholderRes;
-        this._bound = false;
+        EveSpaceSceneDepthHandler.ApplyPlaceholder();
+    }
+
+    /**
+     * Points an unbound `DepthMap` at the value meaning "nothing in front" for
+     * this session's depth layout.
+     *
+     * White (1) is the far plane of a forward buffer and stays the config
+     * default. On a reversed buffer the far plane is 0: Carbon binds nothing,
+     * which samples as zeros, and a WHITE placeholder would read as an occluder
+     * at the near plane and fade every soft effect out.
+     */
+    static ApplyPlaceholder()
+    {
+        if (!tw2.HasVariable("DepthMap")) return;
+        const wanted = device.reversedDepthBuffer ? "dynamic:/color/0,0,0,1" : "dynamic:/color/1,1,1,1";
+        // SetValue on the existing parameter, never tw2.SetVariable: the store
+        // would swap in a new parameter object that effects already resolved
+        // against the old one never see.
+        const parameter = tw2.GetVariable("DepthMap");
+        if (parameter.resourcePath !== wanted) parameter.SetValue(wanted);
     }
 
     /**
@@ -425,8 +454,10 @@ export class EveSpaceSceneDepthHandler extends meta.Model
         gl.bindFramebuffer(gl.FRAMEBUFFER, probe.fbo);
         gl.viewport(0, 0, size, size);
         gl.bindVertexArray(probe.vao);
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
+        // Raw pass: reset to the full-screen state so leftover culling, colour
+        // writes or depth state from the previous draw cannot drop this triangle.
+        device.InvalidateStandardStates();
+        device.SetStandardStates(RM_FULLSCREEN);
         gl.useProgram(probe.program);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.depthTextureGL);
@@ -487,6 +518,8 @@ export class EveSpaceSceneDepthHandler extends meta.Model
      */
     static Linearize(d)
     {
+        // A reversed buffer holds exactly 1 - the GL depth for the same planes.
+        if (device.reversedDepthBuffer) d = 1 - d;
         const
             a = device.projection[10],
             b = device.projection[14],
@@ -619,10 +652,10 @@ export class EveSpaceSceneDepthHandler extends meta.Model
 
         this._debugTarget.SetCallUnset(() =>
         {
+            // See Probe. Scissor is not in the full-screen table, so it stays.
+            device.InvalidateStandardStates();
+            device.SetStandardStates(RM_FULLSCREEN);
             gl.disable(gl.SCISSOR_TEST);
-            gl.disable(gl.DEPTH_TEST);
-            gl.disable(gl.BLEND);
-            gl.depthMask(false);
 
             gl.bindVertexArray(view.vao);
             gl.useProgram(view.program);
@@ -634,6 +667,7 @@ export class EveSpaceSceneDepthHandler extends meta.Model
             // Linearisation constants for the distance mode; the pair AO uses.
             gl.uniform2f(view.ab, device.projection[10], device.projection[14]);
             gl.uniform2f(view.viewSize, this._debugTarget.width, this._debugTarget.height);
+            gl.uniform1f(view.rev, device.reversedDepthBuffer ? 1 : 0);
             gl.drawArrays(gl.TRIANGLES, 0, 3);
         });
 
@@ -704,6 +738,7 @@ export class EveSpaceSceneDepthHandler extends meta.Model
             uniform vec2 uRange;
             uniform vec2 uAB;
             uniform vec2 uViewSize;
+            uniform float uRev;
             out vec4 color;
 
             // Cheap perceptual ramp: dark blue -> cyan -> green -> yellow -> red.
@@ -725,6 +760,8 @@ export class EveSpaceSceneDepthHandler extends meta.Model
                 // than fetching the top-left corner of a full-resolution image.
                 vec2 uv = gl_FragCoord.xy / vec2(uViewSize);
                 float d = texelFetch(depth, ivec2(uv * vec2(textureSize(depth, 0))), 0).r;
+                // Reversed buffer: 1 - GL depth, so everything below reads as before.
+                if (uRev > 0.5) d = 1.0 - d;
 
                 // Untouched by the pass. Called out loudly, because "cleared"
                 // and "constant" have completely different causes and both look
@@ -765,7 +802,8 @@ export class EveSpaceSceneDepthHandler extends meta.Model
             mode: gl.getUniformLocation(program, "uMode"),
             range: gl.getUniformLocation(program, "uRange"),
             ab: gl.getUniformLocation(program, "uAB"),
-            viewSize: gl.getUniformLocation(program, "uViewSize")
+            viewSize: gl.getUniformLocation(program, "uViewSize"),
+            rev: gl.getUniformLocation(program, "uRev")
         };
 
         return this._debugView;

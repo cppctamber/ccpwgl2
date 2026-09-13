@@ -115,7 +115,7 @@ export class Tw2Picker
         if (!force && !this.enabled) return false;
 
         const
-            useBatchContext = !!tw2.enableExperimentalBatchContext,
+            useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext"),
             context = useBatchContext ? this.GetContext() : null,
             ac = this._accumulator,
             rt = this._renderTarget;

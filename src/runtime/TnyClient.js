@@ -580,7 +580,10 @@ export class TnyClient extends meta.Model
             .SetOpaqueRenderStates()
             .SetProjectionMatrix(camera.GetProjection(g.projection, aspect))
             .SetViewMatrix(camera.GetView(g.view))
-            .SetDepth(true, "LEQUAL", 1.0)
+            // The session's depth layout, not a hard-coded forward one: on a
+            // reversed buffer (`device.depthMode`) a clear to 1 is the NEAR
+            // plane and everything drawn after it fails the depth test.
+            .SetDepth(true, device.reversedDepthBuffer ? "GEQUAL" : "LEQUAL", device.clearDepthValue)
             .SetViewport(viewport);
 
         if (this.options.clearColor)

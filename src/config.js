@@ -24,8 +24,11 @@ const FX_TIER_PINS = [
     // Drone booster volumes have no published GLES container; use the native
     // high-tier program through the existing DXBC translator.
     { match: "/booster/droneboostervolumetric.fx", dir: "/effect.dx11/", tier: "sm_hi" },
-    { match: "/specialfx/flarequad.fx", tier: "sm_hi" },
-    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi" },
+    // Tied to the `forceUberDepthOff` setting: the same missing-DepthMap workaround, so
+    // one switch lifts both. Lifting them on a reversed buffer hid VFX
+    // (operator, 2026-09-13) - kept until that is understood.
+    { match: "/specialfx/flarequad.fx", tier: "sm_hi", depthMapWorkaround: true },
+    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi", depthMapWorkaround: true },
     // Not a tier pin - a PROFILE pin, on the same list because it is the same
     // substitution. `ubershaderinstanced` is the beam material on smart light
     // sets (EveSmartLightMesh, mesh name "Beam"), and it is ABSENT from the
@@ -88,18 +91,16 @@ export const config = {
     // with audible output starting on the first user gesture
     audioEnabled: false,
 
-    // Enables experimental EveSpaceScene shadow rendering path
-    enableExperimentalShadows: false,
-
-    // TEMPORARY. Forces every UBER_DEPTH permutation to its OFF value.
-    //
-    // UBER_DEPTH_ON fades a surface against DepthMap, which nothing publishes,
-    // so the fade resolves to zero and the surface draws perfectly while
-    // contributing no pixels. Smart light beams are the visible case.
-    //
-    // Remove together with the flarequad tier pins below once DepthMap is
-    // published - they exist for the same missing input.
-    forceUberDepthOff: true,
+    // Engine switches, applied to `tw2.settings` (registered and documented in
+    // Tw2Library). Only registered names are accepted.
+    settings: {
+        // Experimental EveSpaceScene shadow rendering path
+        enableExperimentalShadows: false,
+        // TEMPORARY - see Tw2Library; also gates the flarequad tier pins below
+        forceUberDepthOff: true,
+        // Experimental Carbon-shaped render batch context
+        enableExperimentalBatchContext: false
+    },
 
     // Case-insensitive dynamic provider names. Each playlist loads on demand.
     dynamic: {
@@ -118,9 +119,6 @@ export const config = {
             "res:/video/billboards/common/eve_shipad_dominix_timeless.webm"
         ]
     },
-
-    // Enables experimental Carbon-shaped render batch context
-    enableExperimentalBatchContext: false,
 
     // Enables Carbon-style LOD cadence throttling for state controllers.
     // Set false to update every active controller on every frame.
@@ -203,6 +201,7 @@ export const config = {
             for (let i = 0; i < FX_TIER_PINS.length; i++)
             {
                 const pin = FX_TIER_PINS[i];
+                if (pin.depthMapWorkaround && !device.tw2.settings.GetValue("forceUberDepthOff")) continue;
                 if (path.includes(pin.match))
                 {
                     // Either axis may be pinned; the other follows the session,

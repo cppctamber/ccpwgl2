@@ -18,7 +18,7 @@ import {
     Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
+    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
     RM_DECAL,
@@ -533,6 +533,7 @@ export class EveSpaceScene extends meta.Model
     _sceneTarget = null;
     _postProcessRenderer = null;
     _godRaysRenderer = null;
+    _depthOfFieldRenderer = null;
     _depthAccumulator = null;
     _depthContext = null;
     _depthContextReport = null;
@@ -975,7 +976,7 @@ export class EveSpaceScene extends meta.Model
         // fallback for the pixel-size measure the frustum now provides.
         const projScaleY = d.projection[5] || 1;
         collector.Resolve({
-            brightness: tw2.localLightBrightness,
+            brightness: tw2.settings.GetValue("localLightBrightness"),
             frustum: this._frustum,
             frustumPlanes: this._frustum.GetPlanes(),
             viewportHeight: d.viewportHeight || 0,
@@ -1247,9 +1248,15 @@ export class EveSpaceScene extends meta.Model
 
         newProj[10] = zf / (zn - zf);
         newProj[14] = (zf * zn) / (zn - zf);
+        // The depthRange partition cannot survive a reversed buffer: every dx11
+        // consumer reads the raw depth as Carbon's `z/w`, and a 0.1..1 remap
+        // would sit inside all of it. Carbon draws planets under their own clip
+        // planes and then CLEARS depth before the scene (EveSpaceScene.cpp:2068);
+        // the planet z-only batches in the main pass restore planet occlusion.
+        const reversed = device.reversedDepthBuffer;
         device.SetProjection(newProj, true);
         this.UpdateViewProjectionFrameData();
-        device.gl.depthRange(0.9, 1);
+        if (!reversed) device.gl.depthRange(0.9, 1);
 
         this._frustum.Initialize(
             device.view,
@@ -1276,7 +1283,8 @@ export class EveSpaceScene extends meta.Model
         }
         device.SetProjection(tempProj, true);
         this.UpdateViewProjectionFrameData();
-        device.gl.depthRange(0, 0.9);
+        if (reversed) tw2.ClearBufferBits(false, true, false);
+        else device.gl.depthRange(0, 0.9);
         this._frustum.Initialize(
             device.view,
             device.projection,
@@ -1328,7 +1336,7 @@ export class EveSpaceScene extends meta.Model
         this.PrepareLod(dt, show);
 
         this._accumulator.Clear();
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
         const mainAccumulator = useBatchContext ? this.GetBatchContext() : this._accumulator;
         if (mainAccumulator !== this._accumulator) mainAccumulator.Clear();
 
@@ -1592,6 +1600,10 @@ export class EveSpaceScene extends meta.Model
         // thing Carbon does to its own scene image.
         this.RenderGodRays(sceneTarget);
 
+        // After god rays, before the composite - Carbon's order
+        // (Tr2PostProcessRenderer.cpp:715-724).
+        this.RenderDepthOfField(sceneTarget);
+
         this.EndSceneTarget(sceneTarget);
 
         if (this.starfield)
@@ -1716,7 +1728,7 @@ export class EveSpaceScene extends meta.Model
      */
     GetShadowHandler(create = true)
     {
-        if (!tw2.enableExperimentalShadows)
+        if (!tw2.settings.GetValue("enableExperimentalShadows"))
         {
             return null;
         }
@@ -1961,18 +1973,24 @@ export class EveSpaceScene extends meta.Model
      */
     BeginSceneTarget()
     {
-        if (!this.hdr || !device.canRenderToHalfFloat) return null;
+        // A Y-flipped session must draw the scene offscreen even without HDR:
+        // its screen-space maps (DepthMap, shadow visibility, SSAO) are stored
+        // top-down, and a main pass on the canvas would read them mirrored. The
+        // present then flips once. RGBA8 when half float is not wanted/available.
+        const hdr = !!(this.hdr && device.canRenderToHalfFloat);
+        if (!hdr && !device.clipYFlip) return null;
+        const format = hdr ? "rgba16f" : null;
 
         const { width, height } = tw2;
         if (!width || !height) return null;
 
         if (!this._sceneTarget)
         {
-            this._sceneTarget = new Tw2RenderTarget("EveSpaceSceneHDR", width, height, true, "rgba16f");
+            this._sceneTarget = new Tw2RenderTarget("EveSpaceSceneHDR", width, height, true, format);
         }
         else
         {
-            this._sceneTarget.Update(width, height, true, "rgba16f");
+            this._sceneTarget.Update(width, height, true, format);
         }
 
         if (!this._sceneTarget.IsGood()) return null;
@@ -2046,6 +2064,39 @@ export class EveSpaceScene extends meta.Model
         {
             this.visible.post = false;
             if (tw2.Warning) tw2.Warning({ name: "God rays", description: String(err && err.message || err) });
+            return false;
+        }
+    }
+
+    /**
+     * Renders Carbon's depth of field over the scene image.
+     *
+     * Needs an offscreen scene target (it reads and writes the image), the
+     * Carbon depth prepass, the `postprocessDofEnabled` setting and an active
+     * `postProcess2.depthOfField`. Self-disables on error like god rays.
+     * @param {Tw2RenderTarget|null} sceneTarget
+     * @returns {Boolean}
+     */
+    RenderDepthOfField(sceneTarget)
+    {
+        if (!sceneTarget || !this.visible.post || !this.postProcess2) return false;
+
+        const depthOfField = this.postProcess2.GetIfAvailable("depthOfField");
+        if (!depthOfField) return false;
+
+        if (!this._depthOfFieldRenderer) this._depthOfFieldRenderer = new Tw2DepthOfFieldRenderer();
+
+        const depthHandler = this.GetDepthHandler(false);
+        const depth = depthHandler && depthHandler.rendered ? depthHandler.depthTextureRes : null;
+
+        try
+        {
+            return this._depthOfFieldRenderer.Render(depthOfField, depth, sceneTarget);
+        }
+        catch (err)
+        {
+            this.visible.post = false;
+            if (tw2.Warning) tw2.Warning({ name: "Depth of field", description: String(err && err.message || err) });
             return false;
         }
     }
@@ -2135,7 +2186,7 @@ export class EveSpaceScene extends meta.Model
      */
     RenderDepth(dt, force)
     {
-        if (tw2.enableExperimentalBatchContext)
+        if (tw2.settings.GetValue("enableExperimentalBatchContext"))
         {
             return this.RenderDepthWithBatchContext(dt, force);
         }
@@ -2145,7 +2196,7 @@ export class EveSpaceScene extends meta.Model
             return false;
         }
 
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
 
         const depthContext = useBatchContext ? this.GetDepthContext() : null;
 
@@ -2517,7 +2568,7 @@ export class EveSpaceScene extends meta.Model
      */
     RenderDistortion(dt)
     {
-        if (tw2.enableExperimentalBatchContext)
+        if (tw2.settings.GetValue("enableExperimentalBatchContext"))
         {
             return this.RenderDistortionWithBatchContext(dt);
         }
@@ -2535,7 +2586,10 @@ export class EveSpaceScene extends meta.Model
 
             this._distortionEffect = this._distortionEffect || Tw2Effect.from({
                 name: "Distortion",
-                effectFilePath: "res:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+                // Profile-neutral: dx11 and gles2 distortion.fx take the same
+                // inputs (BlitCurrent, TexDistortion, one offset constant), so the
+                // session profile chooses instead of forcing a gles2 body into dx11.
+                effectFilePath: "res:/graphics/effect/managed/space/postprocess/distortion.fx",
                 parameters: {
                     MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
                 },
@@ -2556,7 +2610,7 @@ export class EveSpaceScene extends meta.Model
 
         this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
 
-        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const useBatchContext = !!tw2.settings.GetValue("enableExperimentalBatchContext");
         const distortionContext = useBatchContext ? this.GetDistortionContext() : null;
 
         if (distortionContext)
@@ -2648,7 +2702,7 @@ export class EveSpaceScene extends meta.Model
 
         this._distortionEffect = this._distortionEffect || Tw2Effect.from({
             name: "Distortion",
-            effectFilePath: "res:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+            effectFilePath: "res:/graphics/effect/managed/space/postprocess/distortion.fx",
             parameters: {
                 MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
             },
@@ -2827,8 +2881,24 @@ export class EveSpaceScene extends meta.Model
         ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.Set("ViewInverseTransposeMat", d.viewInverse);
         ps.Set("ViewMat", d.viewTranspose);
-        ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
-        ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+        if (d.reversedDepthBuffer)
+        {
+            // Carbon's pair: `(_43, _33)` of the reversed D3D projection
+            // (EveSpaceScene.cpp:3143-3145). The seam's `z' = (w - z) / 2` turns
+            // our GL projection into exactly that matrix, so the pair is
+            // `(-P14 / 2, (-P10 - 1) / 2)` = `(nf/(f-n), n/(f-n))`. Shaders take
+            // `x / (depth + y)`, which on the reversed buffer gives n at 1 and f
+            // at 0. The branch below is twice this, which is not a distance in
+            // any convention; it is kept only for the "reversed"/"forward" A/B
+            // modes and the gles2 profile, which must not change.
+            ps.SetIndex("ProjectionToView", 0, -d.projection[14] / 2);
+            ps.SetIndex("ProjectionToView", 1, (-d.projection[10] - 1) / 2);
+        }
+        else
+        {
+            ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
+            ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+        }
 
         this.UpdateShadow();
     }
@@ -2841,7 +2911,7 @@ export class EveSpaceScene extends meta.Model
             return handler.ApplyPerFrameData(this);
         }
 
-        if (this.enableShadows || !tw2.enableExperimentalShadows)
+        if (this.enableShadows || !tw2.settings.GetValue("enableExperimentalShadows"))
         {
             device.perFrameShadowPSData = this._perFrameShadowPS;
             device.perFrameShadowVSData = this._perFrameShadowVS;

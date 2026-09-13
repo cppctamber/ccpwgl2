@@ -179,7 +179,13 @@ function composeCascadeMatrix(out, options, ortho)
     // `scripts/test-carbon-shadow.mjs` could not catch this: with `cellsY = 1`
     // it asserts the cascade centre lands near V = 0.5, and a flip about 0.5
     // leaves the centre exactly where it was.
-    mat4.fromScaling(_scratch, [ 0.5, 0.5, 1 ]);
+    //
+    // UNLESS the caster drew Y-flipped (`options.yFlipped`, the dx11 clip-Y flip
+    // convention): then the atlas is stored top-down exactly as D3D stores it,
+    // and Carbon's negation is correct again. (A false band seen with it on
+    // 2026-09-13 was the caster storing reversed depth - see
+    // Tw2CarbonShadowProducer.PackPerFrameVS - not this sign.)
+    mat4.fromScaling(_scratch, [ 0.5, options.yFlipped ? -0.5 : 0.5, 1 ]);
     mat4.multiply(out, out, _scratch);
 
     mat4.multiply(out, out, ortho);

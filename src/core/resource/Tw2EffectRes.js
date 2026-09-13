@@ -346,12 +346,21 @@ export class Tw2EffectRes extends Tw2Resource
                 // near for far - which presents as the quad being occluded by
                 // everything instead of drawing in front.
                 //
-                // Set `tw2.device.effectDepthRange = "forward"` and reload the
-                // effect to compare.
+                // Set `tw2.device.depthMode` before anything loads to compare.
+                //
+                // The tail comes from the device, not straight from DEPTH_RANGE:
+                // under `depthMode` "reversed-buffer" the seam stays reversed but
+                // the tail is the "forward" formula `2z - w`, which leaves the
+                // reversed clip z in the depth buffer instead of undoing it.
                 const built = CjsWebglFormat.buildEffect(bytes, {
                     source: this.path,
                     localLights: "packed-texture",
-                    emitterOptions: { depthRange: Tw2EffectRes.DEPTH_RANGE, packedLightProfiles: true }
+                    emitterOptions: {
+                        depthRange: device.emitterDepthRange,
+                        // CCP's `ssyf` tail; the device sets the uniform per draw.
+                        clipYFlip: device.clipYFlip,
+                        packedLightProfiles: true
+                    }
                 });
                 container = built.bytes;
                 permutationGraph = built.permutationGraph;

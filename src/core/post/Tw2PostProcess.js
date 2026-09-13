@@ -302,6 +302,60 @@ export class Tw2PostProcess extends meta.Model
     }
 
     /**
+     * Copies the canvas into `_blitOriginal`, the image stage 0 samples.
+     *
+     * A canvas copy is stored bottom-up (GL row order). Under `device.clipYFlip`
+     * every render target is top-down and every full-screen quad uses D3D texture
+     * coordinates, so a raw copy would be sampled upside down - which turned the
+     * whole dx11 frame over, and made distortion move mirrored against the ship.
+     * So in that mode the copy is taken into a scratch texture and blitted into
+     * `_blitOriginal` with its rows reversed. Two steps because reading the
+     * (possibly multisampled) default framebuffer resolves it, but a flipped
+     * `blitFramebuffer` straight from a multisampled source is not allowed.
+     * @param {Number} width
+     * @param {Number} height
+     * @private
+     */
+    _CopyFrame(width, height)
+    {
+        const { gl, device } = tw2;
+        const format = device.alphaBlendBackBuffer ? gl.RGBA : gl.RGB;
+
+        if (!device.clipYFlip)
+        {
+            gl.bindTexture(gl.TEXTURE_2D, this._blitOriginal.texture);
+            gl.copyTexImage2D(gl.TEXTURE_2D, 0, format, 0, 0, width, height, 0);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            return;
+        }
+
+        if (!this._frameCopy) this._frameCopy = gl.createTexture();
+        if (!this._frameCopyRead) this._frameCopyRead = gl.createFramebuffer();
+        if (!this._frameCopyDraw) this._frameCopyDraw = gl.createFramebuffer();
+
+        // Resolved, bottom-up copy of the canvas.
+        gl.bindTexture(gl.TEXTURE_2D, this._frameCopy);
+        gl.copyTexImage2D(gl.TEXTURE_2D, 0, format, 0, 0, width, height, 0);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        // Same-size storage for the flipped destination.
+        gl.bindTexture(gl.TEXTURE_2D, this._blitOriginal.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, gl.UNSIGNED_BYTE, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this._frameCopyRead);
+        gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._frameCopy, 0);
+        gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this._frameCopyDraw);
+        gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._blitOriginal.texture, 0);
+
+        // Destination rows reversed: bottom-up canvas -> top-down target.
+        gl.blitFramebuffer(0, 0, width, height, 0, height, width, 0, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+
+    /**
      * Renders the post processing
      * @returns {Boolean}
      */
@@ -342,9 +396,7 @@ export class Tw2PostProcess extends meta.Model
         if (!this._visibleStages.length) return false;
 
         // Copy current frame
-        gl.bindTexture(gl.TEXTURE_2D, this._blitOriginal.texture);
-        gl.copyTexImage2D(gl.TEXTURE_2D, 0, device.alphaBlendBackBuffer ? gl.RGBA : gl.RGB, 0, 0, width, height, 0);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        this._CopyFrame(width, height);
         device.SetStandardStates(this.renderMode);
 
         let cameraCache;

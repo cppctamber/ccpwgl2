@@ -241,7 +241,14 @@ export class Tw2RenderTarget
             // typically 24, so a 16-bit target is a downgrade rather than parity,
             // and a scene spanning kilometres to millions of kilometres z-fights
             // visibly at 16. DEPTH_COMPONENT24 is core in WebGL2.
-            const depthFormat = tw2.device.glVersion > 1 ? gl.DEPTH_COMPONENT24 : gl.DEPTH_COMPONENT16;
+            //
+            // A reversed buffer (dx11 sessions) takes Carbon's D32F instead: an
+            // integer buffer spaces its values evenly, so reversing it buys no
+            // far precision at all, and the depth tests then disagree in
+            // precision with the 32F DepthMap the effects sample.
+            const depthFormat = tw2.device.glVersion === 1
+                ? gl.DEPTH_COMPONENT16
+                : tw2.device.reversedDepthBuffer ? gl.DEPTH_COMPONENT32F : gl.DEPTH_COMPONENT24;
             gl.renderbufferStorage(gl.RENDERBUFFER, depthFormat, width, height);
         }
 

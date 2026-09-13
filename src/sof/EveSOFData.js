@@ -321,7 +321,9 @@ export class EveSOFData extends meta.Model
                 {
                     name: "Additive effect",
                     effect: {
-                        effectFilePath: "res:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
+                        // Profile-neutral: the session picks gles2 or dx11, so a
+                        // dx11 session no longer mixes a gles2 body into its frame.
+                        effectFilePath: "res:/graphics/effect/managed/space/specialfx/ubershader.fx",
                         parameters: {
                             FresnelFactors: [ 2.5, 12, 0, 0 ],
                             DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
@@ -342,7 +344,7 @@ export class EveSOFData extends meta.Model
                 {
                     name: "Transparent effect",
                     effect: {
-                        effectFilePath: "res:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
+                        effectFilePath: "res:/graphics/effect/managed/space/specialfx/ubershader.fx",
                         parameters: {
                             DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
                             TextureScroll1: [ 0, 0, 0, 0 ],

@@ -29,11 +29,13 @@ void main(){ vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2)); gl_Pos
 const AO_FS = `#version 300 es
 precision highp float;
 uniform highp sampler2D uDepth; uniform vec2 uRes, uAB, uTan;
-uniform float uFocalPx, uRadius, uStrength, uBias, uMaxPx; uniform int uView; out vec4 o;
-float vzat(vec2 uv){ float d=texture(uDepth,uv).r; return uAB.y/((2.0*d-1.0)+uAB.x); }
+uniform float uFocalPx, uRadius, uStrength, uBias, uMaxPx, uRev; uniform int uView; out vec4 o;
+// uRev: the prepass is a reversed buffer, whose depth is exactly 1 - the GL depth.
+float fwd(float d){ return uRev > 0.5 ? 1.0 - d : d; }
+float vzat(vec2 uv){ float d=fwd(texture(uDepth,uv).r); return uAB.y/((2.0*d-1.0)+uAB.x); }
 vec3 posAt(vec2 uv){ float z=vzat(uv); vec2 ndc=uv*2.0-1.0; return vec3(ndc*uTan*z, z); }
 void main(){
-  vec2 uv=gl_FragCoord.xy/uRes; float dc=texture(uDepth,uv).r; float zc=uAB.y/((2.0*dc-1.0)+uAB.x);
+  vec2 uv=gl_FragCoord.xy/uRes; float dc=fwd(texture(uDepth,uv).r); float zc=uAB.y/((2.0*dc-1.0)+uAB.x);
   if(uView==1){ o=vec4(vec3(dc),1.0); return; }
   if(uView==2){ o=vec4(vec3(clamp(zc/8000.0,0.0,1.0)),1.0); return; }
   if(dc>=0.9999995 || zc<=0.0){ o=vec4(1.0); return; }
@@ -46,7 +48,7 @@ void main(){
     float a=float(i)*2.3999632, r=radPx*sqrt((float(i)+0.5)/float(N));
     vec2 suv=uv+vec2(cos(a),sin(a))*r/uRes;
     if(suv.x<0.0||suv.x>1.0||suv.y<0.0||suv.y>1.0) continue;
-    float ds=texture(uDepth,suv).r; if(ds>=0.9999995) continue;
+    float ds=fwd(texture(uDepth,suv).r); if(ds>=0.9999995) continue;
     vec3 dir=posAt(suv)-P; float dist=length(dir);
     float ndl=max(0.0, dot(n, dir/max(dist,1e-4)) - uBias);
     occ += ndl * (uRadius/(uRadius+dist));
