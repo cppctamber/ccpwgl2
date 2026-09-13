@@ -138,6 +138,9 @@ uniform sampler2D s3;            // ParticleParamsMap
 
 uniform vec4 cb1[24];            // per frame; 4-7 view-projection, 12-15 projection
 uniform vec4 cb7[${CONSTANTS.length}];
+// CCP's clip-space Y flip (see the end of main): (0,0,-1) while a Y-flipped
+// session draws offscreen, (0,0,1) otherwise. Tw2Device.ApplyClipYFlip sets it.
+uniform vec3 ssyf;
 
 out vec2 cornerUv;
 out float lifeFraction;
@@ -244,6 +247,11 @@ void main()
     clip.xy += offset * size * vec2(cb1[12].x, cb1[13].y);
 
     gl_Position = clip;
+
+    // Same tail as CCP's gles2 bodies and the translated dx11 stages, so the
+    // particles land on the same (possibly flipped) render target as the scene.
+    gl_Position.xy += ssyf.xy * gl_Position.w;
+    gl_Position.y *= ssyf.z;
 }
 `;
 
