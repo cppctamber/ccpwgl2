@@ -72159,6 +72159,52 @@
 	  }
 
 	  /**
+	   * The top-level values rule for from/set: a plain object, or null for "no
+	   * values".
+	   *
+	   * SetValues and from exist for hydration and dehydration, so what arrives
+	   * at the top is data. A live object there is refused rather than read as
+	   * a bag: measured before this rule, `X.constructor.from(X)` built a new
+	   * object that aliased X's children and flattened its Map-held models.
+	   * Child fields are different - a non-plain value there is a reference, and
+	   * the field's declared type decides that. The one rule lives here so every
+	   * entry point asks the same question in the same place.
+	   *
+	   * @param {*} values Incoming top-level values.
+	   * @param {string} label Entry point named in the error.
+	   * @returns {boolean} False for null (nothing to apply), true for a plain bag.
+	   * @throws {TypeError} For anything that is not a plain object or null.
+	   */
+	  static assertValues(values, label) {
+	    if (values === null) return false;
+	    if (!isPlainObject(values)) {
+	      throw new TypeError("".concat(label, " requires a plain values object; received ").concat(describeValuesInput(values), "."));
+	    }
+	    return true;
+	  }
+
+	  /**
+	   * Copies a source's values into a target - the explicit copy helper.
+	   *
+	   * The top-level from/set rule refuses a live object as values, so copying
+	   * one says so here instead: a plain source already IS values, anything
+	   * else is exported first. Both then go through the target's validated
+	   * setter, so the target keeps its own identity and in-place buffers. This
+	   * is a value copy, not Carbon's Copier: no topology is preserved and
+	   * reference fields carry the source's references across as references.
+	   *
+	   * @param {object} target The object receiving the values.
+	   * @param {object} source A live object or a plain values object.
+	   * @param {object} [options={}] Population options.
+	   * @returns {Set<string>|boolean} Changed fields, or a boolean result.
+	   */
+	  static copy(target, source) {
+	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    var values = isPlainObject(source) ? source : CjsSchema.getValues(source, {}, options);
+	    return CjsSchema.setValues(target, values, options);
+	  }
+
+	  /**
 	   * Applies a plain value bag to a target through its validated setter.
 	   *
 	   * @param {object} target A schema-backed instance.
@@ -72169,6 +72215,7 @@
 	  static setValues(target) {
 	    var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    if (!CjsSchema.assertValues(values, "CjsSchema.setValues")) return false;
 	    var service = _classPrivateFieldLooseBase(CjsSchema, _valuesService)[_valuesService];
 	    return service ? service.setValues(target, values, options) : CjsSchema.setValuesFromSchema(target, values, options);
 	  }
@@ -72212,6 +72259,7 @@
 	  static from(className) {
 	    var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    if (!CjsSchema.assertValues(values, "CjsSchema.from")) values = {};
 	    return _classPrivateFieldLooseBase(CjsSchema, _requireValuesService)[_requireValuesService]("from").from(className, values, options);
 	  }
 
@@ -72322,18 +72370,7 @@
 	  value: createValuesTransport({
 	    GetFields: Constructor => getEffectiveFields(Constructor),
 	    Export: (value, field, options) => exportCarbonValue(value, field.type),
-	    // A live instance of a registered class is ALIASED, never copied - the
-	    // rule the model path applies through its brand (CjsModel.js, the
-	    // isModelInstance early return). A class off the base carries no brand,
-	    // so without this a reference field would receive a plain-object copy
-	    // and shared identity across the graph would silently split.
-	    Import: (value, field) => {
-	      if (isLiveSchemaInstance(value)) return value;
-	      if (Array.isArray(value) && value.some(isLiveSchemaInstance)) {
-	        return value.map(item => isLiveSchemaInstance(item) ? item : cloneCarbonValue(item));
-	      }
-	      return normalizeCarbonValue(value, field.type);
-	    },
+	    Import: (value, field) => importDeclaredValue(value, field),
 	    CoerceInto: (current, incoming, field) => {
 	      var _coerceCarbonMathInto;
 	      return (_coerceCarbonMathInto = coerceCarbonMathInto(current, incoming, field.type)) != null ? _coerceCarbonMathInto : coerceCarbonTypedArrayInto(current, incoming, field.type);
@@ -73122,11 +73159,51 @@
 	  }
 	}
 
-	// A live instance of a registered class, from this copy or a sibling one -
-	// getClassName reads the cross-copy stamp. Plain bags, arrays, typed arrays
-	// and the reader's `{ _sourceClassName }` carriers all answer false.
-	function isLiveSchemaInstance(value) {
-	  return !!value && typeof value === "object" && !Array.isArray(value) && !ArrayBuffer.isView(value) && CjsSchema.getClassName(value.constructor) !== null;
+	// The state-free transport's import. A declared REFERENCE field - model or
+	// objectRef, or a list or Map of them - treats a non-plain object as the
+	// reference itself and assigns it, Carbon's IRoot* member (operator ruling,
+	// 2026-09-14). The DECLARED TYPE decides that the field holds references; the
+	// value's class is never inspected. Plain bags, and every other field kind,
+	// import by value exactly as before.
+	function importDeclaredValue(value, field) {
+	  var type = field.type;
+	  switch (type === null || type === void 0 ? void 0 : type.kind) {
+	    case "model":
+	    case "objectRef":
+	      if (isObjectReference(value)) return value;
+	      break;
+	    case "list":
+	    case "array":
+	      if (Array.isArray(value) && isReferenceType(type.itemType)) {
+	        return value.map(item => isObjectReference(item) ? item : cloneCarbonValue(item));
+	      }
+	      break;
+	    case "map":
+	      if (value instanceof Map && isReferenceType(type.valueType)) {
+	        return new Map(Array.from(value, _ref25 => {
+	          var _ref26 = _slicedToArray(_ref25, 2),
+	            key = _ref26[0],
+	            item = _ref26[1];
+	          return [key, isObjectReference(item) ? item : cloneCarbonValue(item)];
+	        }));
+	      }
+	      break;
+	  }
+	  return normalizeCarbonValue(value, type);
+	}
+
+	// A declared item type that holds references: a model or objectRef
+	// descriptor, or a bare name registered as a class. "string" and "unknown"
+	// are not registered, so they stay values.
+	function isReferenceType(type) {
+	  if (typeof type === "string") return CjsSchema.GetConstructor(type) !== null;
+	  return (type === null || type === void 0 ? void 0 : type.kind) === "model" || (type === null || type === void 0 ? void 0 : type.kind) === "objectRef";
+	}
+
+	// Not a values bag: an object that is neither plain, an array nor a typed
+	// array. Asks only what the value is made of, never which class built it.
+	function isObjectReference(value) {
+	  return value !== null && typeof value === "object" && !isPlainObject(value) && !Array.isArray(value) && !ArrayBuffer.isView(value);
 	}
 	function getEffectiveFields(Constructor) {
 	  var ordered = [];
@@ -73172,10 +73249,10 @@
 	  return lineage.reverse();
 	}
 	function mergeMemberMetadata(target, source) {
-	  for (var _ref27 of Object.entries(source)) {
-	    var _ref26 = _slicedToArray(_ref27, 2);
-	    var namespace = _ref26[0];
-	    var value = _ref26[1];
+	  for (var _ref29 of Object.entries(source)) {
+	    var _ref28 = _slicedToArray(_ref29, 2);
+	    var namespace = _ref28[0];
+	    var value = _ref28[1];
 	    if (namespace === "name") continue;
 	    target[namespace] = mergeNamespace(target[namespace], value);
 	  }
@@ -73412,10 +73489,10 @@
 	  // document calls this class on the wire (`CjsLightData`'s `"LightData"`).
 	  // A donor is not a wire name: writing `MetalWorkQueue` there would tell
 	  // dehydration the class serializes under that name.
-	  for (var _ref30 of [["carbon", "replicates"], ["modelledOn", "is modelled on"]]) {
-	    var _ref29 = _slicedToArray(_ref30, 2);
-	    var key = _ref29[0];
-	    var what = _ref29[1];
+	  for (var _ref32 of [["carbon", "replicates"], ["modelledOn", "is modelled on"]]) {
+	    var _ref31 = _slicedToArray(_ref32, 2);
+	    var key = _ref31[0];
+	    var what = _ref31[1];
 	    if (result[key] === undefined || result[key] === null) continue;
 	    if (typeof result[key] !== "string" || !result[key].trim()) {
 	      throw new TypeError("CjsSchema.define ".concat(key, " must be a non-empty Carbon class name when provided."));
@@ -73462,10 +73539,10 @@
 	  if (!isPlainObject(members)) {
 	    throw new TypeError("CjsSchema.define ".concat(memberType, " must be a name-keyed object or an array of named records."));
 	  }
-	  return Object.entries(members).map(_ref31 => {
-	    var _ref32 = _slicedToArray(_ref31, 2),
-	      name = _ref32[0],
-	      definition = _ref32[1];
+	  return Object.entries(members).map(_ref33 => {
+	    var _ref34 = _slicedToArray(_ref33, 2),
+	      name = _ref34[0],
+	      definition = _ref34[1];
 	    if (!name.trim()) {
 	      throw new TypeError("CjsSchema.define ".concat(memberType, " requires a non-empty name."));
 	    }
@@ -73500,10 +73577,10 @@
 	    if (!isPlainObject(entry)) {
 	      throw new TypeError("CjsSchema.define ".concat(memberType, " \"").concat(name, "\" accepts schema decorators, ") + "namespace objects, or an array of them.");
 	    }
-	    for (var _ref35 of Object.entries(entry)) {
-	      var _ref34 = _slicedToArray(_ref35, 2);
-	      var namespace = _ref34[0];
-	      var value = _ref34[1];
+	    for (var _ref37 of Object.entries(entry)) {
+	      var _ref36 = _slicedToArray(_ref37, 2);
+	      var namespace = _ref36[0];
+	      var value = _ref36[1];
 	      member[namespace] = mergeNamespace(member[namespace], value);
 	    }
 	  }
@@ -73563,10 +73640,10 @@
 	  if (!isPlainObject(definition)) {
 	    throw new TypeError("CjsSchema.components requires a plain object definition.");
 	  }
-	  return Object.fromEntries(Object.entries(definition).map(_ref36 => {
-	    var _ref37 = _slicedToArray(_ref36, 2),
-	      swizzle = _ref37[0],
-	      value = _ref37[1];
+	  return Object.fromEntries(Object.entries(definition).map(_ref38 => {
+	    var _ref39 = _slicedToArray(_ref38, 2),
+	      swizzle = _ref39[0],
+	      value = _ref39[1];
 	    return [normalizeSwizzle(swizzle), normalizeComponentEntry(value)];
 	  }));
 	}
@@ -73673,10 +73750,10 @@
 	  var result = {
 	    name: field.name
 	  };
-	  for (var _ref40 of Object.entries(field)) {
-	    var _ref39 = _slicedToArray(_ref40, 2);
-	    var key = _ref39[0];
-	    var value = _ref39[1];
+	  for (var _ref42 of Object.entries(field)) {
+	    var _ref41 = _slicedToArray(_ref42, 2);
+	    var key = _ref41[0];
+	    var value = _ref41[1];
 	    if (key === "name") continue;
 	    if (namespaces && !namespaces.has(key)) continue;
 	    result[key] = value;
@@ -73689,16 +73766,26 @@
 	}
 	function cloneSchemaValue(value) {
 	  if (Array.isArray(value)) return value.map(cloneSchemaValue);
-	  if (isPlainObject(value)) return Object.fromEntries(Object.entries(value).map(_ref41 => {
-	    var _ref42 = _slicedToArray(_ref41, 2),
-	      key = _ref42[0],
-	      item = _ref42[1];
+	  if (isPlainObject(value)) return Object.fromEntries(Object.entries(value).map(_ref43 => {
+	    var _ref44 = _slicedToArray(_ref43, 2),
+	      key = _ref44[0],
+	      item = _ref44[1];
 	    return [key, cloneSchemaValue(item)];
 	  }));
 	  return value;
 	}
 	function isPlainObject(value) {
 	  return Boolean(value) && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype;
+	}
+
+	// Names what arrived where a values bag was required, for assertValues' error.
+	function describeValuesInput(value) {
+	  var _value$constructor;
+	  if (value === undefined) return "undefined";
+	  if (Array.isArray(value)) return "an array";
+	  if (typeof value !== "object") return "a ".concat(typeof value);
+	  var name = (_value$constructor = value.constructor) === null || _value$constructor === void 0 ? void 0 : _value$constructor.name;
+	  return name ? "an instance of ".concat(name) : "an object without Object.prototype";
 	}
 
 	/**
@@ -73728,12 +73815,14 @@
 	 * reader works with only the schema layer loaded; the two are the same path
 	 * for every class that has the method.
 	 *
-	 * A REGISTERED class without SetValues - one that no longer extends CjsModel -
-	 * is still a resolved class, so it populates through CjsSchema.setValues, which
-	 * answers without the model layer. Only an unregistered carrier (the reader's
-	 * `{ _sourceClassName }` fallback) takes raw assignment. Without this middle
-	 * arm, taking a class off the base would silently drop it to Object.assign:
-	 * no coercion, no writability gate, no settle.
+	 * A schema-declared class without SetValues - one that no longer extends
+	 * CjsModel - populates through CjsSchema.setValues, which answers without the
+	 * model layer. The READER says so, as `ctx.declared`: it resolved the kind to
+	 * a constructor itself and asks CjsSchema whether that class declares fields,
+	 * so the adapter never inspects the object. Raw assignment stays for what
+	 * declares nothing - the reader's fallback carrier, and a caller-supplied
+	 * plain class. Without this arm, taking a class off the base would silently
+	 * drop it to Object.assign: no coercion, no writability gate, no settle.
 	 */
 
 	/**
@@ -73758,8 +73847,8 @@
 	        instance.SetValues(values, ctx === null || ctx === void 0 ? void 0 : ctx.options);
 	        return instance;
 	      }
-	      if (instance && CjsSchema.getClassName(instance.constructor)) {
-	        CjsSchema.setValues(instance, values, ctx === null || ctx === void 0 ? void 0 : ctx.options);
+	      if ((ctx === null || ctx === void 0 ? void 0 : ctx.declared) === true) {
+	        CjsSchema.setValues(instance, values, ctx.options);
 	        return instance;
 	      }
 	      return Object.assign(instance, values);
@@ -74442,7 +74531,7 @@
 	    if (!(out instanceof CjsModel)) {
 	      throw new TypeError("CjsModel.set requires a CjsModel target.");
 	    }
-	    if (!values || typeof values !== "object") return false;
+	    if (!CjsSchema.assertValues(values, "CjsModel.set")) return false;
 	    if (typeof values._type === "string") {
 	      assertTargetTypeMatches(out, values._type, options);
 	    }
@@ -74594,6 +74683,8 @@
 	  static from() {
 	    var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    // null still means "no values": a default instance, as before.
+	    if (!CjsSchema.assertValues(values, "CjsModel.from")) values = {};
 	    if (isReferenceValue(values)) {
 	      throw new TypeError("".concat(CjsSchema.getClassName(this) || this.name, ".from cannot construct from a { _ref } value; references resolve only inside the owning import operation."));
 	    }
@@ -165705,6 +165796,113 @@
 	  family: "resource"
 	});
 
+	// Source: trinity/trinity/Resources/Procedural/SolidColorTexture.h
+	// Source: trinity/trinity/Resources/Procedural/SolidColorTexture.cpp
+	//
+	// The free functions of Carbon's solid colour texture: a `dynamic:/color/r,g,b,a`
+	// path names a 1x1 texture of that colour. They live apart from
+	// SolidColorTextureConstructor because TriTextureRes.Initialize calls them, and
+	// the constructor builds a TriTextureRes - one module holding both would be an
+	// import cycle.
+	//
+	// Not ported, for want of a consumer: ColorPathToColor and ColorToColorPath.
+
+	/** `colorPrefix` (SolidColorTexture.cpp:13). */
+	var ColorPrefix = "dynamic:/color/";
+
+	// One `stream >> float` extraction under `std::locale( "C" )`: leading
+	// whitespace, an optional sign, digits with an optional fraction, and an
+	// optional exponent.
+	var FLOAT_EXTRACTION = /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*[\+\x2D]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][\+\x2D]?[0-9]+)?/;
+
+	// `stream >> coma` skips whitespace, then reads one character.
+	var COMMA_EXTRACTION = /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*,/;
+
+	/**
+	 * Parses `r,g,b,a` exactly as Carbon's `ParseColor` does
+	 * (SolidColorTexture.cpp:34-70), or returns null where Carbon logs and returns
+	 * an empty optional.
+	 *
+	 * quirk: the alpha extraction is followed only by `stream.eof()`. When nothing
+	 * but whitespace follows the third comma, `stream >> color.a` fails AT the end
+	 * of the stream, which sets eofbit, and C++11 `num_get` stores 0 on failure - so
+	 * Carbon accepts `1,1,1,` as alpha 0. Reproduced, not corrected: a port never
+	 * silently fixes Carbon.
+	 *
+	 * @param {string} query Text after `dynamic:/color/`.
+	 * @returns {number[]|null} `[r, g, b, a]`, or null when Carbon would reject it.
+	 */
+	function ParseColor(query) {
+	  var rest = String(query);
+	  var color = [];
+	  for (var index = 0; index < 4; index++) {
+	    var extraction = FLOAT_EXTRACTION.exec(rest);
+	    if (!extraction) {
+	      // Only the last component can fail at the end of the stream and still
+	      // pass the eof test; a failed r/g/b leaves the stream in a fail state and
+	      // the following comma is never read.
+	      if (index === 3 && /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*$/.test(rest)) {
+	        color.push(0);
+	        return color;
+	      }
+	      return null;
+	    }
+	    color.push(Number(extraction[0]));
+	    rest = rest.slice(extraction[0].length);
+	    if (index < 3) {
+	      var comma = COMMA_EXTRACTION.exec(rest);
+	      if (!comma) return null;
+	      rest = rest.slice(comma[0].length);
+	    }
+	  }
+	  // `stream.eof()`: the alpha extraction must have reached the end of the query.
+	  return rest.length === 0 ? color : null;
+	}
+
+	/**
+	 * Whether a path names a solid colour texture (SolidColorTexture.cpp:72-75).
+	 *
+	 * @param {string} path Resource path.
+	 * @returns {boolean}
+	 */
+	function IsSolidColorTexturePath(path) {
+	  return String(path).startsWith(ColorPrefix);
+	}
+
+	/**
+	 * Carbon's `RasterizeSolidColor` (SolidColorTexture.cpp:104-126): a 1x1 bitmap of
+	 * the parsed colour, or null where Carbon leaves the bitmap invalid.
+	 *
+	 * Carbon writes `PIXEL_FORMAT_R16G16B16A16_FLOAT`. The resource payload contract
+	 * carries float colour as `rgba32float` only, so each component is quantized
+	 * through the half-float codec first - the stored values are Carbon's, in a
+	 * wider container.
+	 *
+	 * @param {string} path `dynamic:/color/...` path.
+	 * @returns {object|null} An `rgba` payload.
+	 */
+	function RasterizeSolidColor(path) {
+	  if (!IsSolidColorTexturePath(path)) return null;
+	  var color = ParseColor(String(path).slice(ColorPrefix.length));
+	  if (!color) return null;
+	  var data = new Float32Array(4);
+	  for (var index = 0; index < 4; index++) {
+	    data[index] = num$1.fromHalfFloat(num$1.toHalfFloat(color[index]));
+	  }
+	  return {
+	    payloadType: "rgba",
+	    sourceFormat: "dynamic-color",
+	    width: 1,
+	    height: 1,
+	    pixelFormat: "rgba32float",
+	    data,
+	    strideBytes: 16,
+	    origin: "top-left",
+	    colorSpace: "linear",
+	    alphaMode: "straight"
+	  };
+	}
+
 	/**
 	 * The `payloadType` vocabulary shared by the format readers and the resources
 	 * they populate, plus validators for the shapes that carry structure worth
@@ -165923,6 +166121,534 @@
 	  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
 	    throw new TypeError("".concat(label, " must be a non-negative finite number."));
 	  }
+	}
+
+	var _excluded$i = ["format", "read", "output"];
+
+	// Source: trinity/trinity/Resources/TriTextureRes.h
+	// Source: trinity/trinity/Resources/TriTextureRes.cpp
+	// Source: trinity/trinity/Resources/TriTextureRes_Blue.cpp
+
+	/**
+	 * Resource record that owns Carbon-style texture identity and validated
+	 * texture, RGBA, or video payload facts with mirrored dimension/format
+	 * metadata, while engine packages decide what those facts become on a device.
+	 *
+	 * The resource never CREATES a backend texture - it cannot reach a render
+	 * context - but it RETAINS the one Trinity makes for it, as Carbon's does
+	 * (`m_texture`), so every parameter sharing the resource binds one texture.
+	 */
+	var _RasterizeProceduralTexture = /*#__PURE__*/_classPrivateFieldLooseKey("RasterizeProceduralTexture");
+	class TriTextureRes extends CjsResource {
+	  /** Creates a TriTextureRes with caller-provided initial state. */
+	  constructor() {
+	    var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	    super();
+	    /**
+	     * `RasterizeProceduralTexture` (TriTextureRes.cpp:181-212). Carbon creates the
+	     * GPU texture from the bitmap here; this layer cannot reach a render context,
+	     * so it publishes the bitmap as the payload and Trinity makes the texture at
+	     * first bind, as it does for every other texture.
+	     *
+	     * @param {Function} rasterize `(path) => payload | null`.
+	     * @returns {void}
+	     */
+	    Object.defineProperty(this, _RasterizeProceduralTexture, {
+	      value: _RasterizeProceduralTexture2
+	    });
+	    this.format = null;
+	    this.type = null;
+	    this.averageColor = [0, 0, 0, 0];
+	    this.depth = 0;
+	    this.cutoutHeight = 1;
+	    this.height = 0;
+	    this.lodEnabled = false;
+	    this.hadLodRequests = false;
+	    this.cpuMip = 0;
+	    this.gpuMip = 0;
+	    this.wrappedRenderTarget = null;
+	    this.originalResolution = 0;
+	    this.originalMemoryUsage = 0;
+	    this.name = "";
+	    this.arraySize = 0;
+	    this.cutoutWidth = 1;
+	    this.width = 0;
+	    this.cutoutX = 0;
+	    this.cutoutY = 0;
+	    /**
+	     * m_texture: the live `Tr2TextureAL`, or null until an engine makes one.
+	     *
+	     * Carbon creates it in `DoPrepare` through the main-thread context and
+	     * stores it here (`TriTextureRes.cpp:690-704`). This layer cannot reach a
+	     * render context, so Trinity creates it at first bind and stores it here,
+	     * where every parameter sharing the resource finds the one texture.
+	     */
+	    this.texture = null;
+	    this.SetValues(values || {}, {
+	      markDirty: false,
+	      skipUpdate: true,
+	      skipEvents: true
+	    });
+	  }
+
+	  /**
+	   * Carbon's Initialize, with its procedural branch (TriTextureRes.cpp:223-236):
+	   * a `dynamic:/color/` path is rasterized here rather than loaded from source.
+	   * The `dynamic:/gradient_1d/` branch Carbon checks first is not ported yet.
+	   *
+	   * @param {string} path Resource path.
+	   * @param {string|null} [ext] Extension override.
+	   * @param {string} [requirement] Semantic requirement.
+	   * @returns {TriTextureRes} This resource.
+	   */
+	  Initialize(path) {
+	    var ext = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	    var requirement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+	    super.Initialize(path, ext, requirement);
+	    if (IsSolidColorTexturePath(this.path)) _classPrivateFieldLooseBase(this, _RasterizeProceduralTexture)[_RasterizeProceduralTexture](RasterizeSolidColor);
+	    return this;
+	  }
+	  /**
+	   * The live texture, or null while there is none - Carbon returns nullptr
+	   * until the load finishes and the parameter substitutes the fallback
+	   * (`TriTextureRes.cpp:394-405`).
+	   *
+	   * @returns {object|null} A `Tr2TextureAL`.
+	   */
+	  GetTexture() {
+	    return this.texture && this.texture.IsValid() ? this.texture : null;
+	  }
+
+	  /**
+	   * Adopts a texture as this resource's (`TriTextureRes.cpp:1159-1195`).
+	   *
+	   * @param {object|null} texture A `Tr2TextureAL`, or null to drop it.
+	   * @returns {TriTextureRes} This resource.
+	   */
+	  SetTexture(texture) {
+	    if (this.texture && this.texture !== texture) this.texture.Destroy();
+	    this.texture = texture != null ? texture : null;
+	    return this;
+	  }
+
+	  /**
+	   * Attach a plain texture, RGBA, or video payload and mirror Carbon-exposed
+	   * metadata. Invalid payloads are rejected before replacing the current one.
+	   *
+	   * @param {object|null} payload
+	   * @param {object|null} options
+	   * @returns {TriTextureRes}
+	   */
+	  SetPayload() {
+	    var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	    if (payload === null) {
+	      // The bytes are gone; so is the texture made from them.
+	      this.SetTexture(null);
+	      super.SetPayload(null);
+	      return this;
+	    }
+	    var validator = {
+	      [ResourcePayloadType.RGBA]: validateRgbaPayload,
+	      [ResourcePayloadType.TEXTURE]: validateTexturePayload,
+	      [ResourcePayloadType.VIDEO]: validateVideoPayload
+	    }[payload === null || payload === void 0 ? void 0 : payload.payloadType];
+	    if (!validator) {
+	      throw resourcePayloadError("TriTextureRes", 'Expected payloadType "rgba", "texture", or "video".', "payloadType");
+	    }
+	    validateResourcePayload("TriTextureRes", payload, validator);
+	    var values = _objectSpread2({}, options || {});
+	    if (payload.pixelFormat !== undefined || payload.format !== undefined) values.format = payload.pixelFormat || payload.format;
+	    if (payload.width !== undefined) values.width = payload.width;
+	    if (payload.height !== undefined) values.height = payload.height;
+	    if (payload.depth !== undefined) values.depth = payload.depth;
+	    if (payload.arraySize !== undefined) values.arraySize = payload.arraySize;else if (Array.isArray(payload.faces)) values.arraySize = payload.faces.length;
+	    if (payload.mipCount !== undefined) values.cpuMip = payload.mipCount;else if (payload.payloadType === ResourcePayloadType.RGBA) values.cpuMip = 1;
+	    if (payload.hadLodRequests !== undefined) values.hadLodRequests = !!payload.hadLodRequests;
+	    values.originalMemoryUsage = getPayloadMemoryUsage(payload);
+	    values.originalResolution = Math.max(payload.width || 0, payload.height || 0, this.originalResolution || 0);
+	    super.SetPayload(payload);
+	    this.SetValues(values);
+	    return this;
+	  }
+
+	  /**
+	   * Turn source bytes into this texture.
+	   *
+	   * This is the family the route design exists for. One `.dds` is readable as a
+	   * compressed `texture` or decoded `rgba`, and six formats — dds, png, jpeg,
+	   * tga, gif, webp — populate this same resource. Which reader and which
+	   * representation is a registration decision, so neither is written here.
+	   *
+	   * The resource imports none of them. A texture resource that imported its
+	   * formats would drag all six into anything that touches a texture, which is
+	   * the whole reason the store exists.
+	   *
+	   * @param {ArrayBuffer|ArrayBufferView|object} data Source bytes, or a payload already read.
+	   * @param {object|null} [options] `{ format, read, output }` plus values applied after the read.
+	   * @returns {TriTextureRes} This resource.
+	   */
+	  DoLoad(data) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	    var _ref = options || {},
+	      _ref$format = _ref.format,
+	      format = _ref$format === void 0 ? null : _ref$format,
+	      _ref$read = _ref.read,
+	      read = _ref$read === void 0 ? null : _ref$read,
+	      _ref$output = _ref.output,
+	      output = _ref$output === void 0 ? null : _ref$output,
+	      values = _objectWithoutProperties(_ref, _excluded$i);
+
+	    // Already a payload: the manager read it, and there is nothing to route.
+	    if ((data === null || data === void 0 ? void 0 : data.payloadType) !== undefined) return this.SetPayload(data, values);
+	    var route = this.ResolveFormat(data, format ? {
+	      format,
+	      read,
+	      output
+	    } : {
+	      output
+	    });
+	    if (!route) throw resourceFormatRequiredError("TriTextureRes", this.ext, output);
+	    return this.SetPayload(route.Read(data), values);
+	  }
+
+	  /**
+	   * Return the number of mip levels known to this texture resource.
+	   *
+	   * @returns {number}
+	   */
+	  GetMipCount() {
+	    var _this$GetPayload;
+	    return ((_this$GetPayload = this.GetPayload()) === null || _this$GetPayload === void 0 ? void 0 : _this$GetPayload.mipCount) || this.cpuMip || 0;
+	  }
+
+	  /**
+	   * Return the multisample type for this texture.
+	   *
+	   * @returns {number}
+	   */
+	  GetMsaaType() {
+	    var _ref2, _ref3, _payload$multiSampleT;
+	    var payload = this.GetPayload();
+	    return (_ref2 = (_ref3 = (_payload$multiSampleT = payload === null || payload === void 0 ? void 0 : payload.multiSampleType) != null ? _payload$multiSampleT : payload === null || payload === void 0 ? void 0 : payload.msaaType) != null ? _ref3 : payload === null || payload === void 0 ? void 0 : payload.samples) != null ? _ref2 : 1;
+	  }
+
+	  /**
+	   * Return the multisample quality for this texture.
+	   *
+	   * @returns {number}
+	   */
+	  GetMsaaQuality() {
+	    var _ref4, _payload$multiSampleQ;
+	    var payload = this.GetPayload();
+	    return (_ref4 = (_payload$multiSampleQ = payload === null || payload === void 0 ? void 0 : payload.multiSampleQuality) != null ? _payload$multiSampleQ : payload === null || payload === void 0 ? void 0 : payload.msaaQuality) != null ? _ref4 : 0;
+	  }
+
+	  /**
+	   * Return true if this texture has received LOD requests.
+	   *
+	   * @returns {boolean}
+	   */
+	  HadLodRequests() {
+	    return this.hadLodRequests;
+	  }
+
+	  /**
+	   * Return the shader-resource-view heap index when a backend owns one.
+	   *
+	   * @returns {number}
+	   */
+	  GetSrvIndexInHeap() {
+	    throw resourceBoundaryError("TriTextureRes", "GetSrvIndexInHeap", "Runtime-resource does not own descriptor heaps.");
+	  }
+
+	  /**
+	   * Save this texture asynchronously.
+	   *
+	   * @param {string} path
+	   * @returns {boolean}
+	   */
+	  SaveAsync() {
+	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	    throw resourceBoundaryError("TriTextureRes", "SaveAsync", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
+	  }
+
+	  /**
+	   * Save this texture synchronously.
+	   *
+	   * @param {string} path
+	   * @returns {boolean}
+	   */
+	  Save() {
+	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	    throw resourceBoundaryError("TriTextureRes", "Save", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
+	  }
+
+	  /**
+	   * Return true if an asynchronous save is active.
+	   *
+	   * @returns {boolean}
+	   */
+	  IsSaving() {
+	    return false;
+	  }
+
+	  /**
+	   * Return true if the asynchronous save operation has completed.
+	   *
+	   * @returns {boolean}
+	   */
+	  IsSaveCompleted() {
+	    return true;
+	  }
+
+	  /**
+	   * Return true if the asynchronous save operation succeeded.
+	   *
+	   * @returns {boolean}
+	   */
+	  IsSaveSucceeded() {
+	    return false;
+	  }
+
+	  /**
+	   * Wait for an asynchronous save operation.
+	   *
+	   * @returns {boolean}
+	   */
+	  WaitForSave() {
+	    return this.IsSaveCompleted();
+	  }
+
+	  /**
+	   * Device texture allocation belongs to engine-gpu.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateEmptyTexture() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateEmptyTexture", "Use engine-gpu to allocate device textures.");
+	  }
+
+	  /**
+	   * Render-target wrapping belongs to engine-gpu.
+	   *
+	   * @throws {Error}
+	   */
+	  SetFromRenderTarget() {
+	    throw resourceBoundaryError("TriTextureRes", "SetFromRenderTarget", "Runtime-resource does not own render targets.");
+	  }
+
+	  /**
+	   * Create a texture copy from a render target.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateAndCopyFromRenderTarget() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateAndCopyFromRenderTarget", "Runtime-resource does not own render targets.");
+	  }
+
+	  /**
+	   * Create a device texture from a host bitmap.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateFromHostBitmap() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateFromHostBitmap", "Use engine-gpu to allocate and upload texture data.");
+	  }
+
+	  /**
+	   * Create this texture from another texture resource.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateFromTexture() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateFromTexture", "Use engine-gpu to copy device textures.");
+	  }
+
+	  /**
+	   * Return true if this texture owns a backend allocation object.
+	   *
+	   * @param {string|number} type
+	   * @param {string|number} object
+	   * @returns {boolean}
+	   */
+	  HasALObject(type, object) {
+	    return this.HasAdapterResource("".concat(type, ":").concat(object));
+	  }
+
+	  /**
+	   * Return an engine-owned texture pipeline object when attached.
+	   *
+	   * @returns {*}
+	   */
+	  GetPipeline() {
+	    return this.GetAdapterResource("pipeline");
+	  }
+
+	  /**
+	   * Return memory size for the original non-LODed texture.
+	   *
+	   * @returns {number}
+	   */
+	  GetOriginalMemoryUsage() {
+	    return this.originalMemoryUsage || getPayloadMemoryUsage(this.GetPayload());
+	  }
+
+	  /**
+	   * Store the average color reported by decoded texture data.
+	   *
+	   * @param {number} red
+	   * @param {number} green
+	   * @param {number} blue
+	   * @param {number} alpha
+	   * @returns {TriTextureRes}
+	   */
+	  SetAverageColor() {
+	    var red = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	    var green = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	    var blue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	    var alpha = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+	    this.averageColor = [red, green, blue, alpha];
+	    return this;
+	  }
+
+	  /**
+	   * Update a texture subresource.
+	   *
+	   * @throws {Error}
+	   */
+	  UpdateSubresource() {
+	    throw resourceBoundaryError("TriTextureRes", "UpdateSubresource", "Use engine-gpu to upload texture bytes.");
+	  }
+
+	  /**
+	   * Resource preparation does not decide device upload policy.
+	   *
+	   * @returns {boolean}
+	   */
+	  PrepareResources() {
+	    return this.IsPrepared();
+	  }
+	}
+	function _RasterizeProceduralTexture2(rasterize) {
+	  this.MarkLoading();
+	  var payload = rasterize(this.path);
+	  if (!payload) {
+	    // Carbon: "Failed to parse dynamic:/color/%s texture path", and the
+	    // texture is never prepared.
+	    var error = new Error("Failed to parse ".concat(this.path, " texture path"));
+	    error.code = "CJS_TEXTURE_PROCEDURAL_PATH_INVALID";
+	    error.path = this.path;
+	    this.SetError(error);
+	    return;
+	  }
+	  this.SetPayload(payload);
+	  this.MarkPrepared();
+	}
+	TriTextureRes.payload = ResourceRequirement.TEXTURE;
+	function getPayloadMemoryUsage(payload) {
+	  if (!payload || typeof payload !== "object") return 0;
+	  if (Number.isSafeInteger(payload.originalMemoryUsage) && payload.originalMemoryUsage >= 0) {
+	    return payload.originalMemoryUsage;
+	  }
+	  return ArrayBuffer.isView(payload.data) || payload.data instanceof ArrayBuffer ? payload.data.byteLength : 0;
+	}
+
+	// Declared as data rather than with decorators, so the resource tree loads from
+	// source without a transform. Field order is key order, and GetValues() exports
+	// in that order.
+	CjsSchema.define(TriTextureRes, {
+	  className: "TriTextureRes",
+	  family: "resources",
+	  fields: {
+	    format: [type$1.unknown, io$1.read],
+	    type: [type$1.unknown, io$1.persist],
+	    averageColor: [type$1.color, io$1.read],
+	    depth: [type$1.uint32, io$1.read],
+	    cutoutHeight: [type$1.float32, io$1.readwrite],
+	    height: [type$1.uint32, io$1.read],
+	    lodEnabled: [type$1.boolean, io$1.read],
+	    hadLodRequests: [type$1.boolean, io$1.read],
+	    cpuMip: [type$1.uint32, io$1.read],
+	    gpuMip: [type$1.uint32, io$1.read],
+	    wrappedRenderTarget: [type$1.unknown, io$1.read],
+	    originalResolution: [type$1.uint32, io$1.read],
+	    originalMemoryUsage: [type$1.uint64, io$1.read],
+	    name: [type$1.string, io$1.readwrite],
+	    arraySize: [type$1.uint32, io$1.read],
+	    cutoutWidth: [type$1.float32, io$1.readwrite],
+	    width: [type$1.uint32, io$1.read],
+	    cutoutX: [type$1.float32, io$1.readwrite],
+	    cutoutY: [type$1.float32, io$1.readwrite]
+	  },
+	  methods: {
+	    Initialize: [carbon$1.method, impl$1.adapted, impl$1.reason("Carbon rasterizes a procedural path into a half-float HostBitmap and creates the GPU texture inside Initialize; this resource cannot reach a render context, so it publishes the half-float-quantized colour as an rgba32float payload. The gradient_1d branch is not ported.")],
+	    GetMipCount: [carbon$1.method, impl$1.adapted],
+	    GetMsaaType: [carbon$1.method, impl$1.adapted],
+	    GetMsaaQuality: [carbon$1.method, impl$1.adapted],
+	    HadLodRequests: [carbon$1.method, impl$1.adapted],
+	    GetSrvIndexInHeap: [carbon$1.method, impl$1.notSupported],
+	    GetTexture: [carbon$1.method, impl$1.implemented],
+	    SetTexture: [carbon$1.method, impl$1.adapted, impl$1.reason("Carbon also copies the texture's dimensions onto the resource and fires m_onTextureChange; the payload already carries the dimensions here, and the binding parameter arms the resource's completion instead.")],
+	    SaveAsync: [carbon$1.method, impl$1.notSupported],
+	    Save: [carbon$1.method, impl$1.notSupported],
+	    IsSaving: [carbon$1.method, impl$1.noop],
+	    IsSaveCompleted: [carbon$1.method, impl$1.noop],
+	    IsSaveSucceeded: [carbon$1.method, impl$1.noop],
+	    WaitForSave: [carbon$1.method, impl$1.noop],
+	    CreateEmptyTexture: [carbon$1.method, impl$1.notSupported],
+	    SetFromRenderTarget: [carbon$1.method, impl$1.notSupported],
+	    CreateAndCopyFromRenderTarget: [carbon$1.method, impl$1.notSupported],
+	    CreateFromHostBitmap: [carbon$1.method, impl$1.notSupported],
+	    CreateFromTexture: [carbon$1.method, impl$1.notSupported],
+	    HasALObject: [carbon$1.method, impl$1.adapted],
+	    GetPipeline: [carbon$1.method, impl$1.adapted],
+	    GetOriginalMemoryUsage: [carbon$1.method, impl$1.adapted],
+	    SetAverageColor: [carbon$1.method, impl$1.adapted],
+	    UpdateSubresource: [carbon$1.method, impl$1.notSupported],
+	    PrepareResources: [carbon$1.method, impl$1.adapted]
+	  }
+	});
+
+	// Source: trinity/trinity/Resources/Procedural/SolidColorTexture.cpp
+	//
+	// Carbon registers this constructor at static-initialisation time, inside its
+	// own translation unit (SolidColorTexture.cpp:17-32). As with
+	// RegisterShaderResources, we do not self-register at module scope: a module
+	// side effect fires on import rather than on composition and cannot be tested in
+	// isolation. Whoever composes a manager calls RegisterSolidColorTexture.
+
+	/**
+	 * Carbon's `SolidColorTextureConstructor`: builds the texture a
+	 * `dynamic:/color/<query>` path names. TriTextureRes.Initialize recognises the
+	 * prefix and rasterizes the colour itself.
+	 */
+	class SolidColorTextureConstructor {
+	  /**
+	   * `IBlueDynamicResourceConstructor::GetResource` (SolidColorTexture.cpp:23-29).
+	   *
+	   * @param {string} query Text after `dynamic:/color/`.
+	   * @returns {TriTextureRes} The texture resource.
+	   */
+	  GetResource(query) {
+	    var texture = new TriTextureRes();
+	    texture.Initialize(ColorPrefix + query, "");
+	    return texture;
+	  }
+	}
+
+	/**
+	 * Registers the `color` dynamic constructor on one manager.
+	 *
+	 * @param {object} resourceManager Manager to register on.
+	 * @returns {object} The same manager, for chaining.
+	 */
+	function RegisterSolidColorTexture(resourceManager) {
+	  if (typeof (resourceManager === null || resourceManager === void 0 ? void 0 : resourceManager.RegisterResourceConstructor) !== "function") {
+	    throw new TypeError("RegisterSolidColorTexture requires a CjsResMan.");
+	  }
+	  resourceManager.RegisterResourceConstructor("color", new SolidColorTextureConstructor());
+	  return resourceManager;
 	}
 
 	// Source: trinity/trinity/Resources/Tr2ImageRes.h
@@ -166823,446 +167549,6 @@
 	  methods: {
 	    GetResourceDependencies: impl$1.implemented,
 	    Execute: [impl$1.adapted, impl$1.reason("Carbon fills an out-param BGRA HostBitmap per mip; the JS pipeline's canonical payload is a returned single-mip RGBA bitmap.")]
-	  }
-	});
-
-	var _excluded$i = ["format", "read", "output"];
-
-	// Source: trinity/trinity/Resources/TriTextureRes.h
-	// Source: trinity/trinity/Resources/TriTextureRes.cpp
-	// Source: trinity/trinity/Resources/TriTextureRes_Blue.cpp
-
-	/**
-	 * Resource record that owns Carbon-style texture identity and validated
-	 * texture, RGBA, or video payload facts with mirrored dimension/format
-	 * metadata, while engine packages decide what those facts become on a device.
-	 *
-	 * The resource never CREATES a backend texture - it cannot reach a render
-	 * context - but it RETAINS the one Trinity makes for it, as Carbon's does
-	 * (`m_texture`), so every parameter sharing the resource binds one texture.
-	 */
-	class TriTextureRes extends CjsResource {
-	  /** Creates a TriTextureRes with caller-provided initial state. */
-	  constructor() {
-	    var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	    super();
-	    this.format = null;
-	    this.type = null;
-	    this.averageColor = [0, 0, 0, 0];
-	    this.depth = 0;
-	    this.cutoutHeight = 1;
-	    this.height = 0;
-	    this.lodEnabled = false;
-	    this.hadLodRequests = false;
-	    this.cpuMip = 0;
-	    this.gpuMip = 0;
-	    this.wrappedRenderTarget = null;
-	    this.originalResolution = 0;
-	    this.originalMemoryUsage = 0;
-	    this.name = "";
-	    this.arraySize = 0;
-	    this.cutoutWidth = 1;
-	    this.width = 0;
-	    this.cutoutX = 0;
-	    this.cutoutY = 0;
-	    /**
-	     * m_texture: the live `Tr2TextureAL`, or null until an engine makes one.
-	     *
-	     * Carbon creates it in `DoPrepare` through the main-thread context and
-	     * stores it here (`TriTextureRes.cpp:690-704`). This layer cannot reach a
-	     * render context, so Trinity creates it at first bind and stores it here,
-	     * where every parameter sharing the resource finds the one texture.
-	     */
-	    this.texture = null;
-	    this.SetValues(values || {}, {
-	      markDirty: false,
-	      skipUpdate: true,
-	      skipEvents: true
-	    });
-	  }
-	  /**
-	   * The live texture, or null while there is none - Carbon returns nullptr
-	   * until the load finishes and the parameter substitutes the fallback
-	   * (`TriTextureRes.cpp:394-405`).
-	   *
-	   * @returns {object|null} A `Tr2TextureAL`.
-	   */
-	  GetTexture() {
-	    return this.texture && this.texture.IsValid() ? this.texture : null;
-	  }
-
-	  /**
-	   * Adopts a texture as this resource's (`TriTextureRes.cpp:1159-1195`).
-	   *
-	   * @param {object|null} texture A `Tr2TextureAL`, or null to drop it.
-	   * @returns {TriTextureRes} This resource.
-	   */
-	  SetTexture(texture) {
-	    if (this.texture && this.texture !== texture) this.texture.Destroy();
-	    this.texture = texture != null ? texture : null;
-	    return this;
-	  }
-
-	  /**
-	   * Attach a plain texture, RGBA, or video payload and mirror Carbon-exposed
-	   * metadata. Invalid payloads are rejected before replacing the current one.
-	   *
-	   * @param {object|null} payload
-	   * @param {object|null} options
-	   * @returns {TriTextureRes}
-	   */
-	  SetPayload() {
-	    var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	    if (payload === null) {
-	      // The bytes are gone; so is the texture made from them.
-	      this.SetTexture(null);
-	      super.SetPayload(null);
-	      return this;
-	    }
-	    var validator = {
-	      [ResourcePayloadType.RGBA]: validateRgbaPayload,
-	      [ResourcePayloadType.TEXTURE]: validateTexturePayload,
-	      [ResourcePayloadType.VIDEO]: validateVideoPayload
-	    }[payload === null || payload === void 0 ? void 0 : payload.payloadType];
-	    if (!validator) {
-	      throw resourcePayloadError("TriTextureRes", 'Expected payloadType "rgba", "texture", or "video".', "payloadType");
-	    }
-	    validateResourcePayload("TriTextureRes", payload, validator);
-	    var values = _objectSpread2({}, options || {});
-	    if (payload.pixelFormat !== undefined || payload.format !== undefined) values.format = payload.pixelFormat || payload.format;
-	    if (payload.width !== undefined) values.width = payload.width;
-	    if (payload.height !== undefined) values.height = payload.height;
-	    if (payload.depth !== undefined) values.depth = payload.depth;
-	    if (payload.arraySize !== undefined) values.arraySize = payload.arraySize;else if (Array.isArray(payload.faces)) values.arraySize = payload.faces.length;
-	    if (payload.mipCount !== undefined) values.cpuMip = payload.mipCount;else if (payload.payloadType === ResourcePayloadType.RGBA) values.cpuMip = 1;
-	    if (payload.hadLodRequests !== undefined) values.hadLodRequests = !!payload.hadLodRequests;
-	    values.originalMemoryUsage = getPayloadMemoryUsage(payload);
-	    values.originalResolution = Math.max(payload.width || 0, payload.height || 0, this.originalResolution || 0);
-	    super.SetPayload(payload);
-	    this.SetValues(values);
-	    return this;
-	  }
-
-	  /**
-	   * Turn source bytes into this texture.
-	   *
-	   * This is the family the route design exists for. One `.dds` is readable as a
-	   * compressed `texture` or decoded `rgba`, and six formats — dds, png, jpeg,
-	   * tga, gif, webp — populate this same resource. Which reader and which
-	   * representation is a registration decision, so neither is written here.
-	   *
-	   * The resource imports none of them. A texture resource that imported its
-	   * formats would drag all six into anything that touches a texture, which is
-	   * the whole reason the store exists.
-	   *
-	   * @param {ArrayBuffer|ArrayBufferView|object} data Source bytes, or a payload already read.
-	   * @param {object|null} [options] `{ format, read, output }` plus values applied after the read.
-	   * @returns {TriTextureRes} This resource.
-	   */
-	  DoLoad(data) {
-	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	    var _ref = options || {},
-	      _ref$format = _ref.format,
-	      format = _ref$format === void 0 ? null : _ref$format,
-	      _ref$read = _ref.read,
-	      read = _ref$read === void 0 ? null : _ref$read,
-	      _ref$output = _ref.output,
-	      output = _ref$output === void 0 ? null : _ref$output,
-	      values = _objectWithoutProperties(_ref, _excluded$i);
-
-	    // Already a payload: the manager read it, and there is nothing to route.
-	    if ((data === null || data === void 0 ? void 0 : data.payloadType) !== undefined) return this.SetPayload(data, values);
-	    var route = this.ResolveFormat(data, format ? {
-	      format,
-	      read,
-	      output
-	    } : {
-	      output
-	    });
-	    if (!route) throw resourceFormatRequiredError("TriTextureRes", this.ext, output);
-	    return this.SetPayload(route.Read(data), values);
-	  }
-
-	  /**
-	   * Return the number of mip levels known to this texture resource.
-	   *
-	   * @returns {number}
-	   */
-	  GetMipCount() {
-	    var _this$GetPayload;
-	    return ((_this$GetPayload = this.GetPayload()) === null || _this$GetPayload === void 0 ? void 0 : _this$GetPayload.mipCount) || this.cpuMip || 0;
-	  }
-
-	  /**
-	   * Return the multisample type for this texture.
-	   *
-	   * @returns {number}
-	   */
-	  GetMsaaType() {
-	    var _ref2, _ref3, _payload$multiSampleT;
-	    var payload = this.GetPayload();
-	    return (_ref2 = (_ref3 = (_payload$multiSampleT = payload === null || payload === void 0 ? void 0 : payload.multiSampleType) != null ? _payload$multiSampleT : payload === null || payload === void 0 ? void 0 : payload.msaaType) != null ? _ref3 : payload === null || payload === void 0 ? void 0 : payload.samples) != null ? _ref2 : 1;
-	  }
-
-	  /**
-	   * Return the multisample quality for this texture.
-	   *
-	   * @returns {number}
-	   */
-	  GetMsaaQuality() {
-	    var _ref4, _payload$multiSampleQ;
-	    var payload = this.GetPayload();
-	    return (_ref4 = (_payload$multiSampleQ = payload === null || payload === void 0 ? void 0 : payload.multiSampleQuality) != null ? _payload$multiSampleQ : payload === null || payload === void 0 ? void 0 : payload.msaaQuality) != null ? _ref4 : 0;
-	  }
-
-	  /**
-	   * Return true if this texture has received LOD requests.
-	   *
-	   * @returns {boolean}
-	   */
-	  HadLodRequests() {
-	    return this.hadLodRequests;
-	  }
-
-	  /**
-	   * Return the shader-resource-view heap index when a backend owns one.
-	   *
-	   * @returns {number}
-	   */
-	  GetSrvIndexInHeap() {
-	    throw resourceBoundaryError("TriTextureRes", "GetSrvIndexInHeap", "Runtime-resource does not own descriptor heaps.");
-	  }
-
-	  /**
-	   * Save this texture asynchronously.
-	   *
-	   * @param {string} path
-	   * @returns {boolean}
-	   */
-	  SaveAsync() {
-	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-	    throw resourceBoundaryError("TriTextureRes", "SaveAsync", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
-	  }
-
-	  /**
-	   * Save this texture synchronously.
-	   *
-	   * @param {string} path
-	   * @returns {boolean}
-	   */
-	  Save() {
-	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-	    throw resourceBoundaryError("TriTextureRes", "Save", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
-	  }
-
-	  /**
-	   * Return true if an asynchronous save is active.
-	   *
-	   * @returns {boolean}
-	   */
-	  IsSaving() {
-	    return false;
-	  }
-
-	  /**
-	   * Return true if the asynchronous save operation has completed.
-	   *
-	   * @returns {boolean}
-	   */
-	  IsSaveCompleted() {
-	    return true;
-	  }
-
-	  /**
-	   * Return true if the asynchronous save operation succeeded.
-	   *
-	   * @returns {boolean}
-	   */
-	  IsSaveSucceeded() {
-	    return false;
-	  }
-
-	  /**
-	   * Wait for an asynchronous save operation.
-	   *
-	   * @returns {boolean}
-	   */
-	  WaitForSave() {
-	    return this.IsSaveCompleted();
-	  }
-
-	  /**
-	   * Device texture allocation belongs to engine-gpu.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateEmptyTexture() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateEmptyTexture", "Use engine-gpu to allocate device textures.");
-	  }
-
-	  /**
-	   * Render-target wrapping belongs to engine-gpu.
-	   *
-	   * @throws {Error}
-	   */
-	  SetFromRenderTarget() {
-	    throw resourceBoundaryError("TriTextureRes", "SetFromRenderTarget", "Runtime-resource does not own render targets.");
-	  }
-
-	  /**
-	   * Create a texture copy from a render target.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateAndCopyFromRenderTarget() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateAndCopyFromRenderTarget", "Runtime-resource does not own render targets.");
-	  }
-
-	  /**
-	   * Create a device texture from a host bitmap.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateFromHostBitmap() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateFromHostBitmap", "Use engine-gpu to allocate and upload texture data.");
-	  }
-
-	  /**
-	   * Create this texture from another texture resource.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateFromTexture() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateFromTexture", "Use engine-gpu to copy device textures.");
-	  }
-
-	  /**
-	   * Return true if this texture owns a backend allocation object.
-	   *
-	   * @param {string|number} type
-	   * @param {string|number} object
-	   * @returns {boolean}
-	   */
-	  HasALObject(type, object) {
-	    return this.HasAdapterResource("".concat(type, ":").concat(object));
-	  }
-
-	  /**
-	   * Return an engine-owned texture pipeline object when attached.
-	   *
-	   * @returns {*}
-	   */
-	  GetPipeline() {
-	    return this.GetAdapterResource("pipeline");
-	  }
-
-	  /**
-	   * Return memory size for the original non-LODed texture.
-	   *
-	   * @returns {number}
-	   */
-	  GetOriginalMemoryUsage() {
-	    return this.originalMemoryUsage || getPayloadMemoryUsage(this.GetPayload());
-	  }
-
-	  /**
-	   * Store the average color reported by decoded texture data.
-	   *
-	   * @param {number} red
-	   * @param {number} green
-	   * @param {number} blue
-	   * @param {number} alpha
-	   * @returns {TriTextureRes}
-	   */
-	  SetAverageColor() {
-	    var red = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	    var green = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	    var blue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-	    var alpha = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-	    this.averageColor = [red, green, blue, alpha];
-	    return this;
-	  }
-
-	  /**
-	   * Update a texture subresource.
-	   *
-	   * @throws {Error}
-	   */
-	  UpdateSubresource() {
-	    throw resourceBoundaryError("TriTextureRes", "UpdateSubresource", "Use engine-gpu to upload texture bytes.");
-	  }
-
-	  /**
-	   * Resource preparation does not decide device upload policy.
-	   *
-	   * @returns {boolean}
-	   */
-	  PrepareResources() {
-	    return this.IsPrepared();
-	  }
-	}
-	TriTextureRes.payload = ResourceRequirement.TEXTURE;
-	function getPayloadMemoryUsage(payload) {
-	  if (!payload || typeof payload !== "object") return 0;
-	  if (Number.isSafeInteger(payload.originalMemoryUsage) && payload.originalMemoryUsage >= 0) {
-	    return payload.originalMemoryUsage;
-	  }
-	  return ArrayBuffer.isView(payload.data) || payload.data instanceof ArrayBuffer ? payload.data.byteLength : 0;
-	}
-
-	// Declared as data rather than with decorators, so the resource tree loads from
-	// source without a transform. Field order is key order, and GetValues() exports
-	// in that order.
-	CjsSchema.define(TriTextureRes, {
-	  className: "TriTextureRes",
-	  family: "resources",
-	  fields: {
-	    format: [type$1.unknown, io$1.read],
-	    type: [type$1.unknown, io$1.persist],
-	    averageColor: [type$1.color, io$1.read],
-	    depth: [type$1.uint32, io$1.read],
-	    cutoutHeight: [type$1.float32, io$1.readwrite],
-	    height: [type$1.uint32, io$1.read],
-	    lodEnabled: [type$1.boolean, io$1.read],
-	    hadLodRequests: [type$1.boolean, io$1.read],
-	    cpuMip: [type$1.uint32, io$1.read],
-	    gpuMip: [type$1.uint32, io$1.read],
-	    wrappedRenderTarget: [type$1.unknown, io$1.read],
-	    originalResolution: [type$1.uint32, io$1.read],
-	    originalMemoryUsage: [type$1.uint64, io$1.read],
-	    name: [type$1.string, io$1.readwrite],
-	    arraySize: [type$1.uint32, io$1.read],
-	    cutoutWidth: [type$1.float32, io$1.readwrite],
-	    width: [type$1.uint32, io$1.read],
-	    cutoutX: [type$1.float32, io$1.readwrite],
-	    cutoutY: [type$1.float32, io$1.readwrite]
-	  },
-	  methods: {
-	    GetMipCount: [carbon$1.method, impl$1.adapted],
-	    GetMsaaType: [carbon$1.method, impl$1.adapted],
-	    GetMsaaQuality: [carbon$1.method, impl$1.adapted],
-	    HadLodRequests: [carbon$1.method, impl$1.adapted],
-	    GetSrvIndexInHeap: [carbon$1.method, impl$1.notSupported],
-	    GetTexture: [carbon$1.method, impl$1.implemented],
-	    SetTexture: [carbon$1.method, impl$1.adapted, impl$1.reason("Carbon also copies the texture's dimensions onto the resource and fires m_onTextureChange; the payload already carries the dimensions here, and the binding parameter arms the resource's completion instead.")],
-	    SaveAsync: [carbon$1.method, impl$1.notSupported],
-	    Save: [carbon$1.method, impl$1.notSupported],
-	    IsSaving: [carbon$1.method, impl$1.noop],
-	    IsSaveCompleted: [carbon$1.method, impl$1.noop],
-	    IsSaveSucceeded: [carbon$1.method, impl$1.noop],
-	    WaitForSave: [carbon$1.method, impl$1.noop],
-	    CreateEmptyTexture: [carbon$1.method, impl$1.notSupported],
-	    SetFromRenderTarget: [carbon$1.method, impl$1.notSupported],
-	    CreateAndCopyFromRenderTarget: [carbon$1.method, impl$1.notSupported],
-	    CreateFromHostBitmap: [carbon$1.method, impl$1.notSupported],
-	    CreateFromTexture: [carbon$1.method, impl$1.notSupported],
-	    HasALObject: [carbon$1.method, impl$1.adapted],
-	    GetPipeline: [carbon$1.method, impl$1.adapted],
-	    GetOriginalMemoryUsage: [carbon$1.method, impl$1.adapted],
-	    SetAverageColor: [carbon$1.method, impl$1.adapted],
-	    UpdateSubresource: [carbon$1.method, impl$1.notSupported],
-	    PrepareResources: [carbon$1.method, impl$1.adapted]
 	  }
 	});
 
@@ -169958,6 +170244,31 @@
 	 *
 	 * @typedef {CjsResourceOwnership|CjsResourceReloadCandidate} CjsResourceMutationAuthority
 	 */
+
+	// `dynamic:` protocol (BlueResMan.cpp:219-223): the name is the segment after
+	// this prefix, and everything after the following slash is the query.
+	var DYNAMIC_RESOURCE_PREFIX = "dynamic:/";
+
+	/**
+	 * Carbon logs and returns null for an unknown dynamic name or a constructor that
+	 * yields nothing (BlueResMan.cpp:225-235). There is no log channel here, and a
+	 * null handle breaks every caller that composes on GetResource, so the same
+	 * condition is raised, named.
+	 *
+	 * @param {string} path Normalized dynamic path.
+	 * @param {string} name Constructor name.
+	 * @param {string} code Error code.
+	 * @param {string} message Error message.
+	 * @returns {Error}
+	 */
+	function dynamicResourceError(path, name, code, message) {
+	  var error = new Error("CjsResMan ".concat(message, " (").concat(path, ")"));
+	  error.code = code;
+	  error.path = path;
+	  error.name = "CjsResManDynamicResourceError";
+	  error.constructorName = name;
+	  return error;
+	}
 	var _global = /*#__PURE__*/_classPrivateFieldLooseKey("global");
 	var _autoPurgePolicy = /*#__PURE__*/_classPrivateFieldLooseKey("autoPurgePolicy");
 	var _activeResourceOperations = /*#__PURE__*/_classPrivateFieldLooseKey("activeResourceOperations");
@@ -169976,6 +170287,9 @@
 	var _resourceExtensionRoutes = /*#__PURE__*/_classPrivateFieldLooseKey("resourceExtensionRoutes");
 	var _resourceHandlerModes = /*#__PURE__*/_classPrivateFieldLooseKey("resourceHandlerModes");
 	var _resourceTypeCandidates = /*#__PURE__*/_classPrivateFieldLooseKey("resourceTypeCandidates");
+	var _dynamicConstructors = /*#__PURE__*/_classPrivateFieldLooseKey("dynamicConstructors");
+	var _dynamicResources = /*#__PURE__*/_classPrivateFieldLooseKey("dynamicResources");
+	var _objectBuilders = /*#__PURE__*/_classPrivateFieldLooseKey("objectBuilders");
 	var _GetReloadCandidateObject = /*#__PURE__*/_classPrivateFieldLooseKey("GetReloadCandidateObject");
 	var _RunReloadCandidate = /*#__PURE__*/_classPrivateFieldLooseKey("RunReloadCandidate");
 	var _FinalizeCommittedReload = /*#__PURE__*/_classPrivateFieldLooseKey("FinalizeCommittedReload");
@@ -169986,6 +170300,9 @@
 	var _ResolveResourceObjectRead = /*#__PURE__*/_classPrivateFieldLooseKey("ResolveResourceObjectRead");
 	var _ReadResolvedResourceObjectPayload = /*#__PURE__*/_classPrivateFieldLooseKey("ReadResolvedResourceObjectPayload");
 	var _HydrateExtensionObject = /*#__PURE__*/_classPrivateFieldLooseKey("HydrateExtensionObject");
+	var _HydrateTarget = /*#__PURE__*/_classPrivateFieldLooseKey("HydrateTarget");
+	var _BuildObject = /*#__PURE__*/_classPrivateFieldLooseKey("BuildObject");
+	var _CreateDynamicResource = /*#__PURE__*/_classPrivateFieldLooseKey("CreateDynamicResource");
 	var _PublishResourceObject = /*#__PURE__*/_classPrivateFieldLooseKey("PublishResourceObject");
 	var _PublishResourceObjectValue = /*#__PURE__*/_classPrivateFieldLooseKey("PublishResourceObjectValue");
 	var _BeginReadOperation = /*#__PURE__*/_classPrivateFieldLooseKey("BeginReadOperation");
@@ -170322,6 +170639,44 @@
 	      value: _PublishResourceObject2
 	    });
 	    /**
+	     * `dynamic:` branch of BlueResMan::GetResourceHelper (BlueResMan.cpp:219-245).
+	     * Inserted not cacheable, Carbon's `CACHING_NOT_ALLOWED`: a dynamic resource is
+	     * never admitted to the byte cache.
+	     *
+	     * @param {string} key Normalized `dynamic:/<name>/<query>` path.
+	     * @param {string} cacheKey MotherLode key.
+	     * @returns {CjsResource} Canonical dynamic resource.
+	     * @throws {Error} If no constructor is registered or it yields no resource.
+	     */
+	    Object.defineProperty(this, _CreateDynamicResource, {
+	      value: _CreateDynamicResource2
+	    });
+	    /**
+	     * A fresh object from a resident builder: Carbon's
+	     * `builder->CreateObjectWithYield` (BlueResMan.cpp:785).
+	     *
+	     * @param {CjsResource} resource Resource holding the decoded values as payload.
+	     * @returns {*} A new hydrated object.
+	     */
+	    Object.defineProperty(this, _BuildObject, {
+	      value: _BuildObject2
+	    });
+	    /**
+	     * Build one object from decoded values. Every build receives its own
+	     * structured copy, so no two callers share a nested array, typed array or
+	     * reader carrier however `from` treats its input - Carbon's objects are
+	     * likewise independent, each read out of the cached reader's bytes.
+	     *
+	     * @param {CjsResource} resource Resource whose values are built.
+	     * @param {Function} Target Resolved target constructor.
+	     * @param {*} values Decoded plain values.
+	     * @param {object} context Hydration context captured at publication.
+	     * @returns {*} A new hydrated object.
+	     */
+	    Object.defineProperty(this, _HydrateTarget, {
+	      value: _HydrateTarget2
+	    });
+	    /**
 	     * Apply a fixed target or dynamic identification policy after format reading
 	     * and before payload publication. Worker decoding has settled by this point,
 	     * so constructors and Identify functions remain on the caller thread.
@@ -170516,6 +170871,23 @@
 	    Object.defineProperty(this, _resourceTypeCandidates, {
 	      writable: true,
 	      value: new Map()
+	    });
+	    // BlueResMan::m_dynamicConstructors (BlueResMan.h:154-155).
+	    Object.defineProperty(this, _dynamicConstructors, {
+	      writable: true,
+	      value: new Map()
+	    });
+	    Object.defineProperty(this, _dynamicResources, {
+	      writable: true,
+	      value: new WeakSet()
+	    });
+	    // Carbon caches a LoadObject BUILDER and creates a new object per call
+	    // (BlueResMan.cpp:653-795). For an OBJECT-mode route that hydrates, the
+	    // payload is the decoded plain values - the builder - and this records what
+	    // builds from them.
+	    Object.defineProperty(this, _objectBuilders, {
+	      writable: true,
+	      value: new WeakMap()
 	    });
 	    this.motherLode = new CjsMotherLode();
 	    this.source = null;
@@ -171325,6 +171697,39 @@
 	  }
 
 	  /**
+	   * Registers the constructor that builds `dynamic:/<name>/<query>` resources
+	   * (BlueResMan.cpp:296-305). The name is lowercased, as Carbon's is; the
+	   * constructor's `GetResource(query)` returns a resource for that query.
+	   *
+	   * @param {string} name Name following `dynamic:/`.
+	   * @param {{GetResource: function(string): object}} constructor Resource constructor.
+	   * @returns {CjsResMan} This resource manager.
+	   * @throws {TypeError} If the name is empty or the constructor has no GetResource.
+	   */
+	  RegisterResourceConstructor(name, constructor) {
+	    var key = String(name != null ? name : "").toLowerCase();
+	    if (!key) {
+	      throw new TypeError("CjsResMan.RegisterResourceConstructor requires a name.");
+	    }
+	    if (typeof (constructor === null || constructor === void 0 ? void 0 : constructor.GetResource) !== "function") {
+	      throw new TypeError("CjsResMan dynamic resource constructor \"".concat(key, "\" must implement GetResource."));
+	    }
+	    _classPrivateFieldLooseBase(this, _dynamicConstructors)[_dynamicConstructors].set(key, constructor);
+	    return this;
+	  }
+
+	  /**
+	   * Removes a dynamic resource constructor (BlueResMan.cpp:312-325).
+	   *
+	   * @param {string} name Name following `dynamic:/`.
+	   * @returns {CjsResMan} This resource manager.
+	   */
+	  UnregisterResourceConstructor(name) {
+	    _classPrivateFieldLooseBase(this, _dynamicConstructors)[_dynamicConstructors].delete(String(name != null ? name : "").toLowerCase());
+	    return this;
+	  }
+
+	  /**
 	   * Return registered format facades for one normalized input extension.
 	   *
 	   * @param {string} inputType Input extension with or without a leading dot.
@@ -171389,6 +171794,11 @@
 	      _classPrivateFieldLooseBase(this, _BindResourceLifecycle)[_BindResourceLifecycle](cacheKey, existing);
 	      this.motherLode.KeepAlive(cacheKey);
 	      return existing;
+	    }
+	    // Below the cache lookup, as in BlueResMan::GetResourceHelper, so identical
+	    // queries share one resource.
+	    if (key.startsWith(DYNAMIC_RESOURCE_PREFIX)) {
+	      return _classPrivateFieldLooseBase(this, _CreateDynamicResource)[_CreateDynamicResource](key, cacheKey);
 	    }
 	    if (!existing && options.reload === true) {
 	      this.InvalidateReadCache(key, {
@@ -171462,12 +171872,25 @@
 	    var ownership = _classPrivateFieldLooseBase(this, _RequireResourceOwnership)[_RequireResourceOwnership](resource, "object:begin");
 	    var existing = this.objectOperations.get(resource);
 	    if ((existing === null || existing === void 0 ? void 0 : existing.ownership) === ownership) {
-	      return existing.promise;
+	      // Joining an in-flight load shares its promise - unless the route builds
+	      // per caller, when the load's own caller receives the instance built at
+	      // publication and a joiner gets its own.
+	      var route = _classPrivateFieldLooseBase(this, _resourceExtensionRoutes)[_resourceExtensionRoutes].get(resource);
+	      if (!(route !== null && route !== void 0 && route.Target) && !(route !== null && route !== void 0 && route.Identify)) return existing.promise;
+	      return existing.promise.then(result => _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].has(resource) ? _classPrivateFieldLooseBase(this, _BuildObject)[_BuildObject](resource) : result);
 	    }
 	    if ((_resource$HasPayload = resource.HasPayload) !== null && _resource$HasPayload !== void 0 && _resource$HasPayload.call(resource)) {
 	      var _resource$KeepPayload;
 	      (_resource$KeepPayload = resource.KeepPayloadAlive) === null || _resource$KeepPayload === void 0 || _resource$KeepPayload.call(resource);
+	      if (_classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].has(resource)) {
+	        return Promise.resolve().then(() => _classPrivateFieldLooseBase(this, _BuildObject)[_BuildObject](resource));
+	      }
 	      return Promise.resolve(getPublishedResourceObject(resource, _classPrivateFieldLooseBase(this, _resourceExtensionRoutes)[_resourceExtensionRoutes].get(resource) || null, _classPrivateFieldLooseBase(this, _resourceHandlerModes)[_resourceHandlerModes].get(resource) || null));
+	    }
+	    if (_classPrivateFieldLooseBase(this, _dynamicResources)[_dynamicResources].has(resource)) {
+	      // A dynamic resource is built by its constructor, never read from a
+	      // source: without a payload it failed, and there is nothing to fetch.
+	      return Promise.reject(resource.error || dynamicResourceError(resource.GetPath(), "", "CJS_RESMAN_DYNAMIC_RESOURCE_UNAVAILABLE", "dynamic resource has no payload"));
 	    }
 	    var promise = this.QueueResourceObject(resource, operationOptions);
 	    var operation = {
@@ -172530,6 +172953,7 @@
 	}
 	function _HydrateExtensionObject2(resource, values, options, resolved) {
 	  var _resolved$descriptor;
+	  _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].delete(resource);
 	  var route = resolved.route;
 	  if (!route || !route.Target && !route.Identify) return values;
 	  var Format = ((_resolved$descriptor = resolved.descriptor) === null || _resolved$descriptor === void 0 ? void 0 : _resolved$descriptor.Format) || null;
@@ -172556,8 +172980,26 @@
 	      throw createExtensionTargetError(resource, "Identify returned an invalid target constructor.", error);
 	    }
 	  }
+	  var hydrated = _classPrivateFieldLooseBase(this, _HydrateTarget)[_HydrateTarget](resource, Target, values, context);
+	  // Publication decides whether this route builds per caller: only an
+	  // OBJECT-mode handle hands its object out, so only it keeps the builder.
+	  _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].set(resource, {
+	    Target,
+	    context,
+	    values,
+	    hydrated
+	  });
+	  return hydrated;
+	}
+	function _HydrateTarget2(resource, Target, values, context) {
+	  var copy;
 	  try {
-	    var hydrated = typeof Target.fromYAML === "function" ? Target.fromYAML(values, context) : Target.from(values);
+	    copy = structuredClone(values);
+	  } catch (error) {
+	    throw createExtensionTargetError(resource, "Decoded values could not be copied for a per-caller build.", error);
+	  }
+	  try {
+	    var hydrated = typeof Target.fromYAML === "function" ? Target.fromYAML(copy, context) : Target.from(copy);
 	    if (hydrated && typeof hydrated.then === "function") {
 	      throw new TypeError("Extension target hydration must be synchronous.");
 	    }
@@ -172565,6 +173007,34 @@
 	  } catch (error) {
 	    throw createExtensionTargetError(resource, "Target hydration failed.", error);
 	  }
+	}
+	function _BuildObject2(resource) {
+	  var builder = _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].get(resource);
+	  return _classPrivateFieldLooseBase(this, _HydrateTarget)[_HydrateTarget](resource, builder.Target, resource.GetPayload(), builder.context);
+	}
+	function _CreateDynamicResource2(key, cacheKey) {
+	  var rest = key.slice(DYNAMIC_RESOURCE_PREFIX.length);
+	  var slash = rest.indexOf("/");
+	  var name = slash === -1 ? rest : rest.slice(0, slash);
+	  var query = slash === -1 ? "" : rest.slice(slash + 1);
+	  var constructor = _classPrivateFieldLooseBase(this, _dynamicConstructors)[_dynamicConstructors].get(name);
+	  if (!constructor) {
+	    throw dynamicResourceError(key, name, "CJS_RESMAN_DYNAMIC_CONSTRUCTOR_MISSING", "no dynamic constructor is registered for \"".concat(name, "\""));
+	  }
+	  var resource = constructor.GetResource(query);
+	  if (!resource || typeof resource.Initialize !== "function" || typeof resource.SetObjectLoader !== "function") {
+	    throw dynamicResourceError(key, name, "CJS_RESMAN_DYNAMIC_RESOURCE_UNAVAILABLE", "dynamic constructor \"".concat(name, "\" returned no CjsResource-compatible resource"));
+	  }
+	  _classPrivateFieldLooseBase(this, _dynamicResources)[_dynamicResources].add(resource);
+	  resource.SetObjectLoader(() => this.GetObject(key));
+	  var insertion = this.motherLode.Insert(cacheKey, resource, {
+	    replace: true,
+	    cacheable: false
+	  });
+	  var canonical = (insertion === null || insertion === void 0 ? void 0 : insertion.resource) || resource;
+	  _classPrivateFieldLooseBase(this, _BindResourceLifecycle)[_BindResourceLifecycle](cacheKey, canonical);
+	  this.motherLode.KeepAlive(cacheKey);
+	  return canonical;
 	}
 	function _PublishResourceObject2(ownership, resource, object, options) {
 	  _classPrivateFieldLooseBase(this, _AssertOptionalResourceOwnership)[_AssertOptionalResourceOwnership](ownership, "publish");
@@ -172575,12 +173045,23 @@
 	function _PublishResourceObjectValue2(resource, object, options) {
 	  var _resource$SetPayload, _resource$IsPrepared;
 	  var mode = resolveResourceHandlerMode(resource, _classPrivateFieldLooseBase(this, _resourceExtensionRoutes)[_resourceExtensionRoutes].get(resource) ? _classPrivateFieldLooseBase(this, _resourceHandlerModes)[_resourceHandlerModes].get(resource) : null);
-	  (_resource$SetPayload = resource.SetPayload) === null || _resource$SetPayload === void 0 || _resource$SetPayload.call(resource, object, options);
+	  var builder = _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].get(resource);
+	  var buildsPerCaller = mode === ResourceHandlerMode.OBJECT && (builder === null || builder === void 0 ? void 0 : builder.hydrated) === object;
+	  if (builder && !buildsPerCaller) _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].delete(resource);
+	  // A per-caller route retains the decoded values - the builder - and hands
+	  // `object` to this publication's caller only. The values then live under the
+	  // payload lease, like any payload.
+	  var payload = buildsPerCaller ? builder.values : object;
+	  if (buildsPerCaller) {
+	    delete builder.values;
+	    delete builder.hydrated;
+	  }
+	  (_resource$SetPayload = resource.SetPayload) === null || _resource$SetPayload === void 0 || _resource$SetPayload.call(resource, payload, options);
 	  // The two modes differ in one thing only: what `object` names and what the
 	  // caller is handed back. RESOURCE publishes the stable handle, so both
 	  // point at the resource; OBJECT publishes the reader outcome.
 	  var published = mode === ResourceHandlerMode.RESOURCE ? resource : object;
-	  resource.object = published;
+	  resource.object = buildsPerCaller ? payload : published;
 	  // PREPARED, not LOADED: `object` is the reader/converter OUTCOME, so the
 	  // bytes have already been turned into whatever they needed to become.
 	  // LOADED means raw source data is in hand and still has to be prepared - a
@@ -229605,7 +230086,11 @@
 	  GetBatches(mode, accumulator, perObjectData) {
 	    var _accumulator$GetCurre;
 	    // ccpwgl has no reflection pass, so ONLY_REFLECTIONS containers never draw.
-	    if (!this.display || !this.IsRendering()) return false;
+	    // Divergence: Carbon gates on IsRendering(), i.e. the shader-quality filters
+	    // too. Enforcing SHADER_MED etc. hid layout geometry ("MediumOnly") at
+	    // quality=depth whose high-quality counterpart ccpwgl does not build yet, so
+	    // only ONLY_REFLECTIONS is enforced until that path exists.
+	    if (!this.display || this.displayFilter === EveChildContainer.DisplayFilter.ONLY_REFLECTIONS) return false;
 	    perObjectData = perObjectData || ((_accumulator$GetCurre = accumulator.GetCurrentPerObjectData) === null || _accumulator$GetCurre === void 0 ? void 0 : _accumulator$GetCurre.call(accumulator));
 	    var c = accumulator.length;
 	    for (var i = 0; i < this.objects.length; i++) {

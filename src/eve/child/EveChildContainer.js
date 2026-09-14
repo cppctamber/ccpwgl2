@@ -934,7 +934,11 @@ export class EveChildContainer extends EveChild
     GetBatches(mode, accumulator, perObjectData)
     {
         // ccpwgl has no reflection pass, so ONLY_REFLECTIONS containers never draw.
-        if (!this.display || !this.IsRendering()) return false;
+        // Divergence: Carbon gates on IsRendering(), i.e. the shader-quality filters
+        // too. Enforcing SHADER_MED etc. hid layout geometry ("MediumOnly") at
+        // quality=depth whose high-quality counterpart ccpwgl does not build yet, so
+        // only ONLY_REFLECTIONS is enforced until that path exists.
+        if (!this.display || this.displayFilter === EveChildContainer.DisplayFilter.ONLY_REFLECTIONS) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const c = accumulator.length;
