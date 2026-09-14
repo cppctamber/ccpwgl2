@@ -299,7 +299,10 @@ export class EvePlaneSet extends EveObjectSet
 
     _vertexBuffer = null;
     _indexBuffer = null;
-    _decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
+    _vertexArray = null;
+    _activationStrength = 1;
+    _worldScratch = mat4.create();
+    _decl =Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
 
     /**
      * Alias for this.items
@@ -446,6 +449,8 @@ export class EvePlaneSet extends EveObjectSet
             }
         }
 
+        this._vertexArray = array;
+
         const
             { gl } = device,
             rebuildVertexBuffer = !this._vertexBuffer || this._vertexBuffer.count !== itemCount;
@@ -514,6 +519,72 @@ export class EvePlaneSet extends EveObjectSet
     }
 
     /**
+     * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
+     * @param {Number} [spriteScale]
+     * @param {Number} [activationStrength=1]
+     */
+    UpdateViewDependentData(parentTransform, bones, spriteScale, activationStrength = 1)
+    {
+        this._activationStrength = activationStrength;
+        super.UpdateViewDependentData(parentTransform, bones);
+    }
+
+    /**
+     * Rewrites the transform rows and colour of every quad in world space.
+     *
+     * Carbon `EvePlaneSet::AddToQuadRenderer` (`EvePlaneSet.cpp:173-230`) does
+     * this every frame: `transform = data.transform [* bone] * parentTransform`
+     * (row-vector; gl-matrix order is parent * bone * local) and
+     * `color = data.color * activation`.
+     * @private
+     */
+    _UploadWorldRows()
+    {
+        const
+            array = this._vertexArray,
+            items = this._visibleItems,
+            vertexSize = EvePlaneSet.vertexSize,
+            world = this._worldScratch,
+            activation = this._activationStrength;
+
+        if (!array || array.length !== items.length * 4 * vertexSize) return;
+
+        for (let i = 0; i < items.length; ++i)
+        {
+            const item = items[i];
+            mat4.multiply(world, this._parentTransform, item.GetTransform(world));
+
+            for (let j = 0; j < 4; ++j)
+            {
+                const vtxOffset = (i * 4 + j) * vertexSize;
+                array[vtxOffset] =      world[0];
+                array[vtxOffset + 1] =  world[4];
+                array[vtxOffset + 2] =  world[8];
+                array[vtxOffset + 3] =  world[12];
+                array[vtxOffset + 4] =  world[1];
+                array[vtxOffset + 5] =  world[5];
+                array[vtxOffset + 6] =  world[9];
+                array[vtxOffset + 7] =  world[13];
+                array[vtxOffset + 8] =  world[2];
+                array[vtxOffset + 9] =  world[6];
+                array[vtxOffset + 10] = world[10];
+                array[vtxOffset + 11] = world[14];
+
+                array[vtxOffset + 12] = item.color[0] * activation;
+                array[vtxOffset + 13] = item.color[1] * activation;
+                array[vtxOffset + 14] = item.color[2] * activation;
+                array[vtxOffset + 15] = item.color[3] * EvePlaneSet.alphaMultiplier * activation;
+            }
+        }
+
+        const { gl } = device;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, array);
+    }
+
+    /**
      * Renders the plane set
      * @param {String} technique - technique name
      */
@@ -524,6 +595,13 @@ export class EvePlaneSet extends EveObjectSet
         const { gl } = device;
 
         device.SetStandardStates(device.RM_ADDITIVE);
+
+        // Carbon planeglow has no world matrix: its rows must already be in
+        // world space. The gles2 shader applies the per-object world itself and
+        // keeps the local rows written by Rebuild.
+        const techniqueRes = this.effect.shader.techniques[technique];
+        if (techniqueRes && techniqueRes.passes[0] && techniqueRes.passes[0].isCarbon) this._UploadWorldRows();
+
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 

@@ -2530,7 +2530,7 @@ export class EveSpaceObject2 extends EveObject
         {
             if ("UpdateViewDependentData" in this.attachments[i])
             {
-                this.attachments[i].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
+                this.attachments[i].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale, Math.max(Math.min(this.activationStrength, 1), 0));
             }
         }
 

@@ -9,11 +9,13 @@ export class EveSOFDataHullPlaneSet extends meta.Model
     @meta.string
     name = "";
 
+    // Carbon defaults (EveSOFData.cpp:596-597). SOF data omits default values,
+    // and the dx11 planeglow shader divides mask UVs by floor(atlasAspectRatio).
     @meta.uint
-    atlasSize = 0;
+    atlasSize = 1;
 
     @meta.vector2
-    atlasAspectRatio = vec2.create();
+    atlasAspectRatio = vec2.fromValues(1, 1);
 
     @meta.list("EveSOFDataHullPlaneSetItem")
     items = [];

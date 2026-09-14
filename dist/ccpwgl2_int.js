@@ -72322,7 +72322,18 @@
 	  value: createValuesTransport({
 	    GetFields: Constructor => getEffectiveFields(Constructor),
 	    Export: (value, field, options) => exportCarbonValue(value, field.type),
-	    Import: (value, field) => normalizeCarbonValue(value, field.type),
+	    // A live instance of a registered class is ALIASED, never copied - the
+	    // rule the model path applies through its brand (CjsModel.js, the
+	    // isModelInstance early return). A class off the base carries no brand,
+	    // so without this a reference field would receive a plain-object copy
+	    // and shared identity across the graph would silently split.
+	    Import: (value, field) => {
+	      if (isLiveSchemaInstance(value)) return value;
+	      if (Array.isArray(value) && value.some(isLiveSchemaInstance)) {
+	        return value.map(item => isLiveSchemaInstance(item) ? item : cloneCarbonValue(item));
+	      }
+	      return normalizeCarbonValue(value, field.type);
+	    },
 	    CoerceInto: (current, incoming, field) => {
 	      var _coerceCarbonMathInto;
 	      return (_coerceCarbonMathInto = coerceCarbonMathInto(current, incoming, field.type)) != null ? _coerceCarbonMathInto : coerceCarbonTypedArrayInto(current, incoming, field.type);
@@ -73110,6 +73121,13 @@
 	    schema.hiddenInherited.add(_fieldName);
 	  }
 	}
+
+	// A live instance of a registered class, from this copy or a sibling one -
+	// getClassName reads the cross-copy stamp. Plain bags, arrays, typed arrays
+	// and the reader's `{ _sourceClassName }` carriers all answer false.
+	function isLiveSchemaInstance(value) {
+	  return !!value && typeof value === "object" && !Array.isArray(value) && !ArrayBuffer.isView(value) && CjsSchema.getClassName(value.constructor) !== null;
+	}
 	function getEffectiveFields(Constructor) {
 	  var ordered = [];
 	  var byName = new Map();
@@ -73709,6 +73727,13 @@
 	 * SetValues is called directly rather than through CjsSchema.setValues so a
 	 * reader works with only the schema layer loaded; the two are the same path
 	 * for every class that has the method.
+	 *
+	 * A REGISTERED class without SetValues - one that no longer extends CjsModel -
+	 * is still a resolved class, so it populates through CjsSchema.setValues, which
+	 * answers without the model layer. Only an unregistered carrier (the reader's
+	 * `{ _sourceClassName }` fallback) takes raw assignment. Without this middle
+	 * arm, taking a class off the base would silently drop it to Object.assign:
+	 * no coercion, no writability gate, no settle.
 	 */
 
 	/**
@@ -73731,6 +73756,10 @@
 	      if (custom && typeof custom.applyValues === "function") return custom.applyValues(instance, values, ctx);
 	      if (instance && typeof instance.SetValues === "function") {
 	        instance.SetValues(values, ctx === null || ctx === void 0 ? void 0 : ctx.options);
+	        return instance;
+	      }
+	      if (instance && CjsSchema.getClassName(instance.constructor)) {
+	        CjsSchema.setValues(instance, values, ctx === null || ctx === void 0 ? void 0 : ctx.options);
 	        return instance;
 	      }
 	      return Object.assign(instance, values);
@@ -112996,8 +113025,9 @@
 	/**
 	 * Formats decoded DXBC operands as GLSL ES 3.00 expressions and assignments.
 	 *
-	 * Type policy: register files use float `vec4`s. Packed-light shaders also
-	 * retain uint companions for temporary registers; integer reads use those
+	 * Type policy: register files use float `vec4`s. Packed-light shaders and
+	 * shaders reading SV_VertexID/SV_InstanceID also retain uint companions for
+	 * temporary registers; integer reads use those
 	 * companions to avoid losing packed bits through float storage. Other integer and
 	 * unsigned reads/writes bitcast at the use site (`floatBitsToInt` family),
 	 * mirroring HLSLcc's lowering when reflection-driven type analysis is
@@ -113022,6 +113052,10 @@
 	    // bitcast (floatBitsToInt(attr)) - ccpwgl uploads them as plain float
 	    // values, not integer bit patterns (see DxbcGlslEmitter._declareVertexInput).
 	    this.integerInputs = options.integerInputs || null;
+	    // Map of input register index -> GLSL integer built-in (`gl_VertexID`).
+	    // Integer reads use the built-in directly instead of bitcasting its
+	    // float bit-pattern register, which ANGLE/D3D11 does not preserve.
+	    this.systemIntegerInputs = options.systemIntegerInputs || null;
 	    this.names = _objectSpread2({
 	      temp: index => "r".concat(index),
 	      indexableTemp: index => "x".concat(index),
@@ -113091,19 +113125,23 @@
 	    }
 	    if (as !== "float") {
 	      var integerInputKind = operand.type === 1 && this.integerInputs ? this.integerInputs.get(operand.registerIndex) : undefined;
-	      if (operand.type === 0 && this.integerTemps && !floatSpaceModifier) {
+	      var systemInteger = operand.type === 1 && this.systemIntegerInputs ? this.systemIntegerInputs.get(operand.registerIndex) : undefined;
+	      if (systemInteger && !floatSpaceModifier) {
+	        var width = suffix ? suffix.length - 1 : 4;
+	        expression = "".concat(VEC_TYPE_BY_KIND[as][width - 1], "(").concat(systemInteger, ")");
+	      } else if (operand.type === 0 && this.integerTemps && !floatSpaceModifier) {
 	        // Raw integer companion. An integer `neg` applies to it
 	        // directly below; a float-space abs forces the float register
 	        // through the bitcast branch instead.
 	        var raw = "cjsBitsR".concat(operand.registerIndex).concat(suffix);
-	        var width = suffix ? suffix.length - 1 : 4;
-	        expression = as === "uint" ? raw : "".concat(VEC_TYPE_BY_KIND.int[width - 1], "(").concat(raw, ")");
+	        var _width = suffix ? suffix.length - 1 : 4;
+	        expression = as === "uint" ? raw : "".concat(VEC_TYPE_BY_KIND.int[_width - 1], "(").concat(raw, ")");
 	      } else if (integerInputKind) {
 	        // Float-lowered integer vertex attribute (e.g. BLENDINDICES):
 	        // the register holds the value (3.0), not the bit pattern of 3,
 	        // so convert rather than bitcast (which would read garbage).
-	        var _width = suffix ? suffix.length - 1 : 4;
-	        expression = "".concat(VEC_TYPE_BY_KIND[as][_width - 1], "(").concat(expression, ")");
+	        var _width2 = suffix ? suffix.length - 1 : 4;
+	        expression = "".concat(VEC_TYPE_BY_KIND[as][_width2 - 1], "(").concat(expression, ")");
 	      } else {
 	        expression = "".concat(BITCAST_FROM_FLOAT[as], "(").concat(expression, ")");
 	      }
@@ -114091,13 +114129,26 @@
 	      this._analyzeUavStores(state);
 	    }
 	    state.integerVertexInputs = new Map();
+	    // Register -> GLSL integer built-in (`gl_VertexID`/`gl_InstanceID`) for
+	    // system-value inputs; filled by _declareSystemInput.
+	    state.systemIntegerInputs = new Map();
+	    // Integer companions for temporaries. Small integers held as float bit
+	    // patterns are denormals, and ANGLE/D3D11 hardware does not preserve
+	    // them in float storage: a vertex-id corner index `r0.x = uintBitsToFloat(id & 3u)`
+	    // reads back 0 for ids 1..3, collapsing every quad (plane sets, the sprite
+	    // pool). Packed-light shaders need the same companions for their words.
+	    state.integerTemps = !!state.lightPackedTexture || state.decoder.instructions.some(instruction => {
+	      var _instruction$declarat, _instruction$declarat2;
+	      return (instruction.opcodeName === "dcl_input_sgv" || instruction.opcodeName === "dcl_input_ps_sgv") && (((_instruction$declarat = instruction.declaration) === null || _instruction$declarat === void 0 ? void 0 : _instruction$declarat.systemValueName) === "vertex_id" || ((_instruction$declarat2 = instruction.declaration) === null || _instruction$declarat2 === void 0 ? void 0 : _instruction$declarat2.systemValueName) === "instance_id");
+	    });
 	    state.formatter = new DxbcGlslOperandFormatter({
 	      // Populated during vertex-input declaration (the declaration loop
 	      // runs before any body emission, so the map is complete before the
 	      // first operand is formatted). Integer reads of these registers
 	      // value-convert instead of bitcast - see _declareVertexInput.
 	      integerInputs: state.integerVertexInputs,
-	      integerTemps: !!state.lightPackedTexture,
+	      integerTemps: state.integerTemps,
+	      systemIntegerInputs: state.systemIntegerInputs,
 	      componentMap: operand => {
 	        if (operand.type === 1) return state.inputMasks.get(operand.registerIndex) || null;
 	        if (operand.type === 2) return state.outputMasks.get(operand.registerIndex) || null;
@@ -114822,7 +114873,7 @@
 	      case "dcl_temps":
 	        for (var index = 0; index < declaration.tempCount; index += 1) {
 	          state.declarationLines.push("vec4 r".concat(index, ";"));
-	          if (state.lightPackedTexture) state.declarationLines.push("uvec4 cjsBitsR".concat(index, ";"));
+	          if (state.integerTemps) state.declarationLines.push("uvec4 cjsBitsR".concat(index, ";"));
 	        }
 	        break;
 	      case "dcl_indexable_temp":
@@ -115231,9 +115282,11 @@
 	        break;
 	      case "vertex_id":
 	        state.inputNames.set(register, "vec4(intBitsToFloat(gl_VertexID))");
+	        state.systemIntegerInputs.set(register, "gl_VertexID");
 	        break;
 	      case "instance_id":
 	        state.inputNames.set(register, "vec4(intBitsToFloat(gl_InstanceID))");
+	        state.systemIntegerInputs.set(register, "gl_InstanceID");
 	        break;
 	      default:
 	        throw new WebglReadError("System-generated input is not supported by the WebGL2 emitter", {
@@ -115489,7 +115542,7 @@
 	    // Centralize writes here because several lowerings emit lane writes
 	    // directly rather than going through _assign. This is per assignment,
 	    // not a shader/register-number pattern or a control-flow dataflow guess.
-	    var assignment = state.lightPackedTexture && /^(r(\d+)(?:\.[xyzw]+)?) = ([\s\S]+);$/.exec(text);
+	    var assignment = state.integerTemps && /^(r(\d+)(?:\.[xyzw]+)?) = ([\s\S]+);$/.exec(text);
 	    if (assignment) {
 	      var _assignment = _slicedToArray(assignment, 4),
 	        target = _assignment[1],
@@ -115855,7 +115908,7 @@
 	      mask = _this$_destMask9.mask;
 	    if (!target) return;
 	    var aliases = instruction.operands.slice(1).some(operand => operand.type === destOperand.type && operand.registerIndex === destOperand.registerIndex);
-	    var rawMove = !!state.lightPackedTexture && destOperand.type === 0;
+	    var rawMove = state.integerTemps && destOperand.type === 0;
 	    if (aliases) {
 	      this._line(state, "{");
 	      state.indent += 1;
@@ -116238,7 +116291,7 @@
 	  mov(state, instruction) {
 	    var _this$_destMask10 = this._destMask(state, instruction),
 	      mask = _this$_destMask10.mask;
-	    if (state.lightPackedTexture && instruction.operands[0].type === 0 && !instruction.saturate && !["neg", "abs", "absneg"].includes(instruction.operands[1].modifierName)) {
+	    if (state.integerTemps && instruction.operands[0].type === 0 && !instruction.saturate && !["neg", "abs", "absneg"].includes(instruction.operands[1].modifierName)) {
 	      var raw = this._vecArg(state, instruction.operands[1], mask, "uint");
 	      this._assign(state, instruction, "uintBitsToFloat(".concat(raw, ")"));
 	      return;
@@ -240203,6 +240256,9 @@
 	    _initializerDefineProperty(this, "usage", _descriptor30$6, this);
 	    this._vertexBuffer = null;
 	    this._indexBuffer = null;
+	    this._vertexArray = null;
+	    this._activationStrength = 1;
+	    this._worldScratch = mat4$2.create();
 	    this._decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
 	    /**
 	     * The plane set's item constructor
@@ -240340,6 +240396,7 @@
 	        array[vtxOffset + 39] = item.blinkMode;
 	      }
 	    }
+	    this._vertexArray = array;
 	    var gl = device.gl,
 	      rebuildVertexBuffer = !this._vertexBuffer || this._vertexBuffer.count !== itemCount;
 	    if (!this._vertexBuffer) this._vertexBuffer = gl.createBuffer();
@@ -240395,6 +240452,63 @@
 	  }
 
 	  /**
+	   * Per frame update
+	   * @param {mat4} parentTransform
+	   * @param {Array<Tw2Bone>} bones
+	   * @param {Number} [spriteScale]
+	   * @param {Number} [activationStrength=1]
+	   */
+	  UpdateViewDependentData(parentTransform, bones, spriteScale) {
+	    var activationStrength = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+	    this._activationStrength = activationStrength;
+	    super.UpdateViewDependentData(parentTransform, bones);
+	  }
+
+	  /**
+	   * Rewrites the transform rows and colour of every quad in world space.
+	   *
+	   * Carbon `EvePlaneSet::AddToQuadRenderer` (`EvePlaneSet.cpp:173-230`) does
+	   * this every frame: `transform = data.transform [* bone] * parentTransform`
+	   * (row-vector; gl-matrix order is parent * bone * local) and
+	   * `color = data.color * activation`.
+	   * @private
+	   */
+	  _UploadWorldRows() {
+	    var array = this._vertexArray,
+	      items = this._visibleItems,
+	      vertexSize = EvePlaneSet.vertexSize,
+	      world = this._worldScratch,
+	      activation = this._activationStrength;
+	    if (!array || array.length !== items.length * 4 * vertexSize) return;
+	    for (var i = 0; i < items.length; ++i) {
+	      var item = items[i];
+	      mat4$2.multiply(world, this._parentTransform, item.GetTransform(world));
+	      for (var j = 0; j < 4; ++j) {
+	        var vtxOffset = (i * 4 + j) * vertexSize;
+	        array[vtxOffset] = world[0];
+	        array[vtxOffset + 1] = world[4];
+	        array[vtxOffset + 2] = world[8];
+	        array[vtxOffset + 3] = world[12];
+	        array[vtxOffset + 4] = world[1];
+	        array[vtxOffset + 5] = world[5];
+	        array[vtxOffset + 6] = world[9];
+	        array[vtxOffset + 7] = world[13];
+	        array[vtxOffset + 8] = world[2];
+	        array[vtxOffset + 9] = world[6];
+	        array[vtxOffset + 10] = world[10];
+	        array[vtxOffset + 11] = world[14];
+	        array[vtxOffset + 12] = item.color[0] * activation;
+	        array[vtxOffset + 13] = item.color[1] * activation;
+	        array[vtxOffset + 14] = item.color[2] * activation;
+	        array[vtxOffset + 15] = item.color[3] * EvePlaneSet.alphaMultiplier * activation;
+	      }
+	    }
+	    var gl = device.gl;
+	    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+	    gl.bufferSubData(gl.ARRAY_BUFFER, 0, array);
+	  }
+
+	  /**
 	   * Renders the plane set
 	   * @param {String} technique - technique name
 	   */
@@ -240402,6 +240516,12 @@
 	    if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
 	    var gl = device.gl;
 	    device.SetStandardStates(device.RM_ADDITIVE);
+
+	    // Carbon planeglow has no world matrix: its rows must already be in
+	    // world space. The gles2 shader applies the per-object world itself and
+	    // keeps the local rows written by Rebuild.
+	    var techniqueRes = this.effect.shader.techniques[technique];
+	    if (techniqueRes && techniqueRes.passes[0] && techniqueRes.passes[0].isCarbon) this._UploadWorldRows();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 	    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
@@ -241587,6 +241707,7 @@
 	    this._vertexBuffer = null;
 	    this._indexBuffer = null;
 	    this._instanceBuffer = null;
+	    this._quadIndexBuffer = null;
 	    this._decl = null;
 	    this._vdecl = Tw2VertexDeclaration.from([{
 	      usage: "TEXCOORD",
@@ -241740,6 +241861,10 @@
 	      gl.deleteBuffer(this._instanceBuffer);
 	      this._instanceBuffer = null;
 	    }
+	    if (this._quadIndexBuffer) {
+	      gl.deleteBuffer(this._quadIndexBuffer);
+	      this._quadIndexBuffer = null;
+	    }
 	    super.Unload(opt);
 	  }
 
@@ -241758,8 +241883,15 @@
 	    if (this.useQuads) {
 	      this._vertexBuffer = gl.createBuffer();
 	      gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-	      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 2, 2, 3, 0]), gl.STATIC_DRAW);
+	      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 2, 3]), gl.STATIC_DRAW);
 	      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+	      // Carbon draws the pool indexed (Tr2QuadRenderer.cpp:206-235, 297-318): the
+	      // dx11 shader takes the corner from SV_VertexID, which must stay in 0..3.
+	      if (this._quadIndexBuffer) gl.deleteBuffer(this._quadIndexBuffer);
+	      this._quadIndexBuffer = gl.createBuffer();
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+	      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 2, 1, 0, 3, 2]), gl.STATIC_DRAW);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 	      this._instanceBuffer = gl.createBuffer();
 	      super.Rebuild(opt);
 	      return;
@@ -241942,7 +242074,8 @@
 	      gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
 	      var resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
 	      d.ApplyShadowState();
-	      gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+	      gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, itemCount);
 	      this._decl.ResetInstanceDivisors(d, resetData);
 	    }
 	    return true;
@@ -241998,7 +242131,8 @@
 	      gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
 	      var resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
 	      d.ApplyShadowState();
-	      gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+	      gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, itemCount);
 	      this._decl.ResetInstanceDivisors(d, resetData);
 	    }
 	    return true;
@@ -257011,7 +257145,7 @@
 	    }
 	    for (var _i25 = 0; _i25 < this.attachments.length; _i25++) {
 	      if ("UpdateViewDependentData" in this.attachments[_i25]) {
-	        this.attachments[_i25].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
+	        this.attachments[_i25].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale, Math.max(Math.min(this.activationStrength, 1), 0));
 	      }
 	    }
 	    for (var _i26 = 0; _i26 < this.locatorSets.length; _i26++) {
@@ -290202,6 +290336,8 @@
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2h, this);
+	    // Carbon defaults (EveSOFData.cpp:596-597). SOF data omits default values,
+	    // and the dx11 planeglow shader divides mask UVs by floor(atlasAspectRatio).
 	    _initializerDefineProperty(this, "atlasSize", _descriptor2$20, this);
 	    _initializerDefineProperty(this, "atlasAspectRatio", _descriptor3$1J, this);
 	    _initializerDefineProperty(this, "items", _descriptor4$1v, this);
@@ -290240,14 +290376,14 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 1;
 	  }
 	}), _descriptor3$1J = _applyDecoratedDescriptor(_class2$2i.prototype, "atlasAspectRatio", [_dec4$1S], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return vec2$2.create();
+	    return vec2$2.fromValues(1, 1);
 	  }
 	}), _descriptor4$1v = _applyDecoratedDescriptor(_class2$2i.prototype, "items", [_dec5$1D], {
 	  configurable: true,
@@ -297397,7 +297533,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 5;
+	    return 2;
 	  }
 	}), _descriptor4$19 = _applyDecoratedDescriptor(_class2$1R.prototype, "fallbackMaterialName", [_dec7$V, _dec8$P], {
 	  configurable: true,

@@ -342,6 +342,7 @@ export class EveSpriteSet extends EveObjectSet
     _vertexBuffer = null;
     _indexBuffer = null;
     _instanceBuffer = null;
+    _quadIndexBuffer = null;
     _decl = null;
     _vdecl = Tw2VertexDeclaration.from([ { usage: "TEXCOORD", usageType: 5, elements: 1 } ]);
     _worldSpriteScale = 1;
@@ -448,6 +449,12 @@ export class EveSpriteSet extends EveObjectSet
             this._instanceBuffer = null;
         }
 
+        if (this._quadIndexBuffer)
+        {
+            gl.deleteBuffer(this._quadIndexBuffer);
+            this._quadIndexBuffer = null;
+        }
+
         super.Unload(opt);
     }
 
@@ -472,8 +479,15 @@ export class EveSpriteSet extends EveObjectSet
         {
             this._vertexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ 0, 1, 2, 2, 3, 0 ]), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ 0, 1, 2, 3 ]), gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            // Carbon draws the pool indexed (Tr2QuadRenderer.cpp:206-235, 297-318): the
+            // dx11 shader takes the corner from SV_VertexID, which must stay in 0..3.
+            if (this._quadIndexBuffer) gl.deleteBuffer(this._quadIndexBuffer);
+            this._quadIndexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([ 0, 2, 1, 0, 3, 2 ]), gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
             this._instanceBuffer = gl.createBuffer();
             super.Rebuild(opt);
             return;
@@ -692,7 +706,8 @@ export class EveSpriteSet extends EveObjectSet
             gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
             const resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
             d.ApplyShadowState();
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+            gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, itemCount);
             this._decl.ResetInstanceDivisors(d, resetData);
         }
 
@@ -762,7 +777,8 @@ export class EveSpriteSet extends EveObjectSet
             gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
             const resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
             d.ApplyShadowState();
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+            gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, itemCount);
             this._decl.ResetInstanceDivisors(d, resetData);
         }
 

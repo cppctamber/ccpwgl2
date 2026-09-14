@@ -71,7 +71,7 @@ export class EveSOFData extends meta.Model
      * Alpha is preserved; rebuild existing objects after changing this value.
      */
     @meta.float
-    globalVideoBrightnessModifier = 5;
+    globalVideoBrightnessModifier = 2;
 
     /**
      * The material used when a named one is not in the data.
