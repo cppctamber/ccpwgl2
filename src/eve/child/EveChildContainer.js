@@ -6,6 +6,7 @@ import { PlayCurveSetOn, StopCurveSetOn } from "../../curve/curveSetOwner";
 import { mat4, quat, vec3, sph3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
+import { device } from "global/tw2";
 
 
 @meta.define("EveChildContainer", true)
@@ -49,9 +50,63 @@ export class EveChildContainer extends EveChild
     @meta.boolean
     display = true;
 
-    @meta.notImplemented
+    /**
+     * Carbon EveChildContainer::IsRendering (`EveChildContainer.cpp:338-366`): whether
+     * the children draw at the current shader model. ccpwgl has no authoring model.
+     * @returns {Boolean}
+     */
+    IsRendering()
+    {
+        const settings = EveChildContainer.ShaderModel[device.shaderModel] ?? EveChildContainer.ShaderModel.hi;
+        const { DisplayFilter } = EveChildContainer;
+        switch (this.displayFilter)
+        {
+            case DisplayFilter.SHADER_LOW: return settings === EveChildContainer.ShaderModel.lo;
+            case DisplayFilter.SHADER_LOWMID: return settings <= EveChildContainer.ShaderModel.hi;
+            case DisplayFilter.SHADER_MED: return settings === EveChildContainer.ShaderModel.hi;
+            case DisplayFilter.SHADER_HIGHMID: return settings >= EveChildContainer.ShaderModel.hi;
+            case DisplayFilter.SHADER_HIGH: return settings === EveChildContainer.ShaderModel.depth;
+            case DisplayFilter.SHADER_ALL: return true;
+            case DisplayFilter.ONLY_REFLECTIONS: return false;
+        }
+        return false;
+    }
+
+    /**
+     * Carbon EveChildContainer::IsUpdating (`EveChildContainer.cpp:368-371`).
+     * @returns {Boolean}
+     */
+    IsUpdating()
+    {
+        return (this.display || !this.updateOnDisplay) && (this.IsRendering() || this.displayFilter === EveChildContainer.DisplayFilter.ONLY_REFLECTIONS);
+    }
+
+    /**
+     * Carbon `DisplayQualityModifier` (`EveSOFData.h:2017-2026`).
+     * @type {Object<String, Number>}
+     */
+    static DisplayFilter = {
+        SHADER_LOW: 0,
+        SHADER_LOWMID: 1,
+        SHADER_MED: 2,
+        SHADER_HIGHMID: 3,
+        SHADER_HIGH: 4,
+        SHADER_ALL: 5,
+        ONLY_REFLECTIONS: 6
+    };
+
+    /**
+     * Carbon `TR2SHADERMODEL` ordering by ccpwgl device shader model.
+     * @type {Object<String, Number>}
+     */
+    static ShaderModel = { lo: 0, hi: 1, depth: 2 };
+
+    /** Carbon `m_updateOnDisplay`, default true (`EveChildContainer.cpp:34`). */
+    updateOnDisplay = true;
+
+    /** Carbon `DisplayQualityModifier`, default SHADER_ALL (`EveChildContainer.cpp:31`). */
     @meta.int32
-    displayFilter = -1;
+    displayFilter = 5;
 
     @meta.list()
     fxAttributes = [];
@@ -878,7 +933,8 @@ export class EveChildContainer extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display) return false;
+        // ccpwgl has no reflection pass, so ONLY_REFLECTIONS containers never draw.
+        if (!this.display || !this.IsRendering()) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const c = accumulator.length;

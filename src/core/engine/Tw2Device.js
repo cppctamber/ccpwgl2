@@ -1442,6 +1442,16 @@ export class Tw2Device extends Tw2EventEmitter
         if (!effect || !effect.IsGood()) return false;
 
         const gl = this.gl;
+
+        // A fullscreen quad must never inherit a batch pass's cull or colour-write
+        // state (Carbon pass states are not restored): under `carbonRenderStates`
+        // "all", haze's CULL_CCW culled the canvas blit and the frame went black.
+        // Pass-declared states still apply afterwards in ApplyPass; blend, depth and
+        // scissor stay with the caller.
+        gl.disable(gl.CULL_FACE);
+        gl.colorMask(true, true, true, true);
+        this.InvalidateStandardStates();
+
         gl.bindBuffer(gl.ARRAY_BUFFER, this.clipYFlip ? this._quadBufferD3D : this._quadBuffer);
         for (let pass = 0; pass < effect.GetPassCount(technique); ++pass)
         {

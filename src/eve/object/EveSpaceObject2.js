@@ -2281,7 +2281,10 @@ export class EveSpaceObject2 extends EveObject
         delete out.jointMatrices;
 
         const
-            boosterGain = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
+            // Carbon's base shipData.x is 1 (EveSpaceObject2.cpp:197); only EveShip2
+            // writes booster glow intensity there (EveShip2.cpp:285). Non-ship objects
+            // have no boosterGain, which made this NaN and every haze set NaN.
+            boosterGain = this.boosterGain === undefined ? 1 : Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
             activationStrength = Math.max(Math.min(this.activationStrength, 1), 0),
             dirtLevel = Math.max(EveSpaceObject2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0),
             modelScale = this.modelScale === 0 ? 1 : this.modelScale,

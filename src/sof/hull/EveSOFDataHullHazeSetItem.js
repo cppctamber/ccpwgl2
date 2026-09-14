@@ -15,11 +15,13 @@ export class EveSOFDataHullHazeSetItem extends meta.Model
     @meta.uint
     colorType = 0;
 
+    // Carbon defaults (EveSOFData.cpp:672-685). SOF data omits default values,
+    // so a 0 here reached the shader as a flat, falloff-less haze.
     @meta.float
-    hazeBrightness = 0;
+    hazeBrightness = 1;
 
     @meta.float
-    hazeFalloff = 0;
+    hazeFalloff = 6;
 
     /**
      * The lights each item of this set emits. Typed so the reader hydrates real
@@ -36,15 +38,15 @@ export class EveSOFDataHullHazeSetItem extends meta.Model
     rotation = quat.create();
 
     @meta.float
-    saturation = 0;
+    saturation = 1;
 
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.float
-    sourceBrightness = 0;
+    sourceBrightness = 2;
 
     @meta.float
-    sourceSize = 0;
+    sourceSize = 0.2;
 
 }
