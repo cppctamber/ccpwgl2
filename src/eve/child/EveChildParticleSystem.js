@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { mat4, quat, sph3, vec3 } from "math";
 import { Tw2PerObjectData } from "core";
+import { GLESPerObjectDataEveSpaceObject } from "core/data/Tr2PerObjectData";
 import { Tr2Lod } from "constant/ccpwgl";
 import { EveChild } from "./EveChild";
 import { EveChildUpdateParams } from "../EveChildUpdateParams";
@@ -76,6 +77,7 @@ export class EveChildParticleSystem extends EveChild
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
+    _spaceObjectData = null;
     _lodSphere = sph3.create();
     _isVisible = true;
     _hasUpdated = false;
@@ -308,13 +310,41 @@ export class EveChildParticleSystem extends EveChild
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} [perObjectData] - the owner's values, inherited into cb3
      * @returns {Boolean} true if batches accumulated
      */
-    GetBatches(mode, accumulator)
+    GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.display || !this._isVisible || !this.mesh) return false;
+
         mat4.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
         mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+
+        // The ffe block above feeds cb5 and serves the legacy bind path only: the
+        // Carbon path never reads it (`Tw2Effect` gates that upload behind
+        // `!rp.isCarbon`). A Carbon particle shader takes its world transform from
+        // cb3 / PerObjectVS instead, which `Tw2CarbonData.PackPerObjectVS` fills from
+        // `pod.vs` - and a particle system supplied no `vs` block at all, so cb3
+        // arrived as zeros. Measured on angbc1_t1 crisis_angel, dx11, 2026-09-15:
+        // `cb3[0..3]` all zero, every particle projected to w = 0 and clipped away,
+        // while cb1 (view and projection) was correct and the instance data healthy.
+        //
+        // Same shape as `EveChildLineSet.GetBatches`: inherit the parent's values so
+        // ship data, clip planes and the rest carry through, then override only this
+        // child's own transforms.
+        const parent = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (parent)
+        {
+            if (!this._spaceObjectData) this._spaceObjectData = new GLESPerObjectDataEveSpaceObject();
+            const bag = GLESPerObjectDataEveSpaceObject.Unpack(parent);
+            bag.worldTransform = this._worldTransform;
+            bag.worldTransformLast = this._worldTransformLast;
+            bag.inverseWorldTransformTranspose = null;
+            GLESPerObjectDataEveSpaceObject.Pack(bag, this._spaceObjectData);
+            this._spaceObjectData.ffe = this._perObjectData.ffe;
+            return this.mesh.GetBatches(mode, accumulator, this._spaceObjectData);
+        }
+
         return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
 
