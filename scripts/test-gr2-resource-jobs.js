@@ -13,7 +13,8 @@ const gr2WorkerPool = { Decode() { let resolve, reject; const promise = new Prom
 class Base { OnRequested() { scheduler.Cancel(this); return true; } OnError(error) { scheduler.Cancel(this); this.error = error; } OnPrepared() { prepared++; } OnUnloaded() {} }
 const Reader = { extension: "gr2", *BuildGeometryResSteps() { builds++; for (let i = 0; i < 3; i++) { now += 8; yield; } } };
 const vec3 = { fromValues: (...x) => x, create: () => [ 0, 0, 0 ], set: (out, ...x) => out.splice(0, 3, ...x) };
-const dependencies = { resMan, gr2WorkerPool, prepareGr2() {}, Tw2Resource: Base, Tw2Error: Error, Gr2Reader: Reader, GR2JsonReader: { extension: "gr2_json" }, GsfReader: { extension: "gsf" }, OBJReader: { extension: "obj" }, GltfReader: { extension: "gltf" }, vec3, box3: {}, sph3: {}, device: { gl: {} } };
+let fallbackDecode = () => { throw Error("Unexpected fallback decode"); };
+const dependencies = { resMan, gr2WorkerPool, prepareGr2(...args) { return fallbackDecode(...args); }, Tw2Resource: Base, Tw2Error: Error, Gr2Reader: Reader, GR2JsonReader: { extension: "gr2_json" }, GsfReader: { extension: "gsf" }, OBJReader: { extension: "obj" }, GltfReader: { extension: "gltf" }, vec3, box3: {}, sph3: {}, device: { gl: {} } };
 const Resource = new Function(...Object.keys(dependencies), source + ";return Tw2GeometryRes;")(...Object.values(dependencies));
 const flush = () => new Promise(resolve => setImmediate(resolve));
 async function main()
@@ -30,6 +31,30 @@ async function main()
     assert.equal(prepared, 1);
     res.Prepare(new ArrayBuffer(4)); pump(); jobs[3].reject(Error("decode failed")); await flush();
     assert.match(res.error.message, /decode failed/); assert.equal(scheduler.size, 0);
+    resMan.useGeometryWorkers = false;
+    const input = new Uint8Array([1, 2, 3, 4]).buffer;
+    let decodedInput, decodedOptions;
+    fallbackDecode = (data, options) => { decodedInput = data; decodedOptions = options; return {}; };
+    const local = new Resource(); local._extension = "gr2"; local.RebuildBounds = () => {};
+    local.Prepare(input, { firstMeshOnly: false, unpackTangents: true }); pump();
+    assert.equal(decodedInput, undefined, "Fallback decoding remains deferred");
+    await flush();
+    assert.equal(decodedInput, input, "Non-worker decoder must receive the original buffer");
+    assert.deepEqual(decodedOptions, { firstMeshOnly: false, unpackTangents: true });
+    while (scheduler.size) pump();
+    assert.equal(prepared, 2, "Non-worker geometry reaches prepared");
+    assert.equal(jobs.length, 4, "Non-worker loading must not submit a worker job");
+    fallbackDecode = () => { throw Error("fallback decode failed"); };
+    local.Prepare(input); pump(); await flush();
+    assert.match(local.error.message, /fallback decode failed/);
+    assert.equal(scheduler.size, 0);
+    fallbackDecode = () => ({});
+    const beforeBuilds = builds;
+    local.Prepare(input); pump(); local.OnRequested(); await flush(); pump();
+    assert.equal(builds, beforeBuilds, "Cancelled fallback must not build stale geometry");
+    assert.equal(prepared, 2);
+    assert.equal(scheduler.size, 0);
+    console.log("GR2 non-worker: input preservation, options, completion, errors and cancellation passed");
     console.log("GR2 processing: cancellation, stale completion, budget, readiness and pending accounting passed");
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

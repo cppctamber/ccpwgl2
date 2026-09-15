@@ -60993,7 +60993,7 @@
 	      firstMeshOnly: (options === null || options === void 0 ? void 0 : options.firstMeshOnly) !== false,
 	      unpackTangents: !!(options !== null && options !== void 0 && options.unpackTangents)
 	    };
-	    var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
+	    var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
 	    // Cancellation of the yielded promise is owned by the scheduler.
 	    data = null;
 	    var json = yield decoded;
@@ -289368,9 +289368,13 @@
 	}), _class2$2G)) || _class$32);
 
 	var _dec$31, _dec2$2G, _dec3$2v, _dec4$29, _dec5$1S, _dec6$1B, _dec7$1i, _dec8$1b, _dec9$Z, _dec0$T, _dec1$L, _dec10$D, _dec11$y, _class$31, _class2$2F, _descriptor$2E, _descriptor2$2n, _descriptor3$20, _descriptor4$1K, _descriptor5$1u, _descriptor6$1b, _descriptor7$$, _descriptor8$R, _descriptor9$L, _descriptor0$H, _descriptor1$w, _descriptor10$s;
-	var EveSOFDataHullAnimation = (_dec$31 = define("EveSOFDataHullAnimation", true), _dec2$2G = string, _dec3$2v = float, _dec4$29 = float, _dec5$1S = quaternion, _dec6$1B = float, _dec7$1i = vector3, _dec8$1b = uint, _dec9$Z = float, _dec0$T = float, _dec1$L = quaternion, _dec10$D = float, _dec11$y = vector3, _dec$31(_class$31 = (_class2$2F = class EveSOFDataHullAnimation extends Model$1 {
+	var EveSOFDataHullAnimation = (_dec$31 = define("EveSOFDataHullAnimation", true), _dec2$2G = string, _dec3$2v = float, _dec4$29 = float, _dec5$1S = quaternion, _dec6$1B = float, _dec7$1i = vector3, _dec8$1b = int32$1, _dec9$Z = float, _dec0$T = float, _dec1$L = quaternion, _dec10$D = float, _dec11$y = vector3, _dec$31(_class$31 = (_class2$2F = class EveSOFDataHullAnimation extends Model$1 {
 	  constructor() {
 	    super(...arguments);
+	    // Carbon defaults every time, rate and id to -1 (`EveSOFData.cpp:529-543`); each is a
+	    // sentinel `SetupChildrenAndAnimations` tests before it builds a curve
+	    // (`EveSOF.cpp:2063`, `:2086`, `:2119`), so a zero default builds curves the hull
+	    // never authored
 	    _initializerDefineProperty(this, "name", _descriptor$2E, this);
 	    _initializerDefineProperty(this, "endRate", _descriptor2$2n, this);
 	    _initializerDefineProperty(this, "endRotationTime", _descriptor3$20, this);
@@ -289396,14 +289400,14 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor3$20 = _applyDecoratedDescriptor(_class2$2F.prototype, "endRotationTime", [_dec4$29], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor4$1K = _applyDecoratedDescriptor(_class2$2F.prototype, "endRotationValue", [_dec5$1S], {
 	  configurable: true,
@@ -289417,7 +289421,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor6$1b = _applyDecoratedDescriptor(_class2$2F.prototype, "endTranslationValue", [_dec7$1i], {
 	  configurable: true,
@@ -289431,21 +289435,21 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor8$R = _applyDecoratedDescriptor(_class2$2F.prototype, "startRate", [_dec9$Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor9$L = _applyDecoratedDescriptor(_class2$2F.prototype, "startRotationTime", [_dec0$T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor0$H = _applyDecoratedDescriptor(_class2$2F.prototype, "startRotationValue", [_dec1$L], {
 	  configurable: true,
@@ -289459,7 +289463,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor10$s = _applyDecoratedDescriptor(_class2$2F.prototype, "startTranslationValue", [_dec11$y], {
 	  configurable: true,
@@ -289975,12 +289979,14 @@
 	}), _class2$2y)) || _class$2W);
 
 	var _dec$2V, _dec2$2y, _dec3$2n, _dec4$21, _dec5$1M, _dec6$1v, _dec7$1c, _dec8$15, _dec9$V, _dec0$P, _dec1$I, _class$2V, _class2$2x, _descriptor$2w, _descriptor2$2f, _descriptor3$1U, _descriptor4$1E, _descriptor5$1o, _descriptor6$15, _descriptor7$W, _descriptor8$N, _descriptor9$I, _descriptor0$E;
-	var EveSOFDataHullChild = (_dec$2V = define("EveSOFDataHullChild", true), _dec2$2y = string, _dec3$2n = int32$1, _dec4$21 = int32$1, _dec5$1M = uint, _dec6$1v = uint, _dec7$1c = path, _dec8$15 = quaternion, _dec9$V = vector3, _dec0$P = vector3, _dec1$I = string, _dec$2V(_class$2V = (_class2$2x = class EveSOFDataHullChild extends Model$1 {
+	var EveSOFDataHullChild = (_dec$2V = define("EveSOFDataHullChild", true), _dec2$2y = string, _dec3$2n = int32$1, _dec4$21 = int32$1, _dec5$1M = int32$1, _dec6$1v = uint, _dec7$1c = path, _dec8$15 = quaternion, _dec9$V = vector3, _dec0$P = vector3, _dec1$I = string, _dec$2V(_class$2V = (_class2$2x = class EveSOFDataHullChild extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2w, this);
 	    _initializerDefineProperty(this, "buildFilter", _descriptor2$2f, this);
 	    _initializerDefineProperty(this, "groupIndex", _descriptor3$1U, this);
+	    // Carbon `m_id( -1 )` (`EveSOFData.cpp:506`): -1 means the child binds to no hull
+	    // animation, and `SetupChildrenAndAnimations` tests `id != -1` before binding it
 	    _initializerDefineProperty(this, "id", _descriptor4$1E, this);
 	    _initializerDefineProperty(this, "lowestLodVisible", _descriptor5$1o, this);
 	    _initializerDefineProperty(this, "redFilePath", _descriptor6$15, this);
@@ -290015,7 +290021,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor5$1o = _applyDecoratedDescriptor(_class2$2x.prototype, "lowestLodVisible", [_dec6$1v], {
 	  configurable: true,

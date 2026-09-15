@@ -350,7 +350,7 @@ export class Tw2GeometryRes extends Tw2Resource
         };
         const decoded = resMan.useGeometryWorkers
             ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl)
-            : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
+            : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
         // Cancellation of the yielded promise is owned by the scheduler.
         data = null;
         const json = yield decoded;
