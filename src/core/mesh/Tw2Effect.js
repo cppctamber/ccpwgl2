@@ -564,10 +564,7 @@ export class Tw2Effect extends meta.Model
 
         try
         {
-            this._BindShader(res.GetShader(this.options), { controller: res }, () =>
-            {
-                this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
-            });
+            this._BindShader(res.GetShader(this.options), { controller: res });
             res.UnregisterNotification(this);
         }
         catch (err)
@@ -789,13 +786,22 @@ export class Tw2Effect extends meta.Model
         {
             if (this._shaderBindingToken !== token || this.shader !== shader || this.effectRes !== resource) return;
             this._pendingShaderBinding = false;
-            if (this.BindParameters(opt)) onBound?.();
+            if (this.BindParameters(opt))
+            {
+                if (!opt?.skipEvents)
+                {
+                    this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, resource);
+                    this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource);
+                }
+                onBound?.();
+            }
         };
         bind.onError = error =>
         {
             if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource)
             {
                 this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
+                this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource, error);
             }
         };
         if (this._pendingShaderBinding)
@@ -1770,6 +1776,12 @@ export class Tw2Effect extends meta.Model
      */
     static onListener(effect, eventName, listener, context)
     {
+        const { RES_PREPARED, RES_COMPLETED } = Tw2Resource.Event;
+        if ((eventName === RES_PREPARED || eventName === RES_COMPLETED)
+            && effect.effectRes && !effect.effectRes.HasErrored() && !effect.IsGood())
+        {
+            return false;
+        }
         if (eventName === "rebuilt" && effect.IsGood())
         {
             listener.call(context, effect, effect.effectRes);

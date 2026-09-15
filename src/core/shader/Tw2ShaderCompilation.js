@@ -29,10 +29,19 @@ export class Tw2ShaderCompilation extends Tw2Resource
         const { gl, extension } = this;
         if (extension)
         {
-            yield { poll: () =>
+            let index = 0;
+            yield { poll: (now, deadline) =>
             {
                 if (device.gl !== gl || gl.isContextLost()) throw new Error("Shader compilation context lost");
-                return this.programs.every(program => gl.getProgramParameter(program.program, extension.COMPLETION_STATUS_KHR));
+                if (!this.programs.length) return true;
+                do
+                {
+                    if (!gl.getProgramParameter(this.programs[index].program, extension.COMPLETION_STATUS_KHR)) return false;
+                    index++;
+                    if (index === this.programs.length) return true;
+                }
+                while (now() < deadline);
+                return false;
             } };
         }
         for (const program of this.programs)
@@ -45,7 +54,8 @@ export class Tw2ShaderCompilation extends Tw2Resource
         // Parameter binding is processing work too, not a promise microtask.
         while (this.callbacks.length)
         {
-            this.callbacks.shift()();
+            this.callbacks[0]();
+            this.callbacks.shift();
             yield;
         }
     }
@@ -70,15 +80,21 @@ export class Tw2ShaderCompilation extends Tw2Resource
         if (this.complete) return;
         this.error = error || this.error || new Error("Shader compilation cancelled");
         if (this.shader) this.shader._isReady = false;
-        if (error)
-        {
-            for (const callback of this.callbacks) callback.onError?.(error);
-        }
-        this.callbacks.length = 0;
+        const callbacks = this.callbacks.splice(0);
         for (const program of this.programs) this.gl.deleteProgram(program.program);
         for (const shader of this.stages) this.gl.deleteShader(shader);
         this.programs.length = 0;
         this.stages.clear();
+        let notificationError;
+        if (error)
+        {
+            for (const callback of callbacks)
+            {
+                try { callback.onError?.(error); }
+                catch (err) { notificationError = notificationError || err; }
+            }
+        }
+        if (notificationError) throw notificationError;
     }
 
     Queue(shader)

@@ -41455,10 +41455,16 @@
 	      var _job$waiting, _job$waiting$cancel;
 	      (_job$waiting = job.waiting) === null || _job$waiting === void 0 || (_job$waiting$cancel = _job$waiting.cancel) === null || _job$waiting$cancel === void 0 || _job$waiting$cancel.call(_job$waiting);
 	    } finally {
-	      var _job$iterator, _job$iterator$return, _resource$OnProcessin2;
-	      (_job$iterator = job.iterator) === null || _job$iterator === void 0 || (_job$iterator$return = _job$iterator.return) === null || _job$iterator$return === void 0 || _job$iterator$return.call(_job$iterator);
-	      job.data = job.options = job.value = job.iterator = job.waiting = null;
-	      (_resource$OnProcessin2 = resource.OnProcessingCancelled) === null || _resource$OnProcessin2 === void 0 || _resource$OnProcessin2.call(resource, error);
+	      try {
+	        var _job$iterator, _job$iterator$return;
+	        if (!job.running) (_job$iterator = job.iterator) === null || _job$iterator === void 0 || (_job$iterator$return = _job$iterator.return) === null || _job$iterator$return === void 0 || _job$iterator$return.call(_job$iterator);
+	      } finally {
+	        var _resource$OnProcessin2;
+	        job.cancelled = true;
+	        if (!job.running) job.iterator = null;
+	        job.data = job.options = job.value = job.waiting = null;
+	        (_resource$OnProcessin2 = resource.OnProcessingCancelled) === null || _resource$OnProcessin2 === void 0 || _resource$OnProcessin2.call(resource, error);
+	      }
 	    }
 	  }
 	  Clear() {
@@ -41472,10 +41478,19 @@
 	    var start = now();
 	    // Poll only jobs parked before this tick. A false result never re-enters
 	    // the runnable queue and therefore cannot spin within the same frame.
-	    for (var job of this.polling) {
+	    var pollBudget = budgetMs * (this.head < this.ready.length ? 0.5 : 1);
+	    var polls = 0;
+	    for (var remaining = this.polling.size; remaining > 0 && this.polling.size && (!polls || now() - start < pollBudget); remaining--) {
+	      var job = this.polling.values().next().value;
+	      this.polling.delete(job);
+	      polls++;
 	      try {
-	        if (!job.waiting.poll()) continue;
-	        this.polling.delete(job);
+	        var completed = job.waiting.poll(now, start + pollBudget);
+	        if (this.jobs.get(job.resource) !== job) continue;
+	        if (!completed) {
+	          this.polling.add(job);
+	          continue;
+	        }
 	        job.waiting = null;
 	        this.ready.push(job);
 	      } catch (error) {
@@ -41494,7 +41509,21 @@
 	            job.iterator = resource.Process(job.data, job.options);
 	            job.data = job.options = null;
 	          }
-	          var result = job.iterator.next(job.value);
+	          var result;
+	          job.running = true;
+	          try {
+	            result = job.iterator.next(job.value);
+	          } finally {
+	            job.running = false;
+	            if (job.cancelled) {
+	              try {
+	                var _job$iterator2, _job$iterator2$return;
+	                (_job$iterator2 = job.iterator) === null || _job$iterator2 === void 0 || (_job$iterator2$return = _job$iterator2.return) === null || _job$iterator2$return === void 0 || _job$iterator2$return.call(_job$iterator2);
+	              } finally {
+	                job.iterator = null;
+	              }
+	            }
+	          }
 	          job.value = undefined;
 	          if (_this.jobs.get(resource) !== job) return 0; // continue
 	          if (result.done) {
@@ -41523,7 +41552,7 @@
 	        }
 	      },
 	      _ret;
-	    while (this.head < this.ready.length && (!steps || now() - start < budgetMs)) {
+	    while (this.head < this.ready.length && (!steps && (!polls || budgetMs <= 0) || now() - start < budgetMs)) {
 	      _ret = _loop();
 	      if (_ret === 0) continue;
 	    }
@@ -41534,8 +41563,11 @@
 	  }
 	  Fail(job, error) {
 	    if (this.jobs.get(job.resource) !== job) return;
-	    this.Cancel(job.resource, error);
-	    job.resource.OnError(error);
+	    try {
+	      this.Cancel(job.resource, error);
+	    } finally {
+	      job.resource.OnError(error);
+	    }
 	  }
 	}
 
@@ -107978,10 +108010,17 @@
 	    var gl = this.gl,
 	      extension = this.extension;
 	    if (extension) {
+	      var index = 0;
 	      yield {
-	        poll: () => {
+	        poll: (now, deadline) => {
 	          if (device.gl !== gl || gl.isContextLost()) throw new Error("Shader compilation context lost");
-	          return this.programs.every(program => gl.getProgramParameter(program.program, extension.COMPLETION_STATUS_KHR));
+	          if (!this.programs.length) return true;
+	          do {
+	            if (!gl.getProgramParameter(this.programs[index].program, extension.COMPLETION_STATUS_KHR)) return false;
+	            index++;
+	            if (index === this.programs.length) return true;
+	          } while (now() < deadline);
+	          return false;
 	        }
 	      };
 	    }
@@ -107993,7 +108032,8 @@
 	    this.shader._isReady = true;
 	    // Parameter binding is processing work too, not a promise microtask.
 	    while (this.callbacks.length) {
-	      this.callbacks.shift()();
+	      this.callbacks[0]();
+	      this.callbacks.shift();
 	      yield;
 	    }
 	  }
@@ -108014,17 +108054,23 @@
 	    if (this.complete) return;
 	    this.error = error || this.error || new Error("Shader compilation cancelled");
 	    if (this.shader) this.shader._isReady = false;
-	    if (error) {
-	      for (var callback of this.callbacks) {
-	        var _callback$onError;
-	        (_callback$onError = callback.onError) === null || _callback$onError === void 0 || _callback$onError.call(callback, error);
-	      }
-	    }
-	    this.callbacks.length = 0;
+	    var callbacks = this.callbacks.splice(0);
 	    for (var program of this.programs) this.gl.deleteProgram(program.program);
 	    for (var shader of this.stages) this.gl.deleteShader(shader);
 	    this.programs.length = 0;
 	    this.stages.clear();
+	    var notificationError;
+	    if (error) {
+	      for (var callback of callbacks) {
+	        try {
+	          var _callback$onError;
+	          (_callback$onError = callback.onError) === null || _callback$onError === void 0 || _callback$onError.call(callback, error);
+	        } catch (err) {
+	          notificationError = notificationError || err;
+	        }
+	      }
+	    }
+	    if (notificationError) throw notificationError;
 	  }
 	  Queue(shader) {
 	    this.shader = shader;
@@ -133774,8 +133820,6 @@
 	    try {
 	      this._BindShader(res.GetShader(this.options), {
 	        controller: res
-	      }, () => {
-	        this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
 	      });
 	      res.UnregisterNotification(this);
 	    } catch (err) {
@@ -133970,11 +134014,18 @@
 	    var bind = () => {
 	      if (this._shaderBindingToken !== token || this.shader !== shader || this.effectRes !== resource) return;
 	      this._pendingShaderBinding = false;
-	      if (this.BindParameters(opt)) onBound === null || onBound === void 0 || onBound();
+	      if (this.BindParameters(opt)) {
+	        if (!(opt !== null && opt !== void 0 && opt.skipEvents)) {
+	          this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, resource);
+	          this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource);
+	        }
+	        onBound === null || onBound === void 0 || onBound();
+	      }
 	    };
 	    bind.onError = error => {
 	      if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource) {
 	        this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
+	        this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource, error);
 	      }
 	    };
 	    if (this._pendingShaderBinding) {
@@ -134805,6 +134856,12 @@
 	   * @return {boolean} true if the listener was fired
 	   */
 	  static onListener(effect, eventName, listener, context) {
+	    var _Tw2Resource$Event = Tw2Resource.Event,
+	      RES_PREPARED = _Tw2Resource$Event.RES_PREPARED,
+	      RES_COMPLETED = _Tw2Resource$Event.RES_COMPLETED;
+	    if ((eventName === RES_PREPARED || eventName === RES_COMPLETED) && effect.effectRes && !effect.effectRes.HasErrored() && !effect.IsGood()) {
+	      return false;
+	    }
 	    if (eventName === "rebuilt" && effect.IsGood()) {
 	      listener.call(context, effect, effect.effectRes);
 	      return true;
@@ -237042,6 +237099,7 @@
 	    this._worldTransform = mat4$2.create();
 	    this._worldTransformLast = mat4$2.create();
 	    this._perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
+	    this._spaceObjectData = null;
 	    this._lodSphere = sph3$2.create();
 	    this._isVisible = true;
 	    this._hasUpdated = false;
@@ -237219,12 +237277,38 @@
 	   * Gets render batches
 	   * @param {number} mode
 	   * @param {Tw2BatchAccumulator} accumulator
+	   * @param {Tw2PerObjectData} [perObjectData] - the owner's values, inherited into cb3
 	   * @returns {Boolean} true if batches accumulated
 	   */
-	  GetBatches(mode, accumulator) {
+	  GetBatches(mode, accumulator, perObjectData) {
+	    var _accumulator$GetCurre;
 	    if (!this.display || !this._isVisible || !this.mesh) return false;
 	    mat4$2.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
 	    mat4$2.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+
+	    // The ffe block above feeds cb5 and serves the legacy bind path only: the
+	    // Carbon path never reads it (`Tw2Effect` gates that upload behind
+	    // `!rp.isCarbon`). A Carbon particle shader takes its world transform from
+	    // cb3 / PerObjectVS instead, which `Tw2CarbonData.PackPerObjectVS` fills from
+	    // `pod.vs` - and a particle system supplied no `vs` block at all, so cb3
+	    // arrived as zeros. Measured on angbc1_t1 crisis_angel, dx11, 2026-09-15:
+	    // `cb3[0..3]` all zero, every particle projected to w = 0 and clipped away,
+	    // while cb1 (view and projection) was correct and the instance data healthy.
+	    //
+	    // Same shape as `EveChildLineSet.GetBatches`: inherit the parent's values so
+	    // ship data, clip planes and the rest carry through, then override only this
+	    // child's own transforms.
+	    var parent = perObjectData || ((_accumulator$GetCurre = accumulator.GetCurrentPerObjectData) === null || _accumulator$GetCurre === void 0 ? void 0 : _accumulator$GetCurre.call(accumulator));
+	    if (parent) {
+	      if (!this._spaceObjectData) this._spaceObjectData = new GLESPerObjectDataEveSpaceObject();
+	      var bag = GLESPerObjectDataEveSpaceObject.Unpack(parent);
+	      bag.worldTransform = this._worldTransform;
+	      bag.worldTransformLast = this._worldTransformLast;
+	      bag.inverseWorldTransformTranspose = null;
+	      GLESPerObjectDataEveSpaceObject.Pack(bag, this._spaceObjectData);
+	      this._spaceObjectData.ffe = this._perObjectData.ffe;
+	      return this.mesh.GetBatches(mode, accumulator, this._spaceObjectData);
+	    }
 	    return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
 	  }
 	}, _EveChildParticleSystem.global = {

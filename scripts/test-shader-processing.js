@@ -42,9 +42,9 @@ scheduler.Pump(()=>now,10);assert.equal(fallback.HasCompleted(),false);scheduler
 console.log('Shader processing: deferred compile/link checks, completion polling, reflection, binding, optional shadow fallback, context loss and non-KHR fallback passed');
 const effectSource=read('core/mesh/Tw2Effect.js');
 const bindStart=effectSource.indexOf('    _BindShader('),bindEnd=effectSource.indexOf('    BindParameters(',bindStart);
-const bindShader=new Function('return ({'+effectSource.slice(bindStart,bindEnd)+'})._BindShader;')();
+const bindShader=new Function('Tw2Resource','return ({'+effectSource.slice(bindStart,bindEnd)+'})._BindShader;')({Event:{RES_PREPARED:'prepared',RES_COMPLETED:'completed'}});
 let bound=0,notified=0;
-const effect={effectRes:{},UnBindParameters(){},BindParameters(){assert.equal(this._pendingShaderBinding,false);bound++;return true;}};
+const effect={effectRes:{},EmitEvent(){},UnBindParameters(){},BindParameters(){assert.equal(this._pendingShaderBinding,false);bound++;return true;}};
 const pendingShader={_isReady:false,_compilation:{callbacks:[]}};
 bindShader.call(effect,pendingShader,{},()=>notified++);
 assert.equal(bound,0);assert.equal(effect._pendingShaderBinding,true);
@@ -54,3 +54,69 @@ pendingShader._isReady=false;bindShader.call(effect,pendingShader,{},()=>notifie
 bindShader.call(effect,{_isReady:true},{},()=>notified++);
 pendingShader._compilation.callbacks.shift()();assert.equal(bound,2);assert.equal(notified,2,'Stale completion must not bind or emit prepared');
 console.log('Effect binding: delayed readiness and stale permutation completion passed');
+
+// Review regressions: cancellation from inside a binding callback must clean up.
+const cancelledBatch = new Compilation(parent), cancelledShader = {};
+const beforeDeletes = deleted;
+cancelledBatch.programs.push({ program: {}, FinishCompilation() {} });
+cancelledBatch.Queue(cancelledShader);
+cancelledBatch.callbacks.push(() => scheduler.Cancel(cancelledBatch));
+scheduler.Pump(() => now, 10);
+assert.equal(scheduler.size, 0);
+assert.equal(cancelledBatch.HasCompleted(), true);
+assert.equal(cancelledShader._isReady, false);
+assert.equal(deleted, beforeDeletes + 1);
+assert.equal(cancelledBatch.callbacks.length, 0);
+
+const events = [];
+const eventResource = { Event: { RES_ERROR: 'error', RES_COMPLETED: 'completed', RES_PREPARED: 'prepared' } };
+const actualBind = new Function('Tw2Resource', 'return ({'+effectSource.slice(bindStart,bindEnd)+'})._BindShader;')(eventResource);
+const failedBatch = new Compilation(parent), failedShader = {};
+failedBatch.Queue(failedShader);
+const failedEffect = { effectRes: parent, UnBindParameters() {}, BindParameters() { throw Error('binding regression'); }, EmitEvent(name) { events.push(name); } };
+actualBind.call(failedEffect, failedShader, {});
+scheduler.Pump(() => now, 10);
+assert.match(parent.error.message, /binding regression/);
+assert.deepEqual(events, ['error', 'completed']);
+assert.equal(failedBatch.HasCompleted(), true);
+
+const listenerStart = effectSource.indexOf('    static onListener(');
+const listenerEnd = effectSource.indexOf('    /**', listenerStart);
+let replayed = 0;
+eventResource.parentOnListener = (effect, target, name, listener) => { replayed++; listener(); return true; };
+const onListener = new Function('Tw2Resource', 'return ({'+effectSource.slice(listenerStart,listenerEnd).replace('static onListener','onListener')+'}).onListener;')(eventResource);
+let good = false, calls = 0;
+const waitingEffect = { effectRes: { HasErrored: () => false }, IsGood: () => good };
+for (const event of ['prepared', 'completed']) assert.equal(onListener(waitingEffect,event,()=>calls++),false);
+assert.equal(replayed, 0); assert.equal(calls, 0);
+good = true;
+for (const event of ['prepared', 'completed']) assert.equal(onListener(waitingEffect,event,()=>calls++),true);
+assert.equal(calls, 2);
+console.log('Shader review regressions: reentrant cancellation, binding errors and readiness replay passed');
+
+// Rebinding also wakes readiness listeners; skipEvents still suppresses them.
+const reboundEvents=[];
+const rebound={effectRes:parent,EmitEvent(name){reboundEvents.push(name);},UnBindParameters(){},BindParameters(){return true;}};
+actualBind.call(rebound,{_isReady:true},{},()=>reboundEvents.push('rebuilt'));
+assert.deepEqual(reboundEvents,['prepared','completed','rebuilt']);
+reboundEvents.length=0;
+actualBind.call(rebound,{_isReady:true},{skipEvents:true});
+assert.deepEqual(reboundEvents,[]);
+
+// A large permutation must also yield between completion-status queries.
+ext = { COMPLETION_STATUS_KHR: 4 };
+const originalQuery = gl.getProgramParameter;
+const seenPrograms = [];
+gl.getProgramParameter = (program, key) => { if (key === 4) { seenPrograms.push(program); now++; return true; } return originalQuery(program,key); };
+const largeBatch = new Compilation(parent);
+for (let i=0;i<25;i++) largeBatch.programs.push({program:{i},FinishCompilation(){}});
+largeBatch.Queue({});
+scheduler.Pump(()=>now,10);
+let started=now;
+scheduler.Pump(()=>now,10);
+assert.equal(now-started,10); assert.equal(seenPrograms.length,10);
+scheduler.Pump(()=>now,10); scheduler.Pump(()=>now,10);
+assert.equal(new Set(seenPrograms).size,25); assert.equal(seenPrograms.length,25);
+assert.equal(largeBatch.HasCompleted(),true);
+gl.getProgramParameter=originalQuery;
+console.log('Shader completion polling: per-program budget and cursor resume passed');

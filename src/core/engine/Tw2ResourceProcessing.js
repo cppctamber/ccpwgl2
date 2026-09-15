@@ -27,9 +27,17 @@ export class Tw2ResourceProcessing
         try { job.waiting?.cancel?.(); }
         finally
         {
-            job.iterator?.return?.();
-            job.data = job.options = job.value = job.iterator = job.waiting = null;
-            resource.OnProcessingCancelled?.(error);
+            try
+            {
+                if (!job.running) job.iterator?.return?.();
+            }
+            finally
+            {
+                job.cancelled = true;
+                if (!job.running) job.iterator = null;
+                job.data = job.options = job.value = job.waiting = null;
+                resource.OnProcessingCancelled?.(error);
+            }
         }
     }
 
@@ -45,19 +53,29 @@ export class Tw2ResourceProcessing
         const start = now();
         // Poll only jobs parked before this tick. A false result never re-enters
         // the runnable queue and therefore cannot spin within the same frame.
-        for (const job of this.polling)
+        const pollBudget = budgetMs * (this.head < this.ready.length ? 0.5 : 1);
+        let polls = 0;
+        for (let remaining = this.polling.size; remaining > 0 && this.polling.size && (!polls || now() - start < pollBudget); remaining--)
         {
+            const job = this.polling.values().next().value;
+            this.polling.delete(job);
+            polls++;
             try
             {
-                if (!job.waiting.poll()) continue;
-                this.polling.delete(job);
+                const completed = job.waiting.poll(now, start + pollBudget);
+                if (this.jobs.get(job.resource) !== job) continue;
+                if (!completed)
+                {
+                    this.polling.add(job);
+                    continue;
+                }
                 job.waiting = null;
                 this.ready.push(job);
             }
             catch (error) { this.Fail(job, error); }
         }
         let steps = 0;
-        while (this.head < this.ready.length && (!steps || now() - start < budgetMs))
+        while (this.head < this.ready.length && ((!steps && (!polls || budgetMs <= 0)) || now() - start < budgetMs))
         {
             const job = this.ready[this.head];
             this.ready[this.head++] = null;
@@ -71,7 +89,18 @@ export class Tw2ResourceProcessing
                     job.iterator = resource.Process(job.data, job.options);
                     job.data = job.options = null;
                 }
-                const result = job.iterator.next(job.value);
+                let result;
+                job.running = true;
+                try { result = job.iterator.next(job.value); }
+                finally
+                {
+                    job.running = false;
+                    if (job.cancelled)
+                    {
+                        try { job.iterator?.return?.(); }
+                        finally { job.iterator = null; }
+                    }
+                }
                 job.value = undefined;
                 if (this.jobs.get(resource) !== job) continue;
                 if (result.done)
@@ -113,7 +142,7 @@ export class Tw2ResourceProcessing
     Fail(job, error)
     {
         if (this.jobs.get(job.resource) !== job) return;
-        this.Cancel(job.resource, error);
-        job.resource.OnError(error);
+        try { this.Cancel(job.resource, error); }
+        finally { job.resource.OnError(error); }
     }
 }

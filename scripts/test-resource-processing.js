@@ -74,3 +74,36 @@ async function main()
     console.log("Processing: opt-in readiness, keep-alive, routing, pending accounting, waiting, fairness, cancellation and failure passed");
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });
+
+// Completion polling must share the budget and rotate fairly across frames.
+const pollingScheduler = new Scheduler();
+let pollTime = 0;
+const polled = [];
+for (let i = 0; i < 100; i++) pollingScheduler.Queue({ *Process() { yield { poll() { polled.push(i); pollTime++; return false; } }; } });
+pollingScheduler.Pump(() => pollTime, 10);
+for (let frame = 0; frame < 10; frame++) {
+    const start = pollTime;
+    pollingScheduler.Pump(() => pollTime, 10);
+    assert.equal(pollTime - start, 10);
+}
+assert.equal(new Set(polled).size, 100);
+let readySteps = 0;
+pollingScheduler.Queue({ *Process() { readySteps++; yield; }, OnPrepared() {} });
+pollingScheduler.Pump(() => pollTime, 10);
+assert.ok(readySteps > 0, 'Waiting polls must leave room for ready jobs');
+pollingScheduler.Clear();
+const reentrant = new Scheduler();
+let closed = 0, cleaned = 0;
+const resource = { *Process() { try { reentrant.Cancel(this); yield; } finally { closed++; } }, OnProcessingCancelled() { cleaned++; } };
+reentrant.Queue(resource); reentrant.Pump(() => 0, 10);
+assert.equal(reentrant.size, 0); assert.equal(closed, 1); assert.equal(cleaned, 1);
+console.log('Scheduler review regressions: bounded fair polling and reentrant cleanup passed');
+
+// A failed permutation can cancel every sibling in the polling set.
+const failedPolls = new Scheduler();
+let reported = 0;
+failedPolls.Queue({ *Process() { yield { poll() { throw Error('link failure'); } }; }, OnError() { reported++; failedPolls.Clear(); } });
+failedPolls.Queue({ *Process() { yield { poll() { return false; } }; } });
+failedPolls.Pump(() => 0, 10);
+assert.doesNotThrow(() => failedPolls.Pump(() => 0, 10));
+assert.equal(reported, 1); assert.equal(failedPolls.size, 0);
