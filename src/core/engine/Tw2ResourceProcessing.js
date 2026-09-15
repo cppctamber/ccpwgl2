@@ -143,6 +143,13 @@ export class Tw2ResourceProcessing
     {
         if (this.jobs.get(job.resource) !== job) return;
         try { this.Cancel(job.resource, error); }
+        catch (notificationError)
+        {
+            // A listener that throws while being told of a failure must not take the
+            // rest of the queue down with it: Fail runs from Pump's catch, so an escape
+            // here skips every remaining job this frame.
+            console.error("Resource processing cancellation listener failed:", notificationError);
+        }
         finally { job.resource.OnError(error); }
     }
 }

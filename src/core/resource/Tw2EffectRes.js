@@ -436,7 +436,7 @@ export class Tw2EffectRes extends Tw2Resource
             }
             if (compilation.programs.length)
             {
-                if (!shader || this.HasErrored())
+                if (this.HasErrored())
                 {
                     compilation.OnProcessingCancelled();
                     return null;

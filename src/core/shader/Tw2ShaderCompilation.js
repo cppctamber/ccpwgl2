@@ -65,6 +65,9 @@ export class Tw2ShaderCompilation extends Tw2Resource
         this.complete = true;
         this.programs.length = 0;
         this.stages.clear();
+        // Nothing waits on a finished compilation, and `Tw2Effect.GetResources`
+        // would otherwise keep handing it out as a pathless resource forever.
+        if (this.shader && this.shader._compilation === this) this.shader._compilation = null;
         super.OnPrepared({ hide: true });
     }
 
@@ -81,18 +84,26 @@ export class Tw2ShaderCompilation extends Tw2Resource
         this.error = error || this.error || new Error("Shader compilation cancelled");
         if (this.shader) this.shader._isReady = false;
         const callbacks = this.callbacks.splice(0);
-        for (const program of this.programs) this.gl.deleteProgram(program.program);
+        // Only the programs still awaiting their link result. A program whose
+        // FinishCompilation has already run is installed on its pass, and deleting
+        // it here would leave that pass holding a deleted GL program.
+        for (const program of this.programs)
+        {
+            if (program.FinishCompilation) this.gl.deleteProgram(program.program);
+        }
         for (const shader of this.stages) this.gl.deleteShader(shader);
         this.programs.length = 0;
         this.stages.clear();
+        // ALWAYS notify. Every cancel the engine actually performs - reload, unload,
+        // purge, error - comes through `CancelProcessing` with no error argument, so
+        // gating this on the caller's `error` dropped the waiting binds silently and
+        // left their effects pending forever, never good and never failed. The error
+        // synthesised above is the one to report.
         let notificationError;
-        if (error)
+        for (const callback of callbacks)
         {
-            for (const callback of callbacks)
-            {
-                try { callback.onError?.(error); }
-                catch (err) { notificationError = notificationError || err; }
-            }
+            try { callback.onError?.(this.error); }
+            catch (err) { notificationError = notificationError || err; }
         }
         if (notificationError) throw notificationError;
     }

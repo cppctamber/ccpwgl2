@@ -800,6 +800,11 @@ export class Tw2Effect extends meta.Model
         {
             if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource)
             {
+                // Clearing this is the point of the callback: the bind will never
+                // happen, so leaving it pending would keep `IsGood` false for the life
+                // of the effect. Readiness still comes from the shader itself, which
+                // stays unready, so this cannot make a failed effect look usable.
+                this._pendingShaderBinding = false;
                 this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
                 this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource, error);
             }
@@ -808,7 +813,16 @@ export class Tw2Effect extends meta.Model
         {
             this.UnBindParameters({ skipEvents: true });
             this.techniques = {};
-            if (!shader._compilation.error) shader._compilation.callbacks.push(bind);
+            const compilation = shader._compilation;
+            // A compilation that already failed, or is gone, can never call this back.
+            // Reporting it here is what keeps the effect from waiting forever: without
+            // it the pending flag stays set, `IsGood` stays false and nothing is emitted.
+            if (!compilation || compilation.error)
+            {
+                this._pendingShaderBinding = false;
+                bind.onError(compilation?.error || new Error("Shader compilation unavailable"));
+            }
+            else compilation.callbacks.push(bind);
         }
         else bind();
     }
