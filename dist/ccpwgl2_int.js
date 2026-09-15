@@ -41565,6 +41565,11 @@
 	    if (this.jobs.get(job.resource) !== job) return;
 	    try {
 	      this.Cancel(job.resource, error);
+	    } catch (notificationError) {
+	      // A listener that throws while being told of a failure must not take the
+	      // rest of the queue down with it: Fail runs from Pump's catch, so an escape
+	      // here skips every remaining job this frame.
+	      console.error("Resource processing cancellation listener failed:", notificationError);
 	    } finally {
 	      job.resource.OnError(error);
 	    }
@@ -108041,6 +108046,9 @@
 	    this.complete = true;
 	    this.programs.length = 0;
 	    this.stages.clear();
+	    // Nothing waits on a finished compilation, and `Tw2Effect.GetResources`
+	    // would otherwise keep handing it out as a pathless resource forever.
+	    if (this.shader && this.shader._compilation === this) this.shader._compilation = null;
 	    super.OnPrepared({
 	      hide: true
 	    });
@@ -108055,19 +108063,27 @@
 	    this.error = error || this.error || new Error("Shader compilation cancelled");
 	    if (this.shader) this.shader._isReady = false;
 	    var callbacks = this.callbacks.splice(0);
-	    for (var program of this.programs) this.gl.deleteProgram(program.program);
+	    // Only the programs still awaiting their link result. A program whose
+	    // FinishCompilation has already run is installed on its pass, and deleting
+	    // it here would leave that pass holding a deleted GL program.
+	    for (var program of this.programs) {
+	      if (program.FinishCompilation) this.gl.deleteProgram(program.program);
+	    }
 	    for (var shader of this.stages) this.gl.deleteShader(shader);
 	    this.programs.length = 0;
 	    this.stages.clear();
+	    // ALWAYS notify. Every cancel the engine actually performs - reload, unload,
+	    // purge, error - comes through `CancelProcessing` with no error argument, so
+	    // gating this on the caller's `error` dropped the waiting binds silently and
+	    // left their effects pending forever, never good and never failed. The error
+	    // synthesised above is the one to report.
 	    var notificationError;
-	    if (error) {
-	      for (var callback of callbacks) {
-	        try {
-	          var _callback$onError;
-	          (_callback$onError = callback.onError) === null || _callback$onError === void 0 || _callback$onError.call(callback, error);
-	        } catch (err) {
-	          notificationError = notificationError || err;
-	        }
+	    for (var callback of callbacks) {
+	      try {
+	        var _callback$onError;
+	        (_callback$onError = callback.onError) === null || _callback$onError === void 0 || _callback$onError.call(callback, this.error);
+	      } catch (err) {
+	        notificationError = notificationError || err;
 	      }
 	    }
 	    if (notificationError) throw notificationError;
@@ -130588,7 +130604,7 @@
 	        return null;
 	      }
 	      if (compilation.programs.length) {
-	        if (!shader || this.HasErrored()) {
+	        if (this.HasErrored()) {
 	          compilation.OnProcessingCancelled();
 	          return null;
 	        }
@@ -134024,6 +134040,11 @@
 	    };
 	    bind.onError = error => {
 	      if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource) {
+	        // Clearing this is the point of the callback: the bind will never
+	        // happen, so leaving it pending would keep `IsGood` false for the life
+	        // of the effect. Readiness still comes from the shader itself, which
+	        // stays unready, so this cannot make a failed effect look usable.
+	        this._pendingShaderBinding = false;
 	        this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
 	        this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource, error);
 	      }
@@ -134033,7 +134054,14 @@
 	        skipEvents: true
 	      });
 	      this.techniques = {};
-	      if (!shader._compilation.error) shader._compilation.callbacks.push(bind);
+	      var compilation = shader._compilation;
+	      // A compilation that already failed, or is gone, can never call this back.
+	      // Reporting it here is what keeps the effect from waiting forever: without
+	      // it the pending flag stays set, `IsGood` stays false and nothing is emitted.
+	      if (!compilation || compilation.error) {
+	        this._pendingShaderBinding = false;
+	        bind.onError((compilation === null || compilation === void 0 ? void 0 : compilation.error) || new Error("Shader compilation unavailable"));
+	      } else compilation.callbacks.push(bind);
 	    } else bind();
 	  }
 	  BindParameters(opt) {
@@ -236582,8 +236610,8 @@
 	});
 	var TEXTURES$1 = [ParticlePositionMap$1, ParticleVelocityMap$1, ParticleAttributeMap$1, ParticleParamsMap$1, ParticleAtlasMap];
 	var CONSTANTS$4 = [ParticleDrawData, ParticleTable];
-	var vs$c = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb1[24];            // per frame; 4-7 view-projection, 12-15 projection\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n// CCP's clip-space Y flip (see the end of main): (0,0,-1) while a Y-flipped\n// session draws offscreen, (0,0,1) otherwise. Tw2Device.ApplyClipYFlip sets it.\nuniform vec3 ssyf;\n\nout vec2 cornerUv;\nout float lifeFraction;\nflat out float emitterRow;\n\n// See the note in particleUpdate: this layout belongs to\n// Tw2GpuParticleParams.Pack and the two must be edited together.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n    vec4 attributes = texture(s2, uv);\n\n    emitterRow = attributes.x;\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // ---- size, from this particle's own emitter -----------------------------\n    float rows = cb7[1].x;\n\n    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint\n    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex\n\n    // A QUADRATIC BEZIER over the three size keys, which is what Carbon does -\n    // decoded from the shipped quads.sm_hi vertex shader, where it appears as\n    // (1-t)^2*s0 + 2(1-t)t*s1 + t^2*s2 spelled out in registers.\n    //\n    // NOT linear interpolation through the keys. A Bezier does not pass through\n    // its middle control point, it only leans toward it: with keys of\n    // (1, 3, 0) a linear reading peaks at 3 and this peaks near 1.75. That\n    // difference is most of why authored sizes came out too large.\n    float t = lifeFraction;\n    float u = 1.0 - t;\n    float size = u * u * sizeRow.x + 2.0 * u * t * sizeRow.y + t * t * sizeRow.z;\n\n    // Variance is ONE-SIDED in Carbon - 1 + variance * phase, with the phase\n    // in [0,1) - so it only ever grows a particle. A symmetric spread would\n    // shrink half of them and halve the mean size.\n    //\n    // The birth seed rather than a hash of the slot: a slot is reused, and\n    // every particle born in it would otherwise be exactly the same size.\n    size *= 1.0 + physics.x * attributes.y;\n\n    // Carbon's flat quarter, applied right before the corner offsets. Its\n    // corners are +/-1 like these, so this is a straight factor of four and not\n    // a difference in how the quad is built.\n    size *= 0.25;\n\n    size *= cb7[0].z;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing, and is not scaled by w, so the perspective divide\n    // shrinks distant particles.\n    //\n    // SCALED BY THE PROJECTION, which it was not before. A world-space quad of\n    // half-size s lands at s * P / w in normalised coordinates, where P is the\n    // projection's scale - roughly 1/tan(fov/2). Adding the size raw made every\n    // particle P times too small: with a 1 radian field of view that is a\n    // factor of about 1.8, and it is why authored sizes came out sub-pixel on a\n    // hull hundreds of units across.\n    //\n    // Rows 12-15 are ProjectionMat (EveSpaceScene.perFrameData.vs). Only the\n    // diagonal is needed, and the diagonal is unaffected by the transpose the\n    // scene uploads.\n    clip.xy += offset * size * vec2(cb1[12].x, cb1[13].y);\n\n    gl_Position = clip;\n\n    // Same tail as CCP's gles2 bodies and the translated dx11 stages, so the\n    // particles land on the same (possibly flipped) render target as the scene.\n    gl_Position.xy += ssyf.xy * gl_Position.w;\n    gl_Position.y *= ssyf.z;\n}\n");
-	var ps$a = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\nuniform sampler2D s4;            // ParticleAtlasMap\n\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float rows = cb7[1].x;\n    float tiles = cb7[1].y;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    vec4 sprite;\n\n    if (tiles >= 1.0)\n    {\n        // A strip of tiles across one texture, so only the horizontal\n        // coordinate is divided.\n        float tile = clamp(floor(emitterParam(emitterRow, 5.0, rows).w), 0.0, tiles - 1.0);\n\n        vec2 tileUv = cornerUv * 0.5 + 0.5;\n        sprite = texture(s4, vec2((tile + tileUv.x) / tiles, tileUv.y));\n    }\n    else\n    {\n        // NO ATLAS BOUND. A round dot from the corner coordinates, so the\n        // simulation can be looked at before there is any art - which is how\n        // every stage of this was built. Without the branch an unbound sampler\n        // reads black and the whole system is invisible for a reason that has\n        // nothing to do with particles.\n        float r = length(cornerUv);\n        if (r > 1.0) discard;\n        // Alpha as well as rgb, because the blend weights by alpha.\n        float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n        sprite = vec4(falloff);\n    }\n\n    // Carbon's own arithmetic: the atlas multiplies the particle colour on rgb\n    // AND alpha - quads.sm_hi does r0 = texture2D(s0, uv) * colour and writes\n    // both. The fade therefore rides on alpha and the blend applies it.\n    //\n    // (No backticks in here: this GLSL is a JS template literal, and one would\n    // end the string.)\n    //\n    // NOT reproduced: that shader then encodes rgb to sRGB with the scene\n    // gamma from cb2[21].w. ccpwgl handles output transfer elsewhere, and\n    // adding a second encode here would double it.\n    outColor = color * sprite;\n}\n");
+	var vs$d = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb1[24];            // per frame; 4-7 view-projection, 12-15 projection\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n// CCP's clip-space Y flip (see the end of main): (0,0,-1) while a Y-flipped\n// session draws offscreen, (0,0,1) otherwise. Tw2Device.ApplyClipYFlip sets it.\nuniform vec3 ssyf;\n\nout vec2 cornerUv;\nout float lifeFraction;\nflat out float emitterRow;\n\n// See the note in particleUpdate: this layout belongs to\n// Tw2GpuParticleParams.Pack and the two must be edited together.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n    vec4 attributes = texture(s2, uv);\n\n    emitterRow = attributes.x;\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // ---- size, from this particle's own emitter -----------------------------\n    float rows = cb7[1].x;\n\n    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint\n    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex\n\n    // A QUADRATIC BEZIER over the three size keys, which is what Carbon does -\n    // decoded from the shipped quads.sm_hi vertex shader, where it appears as\n    // (1-t)^2*s0 + 2(1-t)t*s1 + t^2*s2 spelled out in registers.\n    //\n    // NOT linear interpolation through the keys. A Bezier does not pass through\n    // its middle control point, it only leans toward it: with keys of\n    // (1, 3, 0) a linear reading peaks at 3 and this peaks near 1.75. That\n    // difference is most of why authored sizes came out too large.\n    float t = lifeFraction;\n    float u = 1.0 - t;\n    float size = u * u * sizeRow.x + 2.0 * u * t * sizeRow.y + t * t * sizeRow.z;\n\n    // Variance is ONE-SIDED in Carbon - 1 + variance * phase, with the phase\n    // in [0,1) - so it only ever grows a particle. A symmetric spread would\n    // shrink half of them and halve the mean size.\n    //\n    // The birth seed rather than a hash of the slot: a slot is reused, and\n    // every particle born in it would otherwise be exactly the same size.\n    size *= 1.0 + physics.x * attributes.y;\n\n    // Carbon's flat quarter, applied right before the corner offsets. Its\n    // corners are +/-1 like these, so this is a straight factor of four and not\n    // a difference in how the quad is built.\n    size *= 0.25;\n\n    size *= cb7[0].z;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing, and is not scaled by w, so the perspective divide\n    // shrinks distant particles.\n    //\n    // SCALED BY THE PROJECTION, which it was not before. A world-space quad of\n    // half-size s lands at s * P / w in normalised coordinates, where P is the\n    // projection's scale - roughly 1/tan(fov/2). Adding the size raw made every\n    // particle P times too small: with a 1 radian field of view that is a\n    // factor of about 1.8, and it is why authored sizes came out sub-pixel on a\n    // hull hundreds of units across.\n    //\n    // Rows 12-15 are ProjectionMat (EveSpaceScene.perFrameData.vs). Only the\n    // diagonal is needed, and the diagonal is unaffected by the transpose the\n    // scene uploads.\n    clip.xy += offset * size * vec2(cb1[12].x, cb1[13].y);\n\n    gl_Position = clip;\n\n    // Same tail as CCP's gles2 bodies and the translated dx11 stages, so the\n    // particles land on the same (possibly flipped) render target as the scene.\n    gl_Position.xy += ssyf.xy * gl_Position.w;\n    gl_Position.y *= ssyf.z;\n}\n");
+	var ps$b = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\nuniform sampler2D s4;            // ParticleAtlasMap\n\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float rows = cb7[1].x;\n    float tiles = cb7[1].y;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    vec4 sprite;\n\n    if (tiles >= 1.0)\n    {\n        // A strip of tiles across one texture, so only the horizontal\n        // coordinate is divided.\n        float tile = clamp(floor(emitterParam(emitterRow, 5.0, rows).w), 0.0, tiles - 1.0);\n\n        vec2 tileUv = cornerUv * 0.5 + 0.5;\n        sprite = texture(s4, vec2((tile + tileUv.x) / tiles, tileUv.y));\n    }\n    else\n    {\n        // NO ATLAS BOUND. A round dot from the corner coordinates, so the\n        // simulation can be looked at before there is any art - which is how\n        // every stage of this was built. Without the branch an unbound sampler\n        // reads black and the whole system is invisible for a reason that has\n        // nothing to do with particles.\n        float r = length(cornerUv);\n        if (r > 1.0) discard;\n        // Alpha as well as rgb, because the blend weights by alpha.\n        float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n        sprite = vec4(falloff);\n    }\n\n    // Carbon's own arithmetic: the atlas multiplies the particle colour on rgb\n    // AND alpha - quads.sm_hi does r0 = texture2D(s0, uv) * colour and writes\n    // both. The fade therefore rides on alpha and the blend applies it.\n    //\n    // (No backticks in here: this GLSL is a JS template literal, and one would\n    // end the string.)\n    //\n    // NOT reproduced: that shader then encodes rgb to sRGB with the scene\n    // gamma from cb2[21].w. ccpwgl handles output transfer elsewhere, and\n    // adding a second encode here would double it.\n    outColor = color * sprite;\n}\n");
 	var definition$2 = {
 	  name: "tw2particledraw",
 	  description: "GPU particle draw",
@@ -236594,12 +236622,12 @@
 	        // NO INPUTS. Every vertex is derived from gl_VertexID, so there
 	        // is nothing to bind and nothing to keep in sync.
 	        inputDefinitions: [],
-	        shader: vs$c
+	        shader: vs$d
 	      },
 	      ps: {
 	        constants: CONSTANTS$4,
 	        textures: TEXTURES$1,
-	        shader: ps$a
+	        shader: ps$b
 	      },
 	      states: {
 	        // Additive and depth-read-only, which is what a particle system
@@ -329921,7 +329949,7 @@
 	var shadowHeader$1 = "\n\n    #ifdef PS\n    uniform vec4 ssi;\n    varying float ssv;\n    #endif\n\n";
 	var shadowFooter$1 = "\n\n    #ifdef PS\n    float av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\n    if(ssi.z==0.0)\n    {\n        if(av*ssi.x+ssi.y<0.0) discard;\n    }\n    else\n    {\n        if(ssi.x>0.0)\n        {\n            if(av==ssi.y) discard;\n        }\n        else\n        {\n            if(av!=ssi.y) discard;\n        }\n    }\n    if(ssv<0.0)discard;\n    #endif\n\n";
 
-	var ps$9 = {
+	var ps$a = {
 		__proto__: null,
 		shadowFooter: shadowFooter$1,
 		shadowHeader: shadowHeader$1
@@ -330031,14 +330059,14 @@
 	var headerNoShadow = "\n\n    ".concat(texture2DLod, "\n    ").concat(precision, "\n    ").concat(texture2DLodPolyfill, "\n    ").concat(saturate, "\n\n");
 	var header = "\n\n    ".concat(headerNoShadow, "\n    ").concat(shadowHeader$1, "\n\n");
 
-	var ps$8 = {
+	var ps$9 = {
 		__proto__: null,
 		header: header,
 		headerNoShadow: headerNoShadow,
 		shadowFooter: shadowFooter$1
 	};
 
-	var ps$7 = {
+	var ps$8 = {
 		__proto__: null,
 		header: header,
 		shadowFooter: shadowFooter$1,
@@ -330048,7 +330076,7 @@
 	var shadowHeader = "\n\n    #ifdef PS\n    uniform vec4 ssf[4];\n    varying float ssv;\n    #endif\n\n";
 	var shadowFooter = "\n\n    #ifdef PS\n    ssv=dot(ssf[0],gl_Position);\n    #endif\n\n    gl_Position.xy+=ssyf.xy*gl_Position.w;\n    gl_Position.y*=ssyf.z;\n    gl_Position.z=gl_Position.z*2.0-gl_Position.w;\n\n";
 
-	var vs$b = {
+	var vs$c = {
 		__proto__: null,
 		shadowFooter: shadowFooter,
 		shadowHeader: shadowHeader
@@ -330406,7 +330434,7 @@
 	  shader: "\n\n        ".concat(shadowHeader, "\n\n        attribute vec4 attr0;\n        attribute vec4 attr1;\n        attribute vec4 attr2;\n        attribute vec4 attr3;\n        attribute vec4 attr4;\n\n        varying vec4 texcoord;\n        varying vec4 texcoord1;\n\n        uniform vec4 cb1[8];\n        uniform vec4 cb3[4];\n        uniform vec3 ssyf;\n\n        void main()\n        {\n            vec4 v0;\n            vec4 v1;\n            vec4 v2;\n            vec4 v3;\n            vec4 v4;\n            vec4 r0;\n            vec4 r1;\n\n            vec4 c0=vec4(1,0,0,0);\n\n            v0=attr0;\n            v1=attr1;\n            v2=attr2;\n            v3=attr3;\n            v4=attr4;\n\n            r0.w=c0.x;\n            r1=v0.xyzx*c0.xxxy+c0.yyyx;\n            r0.x=dot(r1,v2);\n            r0.y=dot(r1,v3);\n            r0.z=dot(r1,v4);\n            r1.x=dot(r0,cb3[0]);\n            r1.y=dot(r0,cb3[1]);\n            r1.z=dot(r0,cb3[2]);\n            r1.w=dot(r0,cb3[3]);\n            texcoord.xyz=r0.xyz;\n            gl_Position.x=dot(r1,cb1[4]);\n            gl_Position.y=dot(r1,cb1[5]);\n            gl_Position.z=dot(r1,cb1[6]);\n            gl_Position.w=dot(r1,cb1[7]);\n\n            texcoord.w=c0.y;\n            texcoord1.xy=v1.xy;\n\n            ").concat(shadowFooter, "\n        }\n\n    ")
 	};
 
-	var vs$a = {
+	var vs$b = {
 		__proto__: null,
 		quadInstancedV5_PosTexTanTexTexTexTex: quadInstancedV5_PosTexTanTexTexTexTex,
 		quadInstancedV5_PosTexTanTexTexTexTexL01: quadInstancedV5_PosTexTanTexTexTexTexL01,
@@ -330435,7 +330463,7 @@
 	  shader: "\n\n        ".concat(shadowHeader, "\n\n        attribute vec4 attr0;\n        attribute vec4 attr1;\n        attribute vec4 attr2;\n\n        varying vec4 texcoord;\n        varying vec4 texcoord1;\n        varying vec4 texcoord2;\n        varying vec4 texcoord3;\n        varying vec4 texcoord4;\n        varying vec4 texcoord5;\n        varying vec4 texcoord7;\n        varying vec4 texcoord8;\n        varying vec4 texcoord9;\n        varying vec4 texcoord10;\n\n        uniform vec4 cb1[24];\n        uniform vec4 cb3[20];\n        uniform vec3 ssyf;\n\n        void main()\n        {\n            vec4 v0;\n            vec4 v1;\n            vec4 v2;\n            vec4 r0;\n            vec4 r1;\n            vec4 r2;\n            vec4 r3;\n            vec4 r4;\n            vec4 r5;\n            vec4 r6;\n            vec4 r7;\n            vec4 r8;\n\n            vec4 c0=vec4(6.28318548,-3.14159274,0.159154937,0.5);\n            vec4 c1=vec4(0,1,0,0);\n\n            v0=attr0;\n            v1=attr1;\n            v2=attr2;\n\n            r0=cb3[17];\n            r1=r0*cb3[3].yyyy;\n            r2=cb3[16];\n            r1=r2*cb3[3].xxxx+r1;\n            r3=cb3[18];\n            r1=r3*cb3[3].zzzz+r1;\n            r4=cb3[19];\n            r1=r4*cb3[3].wwww+r1;\n            r5=v0.xyzx*c1.yyyx+c1.xxxy;\n            r1.w=dot(r5,r1);\n            r6=r0*cb3[0].yyyy;\n            r6=r2*cb3[0].xxxx+r6;\n            r6=r3*cb3[0].zzzz+r6;\n            r6=r4*cb3[0].wwww+r6;\n            r1.x=dot(r5,r6);\n            r7=r0*cb3[1].yyyy;\n            r7=r2*cb3[1].xxxx+r7;\n            r7=r3*cb3[1].zzzz+r7;\n            r7=r4*cb3[1].wwww+r7;\n            r1.y=dot(r5,r7);\n            r0=r0*cb3[2].yyyy;\n            r0=r2*cb3[2].xxxx+r0;\n            r0=r3*cb3[2].zzzz+r0;\n            r0=r4*cb3[2].wwww+r0;\n            r1.z=dot(r5,r0);\n            gl_Position.x=dot(r1,cb1[4]);\n            gl_Position.y=dot(r1,cb1[5]);\n            gl_Position.z=dot(r1,cb1[6]);\n            gl_Position.w=dot(r1,cb1[7]);\n            r2=v2*c0.xxxx+c0.yyyy;\n            {\n                bvec4 tmp=lessThan(c1.xxxx,r2.ywzw);\n                r3.xy=(vec4(tmp.x?1.0:0.0,tmp.y?1.0:0.0,tmp.z?1.0:0.0,tmp.w?1.0:0.0)).xy;\n            }\n            r2=r2*c0.zzzz+c0.wwww;\n            r2=fract(r2);\n            r2=r2*c0.xxxx+c0.yyyy;\n            r0.w=r3.y*r3.x;\n            r3.xy=vec2(cos(r2.x), sin(r2.x));\n            r4.xy=vec2(cos(r2.y), sin(r2.y));\n            r3.xy=r3.xy*abs(r4.yy);\n            r3.z=r4.x;\n            r4.xy=vec2(cos(r2.z), sin(r2.z));\n            r8.xy=vec2(cos(r2.w), sin(r2.w));\n            r2.xy=r4.xy*abs(r8.yy);\n            r2.z=r8.x;\n            r4.xyz=r2.yzx*r3.zxy;\n            r4.xyz=r3.yzx*r2.zxy+(-r4.xyz);\n            r8.xyz=mix((-r4.xyz),r4.xyz,r0.www);\n            texcoord1.x=dot(r8.xyz,r6.xyz);\n            texcoord1.y=dot(r8.xyz,r7.xyz);\n            texcoord1.z=dot(r8.xyz,r0.xyz);\n            texcoord2.x=dot(r3.xyz,r6.xyz);\n            texcoord3.x=dot(r2.xyz,r6.xyz);\n            texcoord2.y=dot(r3.xyz,r7.xyz);\n            texcoord3.y=dot(r2.xyz,r7.xyz);\n            texcoord3.z=dot(r2.xyz,r0.xyz);\n            texcoord2.z=dot(r3.xyz,r0.xyz);\n            r0.xyz=(-r1.xyz)+cb1[3].xyz;\n            r0.w=dot(r0.xyz,r0.xyz);\n            r0.w=r0.w==0.0?3.402823466e+38:inversesqrt(abs(r0.w));\n            texcoord4.xyz=r0.www*r0.xyz;\n            r0.x=1.0/r0.w;\n            texcoord7.x=dot(r1,cb1[16]);\n            texcoord7.y=dot(r1,cb1[17]);\n            texcoord7.z=dot(r1,cb1[18]);\n            texcoord7.w=dot(r1,cb1[19]);\n            texcoord8.x=dot(r1,cb1[20]);\n            texcoord8.y=dot(r1,cb1[21]);\n            texcoord8.z=dot(r1,cb1[22]);\n            texcoord8.w=dot(r1,cb1[23]);\n            texcoord9.w=dot(r5,cb3[12]);\n            texcoord.z=dot(r5,cb3[13]);\n            texcoord.w=dot(r5,cb3[14]);\n            r1.x=cb3[8].y;\n            r1.y=cb3[9].y;\n            r1.z=cb3[10].y;\n            r1.w=cb3[11].y;\n            r2.x=dot(r1,cb3[16]);\n            r2.y=dot(r1,cb3[17]);\n            r2.z=dot(r1,cb3[18]);\n            r2.w=dot(r1,cb3[19]);\n            r1.x=dot(r2,cb3[0]);\n            r1.y=dot(r2,cb3[1]);\n            r1.z=dot(r2,cb3[2]);\n            r0.y=dot(r1.xyz,r1.xyz);\n            r0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\n            texcoord9.xyz=r0.yyy*r1.xyz;\n            r1.x=cb3[8].z;\n            r1.y=cb3[9].z;\n            r1.z=cb3[10].z;\n            r1.w=cb3[11].z;\n            r2.x=dot(r1,cb3[16]);\n            r2.y=dot(r1,cb3[17]);\n            r2.z=dot(r1,cb3[18]);\n            r2.w=dot(r1,cb3[19]);\n            r1.x=dot(r2,cb3[0]);\n            r1.y=dot(r2,cb3[1]);\n            r1.z=dot(r2,cb3[2]);\n            r0.y=dot(r1.xyz,r1.xyz);\n            r0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\n            texcoord10.xyz=r0.yyy*r1.xyz;\n            texcoord.xy=v1.xy;\n            texcoord4.w=r0.x;\n            texcoord5.w=r0.x;\n            texcoord5.xyz=v0.xyz;\n            texcoord10.w=c1.x;\n\n            ").concat(shadowFooter, "\n        }\n    ")
 	};
 
-	var vs$9 = {
+	var vs$a = {
 		__proto__: null,
 		decal_PosTexTan: decal_PosTexTan,
 		decal_PosTexTanL01: decal_PosTexTanL01,
@@ -333094,8 +333122,8 @@
 	 * that was authored from it.
 	 */
 
-	var vs$8 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb0[1];\nuniform vec4 cb1[16];\nuniform vec4 cb3[5];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r14;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c1=vec4(0.5,1,0,9.99999975e-005);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nr0.w=dot(v4,cb3[0]);\nr1.x=r0.w;\nr2.w=dot(v4,cb3[1]);\nr1.y=r2.w;\nr3.x=dot(v4,cb3[3]);\nr1.w=r3.x;\nr4.w=dot(v4,cb3[2]);\nr1.z=r4.w;\ntexcoord6.w=dot(r1,cb1[11]);\nr5.x=saturate(cb3[4].x);\nr5.y=r5.x*c1.x+c1.x;\nr6=cb0[0].xxxx*v1;\nr3.w=dot(r6,cb3[3]);\nr7.w=r3.w;\nr0.x=dot(r6,cb3[0]);\nr7.x=r0.x;\nr2.x=dot(r6,cb3[1]);\nr7.y=r2.x;\nr4.x=dot(r6,cb3[2]);\nr7.z=r4.x;\ntexcoord3.w=dot(r7,cb1[11]);\nr8=cb0[0].yyyy*v2;\nr3.y=dot(r8,cb3[3]);\nr9=cb0[0].zzzz*v3;\nr9=r5.yyyy*r9;\nr3.z=dot(r9,cb3[3]);\nr10.w=r3.y;\nr0.y=dot(r8,cb3[0]);\nr10.x=r0.y;\nr2.y=dot(r8,cb3[1]);\nr10.y=r2.y;\nr4.y=dot(r8,cb3[2]);\nr10.z=r4.y;\ntexcoord4.w=dot(r10,cb1[11]);\nr11.w=r3.z;\nr0.z=dot(r9,cb3[0]);\nr11.x=r0.z;\nr2.z=dot(r9,cb3[1]);\nr11.y=r2.z;\nr4.z=dot(r9,cb3[2]);\nr11.z=r4.z;\ntexcoord5.w=dot(r11,cb1[11]);\nr5.yzw=r3.zwy*r4.yzx;\nr5.yzw=r4.zxy*r3.yzw+(-r5.yzw);\nr12.w=dot(r5.yzw,r2.xyz);\nr5.yzw=r3.zxy*r4.wyz;\nr5.yzw=r4.zwy*r3.xyz+(-r5.yzw);\nr12.x=dot(r5.yzw,r2.yzw);\nr5.yzw=r3.xwz*r4.zwx;\nr5.yzw=r4.wxz*r3.zxw+(-r5.yzw);\nr12.y=dot(r5.yzw,r2.xzw);\nr5.yzw=r3.yxw*r4.wxy;\nr5.yzw=r4.ywx*r3.xwy+(-r5.yzw);\nr12.z=dot(r5.yzw,r2.xyw);\nr5.y=dot(r12,r0);\nr5.x=c1.w>=r5.x?1.0:0.0;;\nr8=r8*v0.yyyy;\nr6=v0.xxxx*r6+r8;\nr6=v0.zzzz*r9+r6;\nr6=r6+v4;\nr8.w=dot(r6,cb3[3]);\nr8.x=dot(r6,cb3[0]);\nr8.y=dot(r6,cb3[1]);\nr8.z=dot(r6,cb3[2]);\nr6.w=dot(r8,cb1[11]);\nr6.x=dot(r8,cb1[8]);\nr6.y=dot(r8,cb1[9]);\nr6.z=dot(r8,cb1[10]);\nr8.w=dot(r6,cb1[15]);\nr8.x=dot(r6,cb1[12]);\nr8.y=dot(r6,cb1[13]);\nr8.z=dot(r6,cb1[14]);\nif(((-abs(r5.y))>=abs(r5.y))){\nr6=r0;\nr9=r2;\nr12=r4;\n}else{\nr5.y=1.0/r5.y;\nr5.zw=r2.ww*r4.zy;\nr5.zw=r2.zy*r4.ww+(-r5.zw);\nr13.xy=r0.ww*r4.zy;\nr13.xy=r0.zy*r4.ww+(-r13.xy);\nr14.xyz=r2.yxx*r13.xxy;\nr14.xyz=r0.yxx*r5.zzw+(-r14.xyz);\nr13.zw=r0.ww*r2.zy;\nr13.zw=r0.zy*r2.ww+(-r13.zw);\nr14.xyz=r4.yxx*r13.zzw+r14.xyz;\nr12.w=r5.y*(-r14.z);\nr6.w=r5.y*(-r14.x);\nr9.w=r5.y*r14.y;\nr14.xy=r2.ww*r3.zy;\nr2.zw=r2.zy*r3.xx+(-r14.xy);\nr14.xy=r0.ww*r3.zy;\nr0.zw=r0.zy*r3.xx+(-r14.xy);\nr14.xyz=r0.zzw*r2.yxx;\nr14.xyz=r0.yxx*r2.zzw+(-r14.xyz);\nr14.xyz=r3.yww*r13.zzw+r14.xyz;\nr6.z=r5.y*r14.x;\nr9.z=(-r5.y)*r14.y;\nr12.z=r5.y*r14.z;\nr13.zw=r3.zy*r4.ww;\nr3.xz=r4.zy*r3.xx+(-r13.zw);\nr14.xyz=r0.zzw*r4.yxx;\nr0.xyz=r0.yxx*r3.xxz+(-r14.xyz);\nr0.xyz=r3.yww*r13.xxy+r0.xyz;\nr6.y=(-r0.x)*r5.y;\nr9.y=r0.y*r5.y;\nr12.y=(-r0.z)*r5.y;\nr0.xyz=r2.zzw*r4.yxx;\nr0.xyz=r2.yxx*r3.xxz+(-r0.xyz);\nr0.xyz=r3.yww*r5.zzw+r0.xyz;\nr6.x=r0.x*r5.y;\nr9.x=r0.y*(-r5.y);\nr12.x=r0.z*r5.y;\n}\nr0.yz=c1.yz;\nr0=cb1[3].xyzx*r0.yyyz+r0.zzzy;\ntexcoord2.z=dot(r0,r12);\ngl_Position=r5.xxxx*(-r8)+r8;\ntexcoord2.x=dot(r0,r6);\ntexcoord2.y=dot(r0,r9);\ntexcoord3.x=dot(r7,cb1[8]);\ntexcoord3.y=dot(r7,cb1[9]);\ntexcoord3.z=dot(r7,cb1[10]);\ntexcoord4.x=dot(r10,cb1[8]);\ntexcoord4.y=dot(r10,cb1[9]);\ntexcoord4.z=dot(r10,cb1[10]);\ntexcoord5.x=dot(r11,cb1[8]);\ntexcoord5.y=dot(r11,cb1[9]);\ntexcoord5.z=dot(r11,cb1[10]);\ntexcoord6.x=dot(r1,cb1[8]);\ntexcoord6.y=dot(r1,cb1[9]);\ntexcoord6.z=dot(r1,cb1[10]);\ntexcoord.x=v5.x;\ntexcoord1.xyz=v0.xyz;\ntexcoord7.xy=v6.xy;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
-	var ps$6 = "\n#if defined(GL_EXT_shader_texture_lod)\n#extension GL_EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(EXT_shader_texture_lod)\n#extension EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(GL_ARB_shader_texture_lod)\n#extension GL_ARB_shader_texture_lod: enable\n#define texture2DGrad texture2DGradARB\n#endif\n#ifdef GL_OES_texture_3D\n#extension GL_OES_texture_3D: enable\n#endif\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\n#if defined(GL_ES)&&!defined(GL_EXT_shader_texture_lod)&&!defined(EXT_shader_texture_lod)\n#define texture2DLod(s,u,l) texture2D(s,u)\n#define textureCubeLod(s,u,l) textureCube(s,u)\n#define texture2DGrad(s,u,x,y) texture2D(s,u)\n#define textureCubeGrad(s,u,x,y) textureCube(s,u)\n#endif\n#if !defined(GL_ES)||defined(GL_OES_texture_3D)\n#define tex3D(s,uvw,sl,su,sw,lw,l) texture3D(s,uvw,l)\n#ifdef GL_EXT_shader_texture_lod\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3DLod(s,uvw,l)\n#else\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3D(s,uvw)\n#endif\n#else\n#define sampler3D sampler2D\nvec4 tex3D(sampler2D s,vec3 uvw,float sl,bool su,bool sw,bool lw,float l)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2D(s,vec2(uvw.x,y+s0));\nvec4 c1=texture2D(s,vec2(uvw.x,y+s1));\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#ifndef tex3DLod\nvec4 tex3DLod(sampler2D s,vec3 uvw,float l,float sl,bool su,bool sw,bool lw)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2DLod(s,vec2(uvw.x,y+s0),l);\nvec4 c1=texture2DLod(s,vec2(uvw.x,y+s1),l);\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nuniform sampler2D s0;\nuniform sampler2D s1;\nuniform sampler3D s2;\n#ifndef GL_OES_texture_3D\nuniform float s2sl;\n#else\n#define s2sl 0.0\n#endif\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb2[22];\nuniform vec4 cb4[1];\nuniform vec4 cb7[12];\nuniform ivec4 i0;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c12=vec4(1,-1,0,-9.99999975e-006);\nvec4 c13=vec4(0.5,0.375,0.0625,0.5625);\nvec4 c14=vec4(0,0.100000001,0.0909090936,0.055555556);\nvec4 c15=vec4(-0.00313080009,12.9200001,0.416666657,0);\nvec4 c16=vec4(1.05499995,-0.0549999997,0,0);\nivec4 i0=ivec4(12,0,0,0);\nv0=texcoord;\nv1=texcoord1;\nv2=texcoord2;\nv3=texcoord3;\nv4=texcoord4;\nv5=texcoord5;\nv6=texcoord6;\nv7=texcoord7;\nr0.xyz=v1.xyz;\nr1.xyz=r0.xyz+(-v2.xyz);\nr0.w=1.0/r1.x;\nr2=c12.xyxy+(-v2.xxyy);\nr2.xy=r0.ww*r2.xy;\nr0.w=r1.x>=0.0?r2.x:r2.y;\nr1.x=1.0/r1.y;\nr1.xw=r1.xx*r2.zw;\nr1.x=r1.y>=0.0?r1.x:r1.w;\nr2.x=min(r0.w,r1.x);\nr0.w=1.0/r1.z;\nr1.x=c12.y+(-v2.z);\nr1.x=r0.w*r1.x;\nr0.w=r0.w*(-v2.z);\nr0.w=r1.z>=0.0?r0.w:r1.x;\nr1.x=min(r2.x,r0.w);\nr2.xyz=mix(v2.xyz,r0.xyz,r1.xxx);\nr0.xy=c12.xy;\nr0.x=r0.x+cb2[20].y;\nr0.x=1.0/r0.x;\nr1.y=r0.x*cb2[20].x;\nr1.x=c12.x;\nr3.w=dot(v6.zw,r1.xy)+c12.z;\nr3.x=dot(v3.zw,r1.xy)+c12.z;\nr3.y=dot(v4.zw,r1.xy)+c12.z;\nr3.z=dot(v5.zw,r1.xy)+c12.z;\nr2.w=c12.x;\nr0.x=dot(r2,r3);\nr0.z=1.0/r3.z;\nr1.z=r0.z*(-r3.w);\nr4=v1.xyzx*c12.xxxz+c12.zzzx;\nr0.z=dot(r4,r3);\nr4.xyz=(-r2.xyz)+v1.xyz;\nr0.w=dot(r3.xyz,r4.xyz);\nr0.w=1.0/r0.w;\nr1.xy=c12.zz;\nr4.xyz=(-r2.xyz)+r1.yyz;\nr1.w=dot(r3.xyz,r4.xyz);\nr0.w=r0.w*r1.w;\nr4.xyz=mix(r2.xyz,v1.xyz,r0.www);\n{bvec3 tmp=greaterThanEqual((-r0.zzz),vec3(0.0));r4.xyz=vec3(tmp.x?v1.x:r4.x,tmp.y?v1.y:r4.y,tmp.z?v1.z:r4.z);};\nr1.xyz=r1.xyz+(-r4.xyz);\nr0.z=dot(r3.xyz,r1.xyz);\nr1.xyz=r2.xyz+(-r4.xyz);\nr0.w=dot(r3.xyz,r1.xyz);\nr0.w=1.0/r0.w;\nr0.z=r0.w*r0.z;\nr1.xyz=mix(r4.xyz,r2.xyz,r0.zzz);\n{bvec3 tmp=greaterThanEqual((-r0.xxx),vec3(0.0));r0.xzw=vec3(tmp.x?r2.x:r1.x,tmp.y?r2.y:r1.y,tmp.z?r2.z:r1.z);};\nr1.xyz=(-r0.xzw)+r4.xyz;\nr1.x=dot(r1.xyz,r1.xyz);\nr1.x=r1.x+c12.w;\n{bvec4 tmp=greaterThanEqual(r1.xxxx,vec4(0.0));r1=vec4(tmp.x?(-c12.z):(-c12.x),tmp.y?(-c12.z):(-c12.x),tmp.z?(-c12.z):(-c12.x),tmp.w?(-c12.z):(-c12.x));};\nif(any(lessThan(r1,vec4(0.0))))discard;\nr1.x=1.0/cb7[0].x;\nr1.y=r1.x*c13.x;\nr1.z=1.0/cb7[0].y;\nr2.w=v7.x*r1.z+r1.y;\nr0.xzw=(-r4.xyz)+r0.xzw;\nr3.x=cb7[4].x;\nr1.y=(-r3.x)+cb7[9].x;\nr1.y=cb4[0].z*r1.y+r3.x;\nr1.y=r1.y*cb2[21].x+v0.x;\nr3.xz=cb4[0].xz;\nr1.w=saturate(r3.x*c13.x);\nr3.xy=r1.ww*c13.yy+c13.zw;\nr5.y=(-cb4[0].z)>=0.0?r3.x:r3.y;\nr0.y=cb7[0].x*r1.z+r0.y;\nr2.y=r1.x*r0.y;\nr6.z=c12.z;\nr7.xyz=cb7[1].xyz;\nr1.xzw=(-r7.xyz)+cb7[6].xyz;\nr1.xzw=r3.zzz*r1.xzw+cb7[1].xyz;\nr7.xyz=cb7[2].xyz;\nr3.xyw=(-r7.xyz)+cb7[7].xyz;\nr3.xyw=r3.zzz*r3.xyw+cb7[2].xyz;\nr7.xyz=cb7[3].xyz;\nr7.xyz=(-r7.xyz)+cb7[8].xyz;\nr7.xyz=r3.zzz*r7.xyz+cb7[3].xyz;\nr8=cb7[5];\nr8=(-r8)+cb7[10];\nr8=r3.zzzz*r8+cb7[5];\nr5.zw=c12.zz;\nr2.xz=c12.xz;\nr9=c12.zzzz;\nr10.xyz=r4.xyz;\nfor(int i=0;i<12;++i){ // dynamic bound: ESSL1 forbids a non-constant loop comparison\nr11.xyz=mix(r1.xzw,r3.xyw,(-r10.zzz));\nr12.xyz=r10.xyz*cb7[11].xyz;\nr12.xyz=r7.xyz*r12.xyz;\nr0.y=r10.z*r10.z;\nr13.z=r12.z*r0.y+r1.y;\nr13.xyw=r12.xyx*c12.xxz;\nr12=tex3DLod(s2,r13.xyz,r13.w,s2sl,true,true,true);\nr12.xyz=r12.xyz+(-c13.xxx);\nr11.xyz=r12.xyz*r11.xyz+r10.xyz;\nr5.x=(-r11.z);\nr12=texture2DLod(s1,r5.xy,r5.w);\n{bvec3 tmp=greaterThanEqual((-r12.xyz),vec3(0.0));r13.xyz=vec3(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x,tmp.z?c12.z:c12.x);};\nr0.y=dot(r13.xyz,r13.xyz);\nr0.y=(-r0.y)>=0.0?c12.z:c12.x;\nr0.y=(-r12.w)>=0.0?c12.z:r0.y;\nif((r0.y!=(-r0.y))){\nr0.y=1.0/r12.w;\nr11.xy=r0.yy*r11.xy;\nr11.xy=r11.xy*c13.xx+c13.xx;\nr11.zw=(-r11.xy)+c12.xx;\n{bvec2 tmp=greaterThanEqual(r11.zw,vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\n{bvec2 tmp=greaterThanEqual(r11.xy,vec2(0.0));r13.xy=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr11.zw=r11.zw+r13.xy;\n{bvec2 tmp=greaterThanEqual((-r11.zw),vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr3.z=dot(r11.zw,r11.zw)+c12.z;\nif(((-r3.z)<c12.z)){\nr13=c12.zzzz;\n}else{\nr6.xy=r11.xy*r2.xy+r2.zw;\nr0.y=r0.y*r0.y;\nr6.w=r0.y*c14.y;\nr13=texture2DLod(s0,r6.xy,r6.w);\n}\nr11=r12*r13;\nr9=r11*r8+r9;\n}\nr10.xyz=r0.xzw*c14.zzz+r10.xyz;\n}\nr0.xyz=r0.xzw*cb7[11].xyz;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c14.w;\nr0=r0.xxxx*r9;\nr1.xyz=max(r0.xyz,c12.zzz);\nr0.x=r1.x>0.0?log2(r1.x):-3.402823466e+38;\nr0.y=r1.y>0.0?log2(r1.y):-3.402823466e+38;\nr0.z=r1.z>0.0?log2(r1.z):-3.402823466e+38;\nr0.xyz=r0.xyz*c15.zzz;\nr2.x=exp2(r0.x);\nr2.y=exp2(r0.y);\nr2.z=exp2(r0.z);\nr0.xyz=r2.xyz*c16.xxx+c16.yyy;\nr2.xyz=r1.xyz+c15.xxx;\nr1.xyz=r1.xyz*c15.yyy;\n{bvec3 tmp=greaterThanEqual(r2.xyz,vec3(0.0));gl_FragData[0].xyz=vec3(tmp.x?r0.x:r1.x,tmp.y?r0.y:r1.y,tmp.z?r0.z:r1.z);};\ngl_FragData[0].w=r0.w;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
+	var vs$9 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb0[1];\nuniform vec4 cb1[16];\nuniform vec4 cb3[5];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r14;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c1=vec4(0.5,1,0,9.99999975e-005);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nr0.w=dot(v4,cb3[0]);\nr1.x=r0.w;\nr2.w=dot(v4,cb3[1]);\nr1.y=r2.w;\nr3.x=dot(v4,cb3[3]);\nr1.w=r3.x;\nr4.w=dot(v4,cb3[2]);\nr1.z=r4.w;\ntexcoord6.w=dot(r1,cb1[11]);\nr5.x=saturate(cb3[4].x);\nr5.y=r5.x*c1.x+c1.x;\nr6=cb0[0].xxxx*v1;\nr3.w=dot(r6,cb3[3]);\nr7.w=r3.w;\nr0.x=dot(r6,cb3[0]);\nr7.x=r0.x;\nr2.x=dot(r6,cb3[1]);\nr7.y=r2.x;\nr4.x=dot(r6,cb3[2]);\nr7.z=r4.x;\ntexcoord3.w=dot(r7,cb1[11]);\nr8=cb0[0].yyyy*v2;\nr3.y=dot(r8,cb3[3]);\nr9=cb0[0].zzzz*v3;\nr9=r5.yyyy*r9;\nr3.z=dot(r9,cb3[3]);\nr10.w=r3.y;\nr0.y=dot(r8,cb3[0]);\nr10.x=r0.y;\nr2.y=dot(r8,cb3[1]);\nr10.y=r2.y;\nr4.y=dot(r8,cb3[2]);\nr10.z=r4.y;\ntexcoord4.w=dot(r10,cb1[11]);\nr11.w=r3.z;\nr0.z=dot(r9,cb3[0]);\nr11.x=r0.z;\nr2.z=dot(r9,cb3[1]);\nr11.y=r2.z;\nr4.z=dot(r9,cb3[2]);\nr11.z=r4.z;\ntexcoord5.w=dot(r11,cb1[11]);\nr5.yzw=r3.zwy*r4.yzx;\nr5.yzw=r4.zxy*r3.yzw+(-r5.yzw);\nr12.w=dot(r5.yzw,r2.xyz);\nr5.yzw=r3.zxy*r4.wyz;\nr5.yzw=r4.zwy*r3.xyz+(-r5.yzw);\nr12.x=dot(r5.yzw,r2.yzw);\nr5.yzw=r3.xwz*r4.zwx;\nr5.yzw=r4.wxz*r3.zxw+(-r5.yzw);\nr12.y=dot(r5.yzw,r2.xzw);\nr5.yzw=r3.yxw*r4.wxy;\nr5.yzw=r4.ywx*r3.xwy+(-r5.yzw);\nr12.z=dot(r5.yzw,r2.xyw);\nr5.y=dot(r12,r0);\nr5.x=c1.w>=r5.x?1.0:0.0;;\nr8=r8*v0.yyyy;\nr6=v0.xxxx*r6+r8;\nr6=v0.zzzz*r9+r6;\nr6=r6+v4;\nr8.w=dot(r6,cb3[3]);\nr8.x=dot(r6,cb3[0]);\nr8.y=dot(r6,cb3[1]);\nr8.z=dot(r6,cb3[2]);\nr6.w=dot(r8,cb1[11]);\nr6.x=dot(r8,cb1[8]);\nr6.y=dot(r8,cb1[9]);\nr6.z=dot(r8,cb1[10]);\nr8.w=dot(r6,cb1[15]);\nr8.x=dot(r6,cb1[12]);\nr8.y=dot(r6,cb1[13]);\nr8.z=dot(r6,cb1[14]);\nif(((-abs(r5.y))>=abs(r5.y))){\nr6=r0;\nr9=r2;\nr12=r4;\n}else{\nr5.y=1.0/r5.y;\nr5.zw=r2.ww*r4.zy;\nr5.zw=r2.zy*r4.ww+(-r5.zw);\nr13.xy=r0.ww*r4.zy;\nr13.xy=r0.zy*r4.ww+(-r13.xy);\nr14.xyz=r2.yxx*r13.xxy;\nr14.xyz=r0.yxx*r5.zzw+(-r14.xyz);\nr13.zw=r0.ww*r2.zy;\nr13.zw=r0.zy*r2.ww+(-r13.zw);\nr14.xyz=r4.yxx*r13.zzw+r14.xyz;\nr12.w=r5.y*(-r14.z);\nr6.w=r5.y*(-r14.x);\nr9.w=r5.y*r14.y;\nr14.xy=r2.ww*r3.zy;\nr2.zw=r2.zy*r3.xx+(-r14.xy);\nr14.xy=r0.ww*r3.zy;\nr0.zw=r0.zy*r3.xx+(-r14.xy);\nr14.xyz=r0.zzw*r2.yxx;\nr14.xyz=r0.yxx*r2.zzw+(-r14.xyz);\nr14.xyz=r3.yww*r13.zzw+r14.xyz;\nr6.z=r5.y*r14.x;\nr9.z=(-r5.y)*r14.y;\nr12.z=r5.y*r14.z;\nr13.zw=r3.zy*r4.ww;\nr3.xz=r4.zy*r3.xx+(-r13.zw);\nr14.xyz=r0.zzw*r4.yxx;\nr0.xyz=r0.yxx*r3.xxz+(-r14.xyz);\nr0.xyz=r3.yww*r13.xxy+r0.xyz;\nr6.y=(-r0.x)*r5.y;\nr9.y=r0.y*r5.y;\nr12.y=(-r0.z)*r5.y;\nr0.xyz=r2.zzw*r4.yxx;\nr0.xyz=r2.yxx*r3.xxz+(-r0.xyz);\nr0.xyz=r3.yww*r5.zzw+r0.xyz;\nr6.x=r0.x*r5.y;\nr9.x=r0.y*(-r5.y);\nr12.x=r0.z*r5.y;\n}\nr0.yz=c1.yz;\nr0=cb1[3].xyzx*r0.yyyz+r0.zzzy;\ntexcoord2.z=dot(r0,r12);\ngl_Position=r5.xxxx*(-r8)+r8;\ntexcoord2.x=dot(r0,r6);\ntexcoord2.y=dot(r0,r9);\ntexcoord3.x=dot(r7,cb1[8]);\ntexcoord3.y=dot(r7,cb1[9]);\ntexcoord3.z=dot(r7,cb1[10]);\ntexcoord4.x=dot(r10,cb1[8]);\ntexcoord4.y=dot(r10,cb1[9]);\ntexcoord4.z=dot(r10,cb1[10]);\ntexcoord5.x=dot(r11,cb1[8]);\ntexcoord5.y=dot(r11,cb1[9]);\ntexcoord5.z=dot(r11,cb1[10]);\ntexcoord6.x=dot(r1,cb1[8]);\ntexcoord6.y=dot(r1,cb1[9]);\ntexcoord6.z=dot(r1,cb1[10]);\ntexcoord.x=v5.x;\ntexcoord1.xyz=v0.xyz;\ntexcoord7.xy=v6.xy;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
+	var ps$7 = "\n#if defined(GL_EXT_shader_texture_lod)\n#extension GL_EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(EXT_shader_texture_lod)\n#extension EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(GL_ARB_shader_texture_lod)\n#extension GL_ARB_shader_texture_lod: enable\n#define texture2DGrad texture2DGradARB\n#endif\n#ifdef GL_OES_texture_3D\n#extension GL_OES_texture_3D: enable\n#endif\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\n#if defined(GL_ES)&&!defined(GL_EXT_shader_texture_lod)&&!defined(EXT_shader_texture_lod)\n#define texture2DLod(s,u,l) texture2D(s,u)\n#define textureCubeLod(s,u,l) textureCube(s,u)\n#define texture2DGrad(s,u,x,y) texture2D(s,u)\n#define textureCubeGrad(s,u,x,y) textureCube(s,u)\n#endif\n#if !defined(GL_ES)||defined(GL_OES_texture_3D)\n#define tex3D(s,uvw,sl,su,sw,lw,l) texture3D(s,uvw,l)\n#ifdef GL_EXT_shader_texture_lod\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3DLod(s,uvw,l)\n#else\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3D(s,uvw)\n#endif\n#else\n#define sampler3D sampler2D\nvec4 tex3D(sampler2D s,vec3 uvw,float sl,bool su,bool sw,bool lw,float l)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2D(s,vec2(uvw.x,y+s0));\nvec4 c1=texture2D(s,vec2(uvw.x,y+s1));\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#ifndef tex3DLod\nvec4 tex3DLod(sampler2D s,vec3 uvw,float l,float sl,bool su,bool sw,bool lw)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2DLod(s,vec2(uvw.x,y+s0),l);\nvec4 c1=texture2DLod(s,vec2(uvw.x,y+s1),l);\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nuniform sampler2D s0;\nuniform sampler2D s1;\nuniform sampler3D s2;\n#ifndef GL_OES_texture_3D\nuniform float s2sl;\n#else\n#define s2sl 0.0\n#endif\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb2[22];\nuniform vec4 cb4[1];\nuniform vec4 cb7[12];\nuniform ivec4 i0;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c12=vec4(1,-1,0,-9.99999975e-006);\nvec4 c13=vec4(0.5,0.375,0.0625,0.5625);\nvec4 c14=vec4(0,0.100000001,0.0909090936,0.055555556);\nvec4 c15=vec4(-0.00313080009,12.9200001,0.416666657,0);\nvec4 c16=vec4(1.05499995,-0.0549999997,0,0);\nivec4 i0=ivec4(12,0,0,0);\nv0=texcoord;\nv1=texcoord1;\nv2=texcoord2;\nv3=texcoord3;\nv4=texcoord4;\nv5=texcoord5;\nv6=texcoord6;\nv7=texcoord7;\nr0.xyz=v1.xyz;\nr1.xyz=r0.xyz+(-v2.xyz);\nr0.w=1.0/r1.x;\nr2=c12.xyxy+(-v2.xxyy);\nr2.xy=r0.ww*r2.xy;\nr0.w=r1.x>=0.0?r2.x:r2.y;\nr1.x=1.0/r1.y;\nr1.xw=r1.xx*r2.zw;\nr1.x=r1.y>=0.0?r1.x:r1.w;\nr2.x=min(r0.w,r1.x);\nr0.w=1.0/r1.z;\nr1.x=c12.y+(-v2.z);\nr1.x=r0.w*r1.x;\nr0.w=r0.w*(-v2.z);\nr0.w=r1.z>=0.0?r0.w:r1.x;\nr1.x=min(r2.x,r0.w);\nr2.xyz=mix(v2.xyz,r0.xyz,r1.xxx);\nr0.xy=c12.xy;\nr0.x=r0.x+cb2[20].y;\nr0.x=1.0/r0.x;\nr1.y=r0.x*cb2[20].x;\nr1.x=c12.x;\nr3.w=dot(v6.zw,r1.xy)+c12.z;\nr3.x=dot(v3.zw,r1.xy)+c12.z;\nr3.y=dot(v4.zw,r1.xy)+c12.z;\nr3.z=dot(v5.zw,r1.xy)+c12.z;\nr2.w=c12.x;\nr0.x=dot(r2,r3);\nr0.z=1.0/r3.z;\nr1.z=r0.z*(-r3.w);\nr4=v1.xyzx*c12.xxxz+c12.zzzx;\nr0.z=dot(r4,r3);\nr4.xyz=(-r2.xyz)+v1.xyz;\nr0.w=dot(r3.xyz,r4.xyz);\nr0.w=1.0/r0.w;\nr1.xy=c12.zz;\nr4.xyz=(-r2.xyz)+r1.yyz;\nr1.w=dot(r3.xyz,r4.xyz);\nr0.w=r0.w*r1.w;\nr4.xyz=mix(r2.xyz,v1.xyz,r0.www);\n{bvec3 tmp=greaterThanEqual((-r0.zzz),vec3(0.0));r4.xyz=vec3(tmp.x?v1.x:r4.x,tmp.y?v1.y:r4.y,tmp.z?v1.z:r4.z);};\nr1.xyz=r1.xyz+(-r4.xyz);\nr0.z=dot(r3.xyz,r1.xyz);\nr1.xyz=r2.xyz+(-r4.xyz);\nr0.w=dot(r3.xyz,r1.xyz);\nr0.w=1.0/r0.w;\nr0.z=r0.w*r0.z;\nr1.xyz=mix(r4.xyz,r2.xyz,r0.zzz);\n{bvec3 tmp=greaterThanEqual((-r0.xxx),vec3(0.0));r0.xzw=vec3(tmp.x?r2.x:r1.x,tmp.y?r2.y:r1.y,tmp.z?r2.z:r1.z);};\nr1.xyz=(-r0.xzw)+r4.xyz;\nr1.x=dot(r1.xyz,r1.xyz);\nr1.x=r1.x+c12.w;\n{bvec4 tmp=greaterThanEqual(r1.xxxx,vec4(0.0));r1=vec4(tmp.x?(-c12.z):(-c12.x),tmp.y?(-c12.z):(-c12.x),tmp.z?(-c12.z):(-c12.x),tmp.w?(-c12.z):(-c12.x));};\nif(any(lessThan(r1,vec4(0.0))))discard;\nr1.x=1.0/cb7[0].x;\nr1.y=r1.x*c13.x;\nr1.z=1.0/cb7[0].y;\nr2.w=v7.x*r1.z+r1.y;\nr0.xzw=(-r4.xyz)+r0.xzw;\nr3.x=cb7[4].x;\nr1.y=(-r3.x)+cb7[9].x;\nr1.y=cb4[0].z*r1.y+r3.x;\nr1.y=r1.y*cb2[21].x+v0.x;\nr3.xz=cb4[0].xz;\nr1.w=saturate(r3.x*c13.x);\nr3.xy=r1.ww*c13.yy+c13.zw;\nr5.y=(-cb4[0].z)>=0.0?r3.x:r3.y;\nr0.y=cb7[0].x*r1.z+r0.y;\nr2.y=r1.x*r0.y;\nr6.z=c12.z;\nr7.xyz=cb7[1].xyz;\nr1.xzw=(-r7.xyz)+cb7[6].xyz;\nr1.xzw=r3.zzz*r1.xzw+cb7[1].xyz;\nr7.xyz=cb7[2].xyz;\nr3.xyw=(-r7.xyz)+cb7[7].xyz;\nr3.xyw=r3.zzz*r3.xyw+cb7[2].xyz;\nr7.xyz=cb7[3].xyz;\nr7.xyz=(-r7.xyz)+cb7[8].xyz;\nr7.xyz=r3.zzz*r7.xyz+cb7[3].xyz;\nr8=cb7[5];\nr8=(-r8)+cb7[10];\nr8=r3.zzzz*r8+cb7[5];\nr5.zw=c12.zz;\nr2.xz=c12.xz;\nr9=c12.zzzz;\nr10.xyz=r4.xyz;\nfor(int i=0;i<12;++i){ // dynamic bound: ESSL1 forbids a non-constant loop comparison\nr11.xyz=mix(r1.xzw,r3.xyw,(-r10.zzz));\nr12.xyz=r10.xyz*cb7[11].xyz;\nr12.xyz=r7.xyz*r12.xyz;\nr0.y=r10.z*r10.z;\nr13.z=r12.z*r0.y+r1.y;\nr13.xyw=r12.xyx*c12.xxz;\nr12=tex3DLod(s2,r13.xyz,r13.w,s2sl,true,true,true);\nr12.xyz=r12.xyz+(-c13.xxx);\nr11.xyz=r12.xyz*r11.xyz+r10.xyz;\nr5.x=(-r11.z);\nr12=texture2DLod(s1,r5.xy,r5.w);\n{bvec3 tmp=greaterThanEqual((-r12.xyz),vec3(0.0));r13.xyz=vec3(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x,tmp.z?c12.z:c12.x);};\nr0.y=dot(r13.xyz,r13.xyz);\nr0.y=(-r0.y)>=0.0?c12.z:c12.x;\nr0.y=(-r12.w)>=0.0?c12.z:r0.y;\nif((r0.y!=(-r0.y))){\nr0.y=1.0/r12.w;\nr11.xy=r0.yy*r11.xy;\nr11.xy=r11.xy*c13.xx+c13.xx;\nr11.zw=(-r11.xy)+c12.xx;\n{bvec2 tmp=greaterThanEqual(r11.zw,vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\n{bvec2 tmp=greaterThanEqual(r11.xy,vec2(0.0));r13.xy=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr11.zw=r11.zw+r13.xy;\n{bvec2 tmp=greaterThanEqual((-r11.zw),vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr3.z=dot(r11.zw,r11.zw)+c12.z;\nif(((-r3.z)<c12.z)){\nr13=c12.zzzz;\n}else{\nr6.xy=r11.xy*r2.xy+r2.zw;\nr0.y=r0.y*r0.y;\nr6.w=r0.y*c14.y;\nr13=texture2DLod(s0,r6.xy,r6.w);\n}\nr11=r12*r13;\nr9=r11*r8+r9;\n}\nr10.xyz=r0.xzw*c14.zzz+r10.xyz;\n}\nr0.xyz=r0.xzw*cb7[11].xyz;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c14.w;\nr0=r0.xxxx*r9;\nr1.xyz=max(r0.xyz,c12.zzz);\nr0.x=r1.x>0.0?log2(r1.x):-3.402823466e+38;\nr0.y=r1.y>0.0?log2(r1.y):-3.402823466e+38;\nr0.z=r1.z>0.0?log2(r1.z):-3.402823466e+38;\nr0.xyz=r0.xyz*c15.zzz;\nr2.x=exp2(r0.x);\nr2.y=exp2(r0.y);\nr2.z=exp2(r0.z);\nr0.xyz=r2.xyz*c16.xxx+c16.yyy;\nr2.xyz=r1.xyz+c15.xxx;\nr1.xyz=r1.xyz*c15.yyy;\n{bvec3 tmp=greaterThanEqual(r2.xyz,vec3(0.0));gl_FragData[0].xyz=vec3(tmp.x?r0.x:r1.x,tmp.y?r0.y:r1.y,tmp.z?r0.z:r1.z);};\ngl_FragData[0].w=r0.w;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
 	var BoosterScale = {
 	  name: "BoosterScale",
 	  value: [1, 1, 1, 1],
@@ -333188,7 +333216,7 @@
 	          elements: 2
 	        }],
 	        constants: [BoosterScale],
-	        shader: vs$8
+	        shader: vs$9
 	      },
 	      ps: {
 	        // cb7 order, matching the container's byte offsets
@@ -333223,7 +333251,7 @@
 	            description: "Booster noise volume"
 	          }
 	        })],
-	        shader: ps$6
+	        shader: ps$7
 	      },
 	      // The container's own render states. Without them the box renders
 	      // unculled and its back faces show up as a second, inside-out flame
@@ -333361,8 +333389,8 @@
 	 * That one call becomes the equivalent `clamp`.
 	 */
 
-	var vs$7 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nattribute vec4 attr7;\nattribute vec4 attr8;\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb1[16];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 v8;\nvec4 r0;\nvec4 r1;\nvec4 r2;\nvec4 r3;\nivec4 a0;\nvec4 c[6];\nc[4]=vec4(0.333333343,-0.0187292993,0.0742610022,-0.212114394);\nc[5]=vec4(1.57072878,1.57079637,0.636619747,0);\nc[0]=vec4(-0.5,-0.5,0,0);\nc[1]=vec4(0.5,-0.5,1,0);\nc[2]=vec4(0.5,0.5,1,1);\nc[3]=vec4(-0.5,0.5,0,1);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nv7=attr7;\nv8=attr8;\nr0.x=v1.y;\nr0.y=v2.y;\nr0.z=v3.y;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c[4].x;\nr1.x=v1.x;\nr1.y=v2.x;\nr1.z=v3.x;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr1.x=v1.z;\nr1.y=v2.z;\nr1.z=v3.z;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr0.y=fract(v0.x);\nr0.y=(-r0.y)+v0.x;\na0.x=int(r0.y+0.5);\nr0.zw=c[1].zw;\nif(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else{r1.xyz=r0.zzw*c[3].xyx;}\nif(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else{texcoord.xyw=r0.zzw*c[3].zwz;}\nr2.x=dot(v4.xyz,r1.xyz);\nr2.y=dot(v5.xyz,r1.xyz);\nr2.z=dot(v6.xyz,r1.xyz);\nr1.xw=v4.ww*c[1].zw+c[1].wz;\nr1.y=v5.w;\nr1.z=v6.w;\nr3.x=dot(v1,r1);\nr3.y=dot(v2,r1);\nr3.z=dot(v3,r1);\nr3.w=c[1].z;\nr1.x=dot(r3,cb1[8]);\nr1.y=dot(r3,cb1[9]);\nr1.z=dot(r3,cb1[10]);\nr3.w=dot(r3,cb1[11]);\nr3.xyz=r2.xyz*r0.xxx+r1.xyz;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\nr0.y=r0.y*r1.z;\nr0.y=saturate((-r0.y));\ngl_Position.x=dot(r3,cb1[12]);\ngl_Position.y=dot(r3,cb1[13]);\ngl_Position.z=dot(r3,cb1[14]);\ngl_Position.w=dot(r3,cb1[15]);\nr1.x=v4.x;\nr1.y=v5.x;\nr1.z=v6.x;\nr0.z=dot(r1.xyz,r1.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.x=1.0/r0.z;\nr2.x=v4.y;\nr2.y=v5.y;\nr2.z=v6.y;\nr0.z=dot(r2.xyz,r2.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.y=1.0/r0.z;\nr0.xz=r0.xx*r1.xy;\ntexcoord.z=min(r0.z,r0.x);\nr0.x=r0.y*c[4].y+c[4].z;\nr0.x=r0.x*r0.y+c[4].w;\nr0.x=r0.x*r0.y+c[5].x;\nr0.y=(-r0.y)+c[1].z;\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.x*(-r0.y)+c[5].y;\nr0.x=r0.x*c[5].z;\nr0.x=r0.x*r0.x;\nr1=v7;\nr1=r1*v8.xxxx;\ntexcoord3=r0.xxxx*r1;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
-	var ps$5 = "\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 r0;\nvec4 c0=vec4(-0.5,0,0.00100000005,-0.999001026);\nvec4 c1=vec4(1.00100005,0,0,0);\nv0=texcoord;\nv1=texcoord3;\nr0.xy=c0.xx+v0.xy;\nr0.xy=r0.xy+r0.xy;\nr0.x=dot(r0.xy,r0.xy)+c0.y;\nr0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\nr0.x=r0.x+c0.z;\nr0.x=1.0/r0.x;\nr0.x=r0.x+c0.w;\nr0.x=r0.x*c1.x;\ngl_FragData[0]=r0.xxxx*v1;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
+	var vs$8 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nattribute vec4 attr7;\nattribute vec4 attr8;\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb1[16];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 v8;\nvec4 r0;\nvec4 r1;\nvec4 r2;\nvec4 r3;\nivec4 a0;\nvec4 c[6];\nc[4]=vec4(0.333333343,-0.0187292993,0.0742610022,-0.212114394);\nc[5]=vec4(1.57072878,1.57079637,0.636619747,0);\nc[0]=vec4(-0.5,-0.5,0,0);\nc[1]=vec4(0.5,-0.5,1,0);\nc[2]=vec4(0.5,0.5,1,1);\nc[3]=vec4(-0.5,0.5,0,1);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nv7=attr7;\nv8=attr8;\nr0.x=v1.y;\nr0.y=v2.y;\nr0.z=v3.y;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c[4].x;\nr1.x=v1.x;\nr1.y=v2.x;\nr1.z=v3.x;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr1.x=v1.z;\nr1.y=v2.z;\nr1.z=v3.z;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr0.y=fract(v0.x);\nr0.y=(-r0.y)+v0.x;\na0.x=int(r0.y+0.5);\nr0.zw=c[1].zw;\nif(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else{r1.xyz=r0.zzw*c[3].xyx;}\nif(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else{texcoord.xyw=r0.zzw*c[3].zwz;}\nr2.x=dot(v4.xyz,r1.xyz);\nr2.y=dot(v5.xyz,r1.xyz);\nr2.z=dot(v6.xyz,r1.xyz);\nr1.xw=v4.ww*c[1].zw+c[1].wz;\nr1.y=v5.w;\nr1.z=v6.w;\nr3.x=dot(v1,r1);\nr3.y=dot(v2,r1);\nr3.z=dot(v3,r1);\nr3.w=c[1].z;\nr1.x=dot(r3,cb1[8]);\nr1.y=dot(r3,cb1[9]);\nr1.z=dot(r3,cb1[10]);\nr3.w=dot(r3,cb1[11]);\nr3.xyz=r2.xyz*r0.xxx+r1.xyz;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\nr0.y=r0.y*r1.z;\nr0.y=saturate((-r0.y));\ngl_Position.x=dot(r3,cb1[12]);\ngl_Position.y=dot(r3,cb1[13]);\ngl_Position.z=dot(r3,cb1[14]);\ngl_Position.w=dot(r3,cb1[15]);\nr1.x=v4.x;\nr1.y=v5.x;\nr1.z=v6.x;\nr0.z=dot(r1.xyz,r1.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.x=1.0/r0.z;\nr2.x=v4.y;\nr2.y=v5.y;\nr2.z=v6.y;\nr0.z=dot(r2.xyz,r2.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.y=1.0/r0.z;\nr0.xz=r0.xx*r1.xy;\ntexcoord.z=min(r0.z,r0.x);\nr0.x=r0.y*c[4].y+c[4].z;\nr0.x=r0.x*r0.y+c[4].w;\nr0.x=r0.x*r0.y+c[5].x;\nr0.y=(-r0.y)+c[1].z;\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.x*(-r0.y)+c[5].y;\nr0.x=r0.x*c[5].z;\nr0.x=r0.x*r0.x;\nr1=v7;\nr1=r1*v8.xxxx;\ntexcoord3=r0.xxxx*r1;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
+	var ps$6 = "\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 r0;\nvec4 c0=vec4(-0.5,0,0.00100000005,-0.999001026);\nvec4 c1=vec4(1.00100005,0,0,0);\nv0=texcoord;\nv1=texcoord3;\nr0.xy=c0.xx+v0.xy;\nr0.xy=r0.xy+r0.xy;\nr0.x=dot(r0.xy,r0.xy)+c0.y;\nr0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\nr0.x=r0.x+c0.z;\nr0.x=1.0/r0.x;\nr0.x=r0.x+c0.w;\nr0.x=r0.x*c1.x;\ngl_FragData[0]=r0.xxxx*v1;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
 	var flarequad = {
 	  name: "flarequad",
 	  replaces: "graphics/effect.gles2/managed/space/specialfx/flarequad",
@@ -333411,10 +333439,10 @@
 	          usageIndex: 1,
 	          elements: 2
 	        }],
-	        shader: vs$7
+	        shader: vs$8
 	      },
 	      ps: {
-	        shader: ps$5
+	        shader: ps$6
 	      },
 	      // The container declares none, so the pass inherited the device
 	      // default CULL_CW and its visibility depended on EveChildQuad's
@@ -333465,16 +333493,16 @@
 	 * pass must not disturb the buffers the flare and the scene are using.
 	 */
 
-	var vs$6 = "\nattribute vec4 attr0;\n\nvoid main()\n{\n    // Degenerate on purpose - see the file header.\n    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
-	var ps$4 = "\nprecision highp float;\n\nvoid main()\n{\n    discard;\n}\n";
+	var vs$7 = "\nattribute vec4 attr0;\n\nvoid main()\n{\n    // Degenerate on purpose - see the file header.\n    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
+	var ps$5 = "\nprecision highp float;\n\nvoid main()\n{\n    discard;\n}\n";
 	var technique = {
 	  Main: {
 	    vs: {
 	      inputDefinitions: Pos,
-	      shader: vs$6
+	      shader: vs$7
 	    },
 	    ps: {
-	      shader: ps$4
+	      shader: ps$5
 	    },
 	    states: {
 	      [RS_ZENABLE$1]: 0,
@@ -333609,18 +333637,148 @@
 	  }
 	};
 
+	/**
+	 * GLES motionvector, ported from the shipped DX11 container.
+	 *
+	 * This replaced an EMPTY stub - a vertex shader that put every particle at (2,2)
+	 * and a pixel shader that wrote vec4(0) - which existed because the shipped GLES
+	 * program has more loops than the profile allows. The DX11 program has NO loops at
+	 * all: two branches and straight-line arithmetic. So it ports directly, and the
+	 * register layouts agree where it matters - `cb3[0..3]` is the per-object world
+	 * matrix and `cb1[8..11]` / `cb1[12..15]` are ViewMat / ProjectionMat on both
+	 * profiles (`EveSpaceScene.js` per-frame VS layout).
+	 *
+	 * Source: the translated GLSL of
+	 * `res:/graphics/effect.dx11/managed/space/specialfx/particles/motionvector.sm_depth`,
+	 * captured from a live draw on hardware (2026-09-16).
+	 *
+	 * TWO DELIBERATE OMISSIONS, both scene-fed samplers the manual definition cannot
+	 * reach, and both multiply-only so their absence leaves geometry and colour intact:
+	 *
+	 *   - the soft-depth fade against the scene depth buffer (DX11 `s1`), which scales
+	 *     alpha where a particle approaches geometry. Particles read hard-edged against
+	 *     intersecting hull instead of fading out.
+	 *   - the height-fog lookup (DX11 `s0`, a 2D array), which scales the final colour.
+	 *     It measured 1.0 on the hull tested, so dropping it changes nothing there.
+	 *
+	 * The DX11 program also ends with a gamma multiply and a linear->sRGB encode. GLES
+	 * manual programs write linear and let the target encode, so that tail is dropped
+	 * too - `planeglow` and the rest of this folder do the same.
+	 *
+	 * Constant registers are OURS, not the DX11 container's: it packs `UseWorldScale`
+	 * and `Depth` into one register, while a manual definition gives every declared
+	 * constant its own. So `cb0[3].x` is UseWorldScale and `cb0[4].x` is Depth here.
+	 */
+
+	var SpriteFactors = {
+	  name: "SpriteFactors",
+	  value: [0, 0, 0, 0]
+	};
+	var VelocityStretch = {
+	  name: "VelocityStretch",
+	  value: [0, 0, 0, 0]
+	};
+	var SpriteFactors2 = {
+	  name: "SpriteFactors2",
+	  value: [1, 1, 1, 1]
+	};
+	var UseWorldScale = {
+	  name: "UseWorldScale",
+	  value: [0, 0, 0, 0]
+	};
+	var Depth = {
+	  name: "Depth",
+	  value: [0, 0, 0, 0]
+	};
+	var AtlasInfo = {
+	  name: "AtlasInfo",
+	  value: [1, 1, 1, 0]
+	};
+	var Colors = {
+	  name: "Colors",
+	  value: [0, 1, 1, 0]
+	};
+	var Colors2 = {
+	  name: "Colors2",
+	  value: [0, 0, 0, 1]
+	};
+	var textures$2 = [createTex("TextureMap", TEX_2D, {
+	  ui: {
+	    description: "Sprite atlas: red is the ramp lookup, alpha the coverage"
+	  }
+	}), createTex("ColorRampMap", TEX_2D, {
+	  ui: {
+	    description: "Colour ramp, U from the atlas red channel and V from particle age"
+	  }
+	}), createTex("GradientMap", TEX_2D, {
+	  ui: {
+	    description: "Flow map displacing the two atlas frames apart"
+	  }
+	})];
+
+	// The per-instance stream the particle system writes, in the order the DX11 input
+	// signature declares it: position, (age, rotation scale), velocity, (size start,
+	// size end), rotation base, rotation rate.
+	var inputDefinitions$2 = [{
+	  usage: "POSITION",
+	  usageIndex: 0,
+	  elements: 3
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 0,
+	  elements: 2
+	}, {
+	  usage: "POSITION",
+	  usageIndex: 8,
+	  elements: 3
+	}, {
+	  usage: "TANGENT",
+	  usageIndex: 8,
+	  elements: 2
+	}, {
+	  usage: "NORMAL",
+	  usageIndex: 8,
+	  elements: 3
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 8,
+	  elements: 2
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 9,
+	  elements: 1
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 10,
+	  elements: 1
+	}];
+	var vs$6 = "\n\nattribute vec4 attr0;   // POSITION0  quad corner, -0.5..0.5\nattribute vec4 attr1;   // TEXCOORD0  quad uv\nattribute vec4 attr2;   // POSITION8  particle position\nattribute vec4 attr3;   // TANGENT8   x: normalised age, y: rotation scale\nattribute vec4 attr4;   // NORMAL8    particle velocity\nattribute vec4 attr5;   // TEXCOORD8  x: size at birth, y: size at death\nattribute vec4 attr6;   // TEXCOORD9  rotation base\nattribute vec4 attr7;   // TEXCOORD10 rotation rate\n\nvarying vec4 texcoord;  // uv, age, view z\nvarying vec4 texcoord1; // clip z, clip w, depth scale\n\nuniform vec4 cb0[5];\nuniform vec4 cb1[16];\nuniform vec4 cb3[4];\nuniform vec3 ssyf;\n\nvoid main()\n{\n    // The object's uniform scale, taken the way the donor takes it: transform (1,1,1)\n    // by the world rotation and normalise by sqrt(3).\n    vec3 unit;\n    unit.x = dot(vec3(1.0, 1.0, 1.0), cb3[0].xyz);\n    unit.y = dot(vec3(1.0, 1.0, 1.0), cb3[1].xyz);\n    unit.z = dot(vec3(1.0, 1.0, 1.0), cb3[2].xyz);\n    float worldScale = sqrt(dot(unit, unit)) * 0.5773502588272095;\n\n    bool useWorldScale = cb0[3].x > 0.0;\n\n    vec4 velocity;\n    velocity.x = dot(attr4.xyz, cb3[0].xyz);\n    velocity.y = dot(attr4.xyz, cb3[1].xyz);\n    velocity.z = dot(attr4.xyz, cb3[2].xyz);\n    velocity.w = dot(attr4.xyz, cb3[3].xyz);\n    if (useWorldScale) velocity = velocity / worldScale;\n\n    vec4 velocityView;\n    velocityView.x = dot(velocity, cb1[8]);\n    velocityView.y = dot(velocity, cb1[9]);\n    velocityView.z = dot(velocity, cb1[10]);\n    velocityView.w = dot(velocity, cb1[11]);\n\n    vec4 local = vec4(attr2.xyz, 1.0);\n    vec4 world;\n    world.x = dot(local, cb3[0]);\n    world.y = dot(local, cb3[1]);\n    world.z = dot(local, cb3[2]);\n    world.w = dot(local, cb3[3]);\n\n    vec4 view;\n    view.x = dot(world, cb1[8]);\n    view.y = dot(world, cb1[9]);\n    view.z = dot(world, cb1[10]);\n    view.w = dot(world, cb1[11]);\n\n    // Where the particle would be one velocity ahead, projected, gives the direction\n    // it is travelling ON SCREEN - which is what the quad stretches along.\n    vec4 ahead = velocityView + view;\n    vec2 motion = vec2(dot(ahead, cb1[12]), dot(ahead, cb1[13]))\n        - vec2(dot(view, cb1[12]), dot(view, cb1[13]));\n    float motionLength = sqrt(dot(motion, motion));\n    vec2 motionDirection = motion / motionLength;\n    bool moving = motionLength > 0.0;\n\n    float size = attr3.x * (attr5.y - attr5.x) + attr5.x;\n    if (useWorldScale) size = size * worldScale;\n\n    vec2 corner = size * attr0.xy;\n\n    float angle = (attr3.x * attr7.x) * attr3.y + attr6.x + cb0[0].y;\n    float sinA = sin(angle);\n    float cosA = cos(angle);\n    vec2 rotated = vec2(dot(vec2(cosA, -sinA), corner), dot(vec2(sinA, cosA), corner));\n\n    vec4 corners = view + vec4(rotated, 0.0, 0.0);\n\n    if (moving)\n    {\n        // How far along the screen-space motion this corner sits decides how much of\n        // the velocity it is dragged by, so the quad shears into a streak.\n        float along = dot(rotated, motionDirection);\n        float stretch = clamp(attr3.x / cb0[2].x, 0.0, 1.0) * cb0[1].x;\n        corners.xyz = (velocityView.xyz * stretch) * along + corners.xyz;\n    }\n\n    gl_Position.x = dot(corners, cb1[12]);\n    gl_Position.y = dot(corners, cb1[13]);\n    gl_Position.z = dot(corners, cb1[14]);\n    gl_Position.w = dot(corners, cb1[15]);\n\n    texcoord = vec4(attr1.xy, attr3.x, corners.z);\n    texcoord1 = vec4(gl_Position.z, gl_Position.w, cb0[4].x, 0.0);\n\n    gl_Position.xy += ssyf.xy * gl_Position.w;\n    gl_Position.y *= ssyf.z;\n    gl_Position.z = gl_Position.z * 2.0 - gl_Position.w;\n}\n";
+	var ps$4 = "\n\n".concat(precision, "\n\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\n\nuniform sampler2D s0;   // TextureMap\nuniform sampler2D s1;   // ColorRampMap\nuniform sampler2D s2;   // GradientMap\n\nuniform vec4 cb7[3];\n\n// One atlas cell, from a frame index: row then column, each clamped to the atlas so\n// a frame past the end repeats the last cell rather than wrapping into the first.\nvec2 atlasUV(float frame, vec2 uv)\n{\n    float columns = cb7[0].x;\n    float rows = cb7[0].y;\n    float row = min(rows - 1.0, floor(frame / columns));\n    float column = min(columns - 1.0, floor(frame - row * columns));\n    return (clamp(uv, 0.0, 1.0) + vec2(column, row)) / vec2(columns, rows);\n}\n\nvoid main()\n{\n    float frames = cb7[0].x * cb7[0].y;\n    bool loops = cb7[0].w > 0.0;\n\n    float position = frames * fract(texcoord.z);\n    float blend = fract(position);\n    float first = floor(position);\n    float last = frames - 1.0;\n\n    float next = first + 1.0;\n    next = loops ? (next >= frames ? 0.0 : next) : min(last, next);\n\n    // A finished, non-looping sprite holds on its final frame.\n    bool finished = !loops && texcoord.z >= 1.0;\n    if (finished) { first = last; next = last; }\n\n    // The flow map pushes the two frames apart along its gradient, so the crossfade\n    // between them slides instead of ghosting.\n    vec2 flowFirst = vec2(0.0, 0.0);\n    vec2 flowNext = vec2(0.0, 0.0);\n    if (cb7[1].w > 0.0)\n    {\n        vec2 a = texture2D(s2, atlasUV(first, texcoord.xy)).xy * 2.0 - 1.0;\n        vec2 b = texture2D(s2, atlasUV(next, texcoord.xy)).xy * 2.0 - 1.0;\n        flowFirst = a * blend * cb7[1].w;\n        flowNext = b * (1.0 - blend) * cb7[1].w;\n    }\n\n    vec2 sampleFirst = texture2D(s0, atlasUV(first, clamp(texcoord.xy - flowFirst, 0.0, 1.0))).xw;\n    vec2 sampleNext = texture2D(s0, atlasUV(next, clamp(texcoord.xy + flowNext, 0.0, 1.0))).xw;\n    vec2 blended = sampleFirst + blend * (sampleNext - sampleFirst);\n\n    if (blended.y <= 0.0) discard;\n\n    float rampU = clamp((blended.x - cb7[1].x) / (cb7[1].y - cb7[1].x), 0.0, 1.0);\n    vec4 ramp = texture2D(s1, vec2(rampU, texcoord.z));\n\n    gl_FragData[0] = vec4(ramp.xyz * cb7[1].zzz, blended.y * ramp.w * cb7[2].w);\n}\n");
 	var motionvector = {
 	  name: "motionvector",
 	  replaces: "graphics/effect.gles2/managed/space/specialfx/particles/motionvector",
-	  description: "Temporary transparent replacement for the broken server motionvector shader",
+	  description: "Motion vector particles, ported from the DX11 container",
 	  techniques: {
 	    Main: {
 	      vs: {
-	        inputDefinitions: [],
-	        shader: "\n\n                    uniform vec3 ssyf;\n\n                    void main()\n                    {\n                        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);\n                        gl_Position.xy += ssyf.xy * gl_Position.w;\n                        gl_Position.y *= ssyf.z;\n                        gl_Position.z = gl_Position.z * 2.0 - gl_Position.w;\n                    }\n                "
+	        inputDefinitions: inputDefinitions$2,
+	        constants: [SpriteFactors, VelocityStretch, SpriteFactors2, UseWorldScale, Depth],
+	        shader: vs$6
 	      },
 	      ps: {
-	        shader: "\n\n                    ".concat(precision, "\n\n                    void main()\n                    {\n                        gl_FragData[0] = vec4(0.0);\n                    }\n                ")
+	        constants: [AtlasInfo, Colors, Colors2],
+	        textures: textures$2,
+	        shader: ps$4
+	      },
+	      // Soft particles: depth tested but not depth writing, alpha blended, and
+	      // two sided because a stretched quad can be dragged past edge-on.
+	      states: {
+	        [RS_ZENABLE$1]: 1,
+	        [RS_ZWRITEENABLE$1]: 0,
+	        [RS_CULLMODE$1]: CULL_NONE,
+	        [RS_ALPHABLENDENABLE$1]: 1,
+	        [RS_SRCBLEND$1]: BLEND_SRCALPHA,
+	        [RS_DESTBLEND$1]: BLEND_INVSRCALPHA
 	      }
 	    }
 	  }
