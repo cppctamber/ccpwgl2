@@ -3493,6 +3493,7 @@ export class EveSOFData extends meta.Model
                     MaskMap: srcSet.maskMapResPath
                 }
             });
+            set.skinned = isSkinned && srcSet.skinned;
             srcSet.items.forEach(item => set.CreateItem(item));
 
             // Update faction colours

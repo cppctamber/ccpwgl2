@@ -156,7 +156,9 @@ export class EvePlaneSetItem extends EveObjectSetItem
     GetTransform(out)
     {
         mat4.copy(out, this._localTransform);
-        if (this._bone) mat4.multiply(out, this._bone.offsetTransform, out);
+        // Carbon uses the bone only when the SET is skinned (EvePlaneSet.cpp:191-207, :338);
+        // soec1_t1 plane items carry boneIndex 0 on non-skinned sets and rode that bone.
+        if (this._bone && this._parent && this._parent.skinned) mat4.multiply(out, this._bone.offsetTransform, out);
         return out;
     }
 
@@ -168,7 +170,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
     GetBoundingBox(out)
     {
         box3.fromTransform(out, this._localTransform);
-        if (this._bone) box3.transformMat4(out, out, this._bone.offsetTransform);
+        if (this._bone && this._parent && this._parent.skinned) box3.transformMat4(out, out, this._bone.offsetTransform);
         return out;
     }
 
@@ -297,12 +299,16 @@ export class EvePlaneSet extends EveObjectSet
     @meta.uint
     usage = 0;
 
+    /** Carbon `m_isSkinned` / `SetIsSkinned` (EvePlaneSet.cpp:74,144; EveSOF.cpp:1242). */
+    @meta.boolean
+    skinned = false;
+
     _vertexBuffer = null;
     _indexBuffer = null;
     _vertexArray = null;
     _activationStrength = 1;
     _worldScratch = mat4.create();
-    _decl =Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
+    _decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
 
     /**
      * Alias for this.items
@@ -554,7 +560,13 @@ export class EvePlaneSet extends EveObjectSet
         for (let i = 0; i < items.length; ++i)
         {
             const item = items[i];
-            mat4.multiply(world, this._parentTransform, item.GetTransform(world));
+            // Carbon applies a bone only in the skinned branch, and only for an item that
+            // has one (EvePlaneSet.cpp:191-207, :338): `data.transform * bone * parent`,
+            // which reverses to `parent * bone * local` in gl-matrix order.
+            const bone = this.skinned && item.boneIndex >= 0 ? item._bone : null;
+            mat4.copy(world, item._localTransform);
+            if (bone) mat4.multiply(world, bone.offsetTransform, world);
+            mat4.multiply(world, this._parentTransform, world);
 
             for (let j = 0; j < 4; ++j)
             {

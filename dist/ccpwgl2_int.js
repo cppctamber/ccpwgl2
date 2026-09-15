@@ -228968,8 +228968,8 @@
 	  return duration;
 	}
 
-	var _dec$5M, _dec2$5k, _dec3$4V, _dec4$4k, _dec5$3Q, _dec6$3l, _dec7$2U, _dec8$2x, _dec9$2a, _dec0$1$, _dec1$1S, _dec10$1D, _dec11$1w, _dec12$1n, _dec13$1e, _dec14$16, _dec15$11, _dec16$U, _dec17$P, _dec18$K, _dec19$F, _dec20$C, _dec21$y, _dec22$v, _dec23$s, _dec24$r, _dec25$p, _dec26$l, _dec27$k, _dec28$i, _dec29$e, _dec30$c, _dec31$b, _dec32$b, _dec33$9, _dec34$8, _dec35$8, _dec36$7, _dec37$6, _dec38$6, _dec39$5, _dec40$5, _dec41$4, _dec42$4, _dec43$4, _dec44$4, _dec45$4, _class$5M, _class2$5h, _descriptor$5e, _descriptor2$4L, _descriptor3$4a, _descriptor4$3E, _descriptor5$3b, _descriptor6$2G, _descriptor7$2e, _descriptor8$1Z, _descriptor9$1Q, _descriptor0$1K, _descriptor1$1s, _descriptor10$1j, _descriptor11$1a, _descriptor12$12, _descriptor13$Z, _descriptor14$R, _descriptor15$J, _descriptor16$C, _descriptor17$z, _descriptor18$w, _descriptor19$q, _descriptor20$o, _descriptor21$n, _descriptor22$m, _descriptor23$l, _descriptor24$i, _descriptor25$g, _descriptor26$c, _descriptor27$9, _descriptor28$9, _descriptor29$7, _descriptor30$7, _descriptor31$6, _descriptor32$5, _descriptor33$5, _descriptor34$5, _descriptor35$5, _descriptor36$5, _descriptor37$4, _descriptor38$4, _descriptor39$4, _descriptor40$4, _descriptor41$4, _descriptor42$4, _descriptor43$2;
-	var EveChildInheritProperties = (_dec$5M = partialImplementation, _dec2$5k = define("EveChildInheritProperties", true), _dec3$4V = struct, _dec4$4k = color$2, _dec5$3Q = color$2, _dec6$3l = color$2, _dec7$2U = color$2, _dec8$2x = color$2, _dec9$2a = color$2, _dec0$1$ = color$2, _dec1$1S = color$2, _dec10$1D = color$2, _dec11$1w = color$2, _dec12$1n = color$2, _dec13$1e = color$2, _dec14$16 = color$2, _dec15$11 = color$2, _dec16$U = color$2, _dec17$P = color$2, _dec18$K = color$2, _dec19$F = color$2, _dec20$C = color$2, _dec21$y = color$2, _dec22$v = color$2, _dec23$s = color$2, _dec24$r = color$2, _dec25$p = color$2, _dec26$l = color$2, _dec27$k = color$2, _dec28$i = color$2, _dec29$e = color$2, _dec30$c = color$2, _dec31$b = color$2, _dec32$b = color$2, _dec33$9 = color$2, _dec34$8 = color$2, _dec35$8 = color$2, _dec36$7 = color$2, _dec37$6 = color$2, _dec38$6 = color$2, _dec39$5 = color$2, _dec40$5 = color$2, _dec41$4 = color$2, _dec42$4 = color$2, _dec43$4 = color$2, _dec44$4 = color$2, _dec45$4 = color$2, _dec$5M(_class$5M = _dec2$5k(_class$5M = (_class2$5h = class EveChildInheritProperties extends Model$1 {
+	var _dec$5M, _dec2$5k, _dec3$4V, _dec4$4k, _dec5$3Q, _dec6$3l, _dec7$2U, _dec8$2x, _dec9$2a, _dec0$1$, _dec1$1S, _dec10$1D, _dec11$1w, _dec12$1n, _dec13$1e, _dec14$16, _dec15$11, _dec16$U, _dec17$P, _dec18$K, _dec19$F, _dec20$C, _dec21$y, _dec22$v, _dec23$s, _dec24$r, _dec25$p, _dec26$l, _dec27$k, _dec28$i, _dec29$e, _dec30$c, _dec31$b, _dec32$b, _dec33$9, _dec34$8, _dec35$8, _dec36$7, _dec37$6, _dec38$6, _dec39$5, _dec40$5, _dec41$5, _dec42$4, _dec43$4, _dec44$4, _dec45$4, _class$5M, _class2$5h, _descriptor$5e, _descriptor2$4L, _descriptor3$4a, _descriptor4$3E, _descriptor5$3b, _descriptor6$2G, _descriptor7$2e, _descriptor8$1Z, _descriptor9$1Q, _descriptor0$1K, _descriptor1$1s, _descriptor10$1j, _descriptor11$1a, _descriptor12$12, _descriptor13$Z, _descriptor14$R, _descriptor15$J, _descriptor16$C, _descriptor17$z, _descriptor18$w, _descriptor19$q, _descriptor20$o, _descriptor21$n, _descriptor22$m, _descriptor23$l, _descriptor24$i, _descriptor25$g, _descriptor26$c, _descriptor27$9, _descriptor28$9, _descriptor29$7, _descriptor30$7, _descriptor31$6, _descriptor32$6, _descriptor33$5, _descriptor34$5, _descriptor35$5, _descriptor36$5, _descriptor37$4, _descriptor38$4, _descriptor39$4, _descriptor40$4, _descriptor41$4, _descriptor42$4, _descriptor43$2;
+	var EveChildInheritProperties = (_dec$5M = partialImplementation, _dec2$5k = define("EveChildInheritProperties", true), _dec3$4V = struct, _dec4$4k = color$2, _dec5$3Q = color$2, _dec6$3l = color$2, _dec7$2U = color$2, _dec8$2x = color$2, _dec9$2a = color$2, _dec0$1$ = color$2, _dec1$1S = color$2, _dec10$1D = color$2, _dec11$1w = color$2, _dec12$1n = color$2, _dec13$1e = color$2, _dec14$16 = color$2, _dec15$11 = color$2, _dec16$U = color$2, _dec17$P = color$2, _dec18$K = color$2, _dec19$F = color$2, _dec20$C = color$2, _dec21$y = color$2, _dec22$v = color$2, _dec23$s = color$2, _dec24$r = color$2, _dec25$p = color$2, _dec26$l = color$2, _dec27$k = color$2, _dec28$i = color$2, _dec29$e = color$2, _dec30$c = color$2, _dec31$b = color$2, _dec32$b = color$2, _dec33$9 = color$2, _dec34$8 = color$2, _dec35$8 = color$2, _dec36$7 = color$2, _dec37$6 = color$2, _dec38$6 = color$2, _dec39$5 = color$2, _dec40$5 = color$2, _dec41$5 = color$2, _dec42$4 = color$2, _dec43$4 = color$2, _dec44$4 = color$2, _dec45$4 = color$2, _dec$5M(_class$5M = _dec2$5k(_class$5M = (_class2$5h = class EveChildInheritProperties extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "source", _descriptor$5e, this);
@@ -229009,7 +229009,7 @@
 	    _initializerDefineProperty(this, "State1", _descriptor29$7, this);
 	    _initializerDefineProperty(this, "State2", _descriptor30$7, this);
 	    _initializerDefineProperty(this, "State3", _descriptor31$6, this);
-	    _initializerDefineProperty(this, "StateVulnerable", _descriptor32$5, this);
+	    _initializerDefineProperty(this, "StateVulnerable", _descriptor32$6, this);
 	    _initializerDefineProperty(this, "StateInvulnerable", _descriptor33$5, this);
 	    _initializerDefineProperty(this, "PrimaryForcefield", _descriptor34$5, this);
 	    _initializerDefineProperty(this, "SecondaryForcefield", _descriptor35$5, this);
@@ -229267,7 +229267,7 @@
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor32$5 = _applyDecoratedDescriptor(_class2$5h.prototype, "StateVulnerable", [_dec34$8], {
+	}), _descriptor32$6 = _applyDecoratedDescriptor(_class2$5h.prototype, "StateVulnerable", [_dec34$8], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -229316,7 +229316,7 @@
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor39$4 = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryFx", [_dec41$4], {
+	}), _descriptor39$4 = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryFx", [_dec41$5], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -240441,7 +240441,7 @@
 	  return out;
 	}
 
-	var _dec$5t, _dec2$51, _dec3$4C, _dec4$43, _dec5$3A, _dec6$36, _dec7$2F, _dec8$2k, _dec9$1Z, _dec0$1O, _dec1$1F, _dec10$1r, _dec11$1k, _dec12$1b, _dec13$12, _dec14$W, _dec15$R, _dec16$I, _dec17$D, _dec18$y, _dec19$u, _class$5t, _class2$4_, _descriptor$4X, _descriptor2$4t, _descriptor3$3V, _descriptor4$3r, _descriptor5$2_, _descriptor6$2t, _descriptor7$21, _descriptor8$1M, _descriptor9$1D, _descriptor0$1x, _descriptor1$1g, _descriptor10$17, _descriptor11$_, _descriptor12$T, _descriptor13$O, _descriptor14$H, _descriptor15$z, _descriptor16$s, _dec20$s, _dec21$p, _dec22$o, _dec23$l, _dec24$l, _dec25$j, _dec26$g, _dec27$f, _dec28$e, _dec29$a, _dec30$8, _class3$j, _class4$h, _descriptor17$p, _descriptor18$n, _descriptor19$i, _descriptor20$i, _descriptor21$i, _descriptor22$h, _descriptor23$g, _descriptor24$f, _descriptor25$d, _EvePlaneLight, _dec31$8, _dec32$8, _dec33$7, _dec34$7, _dec35$7, _dec36$6, _dec37$5, _dec38$5, _dec39$4, _dec40$4, _class5$6, _class6$4, _descriptor26$a, _descriptor27$8, _descriptor28$8, _descriptor29$6, _descriptor30$6, _descriptor31$5, _EvePlaneSet;
+	var _dec$5t, _dec2$51, _dec3$4C, _dec4$43, _dec5$3A, _dec6$36, _dec7$2F, _dec8$2k, _dec9$1Z, _dec0$1O, _dec1$1F, _dec10$1r, _dec11$1k, _dec12$1b, _dec13$12, _dec14$W, _dec15$R, _dec16$I, _dec17$D, _dec18$y, _dec19$u, _class$5t, _class2$4_, _descriptor$4X, _descriptor2$4t, _descriptor3$3V, _descriptor4$3r, _descriptor5$2_, _descriptor6$2t, _descriptor7$21, _descriptor8$1M, _descriptor9$1D, _descriptor0$1x, _descriptor1$1g, _descriptor10$17, _descriptor11$_, _descriptor12$T, _descriptor13$O, _descriptor14$H, _descriptor15$z, _descriptor16$s, _dec20$s, _dec21$p, _dec22$o, _dec23$l, _dec24$l, _dec25$j, _dec26$g, _dec27$f, _dec28$e, _dec29$a, _dec30$8, _class3$j, _class4$h, _descriptor17$p, _descriptor18$n, _descriptor19$i, _descriptor20$i, _descriptor21$i, _descriptor22$h, _descriptor23$g, _descriptor24$f, _descriptor25$d, _EvePlaneLight, _dec31$8, _dec32$8, _dec33$7, _dec34$7, _dec35$7, _dec36$6, _dec37$5, _dec38$5, _dec39$4, _dec40$4, _dec41$4, _class5$6, _class6$4, _descriptor26$a, _descriptor27$8, _descriptor28$8, _descriptor29$6, _descriptor30$6, _descriptor31$5, _descriptor32$5, _EvePlaneSet;
 	class EvePlaneSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
@@ -240536,7 +240536,9 @@
 	   */
 	  GetTransform(out) {
 	    mat4$2.copy(out, this._localTransform);
-	    if (this._bone) mat4$2.multiply(out, this._bone.offsetTransform, out);
+	    // Carbon uses the bone only when the SET is skinned (EvePlaneSet.cpp:191-207, :338);
+	    // soec1_t1 plane items carry boneIndex 0 on non-skinned sets and rode that bone.
+	    if (this._bone && this._parent && this._parent.skinned) mat4$2.multiply(out, this._bone.offsetTransform, out);
 	    return out;
 	  }
 
@@ -240547,7 +240549,7 @@
 	   */
 	  GetBoundingBox(out) {
 	    box3$2.fromTransform(out, this._localTransform);
-	    if (this._bone) box3$2.transformMat4(out, out, this._bone.offsetTransform);
+	    if (this._bone && this._parent && this._parent.skinned) box3$2.transformMat4(out, out, this._bone.offsetTransform);
 	    return out;
 	  }
 
@@ -240793,7 +240795,7 @@
 	    return "";
 	  }
 	}), _class4$h)) || _class3$j);
-	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$6 = notImplemented, _dec37$5 = byte, _dec38$5 = uint, _dec39$4 = list("EvePlaneSetItem"), _dec40$4 = list("EvePlaneLight"), _dec31$8(_class5$6 = (_class6$4 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
+	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$6 = notImplemented, _dec37$5 = byte, _dec38$5 = uint, _dec39$4 = boolean, _dec40$4 = list("EvePlaneSetItem"), _dec41$4 = list("EvePlaneLight"), _dec31$8(_class5$6 = (_class6$4 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor26$a, this);
@@ -240812,6 +240814,8 @@
 	     * @type {Number}
 	     */
 	    _initializerDefineProperty(this, "usage", _descriptor30$6, this);
+	    /** Carbon `m_isSkinned` / `SetIsSkinned` (EvePlaneSet.cpp:74,144; EveSOF.cpp:1242). */
+	    _initializerDefineProperty(this, "skinned", _descriptor31$5, this);
 	    this._vertexBuffer = null;
 	    this._indexBuffer = null;
 	    this._vertexArray = null;
@@ -240827,7 +240831,7 @@
 	     * (`EvePlaneSet.h:87`).
 	     * @type {Array<EvePlaneLight>}
 	     */
-	    _initializerDefineProperty(this, "lights", _descriptor31$5, this);
+	    _initializerDefineProperty(this, "lights", _descriptor32$5, this);
 	    this._activationStrength = 1;
 	  }
 	  /** Carbon EvePlaneSet::SetShaderOption. */
@@ -241040,7 +241044,13 @@
 	    if (!array || array.length !== items.length * 4 * vertexSize) return;
 	    for (var i = 0; i < items.length; ++i) {
 	      var item = items[i];
-	      mat4$2.multiply(world, this._parentTransform, item.GetTransform(world));
+	      // Carbon applies a bone only in the skinned branch, and only for an item that
+	      // has one (EvePlaneSet.cpp:191-207, :338): `data.transform * bone * parent`,
+	      // which reverses to `parent * bone * local` in gl-matrix order.
+	      var bone = this.skinned && item.boneIndex >= 0 ? item._bone : null;
+	      mat4$2.copy(world, item._localTransform);
+	      if (bone) mat4$2.multiply(world, bone.offsetTransform, world);
+	      mat4$2.multiply(world, this._parentTransform, world);
 	      for (var j = 0; j < 4; ++j) {
 	        var vtxOffset = (i * 4 + j) * vertexSize;
 	        array[vtxOffset] = world[0];
@@ -241318,7 +241328,14 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _applyDecoratedDescriptor(_class6$4.prototype, "planes", [_dec39$4], Object.getOwnPropertyDescriptor(_class6$4.prototype, "planes"), _class6$4.prototype), _descriptor31$5 = _applyDecoratedDescriptor(_class6$4.prototype, "lights", [_dec40$4], {
+	}), _descriptor31$5 = _applyDecoratedDescriptor(_class6$4.prototype, "skinned", [_dec39$4], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return false;
+	  }
+	}), _applyDecoratedDescriptor(_class6$4.prototype, "planes", [_dec40$4], Object.getOwnPropertyDescriptor(_class6$4.prototype, "planes"), _class6$4.prototype), _descriptor32$5 = _applyDecoratedDescriptor(_class6$4.prototype, "lights", [_dec41$4], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -296652,6 +296669,7 @@
 	          MaskMap: srcSet.maskMapResPath
 	        }
 	      });
+	      set.skinned = isSkinned && srcSet.skinned;
 	      srcSet.items.forEach(item => set.CreateItem(item));
 
 	      // Update faction colours
