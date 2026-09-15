@@ -40464,12 +40464,13 @@
 	  }
 
 	  /**
-	   * Checks if the resource is good and keeps it alive
+	   * Keeps the resource alive and checks readiness. Processing resources must
+	   * finish building; legacy resources retain their loaded-state contract.
 	   * @returns {boolean}
 	   */
 	  IsGood() {
 	    this.KeepAlive();
-	    return this.HasLoaded();
+	    return this.constructor.requiresProcessing ? this.HasPrepared() : this.HasLoaded();
 	  }
 
 	  /**
@@ -40567,6 +40568,7 @@
 	   */
 	  OnError() {
 	    var err = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Tw2Error();
+	    resMan.CancelProcessing(this);
 	    var wasGood = this.HasLoaded();
 
 	    /*
@@ -40598,6 +40600,7 @@
 	   * @param {*} [log]
 	   */
 	  OnRequested(log) {
+	    resMan.CancelProcessing(this);
 	    var stateName = this._state === Tw2Resource.State.NO_INIT ? "REQUESTED" : "RELOADING";
 	    if (this._SetState(Tw2Resource.State.REQUESTED)) {
 	      this._requested = Date.now();
@@ -40636,11 +40639,17 @@
 	    }
 	  }
 
+	  /** Loaded data is being built; the scheduler owns the processing status. */
+	  OnProcessing() {
+	    this._SetState(Tw2Resource.State.LOADED);
+	  }
+
 	  /**
 	   * Fires when the resource has been unloads
 	   * @param {*} [log]
 	   */
 	  OnUnloaded(log) {
+	    resMan.CancelProcessing(this);
 	    if (this._SetState(Tw2Resource.State.UNLOADED)) {
 	      resMan.OnPathEvent(this.path, "unloaded", log, this.suppressLogging);
 	      this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
@@ -40652,6 +40661,7 @@
 	   * @param {*} [log]
 	   */
 	  OnPurged(log) {
+	    resMan.CancelProcessing(this);
 	    this._SetState(Tw2Resource.State.PURGED);
 	    resMan.OnPathEvent(this.path, "purged", log, this.suppressLogging);
 	    this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
@@ -40864,7 +40874,7 @@
 	   * Resource states
 	   * @type {*}
 	   */
-	}, _Tw2Resource.State = {
+	}, _Tw2Resource.requiresProcessing = false, _Tw2Resource.State = {
 	  ERROR: -3,
 	  PURGED: -2,
 	  UNLOADED: -1,
@@ -41406,6 +41416,126 @@
 	        }
 	      }
 	    }
+	  }
+	}
+
+	/** Schedules cooperative resource work on the rendering thread. */
+	class Tw2ResourceProcessing {
+	  constructor() {
+	    this.jobs = new Map();
+	    this.ready = [];
+	    this.head = 0;
+	    this.polling = new Set();
+	  }
+	  get size() {
+	    return this.jobs.size;
+	  }
+	  Queue(resource, data, options) {
+	    var _resource$OnProcessin;
+	    this.Cancel(resource);
+	    // A new build invalidates readiness even when it reuses loaded data.
+	    (_resource$OnProcessin = resource.OnProcessing) === null || _resource$OnProcessin === void 0 || _resource$OnProcessin.call(resource);
+	    var job = {
+	      resource,
+	      data,
+	      options,
+	      iterator: null,
+	      waiting: null,
+	      value: undefined
+	    };
+	    this.jobs.set(resource, job);
+	    this.ready.push(job);
+	  }
+	  Cancel(resource, error) {
+	    var job = this.jobs.get(resource);
+	    if (!job) return;
+	    this.jobs.delete(resource);
+	    this.polling.delete(job);
+	    try {
+	      var _job$waiting, _job$waiting$cancel;
+	      (_job$waiting = job.waiting) === null || _job$waiting === void 0 || (_job$waiting$cancel = _job$waiting.cancel) === null || _job$waiting$cancel === void 0 || _job$waiting$cancel.call(_job$waiting);
+	    } finally {
+	      var _job$iterator, _job$iterator$return, _resource$OnProcessin2;
+	      (_job$iterator = job.iterator) === null || _job$iterator === void 0 || (_job$iterator$return = _job$iterator.return) === null || _job$iterator$return === void 0 || _job$iterator$return.call(_job$iterator);
+	      job.data = job.options = job.value = job.iterator = job.waiting = null;
+	      (_resource$OnProcessin2 = resource.OnProcessingCancelled) === null || _resource$OnProcessin2 === void 0 || _resource$OnProcessin2.call(resource, error);
+	    }
+	  }
+	  Clear() {
+	    for (var resource of this.jobs.keys()) this.Cancel(resource);
+	    this.ready.length = this.head = 0;
+	  }
+
+	  /** A step yields nothing to continue later, or a promise to wait without polling. */
+	  Pump(now, budgetMs) {
+	    var _this = this;
+	    var start = now();
+	    // Poll only jobs parked before this tick. A false result never re-enters
+	    // the runnable queue and therefore cannot spin within the same frame.
+	    for (var job of this.polling) {
+	      try {
+	        if (!job.waiting.poll()) continue;
+	        this.polling.delete(job);
+	        job.waiting = null;
+	        this.ready.push(job);
+	      } catch (error) {
+	        this.Fail(job, error);
+	      }
+	    }
+	    var steps = 0;
+	    var _loop = function () {
+	        var job = _this.ready[_this.head];
+	        _this.ready[_this.head++] = null;
+	        var resource = job.resource;
+	        if (_this.jobs.get(resource) !== job) return 0; // continue
+	        steps++;
+	        try {
+	          if (!job.iterator) {
+	            job.iterator = resource.Process(job.data, job.options);
+	            job.data = job.options = null;
+	          }
+	          var result = job.iterator.next(job.value);
+	          job.value = undefined;
+	          if (_this.jobs.get(resource) !== job) return 0; // continue
+	          if (result.done) {
+	            _this.jobs.delete(resource);
+	            try {
+	              resource.OnPrepared();
+	            } catch (error) {
+	              resource.OnError(error);
+	            }
+	          } else if (result.value && typeof result.value.poll === "function") {
+	            job.waiting = result.value;
+	            _this.polling.add(job);
+	          } else if (result.value && typeof result.value.then === "function") {
+	            job.waiting = result.value;
+	            Promise.resolve(result.value).then(value => {
+	              if (_this.jobs.get(resource) !== job) return;
+	              job.waiting = null;
+	              job.value = value;
+	              _this.ready.push(job);
+	            }, error => _this.Fail(job, error));
+	          } else {
+	            _this.ready.push(job);
+	          }
+	        } catch (error) {
+	          _this.Fail(job, error);
+	        }
+	      },
+	      _ret;
+	    while (this.head < this.ready.length && (!steps || now() - start < budgetMs)) {
+	      _ret = _loop();
+	      if (_ret === 0) continue;
+	    }
+	    if (this.head === this.ready.length || this.head > 256) {
+	      this.ready = this.ready.slice(this.head);
+	      this.head = 0;
+	    }
+	  }
+	  Fail(job, error) {
+	    if (this.jobs.get(job.resource) !== job) return;
+	    this.Cancel(job.resource, error);
+	    job.resource.OnError(error);
 	  }
 	}
 
@@ -60578,7 +60708,7 @@
 	 */
 	GsfReader.extension = "gsf";
 
-	var _dec$7U, _class$7U;
+	var _dec$7U, _class$7U, _Tw2GeometryRes;
 
 	// Todo: Change to registration process
 	var readers = {
@@ -60602,7 +60732,7 @@
 	 * @property {Array<Tw2GeometryAnimation>} animations
 	 * @property {Boolean} _boundsDirty
 	 */
-	var Tw2GeometryRes = (_dec$7U = define("Tw2GeometryRes", "TriGeometryRes"), _dec$7U(_class$7U = class Tw2GeometryRes extends Tw2Resource {
+	var Tw2GeometryRes = (_dec$7U = define("Tw2GeometryRes", "TriGeometryRes"), _dec$7U(_class$7U = (_Tw2GeometryRes = class Tw2GeometryRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    this.meshes = [];
@@ -60617,7 +60747,6 @@
 	    this._requestResponseType = null;
 	    this._extension = null;
 	    this._boundsDirty = true;
-	    this._gr2Task = null;
 	  }
 	  /**
 	   * Sets system mirror
@@ -60838,7 +60967,8 @@
 	   * Clears the geometry data
 	   */
 	  Clear() {
-	    this.CancelPreparation();
+	    var cancelProcessing = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	    if (cancelProcessing) this.CancelPreparation();
 	    for (var i = 0; i < this.meshes.length; i++) this.meshes[i].Clear();
 	    this.meshes.splice(0);
 	    this.models.splice(0);
@@ -60849,82 +60979,36 @@
 	    this.boundsSphereRadius = 0;
 	  }
 
-	  /**
-	   * Prepares the object
-	   * TODO: Normalize geometry readers
-	   * @param {*} data
-	   * @param {Object} [options]
-	   */
+	  /** Cancels queued, waiting or partially built geometry. */
 	  CancelPreparation() {
-	    var task = this._gr2Task;
-	    this._gr2Task = null;
-	    if (task) {
-	      var _task$cancel, _task$iterator;
-	      (_task$cancel = task.cancel) === null || _task$cancel === void 0 || _task$cancel.call(task);
-	      task.release();
-	      (_task$iterator = task.iterator) === null || _task$iterator === void 0 || _task$iterator.return();
+	    resMan.CancelProcessing(this);
+	  }
+	  *Process(data, options) {
+	    if (this._extension !== "gr2") {
+	      this.Prepare(data, options, true);
+	      return;
 	    }
-	  }
-	  OnRequested(log) {
-	    this.CancelPreparation();
-	    return super.OnRequested(log);
-	  }
-	  OnError(error) {
-	    this.CancelPreparation();
-	    return super.OnError(error);
+	    this.Clear(false);
+	    var decodeOptions = {
+	      firstMeshOnly: (options === null || options === void 0 ? void 0 : options.firstMeshOnly) !== false,
+	      unpackTangents: !!(options !== null && options !== void 0 && options.unpackTangents)
+	    };
+	    var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
+	    // Cancellation of the yielded promise is owned by the scheduler.
+	    data = null;
+	    var json = yield decoded;
+	    yield* Gr2Reader.BuildGeometryResSteps(json, this, options);
+	    this.RebuildBounds();
+	    this._custom = null;
+	    if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
 	  }
 	  Prepare(data, options) {
-	    if (options !== null && options !== void 0 && options._gr2Task) {
-	      var task = options._gr2Task;
-	      if (task !== this._gr2Task) return;
-	      var started = resMan.tw2.now;
-	      var budget = Math.max(0, resMan._prepareBudget) * 1000;
-	      while (!task.iterator.next().done) {
-	        if (resMan.tw2.now - started >= budget) {
-	          resMan.Queue(this, null, options);
-	          return;
-	        }
-	      }
-	      this._gr2Task = null;
-	      this.RebuildBounds();
-	      this._custom = null;
-	      if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
-	      this.OnPrepared();
-	      return;
-	    }
-	    this.Clear();
+	    var processing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 	    if (this._extension === "gr2") {
-	      var decodeOptions = {
-	        firstMeshOnly: (options === null || options === void 0 ? void 0 : options.firstMeshOnly) !== false,
-	        unpackTangents: !!(options !== null && options !== void 0 && options.unpackTangents)
-	      };
-	      var _task = {
-	        iterator: null,
-	        cancel: null,
-	        pending: true,
-	        release: () => {
-	          if (_task.pending) {
-	            _task.pending = false;
-	            resMan.RemovePendingLoad(this.path);
-	          }
-	        }
-	      };
-	      this._gr2Task = _task;
-	      resMan.AddPendingLoad(this.path);
-	      var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
-	      _task.cancel = decoded.cancel;
-	      decoded.then(json => {
-	        if (this._gr2Task !== _task) return;
-	        _task.iterator = Gr2Reader.BuildGeometryResSteps(json, this, options);
-	        resMan.Queue(this, null, {
-	          _gr2Task: _task
-	        });
-	        _task.release();
-	      }, error => {
-	        if (this._gr2Task === _task) this.OnError(error);
-	      });
+	      resMan.Queue(this, data, options);
 	      return;
 	    }
+	    this.Clear(!processing);
 	    var Reader = readers[this._extension];
 	    if (!Reader) throw new ErrResourceFormatUnsupported({
 	      format: this._extension
@@ -60939,7 +61023,7 @@
 	    this.RebuildBounds();
 	    this._custom = null;
 	    if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
-	    this.OnPrepared();
+	    if (!processing) this.OnPrepared();
 	  }
 
 	  /**
@@ -61294,7 +61378,7 @@
 	    res.UpdateFromJSON(json, options);
 	    return res;
 	  }
-	}) || _class$7U);
+	}, _Tw2GeometryRes.requiresProcessing = true, _Tw2GeometryRes)) || _class$7U);
 
 	/**
 	 * Throws when a geometry mesh lacks an element required for a particle system
@@ -66173,11 +66257,14 @@
 	  }
 
 	  /**
-	   * Gets a count of resources waiting to be built.
+	   * Gets outstanding preparation, including runnable and waiting processing jobs.
 	   * @returns {number}
 	   */
 	  get pendingPrepares() {
-	    return this._prepareQueue.length - this._prepareQueueHead;
+	    return this._prepareQueue.length - this._prepareQueueHead + this.pendingProcessing;
+	  }
+	  get pendingProcessing() {
+	    return this.processing.size;
 	  }
 
 	  /**
@@ -66190,6 +66277,9 @@
 	    _this = this;
 	    /** Resource cache and lifecycle root owned by this manager. */
 	    this.motherLode = new Tw2MotherLode();
+	    this.processing = new Tw2ResourceProcessing();
+	    /** Defer shader validation/reflection through the processing scheduler. */
+	    this.useParallelShaders = true;
 	    /** Max seconds per frame spent preparing loaded resources. */
 	    /**
 	     * Seconds of resource preparation allowed per frame.
@@ -66392,7 +66482,7 @@
 	  Register(opt) {
 	    if (!opt) return;
 	    if ("events" in opt) this.AddEvents(opt.events);
-	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "useGeometryWorkers", "geometryWorkerUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
+	    assignIfExists(this, opt, ["maxPrepareTime", "useParallelShaders", "maxConcurrentLoads", "workerLoaderUrl", "useGeometryWorkers", "geometryWorkerUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
 	    if (opt.useWorkerLoading !== undefined) {
 	      this.UseWorkerLoading(opt.useWorkerLoading);
 	    } else if (opt.workerLoading !== undefined) {
@@ -66560,6 +66650,7 @@
 	   * @param {Function} [onClear] - An optional function which is called on each cleared resource
 	   */
 	  Clear(onClear) {
+	    this.processing.Clear();
 	    this.motherLode.Clear(onClear);
 	  }
 
@@ -66620,7 +66711,13 @@
 	    }
 	    this._prepareBudget = this.maxPrepareTime;
 	    var startTime = this.tw2.now;
+	    // Share the existing budget. Reserve half for legacy preparation when
+	    // both paths have work, so processing cannot starve older resources.
+	    var processingBudget = this.maxPrepareTime * 1000 * (this._prepareQueue.length > this._prepareQueueHead ? 0.5 : 1);
+	    this.processing.Pump(() => this.tw2.now, processingBudget);
+	    this._prepareBudget = this.maxPrepareTime - (this.tw2.now - startTime) * 0.001;
 	    while (this._prepareQueue.length > this._prepareQueueHead) {
+	      if (this.maxPrepareTime > 0 && this._prepareBudget <= 0) break;
 	      var _this$_prepareQueue$t = _slicedToArray(this._prepareQueue[this._prepareQueueHead], 3),
 	        res = _this$_prepareQueue$t[0],
 	        data = _this$_prepareQueue$t[1],
@@ -66752,13 +66849,20 @@
 	  }
 
 	  /**
-	   * Adds a resource and response to the prepare queue
+	   * Routes loaded data to processing for opted-in classes, otherwise preparation.
 	   * @param {Tw2Resource} res
 	   * @param {*} response
 	   * @param {*} [meta]
 	   */
 	  Queue(res, response, meta) {
-	    this._prepareQueue.push([res, response, meta]);
+	    if (res.constructor.requiresProcessing) {
+	      this.processing.Queue(res, response, meta);
+	    } else {
+	      this._prepareQueue.push([res, response, meta]);
+	    }
+	  }
+	  CancelProcessing(res) {
+	    this.processing.Cancel(res);
 	  }
 
 	  /**
@@ -107851,6 +107955,88 @@
 	  }
 	}) || _class$7K);
 
+	/** One permutation's pending driver work and effect bindings. */
+	class Tw2ShaderCompilation extends Tw2Resource {
+	  constructor(resource) {
+	    super();
+	    this.programs = [];
+	    this.stages = new Set();
+	    this.callbacks = [];
+	    this.complete = false;
+	    this.error = null;
+	    this.resource = resource;
+	    this.gl = device.gl;
+	    this.extension = device.GetExtension("KHR_parallel_shader_compile");
+	  }
+	  HasCompleted() {
+	    return this.complete || !!this.error;
+	  }
+	  KeepAlive() {
+	    this.resource.KeepAlive();
+	  }
+	  *Process() {
+	    var gl = this.gl,
+	      extension = this.extension;
+	    if (extension) {
+	      yield {
+	        poll: () => {
+	          if (device.gl !== gl || gl.isContextLost()) throw new Error("Shader compilation context lost");
+	          return this.programs.every(program => gl.getProgramParameter(program.program, extension.COMPLETION_STATUS_KHR));
+	        }
+	      };
+	    }
+	    for (var program of this.programs) {
+	      if (device.gl !== gl || gl.isContextLost()) throw new Error("Shader compilation context lost");
+	      program.FinishCompilation();
+	      yield;
+	    }
+	    this.shader._isReady = true;
+	    // Parameter binding is processing work too, not a promise microtask.
+	    while (this.callbacks.length) {
+	      this.callbacks.shift()();
+	      yield;
+	    }
+	  }
+	  OnPrepared() {
+	    this.complete = true;
+	    this.programs.length = 0;
+	    this.stages.clear();
+	    super.OnPrepared({
+	      hide: true
+	    });
+	  }
+	  OnError(error) {
+	    this.error = error;
+	    super.OnError(error);
+	    this.resource.OnError(error);
+	  }
+	  OnProcessingCancelled(error) {
+	    if (this.complete) return;
+	    this.error = error || this.error || new Error("Shader compilation cancelled");
+	    if (this.shader) this.shader._isReady = false;
+	    if (error) {
+	      for (var callback of this.callbacks) {
+	        var _callback$onError;
+	        (_callback$onError = callback.onError) === null || _callback$onError === void 0 || _callback$onError.call(callback, error);
+	      }
+	    }
+	    this.callbacks.length = 0;
+	    for (var program of this.programs) this.gl.deleteProgram(program.program);
+	    for (var shader of this.stages) this.gl.deleteShader(shader);
+	    this.programs.length = 0;
+	    this.stages.clear();
+	  }
+	  Queue(shader) {
+	    this.shader = shader;
+	    shader._isReady = false;
+	    shader._compilation = this;
+	    resMan.processing.Queue(this);
+	  }
+	}
+	Tw2ShaderCompilation.requiresProcessing = true;
+	// Scoped to synchronous shader construction, never held across a yield.
+	Tw2ShaderCompilation.current = null;
+
 	var _dec$7J, _dec2$77, _dec3$6E, _dec4$5O, _dec5$5f, _dec6$4E, _dec7$3_, _class$7J, _class2$73, _descriptor$72, _descriptor2$6u, _descriptor3$5F, _descriptor4$4Z, _descriptor5$4j, _descriptor6$3C;
 
 	/*
@@ -108972,7 +109158,8 @@
 	      gl.shaderSource(shader, source);
 	      gl.compileShader(shader);
 	    }
-	    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+	    if (Tw2ShaderCompilation.current) Tw2ShaderCompilation.current.stages.add(shader);
+	    if (!Tw2ShaderCompilation.current && !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 	      if (!skipError) {
 	        var infoLog = gl.getShaderInfoLog(shader) || this.getShaderFailureDetails(gl, shader, shaderCode);
 	        throw new ErrShaderCompile({
@@ -109279,7 +109466,23 @@
 	    gl.attachShader(program.program, vertexShader);
 	    gl.attachShader(program.program, fragmentShader);
 	    gl.linkProgram(program.program);
-
+	    program.FinishCompilation = () => {
+	      try {
+	        var result = this.finish(program, vertexShader, fragmentShader, pass, context, skipError);
+	        if (!result) pass.shadowShaderProgram = pass.shaderProgram;
+	        return result;
+	      } finally {
+	        delete program.FinishCompilation;
+	      }
+	    };
+	    if (Tw2ShaderCompilation.current) {
+	      Tw2ShaderCompilation.current.programs.push(program);
+	      return program;
+	    }
+	    return program.FinishCompilation();
+	  }
+	  static finish(program, vertexShader, fragmentShader, pass, context, skipError) {
+	    var gl = device.gl;
 	    // Ensure shader is good
 	    if (!gl.getProgramParameter(program.program, gl.LINK_STATUS)) {
 	      if (!skipError) {
@@ -109294,6 +109497,7 @@
 	          infoLog
 	        });
 	      }
+	      gl.deleteProgram(program.program);
 	      return null;
 	    }
 	    gl.useProgram(program.program);
@@ -129966,7 +130170,8 @@
 	  var shader = gl.createShader(stageType === STAGE_VERTEX ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
 	  gl.shaderSource(shader, shaderCode);
 	  gl.compileShader(shader);
-	  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+	  if (Tw2ShaderCompilation.current) Tw2ShaderCompilation.current.stages.add(shader);
+	  if (!Tw2ShaderCompilation.current && !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 	    throw new ErrShaderCompile({
 	      path,
 	      shaderType: stageType === STAGE_VERTEX ? "vertex" : "fragment",
@@ -130187,6 +130392,7 @@
 	   * @param {ArrayBuffer|Object} data
 	   */
 	  Prepare(data) {
+	    this.CancelShaderCompilations();
 	    this.permutations.splice(0);
 	    this.offsets.splice(0);
 	    this.passes.splice(0);
@@ -130325,6 +130531,55 @@
 	   * @returns {Tw2Shader|null}
 	   */
 	  GetShader(options) {
+	    if (!tw2.resMan.useParallelShaders) return this._GetShader(options);
+	    var previous = Tw2ShaderCompilation.current;
+	    var compilation = new Tw2ShaderCompilation(this);
+	    Tw2ShaderCompilation.current = compilation;
+	    try {
+	      var shader = this._GetShader(options);
+	      if (!shader) {
+	        compilation.OnProcessingCancelled();
+	        return null;
+	      }
+	      if (compilation.programs.length) {
+	        if (!shader || this.HasErrored()) {
+	          compilation.OnProcessingCancelled();
+	          return null;
+	        }
+	        compilation.Queue(shader);
+	      }
+	      return shader;
+	    } catch (error) {
+	      compilation.OnProcessingCancelled();
+	      throw error;
+	    } finally {
+	      Tw2ShaderCompilation.current = previous;
+	    }
+	  }
+	  CancelShaderCompilations() {
+	    for (var shader of this.shaders) {
+	      if (shader !== null && shader !== void 0 && shader._compilation && !shader._compilation.HasCompleted()) {
+	        tw2.resMan.CancelProcessing(shader._compilation);
+	      }
+	    }
+	  }
+	  OnRequested(log) {
+	    this.CancelShaderCompilations();
+	    return super.OnRequested(log);
+	  }
+	  OnError(error) {
+	    this.CancelShaderCompilations();
+	    return super.OnError(error);
+	  }
+	  OnUnloaded(log) {
+	    this.CancelShaderCompilations();
+	    return super.OnUnloaded(log);
+	  }
+	  OnPurged(log) {
+	    this.CancelShaderCompilations();
+	    return super.OnPurged(log);
+	  }
+	  _GetShader(options) {
 	    if (!this.IsGood()) {
 	      return null;
 	    }
@@ -130402,7 +130657,7 @@
 	    tw2.AddResource(res.path, res);
 
 	    // Load the shader
-	    res.GetShaderJSON(options);
+	    res.GetShader(options);
 	    return res;
 	  }
 	}, _Tw2EffectRes.DEPTH_RANGE = "reversed", _Tw2EffectRes)) || _class$7z);
@@ -133423,7 +133678,7 @@
 	   */
 	  IsGood() {
 	    this.KeepAlive();
-	    return this.shader !== null;
+	    return this.shader !== null && this.shader._isReady !== false && !this._pendingShaderBinding;
 	  }
 
 	  /**
@@ -133457,9 +133712,13 @@
 	   * @returns {Array.<Tw2Resource>} [out]
 	   */
 	  GetResources() {
+	    var _this$shader;
 	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	    if (this.effectRes && !out.includes(this.effectRes)) {
 	      out.push(this.effectRes);
+	    }
+	    if ((_this$shader = this.shader) !== null && _this$shader !== void 0 && _this$shader._compilation && !out.includes(this.shader._compilation)) {
+	      out.push(this.shader._compilation);
 	    }
 	    this.PerChild(x => {
 	      if (x.struct.GetResources) {
@@ -133513,11 +133772,11 @@
 	      }
 	    }
 	    try {
-	      this.shader = res.GetShader(this.options);
-	      this.BindParameters({
+	      this._BindShader(res.GetShader(this.options), {
 	        controller: res
+	      }, () => {
+	        this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
 	      });
-	      this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
 	      res.UnregisterNotification(this);
 	    } catch (err) {
 	      res.OnError(err);
@@ -133590,10 +133849,9 @@
 	    // OnResPrepared builds the shader from `options` when the
 	    // resource is actually ready.
 	    if (!res || !res.IsGood() || !res.HasPrepared()) return false;
-	    this.shader = res.GetShader(this.options);
-	    if (!this.shader) return false;
-	    this.BindParameters(opt);
-	    this.EmitEvent("rebuilt", this, opt);
+	    var shader = res.GetShader(this.options);
+	    if (!shader) return false;
+	    this._BindShader(shader, opt, () => this.EmitEvent("rebuilt", this, opt));
 	    return true;
 	  }
 
@@ -133703,6 +133961,30 @@
 	   * @param {Object} [opt]
 	   * @returns {Boolean}
 	   */
+	  _BindShader(shader, opt, onBound) {
+	    this.shader = shader;
+	    var token = {};
+	    var resource = this.effectRes;
+	    this._shaderBindingToken = token;
+	    this._pendingShaderBinding = !!shader && shader._isReady === false;
+	    var bind = () => {
+	      if (this._shaderBindingToken !== token || this.shader !== shader || this.effectRes !== resource) return;
+	      this._pendingShaderBinding = false;
+	      if (this.BindParameters(opt)) onBound === null || onBound === void 0 || onBound();
+	    };
+	    bind.onError = error => {
+	      if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource) {
+	        this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
+	      }
+	    };
+	    if (this._pendingShaderBinding) {
+	      this.UnBindParameters({
+	        skipEvents: true
+	      });
+	      this.techniques = {};
+	      if (!shader._compilation.error) shader._compilation.callbacks.push(bind);
+	    } else bind();
+	  }
 	  BindParameters(opt) {
 	    if (!this.IsGood()) {
 	      this.UnBindParameters();
@@ -134558,13 +134840,10 @@
 	      // TODO: Check if options and current options are the same
 	      a.options = normalizedOptions;
 	      if (a.effectRes) {
-	        a.shader = a.effectRes.GetShader(a.options);
-	        if (a.shader) {
-	          a.BindParameters({
-	            controller: a.effectRes,
-	            skipEvents: opt.skipEvents
-	          });
-	        }
+	        a._BindShader(a.effectRes.GetShader(a.options), {
+	          controller: a.effectRes,
+	          skipEvents: opt.skipEvents
+	        });
 	      }
 	      updated = true;
 	    }

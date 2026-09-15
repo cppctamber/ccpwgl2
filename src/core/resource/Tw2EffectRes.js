@@ -1,3 +1,4 @@
+import { Tw2ShaderCompilation } from "../shader/Tw2ShaderCompilation";
 import { emptyObject, meta } from "utils";
 import { Tw2BinaryReader } from "../reader";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
@@ -255,6 +256,7 @@ export class Tw2EffectRes extends Tw2Resource
      */
     Prepare(data)
     {
+        this.CancelShaderCompilations();
         this.permutations.splice(0);
         this.offsets.splice(0);
         this.passes.splice(0);
@@ -420,6 +422,74 @@ export class Tw2EffectRes extends Tw2Resource
      */
     GetShader(options)
     {
+        if (!tw2.resMan.useParallelShaders) return this._GetShader(options);
+        const previous = Tw2ShaderCompilation.current;
+        const compilation = new Tw2ShaderCompilation(this);
+        Tw2ShaderCompilation.current = compilation;
+        try
+        {
+            const shader = this._GetShader(options);
+            if (!shader)
+            {
+                compilation.OnProcessingCancelled();
+                return null;
+            }
+            if (compilation.programs.length)
+            {
+                if (!shader || this.HasErrored())
+                {
+                    compilation.OnProcessingCancelled();
+                    return null;
+                }
+                compilation.Queue(shader);
+            }
+            return shader;
+        }
+        catch (error)
+        {
+            compilation.OnProcessingCancelled();
+            throw error;
+        }
+        finally { Tw2ShaderCompilation.current = previous; }
+    }
+
+    CancelShaderCompilations()
+    {
+        for (const shader of this.shaders)
+        {
+            if (shader?._compilation && !shader._compilation.HasCompleted())
+            {
+                tw2.resMan.CancelProcessing(shader._compilation);
+            }
+        }
+    }
+
+    OnRequested(log)
+    {
+        this.CancelShaderCompilations();
+        return super.OnRequested(log);
+    }
+
+    OnError(error)
+    {
+        this.CancelShaderCompilations();
+        return super.OnError(error);
+    }
+
+    OnUnloaded(log)
+    {
+        this.CancelShaderCompilations();
+        return super.OnUnloaded(log);
+    }
+
+    OnPurged(log)
+    {
+        this.CancelShaderCompilations();
+        return super.OnPurged(log);
+    }
+
+    _GetShader(options)
+    {
         if (!this.IsGood())
         {
             return null;
@@ -508,7 +578,7 @@ export class Tw2EffectRes extends Tw2Resource
         tw2.AddResource(res.path, res);
 
         // Load the shader
-        res.GetShaderJSON(options);
+        res.GetShader(options);
 
         return res;
     }

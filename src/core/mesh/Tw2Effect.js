@@ -450,7 +450,7 @@ export class Tw2Effect extends meta.Model
     IsGood()
     {
         this.KeepAlive();
-        return this.shader !== null;
+        return this.shader !== null && this.shader._isReady !== false && !this._pendingShaderBinding;
     }
 
     /**
@@ -490,6 +490,11 @@ export class Tw2Effect extends meta.Model
         if (this.effectRes && !out.includes(this.effectRes))
         {
             out.push(this.effectRes);
+        }
+
+        if (this.shader?._compilation && !out.includes(this.shader._compilation))
+        {
+            out.push(this.shader._compilation);
         }
 
         this.PerChild(x =>
@@ -559,9 +564,10 @@ export class Tw2Effect extends meta.Model
 
         try
         {
-            this.shader = res.GetShader(this.options);
-            this.BindParameters({ controller: res });
-            this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
+            this._BindShader(res.GetShader(this.options), { controller: res }, () =>
+            {
+                this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
+            });
             res.UnregisterNotification(this);
         }
         catch (err)
@@ -642,11 +648,9 @@ export class Tw2Effect extends meta.Model
         // resource is actually ready.
         if (!res || !res.IsGood() || !res.HasPrepared()) return false;
 
-        this.shader = res.GetShader(this.options);
-        if (!this.shader) return false;
-
-        this.BindParameters(opt);
-        this.EmitEvent("rebuilt", this, opt);
+        const shader = res.GetShader(this.options);
+        if (!shader) return false;
+        this._BindShader(shader, opt, () => this.EmitEvent("rebuilt", this, opt));
         return true;
     }
 
@@ -774,6 +778,35 @@ export class Tw2Effect extends meta.Model
      * @param {Object} [opt]
      * @returns {Boolean}
      */
+    _BindShader(shader, opt, onBound)
+    {
+        this.shader = shader;
+        const token = {};
+        const resource = this.effectRes;
+        this._shaderBindingToken = token;
+        this._pendingShaderBinding = !!shader && shader._isReady === false;
+        const bind = () =>
+        {
+            if (this._shaderBindingToken !== token || this.shader !== shader || this.effectRes !== resource) return;
+            this._pendingShaderBinding = false;
+            if (this.BindParameters(opt)) onBound?.();
+        };
+        bind.onError = error =>
+        {
+            if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource)
+            {
+                this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
+            }
+        };
+        if (this._pendingShaderBinding)
+        {
+            this.UnBindParameters({ skipEvents: true });
+            this.techniques = {};
+            if (!shader._compilation.error) shader._compilation.callbacks.push(bind);
+        }
+        else bind();
+    }
+
     BindParameters(opt)
     {
 
@@ -1775,11 +1808,7 @@ export class Tw2Effect extends meta.Model
 
             if (a.effectRes)
             {
-                a.shader = a.effectRes.GetShader(a.options);
-                if (a.shader)
-                {
-                    a.BindParameters({ controller: a.effectRes, skipEvents: opt.skipEvents });
-                }
+                a._BindShader(a.effectRes.GetShader(a.options), { controller: a.effectRes, skipEvents: opt.skipEvents });
             }
 
             updated = true;

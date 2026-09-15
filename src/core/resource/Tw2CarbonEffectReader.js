@@ -1,3 +1,4 @@
+import { Tw2ShaderCompilation } from "../shader/Tw2ShaderCompilation";
 import { device, tw2 } from "global";
 import {
     GL_TEXTURE_2D,
@@ -831,7 +832,8 @@ function compileShader(stageType, shaderCode, path)
     gl.shaderSource(shader, shaderCode);
     gl.compileShader(shader);
 
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+    if (Tw2ShaderCompilation.current) Tw2ShaderCompilation.current.stages.add(shader);
+    if (!Tw2ShaderCompilation.current && !gl.getShaderParameter(shader, gl.COMPILE_STATUS))
     {
         throw new ErrShaderCompile({
             path,

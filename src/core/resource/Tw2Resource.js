@@ -7,6 +7,7 @@ import { Tw2Notifications } from "./Tw2Notifications";
 @meta.define("Tw2Resource")
 export class Tw2Resource extends Tw2Notifications
 {
+    static requiresProcessing = false;
     path = "";
     activeFrame = 0;
     doNotPurge = 0;
@@ -101,13 +102,14 @@ export class Tw2Resource extends Tw2Notifications
     }
 
     /**
-     * Checks if the resource is good and keeps it alive
+     * Keeps the resource alive and checks readiness. Processing resources must
+     * finish building; legacy resources retain their loaded-state contract.
      * @returns {boolean}
      */
     IsGood()
     {
         this.KeepAlive();
-        return this.HasLoaded();
+        return this.constructor.requiresProcessing ? this.HasPrepared() : this.HasLoaded();
     }
 
     /**
@@ -215,6 +217,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     OnError(err = new Tw2Error())
     {
+        resMan.CancelProcessing(this);
         let wasGood = this.HasLoaded();
 
         /*
@@ -249,6 +252,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     OnRequested(log)
     {
+        resMan.CancelProcessing(this);
         const stateName = this._state === Tw2Resource.State.NO_INIT ? "REQUESTED" : "RELOADING";
         if (this._SetState(Tw2Resource.State.REQUESTED))
         {
@@ -290,12 +294,19 @@ export class Tw2Resource extends Tw2Notifications
         }
     }
 
+    /** Loaded data is being built; the scheduler owns the processing status. */
+    OnProcessing()
+    {
+        this._SetState(Tw2Resource.State.LOADED);
+    }
+
     /**
      * Fires when the resource has been unloads
      * @param {*} [log]
      */
     OnUnloaded(log)
     {
+        resMan.CancelProcessing(this);
         if (this._SetState(Tw2Resource.State.UNLOADED))
         {
             resMan.OnPathEvent(this.path, "unloaded", log, this.suppressLogging);
@@ -309,6 +320,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     OnPurged(log)
     {
+        resMan.CancelProcessing(this);
         this._SetState(Tw2Resource.State.PURGED);
         resMan.OnPathEvent(this.path, "purged", log, this.suppressLogging);
         this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());

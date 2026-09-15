@@ -1,5 +1,6 @@
 import { Tr2LightProfileRes } from "../resource/Tr2LightProfileRes";
 import { Tw2MotherLode } from "./Tw2MotherLode";
+import { Tw2ResourceProcessing } from "./Tw2ResourceProcessing";
 import { Tw2ResManMainThreadLoader } from "./Tw2ResManMainThreadLoader";
 import { Tw2ResManWorkerLoader } from "./Tw2ResManWorkerLoader";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
@@ -18,6 +19,9 @@ export class Tw2ResMan extends Tw2EventEmitter
 {
     /** Resource cache and lifecycle root owned by this manager. */
     motherLode = new Tw2MotherLode();
+    processing = new Tw2ResourceProcessing();
+    /** Defer shader validation/reflection through the processing scheduler. */
+    useParallelShaders = true;
     /** Max seconds per frame spent preparing loaded resources. */
     /**
      * Seconds of resource preparation allowed per frame.
@@ -218,12 +222,17 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Gets a count of resources waiting to be built.
+     * Gets outstanding preparation, including runnable and waiting processing jobs.
      * @returns {number}
      */
     get pendingPrepares()
     {
-        return this._prepareQueue.length - this._prepareQueueHead;
+        return this._prepareQueue.length - this._prepareQueueHead + this.pendingProcessing;
+    }
+
+    get pendingProcessing()
+    {
+        return this.processing.size;
     }
 
     /**
@@ -294,6 +303,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         assignIfExists(this, opt, [
             "maxPrepareTime",
+            "useParallelShaders",
             "maxConcurrentLoads",
             "workerLoaderUrl",
             "useGeometryWorkers",
@@ -501,6 +511,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     Clear(onClear)
     {
+        this.processing.Clear();
         this.motherLode.Clear(onClear);
     }
 
@@ -573,8 +584,15 @@ export class Tw2ResMan extends Tw2EventEmitter
         this._prepareBudget = this.maxPrepareTime;
 
         const startTime = this.tw2.now;
+        // Share the existing budget. Reserve half for legacy preparation when
+        // both paths have work, so processing cannot starve older resources.
+        const processingBudget = this.maxPrepareTime * 1000
+            * (this._prepareQueue.length > this._prepareQueueHead ? 0.5 : 1);
+        this.processing.Pump(() => this.tw2.now, processingBudget);
+        this._prepareBudget = this.maxPrepareTime - (this.tw2.now - startTime) * 0.001;
         while (this._prepareQueue.length > this._prepareQueueHead)
         {
+            if (this.maxPrepareTime > 0 && this._prepareBudget <= 0) break;
             const [ res, data, xml ] = this._prepareQueue[this._prepareQueueHead];
             this._prepareQueueHead += 1;
 
@@ -737,14 +755,26 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Adds a resource and response to the prepare queue
+     * Routes loaded data to processing for opted-in classes, otherwise preparation.
      * @param {Tw2Resource} res
      * @param {*} response
      * @param {*} [meta]
      */
     Queue(res, response, meta)
     {
-        this._prepareQueue.push([ res, response, meta ]);
+        if (res.constructor.requiresProcessing)
+        {
+            this.processing.Queue(res, response, meta);
+        }
+        else
+        {
+            this._prepareQueue.push([ res, response, meta ]);
+        }
+    }
+
+    CancelProcessing(res)
+    {
+        this.processing.Cancel(res);
     }
 
     /**

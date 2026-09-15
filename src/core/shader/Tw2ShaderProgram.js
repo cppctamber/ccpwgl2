@@ -1,3 +1,4 @@
+import { Tw2ShaderCompilation } from "./Tw2ShaderCompilation";
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
@@ -82,6 +83,27 @@ export class Tw2ShaderProgram
         gl.attachShader(program.program, fragmentShader);
         gl.linkProgram(program.program);
 
+        program.FinishCompilation = () =>
+        {
+            try
+            {
+                const result = this.finish(program, vertexShader, fragmentShader, pass, context, skipError);
+                if (!result) pass.shadowShaderProgram = pass.shaderProgram;
+                return result;
+            }
+            finally { delete program.FinishCompilation; }
+        };
+        if (Tw2ShaderCompilation.current)
+        {
+            Tw2ShaderCompilation.current.programs.push(program);
+            return program;
+        }
+        return program.FinishCompilation();
+    }
+
+    static finish(program, vertexShader, fragmentShader, pass, context, skipError)
+    {
+        const { gl } = device;
         // Ensure shader is good
         if (!gl.getProgramParameter(program.program, gl.LINK_STATUS))
         {
@@ -101,6 +123,7 @@ export class Tw2ShaderProgram
 
                 throw new ErrShaderLink({ path: context.path, infoLog });
             }
+            gl.deleteProgram(program.program);
             return null;
         }
 
