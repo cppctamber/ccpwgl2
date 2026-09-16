@@ -60680,14 +60680,14 @@
 	 * GSF shares the same Granny container as `.gr2`, but the payload is a
 	 * reflected state graph rather than render geometry. This reader projects the
 	 * authored state data onto the resource selected for the `.gsf` extension;
-	 * `Tw2GrannyStateRes` owns that contract while a legacy host may still select
+	 * `Tr2GrannyStateRes` owns that contract while a legacy host may still select
 	 * `Tw2GeometryRes` until it updates its extension store.
 	 */
 	class GsfReader {
 	  /**
 	   * Prepares a GSF payload on a geometry resource.
 	   * @param {ArrayBuffer|Uint8Array|Object} data
-	   * @param {Tw2GrannyStateRes|Tw2GeometryRes} res
+	   * @param {Tr2GrannyStateRes|Tw2GeometryRes} res
 	   */
 	  static Prepare(data, res) {
 	    var gsf = GsfReader.Read(data);
@@ -130786,7 +130786,7 @@
 	  }
 	}
 
-	var _dec$7y, _class$7y, _Tw2GrannyStateRes, _animationLoadError, _animationLoadPromise, _animationResources, _loadGeneration, _BeginAnimationLoads;
+	var _dec$7y, _class$7y, _Tr2GrannyStateRes, _animationLoadError, _animationLoadPromise, _animationResources, _loadGeneration, _BeginAnimationLoads;
 
 	/**
 	 * Granny character animation state resource.
@@ -130806,7 +130806,7 @@
 	 * @property {Array} animationSets Animation sets carrying GR2 references.
 	 * @property {Array<String>} gsfReferences Resolved, deduplicated GR2 paths.
 	 */
-	var Tw2GrannyStateRes = (_dec$7y = define("Tw2GrannyStateRes", true), _dec$7y(_class$7y = (_animationLoadError = /*#__PURE__*/_classPrivateFieldLooseKey("animationLoadError"), _animationLoadPromise = /*#__PURE__*/_classPrivateFieldLooseKey("animationLoadPromise"), _animationResources = /*#__PURE__*/_classPrivateFieldLooseKey("animationResources"), _loadGeneration = /*#__PURE__*/_classPrivateFieldLooseKey("loadGeneration"), _BeginAnimationLoads = /*#__PURE__*/_classPrivateFieldLooseKey("BeginAnimationLoads"), _Tw2GrannyStateRes = class Tw2GrannyStateRes extends Tw2Resource {
+	var Tr2GrannyStateRes$1 = (_dec$7y = define("Tr2GrannyStateRes", true), _dec$7y(_class$7y = (_animationLoadError = /*#__PURE__*/_classPrivateFieldLooseKey("animationLoadError"), _animationLoadPromise = /*#__PURE__*/_classPrivateFieldLooseKey("animationLoadPromise"), _animationResources = /*#__PURE__*/_classPrivateFieldLooseKey("animationResources"), _loadGeneration = /*#__PURE__*/_classPrivateFieldLooseKey("loadGeneration"), _BeginAnimationLoads = /*#__PURE__*/_classPrivateFieldLooseKey("BeginAnimationLoads"), _Tr2GrannyStateRes = class Tr2GrannyStateRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    /** Starts one generation of deduplicated external animation requests. */
@@ -130845,7 +130845,7 @@
 	   */
 	  DoCustomLoad(_url, extension) {
 	    if (String(extension).toLowerCase() !== GsfReader.extension) {
-	      throw new TypeError("Tw2GrannyStateRes cannot load ".concat(JSON.stringify(extension)));
+	      throw new TypeError("Tr2GrannyStateRes cannot load ".concat(JSON.stringify(extension)));
 	    }
 	    this._requestResponseType = GsfReader.requestResponseType;
 	    return false;
@@ -130861,10 +130861,10 @@
 	    this.Clear();
 	    GsfReader.Prepare(data, this);
 	    if (!((_this$gsf = this.gsf) !== null && _this$gsf !== void 0 && _this$gsf.stateMachine) || !this.stateMachine) {
-	      throw new TypeError("Tw2GrannyStateRes expected a GSF stateMachine");
+	      throw new TypeError("Tr2GrannyStateRes expected a GSF stateMachine");
 	    }
 	    if (!Array.isArray(this.animationSets)) {
-	      throw new TypeError("Tw2GrannyStateRes expected animationSets to be an array");
+	      throw new TypeError("Tr2GrannyStateRes expected animationSets to be an array");
 	    }
 	    this.gsfReferences = this.GetGStateAnimFileRefPaths();
 	    _classPrivateFieldLooseBase(this, _BeginAnimationLoads)[_BeginAnimationLoads]();
@@ -130875,7 +130875,7 @@
 	   * Loads projected or raw GSF input through the normal resource preparation path.
 	   *
 	   * @param {ArrayBuffer|Uint8Array|Object} data GSF bytes or projected data.
-	   * @returns {Tw2GrannyStateRes} This resource.
+	   * @returns {Tr2GrannyStateRes} This resource.
 	   */
 	  DoLoad(data) {
 	    this.Prepare(data);
@@ -130941,7 +130941,7 @@
 	    var result = [];
 	    for (var set of this.GetAnimationSets()) {
 	      for (var reference of (set === null || set === void 0 ? void 0 : set.sourceFileReferences) || []) {
-	        var path = Tw2GrannyStateRes.ResolveAnimPath(reference, this.path);
+	        var path = Tr2GrannyStateRes.ResolveAnimPath(reference, this.path);
 	        if (!path || seen.has(path)) continue;
 	        seen.add(path);
 	        result.push(path);
@@ -130955,7 +130955,7 @@
 	   *
 	   * @param {String} path Resolved GR2 path.
 	   * @param {*} resource Loaded GR2 resource.
-	   * @returns {Tw2GrannyStateRes} This resource.
+	   * @returns {Tr2GrannyStateRes} This resource.
 	   */
 	  SetAnimationResource(path, resource) {
 	    _classPrivateFieldLooseBase(this, _animationResources)[_animationResources].set(NormalizeSeparators(path), resource);
@@ -130985,7 +130985,7 @@
 	  /**
 	   * Waits for every automatically requested animation resource.
 	   *
-	   * @returns {Promise<Tw2GrannyStateRes>} This resource after all clips arrive.
+	   * @returns {Promise<Tr2GrannyStateRes>} This resource after all clips arrive.
 	   */
 	  WaitForAnimationResources() {
 	    var _this = this;
@@ -131021,7 +131021,7 @@
 	    if (value.startsWith("./")) value = value.slice(2);
 	    return directory ? "".concat(directory, "/").concat(value) : value;
 	  }
-	}, _Tw2GrannyStateRes.extension = "gsf", _Tw2GrannyStateRes)) || _class$7y);
+	}, _Tr2GrannyStateRes.extension = "gsf", _Tr2GrannyStateRes)) || _class$7y);
 	function _BeginAnimationLoads2() {
 	  var _this2 = this;
 	  var generation = _classPrivateFieldLooseBase(this, _loadGeneration)[_loadGeneration];
@@ -131029,7 +131029,7 @@
 	    var _ref = _asyncToGenerator(function* (path) {
 	      var resource = yield resMan.FetchResource(path);
 	      if (!resource) {
-	        throw new Error("Tw2GrannyStateRes could not load ".concat(path));
+	        throw new Error("Tr2GrannyStateRes could not load ".concat(path));
 	      }
 	      if (generation === _classPrivateFieldLooseBase(_this2, _loadGeneration)[_loadGeneration]) {
 	        _this2.SetAnimationResource(path, resource);
@@ -219665,6 +219665,7 @@
 		GsfReader: GsfReader,
 		OBJReader: OBJReader,
 		Tr2FactionLight: Tr2FactionLight,
+		Tr2GrannyStateRes: Tr2GrannyStateRes$1,
 		Tr2LightProfileRes: Tr2LightProfileRes$1,
 		Tr2PPBloomEffect: Tr2PPBloomEffect,
 		Tr2PPColorCorrectionEffect: Tr2PPColorCorrectionEffect,
@@ -219734,7 +219735,6 @@
 		Tw2GeometryTrackGroup: Tw2GeometryTrackGroup,
 		Tw2GeometryTransformTrack: Tw2GeometryTransformTrack,
 		Tw2GodRaysRenderer: Tw2GodRaysRenderer,
-		Tw2GrannyStateRes: Tw2GrannyStateRes,
 		Tw2InstancedMesh: Tw2InstancedMesh,
 		Tw2InstancedMeshBatch: Tw2InstancedMeshBatch,
 		Tw2JsonRes: Tw2JsonRes,
@@ -278364,7 +278364,7 @@
 	    out.set(source.subarray(0, Math.min(out.length, source.length)));
 	    // Interior b1: ViewInverseTranspose 0-3, SunData.DirWorld 4,
 	    // Fog.color 5, ViewProjectionMat 6-9, ViewMat 10-13, ProjectionMat
-	    // 14-17 (Tw2InteriorScene.perFrameData.vs). The two clip matrices carry
+	    // 14-17 (Tr2InteriorScene.perFrameData.vs). The two clip matrices carry
 	    // the camera's GL depth range and a translated shader applies the
 	    // emitter's `2z - w` fixup on top, so they convert here for exactly
 	    // the reason the space packer converts regs 4 and 12.
@@ -278735,7 +278735,7 @@
 	 *
 	 * Source: carbonengine trinity/trinity/Interior/Tr2InteriorLightSource.h/.cpp/_Blue.cpp.
 	 * A point/spot light for interior (ship-interior) scenes, managed by
-	 * `Tr2InteriorLightSet` at the `Tw2InteriorScene` level (an entirely
+	 * `Tr2InteriorLightSet` at the `Tr2InteriorScene` level (an entirely
 	 * separate light-collection path from Tr2LightManager/space-scene lights -
 	 * see the survey report's LIGHT COLLECTION section).
 	 *
@@ -279005,8 +279005,8 @@
 	  }
 	}), _class2$3K)) || _class$48) || _class$48);
 
-	var _dec$47, _dec2$3K, _dec3$3o, _dec4$2V, _dec5$2u, _dec6$2a, _dec7$1N, _dec8$1B, _dec9$1l, _dec0$1c, _dec1$14, _dec10$U, _dec11$P, _dec12$H, _dec13$B, _dec14$x, _dec15$t, _class$47, _class2$3J, _descriptor$3F, _descriptor2$3f, _descriptor3$2L, _descriptor4$2m, _descriptor5$23, _descriptor6$1D, _descriptor7$1l, _descriptor8$1b, _descriptor9$13, _descriptor0$$, _descriptor1$N, _descriptor10$H, _descriptor11$z, _descriptor12$w, _descriptor13$s, _descriptor14$o, _Tw2InteriorScene;
-	var Tw2InteriorScene = (_dec$47 = define("Tw2InteriorScene", true), _dec2$3K = path, _dec3$3o = boolean, _dec4$2V = list(["Tw2IntSkinnedObject", "Tr2InteriorPlaceable"]), _dec5$2u = list("Tr2InteriorLightSource"), _dec6$2a = list("Tw2CurveSet"), _dec7$1N = boolean, _dec8$1B = float, _dec9$1l = float, _dec0$1c = float, _dec1$14 = vector4, _dec10$U = vector4, _dec11$P = vector4, _dec12$H = vector3, _dec13$B = vector4, _dec14$x = uint, _dec15$t = uint, _dec$47(_class$47 = (_class2$3J = (_Tw2InteriorScene = class Tw2InteriorScene extends Model$1 {
+	var _dec$47, _dec2$3K, _dec3$3o, _dec4$2V, _dec5$2u, _dec6$2a, _dec7$1N, _dec8$1B, _dec9$1l, _dec0$1c, _dec1$14, _dec10$U, _dec11$P, _dec12$H, _dec13$B, _dec14$x, _dec15$t, _class$47, _class2$3J, _descriptor$3F, _descriptor2$3f, _descriptor3$2L, _descriptor4$2m, _descriptor5$23, _descriptor6$1D, _descriptor7$1l, _descriptor8$1b, _descriptor9$13, _descriptor0$$, _descriptor1$N, _descriptor10$H, _descriptor11$z, _descriptor12$w, _descriptor13$s, _descriptor14$o, _Tr2InteriorScene;
+	var Tr2InteriorScene = (_dec$47 = define("Tr2InteriorScene", true), _dec2$3K = path, _dec3$3o = boolean, _dec4$2V = list(["Tr2IntSkinnedObject", "Tr2InteriorPlaceable"]), _dec5$2u = list("Tr2InteriorLightSource"), _dec6$2a = list("Tw2CurveSet"), _dec7$1N = boolean, _dec8$1B = float, _dec9$1l = float, _dec0$1c = float, _dec1$14 = vector4, _dec10$U = vector4, _dec11$P = vector4, _dec12$H = vector3, _dec13$B = vector4, _dec14$x = uint, _dec15$t = uint, _dec$47(_class$47 = (_class2$3J = (_Tr2InteriorScene = class Tr2InteriorScene extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "backgroundCubemapPath", _descriptor$3F, this);
@@ -279025,8 +279025,8 @@
 	    _initializerDefineProperty(this, "sunSpecularColor", _descriptor12$w, this);
 	    _initializerDefineProperty(this, "shadowCount", _descriptor13$s, this);
 	    _initializerDefineProperty(this, "shadowSize", _descriptor14$o, this);
-	    this._perFrameVS = Tw2RawData.from(Tw2InteriorScene.perFrameData.vs);
-	    this._perFramePS = Tw2RawData.from(Tw2InteriorScene.perFrameData.ps);
+	    this._perFrameVS = Tw2RawData.from(Tr2InteriorScene.perFrameData.vs);
+	    this._perFramePS = Tw2RawData.from(Tr2InteriorScene.perFrameData.ps);
 	    this._lightSet = new Tr2InteriorLightSet();
 	    this._selectedLights = [];
 	    this._defaultLights = null;
@@ -279138,7 +279138,7 @@
 	   * @param {mat4} [parentTransform]
 	   */
 	  UpdateViewDependentData() {
-	    var parentTransform = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Tw2InteriorScene.global.identity;
+	    var parentTransform = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Tr2InteriorScene.global.identity;
 	    this.ApplyPerFrameData();
 	    this.ApplyInteriorLights();
 	    for (var i = 0; i < this.dynamics.length; i++) {
@@ -279181,11 +279181,11 @@
 	   * Applies compact Carbon/legacy GLES interior per-frame data.
 	   * These layouts intentionally differ from EveSpaceScene's space-object
 	   * per-frame buffers; old managed/interior shaders read cb1/cb2 in this order.
-	   * @returns {Tw2InteriorScene}
+	   * @returns {Tr2InteriorScene}
 	   */
 	  ApplyPerFrameData() {
 	    device.UpdateViewProjection();
-	    var g = Tw2InteriorScene.global,
+	    var g = Tr2InteriorScene.global,
 	      vs = this._perFrameVS,
 	      ps = this._perFramePS,
 	      sunDir = this.GetPerFrameSunDirection(g.vec4_0),
@@ -279266,7 +279266,7 @@
 	   */
 	  GetDefaultLights() {
 	    if (!this._defaultLights) {
-	      this._defaultLights = Tw2InteriorScene.CreateDefaultLights();
+	      this._defaultLights = Tr2InteriorScene.CreateDefaultLights();
 	    }
 	    return this._defaultLights;
 	  }
@@ -279297,16 +279297,16 @@
 	  /**
 	   * Applies default interior per-frame data for unsupported bootstrap paths
 	   * where interior objects are hosted by a regular EveSpaceScene.
-	   * @returns {Tw2InteriorScene}
+	   * @returns {Tr2InteriorScene}
 	   */
 	  static ApplyFallbackPerFrameData() {
 	    if (!this.fallbackScene) {
-	      this.fallbackScene = new Tw2InteriorScene();
+	      this.fallbackScene = new Tr2InteriorScene();
 	    }
 	    this.fallbackScene.ApplyPerFrameData();
 	    return this.fallbackScene;
 	  }
-	}, _Tw2InteriorScene.global = {
+	}, _Tr2InteriorScene.global = {
 	  identity: mat4$2.create(),
 	  vec4_0: vec4$2.create(),
 	  fogData: (() => {
@@ -279320,10 +279320,10 @@
 	      return out;
 	    };
 	  })()
-	}, _Tw2InteriorScene.fallbackScene = null, _Tw2InteriorScene.perFrameData = {
+	}, _Tr2InteriorScene.fallbackScene = null, _Tr2InteriorScene.perFrameData = {
 	  ps: [["ViewInverseTransposeMat", 16], ["SceneData.ambientColor", 4], ["SceneData.fogColor", 16], ["SunData.DirWorld", 4], ["SunData.DiffuseColor", 4], ["SunData.SpecularColor", 4], ["Fog.Values", 4], ["ViewProjectionMat", 16], ["Unknown", 4], ["Viewport", 4], ["ViewProjInverse", 16]],
 	  vs: [["ViewInverseTransposeMat", 16], ["SunData.DirWorld", 4], ["Fog.color", 4], ["ViewProjectionMat", 16], ["ViewMat", 16], ["ProjectionMat", 16]]
-	}, _Tw2InteriorScene), _descriptor$3F = _applyDecoratedDescriptor(_class2$3J.prototype, "backgroundCubemapPath", [_dec2$3K], {
+	}, _Tr2InteriorScene), _descriptor$3F = _applyDecoratedDescriptor(_class2$3J.prototype, "backgroundCubemapPath", [_dec2$3K], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -279437,8 +279437,8 @@
 	  }
 	}), _class2$3J)) || _class$47);
 
-	var _dec$46, _dec2$3J, _dec3$3n, _dec4$2U, _dec5$2t, _dec6$29, _dec7$1M, _dec8$1A, _dec9$1k, _class$46, _class2$3I, _descriptor$3E, _descriptor2$3e, _descriptor3$2K, _descriptor4$2l, _descriptor5$22, _descriptor6$1C, _descriptor7$1k, _descriptor8$1a, _Tw2IntSkinnedObject;
-	var Tw2IntSkinnedObject = (_dec$46 = define("Tw2IntSkinnedObject", true), _dec2$3J = boolean, _dec3$3n = float, _dec4$2U = struct("Tw2InteriorAnimationController"), _dec5$2t = struct("Tr2SkinnedModel"), _dec6$29 = list("Tw2CurveSet"), _dec7$1M = list("Tr2InteriorLightSource"), _dec8$1A = plain, _dec9$1k = vector4, _dec$46(_class$46 = (_class2$3I = (_Tw2IntSkinnedObject = class Tw2IntSkinnedObject extends WglTransform {
+	var _dec$46, _dec2$3J, _dec3$3n, _dec4$2U, _dec5$2t, _dec6$29, _dec7$1M, _dec8$1A, _dec9$1k, _class$46, _class2$3I, _descriptor$3E, _descriptor2$3e, _descriptor3$2K, _descriptor4$2l, _descriptor5$22, _descriptor6$1C, _descriptor7$1k, _descriptor8$1a, _Tr2IntSkinnedObject;
+	var Tr2IntSkinnedObject = (_dec$46 = define("Tr2IntSkinnedObject", true), _dec2$3J = boolean, _dec3$3n = float, _dec4$2U = struct("Tw2InteriorAnimationController"), _dec5$2t = struct("Tr2SkinnedModel"), _dec6$29 = list("Tw2CurveSet"), _dec7$1M = list("Tr2InteriorLightSource"), _dec8$1A = plain, _dec9$1k = vector4, _dec$46(_class$46 = (_class2$3I = (_Tr2IntSkinnedObject = class Tr2IntSkinnedObject extends WglTransform {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$3E, this);
@@ -279653,14 +279653,14 @@
 	  }
 
 	  /**
-	   * Applies interior frame constants when hosted outside Tw2InteriorScene.
+	   * Applies interior frame constants when hosted outside Tr2InteriorScene.
 	   */
 	  ApplyInteriorPerFrameData() {
 	    var scene;
 	    if (this._interiorScene && this._interiorScene.ApplyPerFrameData) {
 	      scene = this._interiorScene.ApplyPerFrameData();
 	    } else {
-	      scene = Tw2InteriorScene.ApplyFallbackPerFrameData();
+	      scene = Tr2InteriorScene.ApplyFallbackPerFrameData();
 	    }
 	    this._interiorFrameScene = scene;
 	    return scene;
@@ -279686,9 +279686,9 @@
 	    perArrayChild(this.curveSets, "GetResources", out);
 	    return out;
 	  }
-	}, _Tw2IntSkinnedObject.global = {
+	}, _Tr2IntSkinnedObject.global = {
 	  vec3_0: vec3$3.create()
-	}, _Tw2IntSkinnedObject), _descriptor$3E = _applyDecoratedDescriptor(_class2$3I.prototype, "display", [_dec2$3J], {
+	}, _Tr2IntSkinnedObject), _descriptor$3E = _applyDecoratedDescriptor(_class2$3I.prototype, "display", [_dec2$3J], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -280669,14 +280669,14 @@
 	  }
 
 	  /**
-	   * Applies interior frame constants when hosted outside Tw2InteriorScene.
+	   * Applies interior frame constants when hosted outside Tr2InteriorScene.
 	   */
 	  ApplyInteriorPerFrameData() {
 	    var scene;
 	    if (this._interiorScene && this._interiorScene.ApplyPerFrameData) {
 	      scene = this._interiorScene.ApplyPerFrameData();
 	    } else {
-	      scene = Tw2InteriorScene.ApplyFallbackPerFrameData();
+	      scene = Tr2InteriorScene.ApplyFallbackPerFrameData();
 	    }
 	    this._interiorFrameScene = scene;
 	    return scene;
@@ -280917,18 +280917,18 @@
 		__proto__: null,
 		CcpwglCharacterVisemeBinding: CcpwglCharacterVisemeBinding,
 		GLESPerObjectDataInterior: GLESPerObjectDataInterior,
+		Tr2IntSkinnedObject: Tr2IntSkinnedObject,
 		Tr2InteriorBoneOffset: Tr2InteriorBoneOffset,
 		Tr2InteriorLightSet: Tr2InteriorLightSet,
 		Tr2InteriorLightSource: Tr2InteriorLightSource,
 		Tr2InteriorPerObjectData: GLESPerObjectDataInterior,
 		Tr2InteriorPlaceable: Tr2InteriorPlaceable,
+		Tr2InteriorScene: Tr2InteriorScene,
 		Tr2KelvinColor: Tr2KelvinColor,
 		Tr2Model: Tr2Model,
 		Tr2SkinnedModel: Tr2SkinnedModel,
 		Tw2CharacterMesh: Tw2CharacterMesh,
-		Tw2IntSkinnedObject: Tw2IntSkinnedObject,
 		Tw2InteriorAnimationController: Tw2InteriorAnimationController,
-		Tw2InteriorScene: Tw2InteriorScene,
 		WodPlaceableRes: WodPlaceableRes
 	};
 
@@ -303628,7 +303628,7 @@
 	 * So a ship reading `animationUpdater` was constructing the character editor's
 	 * controller: the wrong type, missing three of the four properties the wire
 	 * actually carries. The interior controller keeps its own name, which is what
-	 * `Tw2IntSkinnedObject` already references it by.
+	 * `Tr2IntSkinnedObject` already references it by.
 	 *
 	 * ## What is here
 	 *
