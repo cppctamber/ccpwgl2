@@ -1,3 +1,4 @@
+import { Tw2ShaderCompilation } from "./Tw2ShaderCompilation";
 import { addToArray, get, getKeyFromValue, isString, meta } from "utils";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
@@ -712,7 +713,8 @@ export class Tw2ShaderStage
             gl.compileShader(shader);
         }
 
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+        if (Tw2ShaderCompilation.current) Tw2ShaderCompilation.current.stages.add(shader);
+        if (!Tw2ShaderCompilation.current && !gl.getShaderParameter(shader, gl.COMPILE_STATUS))
         {
             if (!skipError)
             {

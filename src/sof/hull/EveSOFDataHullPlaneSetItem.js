@@ -29,20 +29,21 @@ export class EveSOFDataHullPlaneSetItem extends meta.Model
     @meta.int32
     boneIndex = -1;
 
+    // Carbon defaults (EveSOFData.cpp:602-624); SOF data omits default values.
     @meta.color
-    color = vec4.create();
+    color = vec4.fromValues(1, 1, 1, 1);
 
     @meta.uint
     colorType = 0; // Assumes the default colour type is "Primary"
 
     @meta.float
-    dutyCycle = 0;
+    dutyCycle = 1;
 
     @meta.int32
     groupIndex = -1;
 
     @meta.float
-    intensity = 0.0;
+    intensity = 1;
 
     @meta.vector4
     layer1Scroll = vec4.create();
@@ -71,13 +72,13 @@ export class EveSOFDataHullPlaneSetItem extends meta.Model
     position = vec3.create();
 
     @meta.float
-    rate = 0;
+    rate = 1;
 
     @meta.quaternion
     rotation = quat.create();
 
     @meta.float
-    saturation = 0.0;
+    saturation = 1;
 
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);

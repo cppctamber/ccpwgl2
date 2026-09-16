@@ -15,8 +15,10 @@ export class EveSOFDataHullChild extends meta.Model
     @meta.int32
     groupIndex = -1;
 
-    @meta.uint
-    id = 0;
+    // Carbon `m_id( -1 )` (`EveSOFData.cpp:506`): -1 means the child binds to no hull
+    // animation, and `SetupChildrenAndAnimations` tests `id != -1` before binding it
+    @meta.int32
+    id = -1;
 
     @meta.uint
     lowestLodVisible = 0;

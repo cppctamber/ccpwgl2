@@ -3,10 +3,10 @@ import { box3, mat4, sph3, vec3 } from "math";
 import { WglTransform } from "core";
 import { GLESPerObjectDataInterior } from "../Tr2InteriorPerObjectData";
 import { Tw2InteriorAnimationController } from "./Tw2InteriorAnimationController";
-import { Tw2InteriorScene } from "../scene/Tw2InteriorScene";
+import { Tr2InteriorScene } from "../scene/Tr2InteriorScene";
 
-@meta.define("Tw2IntSkinnedObject", true)
-export class Tw2IntSkinnedObject extends WglTransform
+@meta.define("Tr2IntSkinnedObject", true)
+export class Tr2IntSkinnedObject extends WglTransform
 {
 
     @meta.boolean
@@ -301,7 +301,7 @@ export class Tw2IntSkinnedObject extends WglTransform
     }
 
     /**
-     * Applies interior frame constants when hosted outside Tw2InteriorScene.
+     * Applies interior frame constants when hosted outside Tr2InteriorScene.
      */
     ApplyInteriorPerFrameData()
     {
@@ -312,7 +312,7 @@ export class Tw2IntSkinnedObject extends WglTransform
         }
         else
         {
-            scene = Tw2InteriorScene.ApplyFallbackPerFrameData();
+            scene = Tr2InteriorScene.ApplyFallbackPerFrameData();
         }
         this._interiorFrameScene = scene;
         return scene;

@@ -541,6 +541,7 @@ export class EveSpaceScene extends meta.Model
     _carbonShadowRenderer = null;
     _carbonShadowError = null;
     _distortionAccumulator = null;
+    _distortionFrameBuffer = null;
     _distortionContext = null;
     _distortionContextReport = null;
     _distortionPostProcess = null;
@@ -2566,6 +2567,111 @@ export class EveSpaceScene extends meta.Model
      * @param {Number} dt
      * @returns {boolean} true if completed
      */
+    /**
+     * Clears the distortion map to the value its shaders are written against.
+     *
+     * Carbon clears it to `0x007f7f00` (`EveSpaceScene.cpp:1243`,
+     * `RenderDistortionBatches`) - red and green at 0x7f, blue and alpha at zero -
+     * because a distortion shader writes a SIGNED screen offset with no bias of its
+     * own and blends it additively, so the destination has to start at the midpoint.
+     * `1layerdyndistortionv2`'s pixel shader is the proof: it writes
+     * `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` and nothing more, while the
+     * apply pass decodes `rg - 0.5`.
+     *
+     * Clearing to black instead - which is what the shared `ClearBufferBits` did,
+     * since it uses whatever `clearColor` the last pass left behind - clamped every
+     * negative offset to zero and left the apply pass reading a half-unit negative
+     * bias on every written pixel.
+     *
+     * Blue stays at zero deliberately: it is the "distortion was written here" flag,
+     * and the apply pass gates on `>= 1/256`, so an untouched pixel must read zero.
+     */
+    ClearDistortionMap()
+    {
+        const gl = tw2.device.gl;
+        const previous = gl.getParameter(gl.COLOR_CLEAR_VALUE);
+        gl.clearColor(0.498039215686, 0.498039215686, 0, 0);
+        tw2.ClearBufferBits(true, false, true);
+        gl.clearColor(previous[0], previous[1], previous[2], previous[3]);
+    }
+
+    /**
+     * Renders the distortion batches into the distortion map, against the depth the
+     * MAIN PASS already wrote.
+     *
+     * Carbon never re-renders depth for this: `RenderDistortionBatches`
+     * (`EveSpaceScene.cpp:1234-1249`) pushes the distortion map as the render target
+     * and binds the same depth buffer it handed to `RenderMainPass`, so distortion
+     * behind hull is occluded by hull.
+     *
+     * ccpwgl instead called `RenderDepth(dt, true)` into the shared internal target and
+     * tested against that. Measured on dx11 (`_dev/cppc/probe-depth-pass.local.mjs`):
+     * that pass collects ZERO batches and issues ZERO draws, so the depth attachment
+     * held nothing but its clear value - and with the reversed buffer's GEQUAL test,
+     * every distortion fragment passed. That is the "distortion ignores depth" report.
+     *
+     * So borrow the scene target's depth renderbuffer for one FBO whose colour is the
+     * distortion map. It is the same size and, on a reversed session, the same
+     * DEPTH_COMPONENT32F the main pass just filled. Depth is never cleared here and
+     * never written to (the batches run with depth writes off), so the borrowed buffer
+     * is only read.
+     *
+     * Falls back to the old path when there is no scene target - a gles2 session with
+     * neither HDR nor the clip flip draws the scene straight onto the canvas, and the
+     * canvas depth buffer cannot be attached to an FBO. gles2 therefore keeps exactly
+     * the behaviour it has today.
+     *
+     * @param {Function} render - draws the distortion batches
+     * @returns {Boolean} true if the batches were rendered
+     */
+    RenderDistortionBatches(render)
+    {
+        const
+            gl = tw2.device.gl,
+            target = this._internalRenderTarget,
+            sceneDepth = this._sceneTarget && this._sceneTarget.hasDepth ? this._sceneTarget._renderBuffer : null,
+            colorTexture = target && target._colorTexture ? target._colorTexture.texture : null;
+
+        if (!sceneDepth || !colorTexture)
+        {
+            return target.SetCallUnset(() =>
+            {
+                this.ClearDistortionMap();
+                render();
+            });
+        }
+
+        if (!this._distortionFrameBuffer) this._distortionFrameBuffer = gl.createFramebuffer();
+
+        const
+            previousFrameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING),
+            previousViewport = gl.getParameter(gl.VIEWPORT);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._distortionFrameBuffer);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorTexture, 0);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, sceneDepth);
+
+        // A mismatched attachment pair leaves nothing drawable, and silently: fall back
+        // rather than render the frame into an incomplete buffer.
+        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+        {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, previousFrameBuffer);
+            return target.SetCallUnset(() =>
+            {
+                this.ClearDistortionMap();
+                render();
+            });
+        }
+
+        gl.viewport(0, 0, target.width, target.height);
+        this.ClearDistortionMap();
+        render();
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, previousFrameBuffer);
+        gl.viewport(previousViewport[0], previousViewport[1], previousViewport[2], previousViewport[3]);
+        return true;
+    }
+
     RenderDistortion(dt)
     {
         if (tw2.settings.GetValue("enableExperimentalBatchContext"))
@@ -2673,9 +2779,8 @@ export class EveSpaceScene extends meta.Model
             this.RenderDepth(dt, true);
         }
 
-        this._internalRenderTarget.SetCallUnset(() =>
+        this.RenderDistortionBatches(() =>
         {
-            tw2.ClearBufferBits(true, false, true);
             if (useBatchContext)
             {
                 distortionContext.Render();
@@ -2780,11 +2885,7 @@ export class EveSpaceScene extends meta.Model
             return false;
         }
 
-        const rendered = this._internalRenderTarget.SetCallUnset(() =>
-        {
-            tw2.ClearBufferBits(true, false, true);
-            distortionContext.Render();
-        });
+        const rendered = this.RenderDistortionBatches(() => distortionContext.Render());
 
         this._distortionContextReport = {
             path: "experimental",

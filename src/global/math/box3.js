@@ -942,7 +942,13 @@ box3.intersectsSph3 = function (a, sphere)
  */
 box3.isEmpty = function (a)
 {
-    if (a[0] + a[1] + a[2] + a[3] + a[4] + a[5] === 0) return true;
+    // An UNSET box - what `box3.create` hands back - is empty. Test its components
+    // rather than their sum: any box symmetric about the origin sums to zero too, so
+    // the sum called a perfectly good box empty. `res:/graphics/generic/unit_plane.gr2`
+    // is exactly that, min (-0.5,-0.5,0) max (0.5,0.5,0), which is why every banner
+    // reported zero world bounds, failed its visibility test and never drew - on both
+    // profiles (measured 2026-09-17).
+    if (a[0] === 0 && a[1] === 0 && a[2] === 0 && a[3] === 0 && a[4] === 0 && a[5] === 0) return true;
     return (a[3] < a[0]) || (a[4] < a[1]) || (a[5] < a[2]);
 };
 

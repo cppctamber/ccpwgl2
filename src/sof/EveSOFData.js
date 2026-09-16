@@ -71,7 +71,7 @@ export class EveSOFData extends meta.Model
      * Alpha is preserved; rebuild existing objects after changing this value.
      */
     @meta.float
-    globalVideoBrightnessModifier = 5;
+    globalVideoBrightnessModifier = 2;
 
     /**
      * The material used when a named one is not in the data.
@@ -167,8 +167,7 @@ export class EveSOFData extends meta.Model
             boosterSymHalo: 0.125,
             boosterBrightness: 1,
             boosterScale: [ 0.9, 0.9, 0.9 ],
-            boosterAlpha: 0.5,
-            maxDistortionOffset: 1 / 1000
+            boosterAlpha: 0.5
         },
 
         effect: {
@@ -196,6 +195,10 @@ export class EveSOFData extends meta.Model
             boosterGlow: "res:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
             boosterTrails: "res:/graphics/effect/managed/space/booster/volumetrictrails.fx",
             spriteSet: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+            // Carbon EveSOF.cpp:141-154
+            hazeSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx",
+            hazeSkinnedSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/skinned_hazespherical.fx",
+            hazeHalfSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazehalfspherical.fx",
             banner: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
         },
 
@@ -2843,13 +2846,21 @@ export class EveSOFData extends meta.Model
                         area.effect.name = area.name + "_effect";
                     }
 
-                    // Handle distortion
-                    // Todo: Update shaders so this isn't required
+                    // A distortion area that authored no MAX_DISTORTION_OFFSET still needs
+                    // one, because its shader DIVIDES by the value when writing the map:
+                    // `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET`. 128 is the authored
+                    // default these materials are written against.
+                    //
+                    // ccpwgl used to scale this by 1/1000 as well, which left `soef1_t1`'s
+                    // effective value at 0.128 - about 1000x off what the material authors,
+                    // and 500x out of line with hulls the scaling never reached, such as
+                    // `angbc1_t1` (whose materials keep their authored 64). Operator
+                    // 2026-09-17: the EVE client is not over-distorted on those hulls, and
+                    // the client runs the authored values, so the scaling went.
                     if (eff.parameters.MAX_DISTORTION_OFFSET || areasName === "distortionAreas")
                     {
-                        const value = eff.parameters.MAX_DISTORTION_OFFSET || [ 128, 0, 0, 0 ];
-                        value[0] *= options.multiplier.maxDistortionOffset;
-                        eff.parameters.MAX_DISTORTION_OFFSET = value;
+                        eff.parameters.MAX_DISTORTION_OFFSET =
+                            eff.parameters.MAX_DISTORTION_OFFSET || [ 128, 0, 0, 0 ];
                     }
 
                     // Update effect
@@ -3489,15 +3500,24 @@ export class EveSOFData extends meta.Model
                     MaskMap: srcSet.maskMapResPath
                 }
             });
+            set.skinned = isSkinned && srcSet.skinned;
             srcSet.items.forEach(item => set.CreateItem(item));
 
             // Update faction colours
-            set.items.forEach(item =>
+            set.items.forEach((item, itemIndex) =>
             {
+                const src = srcSet.items[itemIndex];
+                // Carbon blinkData = (rate, phase, dutyCycle, blinkMode) (EveSOF.cpp:1266).
+                item.blinkRate = src.rate;
+                item.dutyCycle = src.dutyCycle;
+
                 if (sof6)
                 {
+                    // Carbon: Saturate(intensity * colorSet[colorType], saturation) (EveSOF.cpp:1271).
                     vec4.copy(item.color, [ 0, 0, 0, 1 ]);
                     sof.faction.GetColorType(item.colorType, item.color, 0);
+                    vec4.scale(item.color, item.color, src.intensity);
+                    Saturate(item.color, item.color, src.saturation);
                 }
                 else
                 {
@@ -4307,7 +4327,7 @@ export class EveSOFData extends meta.Model
      */
     static SetupHazeSets(data, obj, sof, options)
     {
-        // Populate light owners while the known-broken haze renderer stays disabled.
+        // Carbon EveSOF::SetupHazeSets (EveSOF.cpp:1451-1552).
         const arr = obj.attachments;
         const toRemove = EveSOFData.FindObjectsByConstructor(arr, EveHazeSet);
         for (const srcSet of sof.hull.hazeSets)
@@ -4324,14 +4344,31 @@ export class EveSOFData extends meta.Model
             set.ClearItems();
             set.lights = [];
             set.skinned = srcSet.skinned && sof.hull.isSkinned;
+
+            // Effect by haze type and skinning (EveSOF.cpp:1474-1489).
+            let effectFilePath;
+            if (srcSet.hazeType === 1) effectFilePath = options.effectPath.hazeHalfSpherical;
+            else effectFilePath = set.skinned ? options.effectPath.hazeSkinnedSpherical : options.effectPath.hazeSpherical;
+            set.effect = set.effect || new Tw2Effect();
+            set.effect.SetValues({ effectFilePath, autoParameter: true });
+
             for (let index = 0; index < srcSet.items.length; index++)
             {
                 const src = srcSet.items[index];
                 const color = vec4.create();
                 sof.faction.GetColorType(src.colorType, color, 0);
+                // EveSOF.cpp:1508, saturation only under SOF6 (:1520-1522).
                 const hazeColor = vec4.scale(vec4.create(), color, src.hazeBrightness);
-                Saturate(hazeColor, hazeColor, src.saturation);
-                set.CreateItem({ ...src, color: hazeColor });
+                if (sof.hull.sof6 && data.enableSof6) Saturate(hazeColor, hazeColor, src.saturation);
+                set.CreateItem({
+                    position: src.position,
+                    rotation: src.rotation,
+                    scaling: src.scaling,
+                    boneIndex: src.boneIndex,
+                    color: hazeColor,
+                    // EveSOF.cpp:1518
+                    hazeData: [ src.hazeFalloff, src.sourceSize, src.sourceBrightness, src.boosterGainInfluence ? 1 : 0 ]
+                });
                 if (!(sof.hull.sof6 && data.enableSof6)) continue;
                 for (const raw of src.lights)
                 {

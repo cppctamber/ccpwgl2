@@ -21,7 +21,7 @@ import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
  * So a ship reading `animationUpdater` was constructing the character editor's
  * controller: the wrong type, missing three of the four properties the wire
  * actually carries. The interior controller keeps its own name, which is what
- * `Tw2IntSkinnedObject` already references it by.
+ * `Tr2IntSkinnedObject` already references it by.
  *
  * ## What is here
  *

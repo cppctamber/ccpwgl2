@@ -30922,7 +30922,13 @@
 	 * @returns {boolean} - true if empty
 	 */
 	box3$2.isEmpty = function (a) {
-	  if (a[0] + a[1] + a[2] + a[3] + a[4] + a[5] === 0) return true;
+	  // An UNSET box - what `box3.create` hands back - is empty. Test its components
+	  // rather than their sum: any box symmetric about the origin sums to zero too, so
+	  // the sum called a perfectly good box empty. `res:/graphics/generic/unit_plane.gr2`
+	  // is exactly that, min (-0.5,-0.5,0) max (0.5,0.5,0), which is why every banner
+	  // reported zero world bounds, failed its visibility test and never drew - on both
+	  // profiles (measured 2026-09-17).
+	  if (a[0] === 0 && a[1] === 0 && a[2] === 0 && a[3] === 0 && a[4] === 0 && a[5] === 0) return true;
 	  return a[3] < a[0] || a[4] < a[1] || a[5] < a[2];
 	};
 
@@ -40464,12 +40470,13 @@
 	  }
 
 	  /**
-	   * Checks if the resource is good and keeps it alive
+	   * Keeps the resource alive and checks readiness. Processing resources must
+	   * finish building; legacy resources retain their loaded-state contract.
 	   * @returns {boolean}
 	   */
 	  IsGood() {
 	    this.KeepAlive();
-	    return this.HasLoaded();
+	    return this.constructor.requiresProcessing ? this.HasPrepared() : this.HasLoaded();
 	  }
 
 	  /**
@@ -40567,6 +40574,7 @@
 	   */
 	  OnError() {
 	    var err = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Tw2Error();
+	    resMan.CancelProcessing(this);
 	    var wasGood = this.HasLoaded();
 
 	    /*
@@ -40598,6 +40606,7 @@
 	   * @param {*} [log]
 	   */
 	  OnRequested(log) {
+	    resMan.CancelProcessing(this);
 	    var stateName = this._state === Tw2Resource.State.NO_INIT ? "REQUESTED" : "RELOADING";
 	    if (this._SetState(Tw2Resource.State.REQUESTED)) {
 	      this._requested = Date.now();
@@ -40636,11 +40645,17 @@
 	    }
 	  }
 
+	  /** Loaded data is being built; the scheduler owns the processing status. */
+	  OnProcessing() {
+	    this._SetState(Tw2Resource.State.LOADED);
+	  }
+
 	  /**
 	   * Fires when the resource has been unloads
 	   * @param {*} [log]
 	   */
 	  OnUnloaded(log) {
+	    resMan.CancelProcessing(this);
 	    if (this._SetState(Tw2Resource.State.UNLOADED)) {
 	      resMan.OnPathEvent(this.path, "unloaded", log, this.suppressLogging);
 	      this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
@@ -40652,6 +40667,7 @@
 	   * @param {*} [log]
 	   */
 	  OnPurged(log) {
+	    resMan.CancelProcessing(this);
 	    this._SetState(Tw2Resource.State.PURGED);
 	    resMan.OnPathEvent(this.path, "purged", log, this.suppressLogging);
 	    this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
@@ -40864,7 +40880,7 @@
 	   * Resource states
 	   * @type {*}
 	   */
-	}, _Tw2Resource.State = {
+	}, _Tw2Resource.requiresProcessing = false, _Tw2Resource.State = {
 	  ERROR: -3,
 	  PURGED: -2,
 	  UNLOADED: -1,
@@ -41405,6 +41421,163 @@
 	          this.Remove(path);
 	        }
 	      }
+	    }
+	  }
+	}
+
+	/** Schedules cooperative resource work on the rendering thread. */
+	class Tw2ResourceProcessing {
+	  constructor() {
+	    this.jobs = new Map();
+	    this.ready = [];
+	    this.head = 0;
+	    this.polling = new Set();
+	  }
+	  get size() {
+	    return this.jobs.size;
+	  }
+	  Queue(resource, data, options) {
+	    var _resource$OnProcessin;
+	    this.Cancel(resource);
+	    // A new build invalidates readiness even when it reuses loaded data.
+	    (_resource$OnProcessin = resource.OnProcessing) === null || _resource$OnProcessin === void 0 || _resource$OnProcessin.call(resource);
+	    var job = {
+	      resource,
+	      data,
+	      options,
+	      iterator: null,
+	      waiting: null,
+	      value: undefined
+	    };
+	    this.jobs.set(resource, job);
+	    this.ready.push(job);
+	  }
+	  Cancel(resource, error) {
+	    var job = this.jobs.get(resource);
+	    if (!job) return;
+	    this.jobs.delete(resource);
+	    this.polling.delete(job);
+	    try {
+	      var _job$waiting, _job$waiting$cancel;
+	      (_job$waiting = job.waiting) === null || _job$waiting === void 0 || (_job$waiting$cancel = _job$waiting.cancel) === null || _job$waiting$cancel === void 0 || _job$waiting$cancel.call(_job$waiting);
+	    } finally {
+	      try {
+	        var _job$iterator, _job$iterator$return;
+	        if (!job.running) (_job$iterator = job.iterator) === null || _job$iterator === void 0 || (_job$iterator$return = _job$iterator.return) === null || _job$iterator$return === void 0 || _job$iterator$return.call(_job$iterator);
+	      } finally {
+	        var _resource$OnProcessin2;
+	        job.cancelled = true;
+	        if (!job.running) job.iterator = null;
+	        job.data = job.options = job.value = job.waiting = null;
+	        (_resource$OnProcessin2 = resource.OnProcessingCancelled) === null || _resource$OnProcessin2 === void 0 || _resource$OnProcessin2.call(resource, error);
+	      }
+	    }
+	  }
+	  Clear() {
+	    for (var resource of this.jobs.keys()) this.Cancel(resource);
+	    this.ready.length = this.head = 0;
+	  }
+
+	  /** A step yields nothing to continue later, or a promise to wait without polling. */
+	  Pump(now, budgetMs) {
+	    var _this = this;
+	    var start = now();
+	    // Poll only jobs parked before this tick. A false result never re-enters
+	    // the runnable queue and therefore cannot spin within the same frame.
+	    var pollBudget = budgetMs * (this.head < this.ready.length ? 0.5 : 1);
+	    var polls = 0;
+	    for (var remaining = this.polling.size; remaining > 0 && this.polling.size && (!polls || now() - start < pollBudget); remaining--) {
+	      var job = this.polling.values().next().value;
+	      this.polling.delete(job);
+	      polls++;
+	      try {
+	        var completed = job.waiting.poll(now, start + pollBudget);
+	        if (this.jobs.get(job.resource) !== job) continue;
+	        if (!completed) {
+	          this.polling.add(job);
+	          continue;
+	        }
+	        job.waiting = null;
+	        this.ready.push(job);
+	      } catch (error) {
+	        this.Fail(job, error);
+	      }
+	    }
+	    var steps = 0;
+	    var _loop = function () {
+	        var job = _this.ready[_this.head];
+	        _this.ready[_this.head++] = null;
+	        var resource = job.resource;
+	        if (_this.jobs.get(resource) !== job) return 0; // continue
+	        steps++;
+	        try {
+	          if (!job.iterator) {
+	            job.iterator = resource.Process(job.data, job.options);
+	            job.data = job.options = null;
+	          }
+	          var result;
+	          job.running = true;
+	          try {
+	            result = job.iterator.next(job.value);
+	          } finally {
+	            job.running = false;
+	            if (job.cancelled) {
+	              try {
+	                var _job$iterator2, _job$iterator2$return;
+	                (_job$iterator2 = job.iterator) === null || _job$iterator2 === void 0 || (_job$iterator2$return = _job$iterator2.return) === null || _job$iterator2$return === void 0 || _job$iterator2$return.call(_job$iterator2);
+	              } finally {
+	                job.iterator = null;
+	              }
+	            }
+	          }
+	          job.value = undefined;
+	          if (_this.jobs.get(resource) !== job) return 0; // continue
+	          if (result.done) {
+	            _this.jobs.delete(resource);
+	            try {
+	              resource.OnPrepared();
+	            } catch (error) {
+	              resource.OnError(error);
+	            }
+	          } else if (result.value && typeof result.value.poll === "function") {
+	            job.waiting = result.value;
+	            _this.polling.add(job);
+	          } else if (result.value && typeof result.value.then === "function") {
+	            job.waiting = result.value;
+	            Promise.resolve(result.value).then(value => {
+	              if (_this.jobs.get(resource) !== job) return;
+	              job.waiting = null;
+	              job.value = value;
+	              _this.ready.push(job);
+	            }, error => _this.Fail(job, error));
+	          } else {
+	            _this.ready.push(job);
+	          }
+	        } catch (error) {
+	          _this.Fail(job, error);
+	        }
+	      },
+	      _ret;
+	    while (this.head < this.ready.length && (!steps && (!polls || budgetMs <= 0) || now() - start < budgetMs)) {
+	      _ret = _loop();
+	      if (_ret === 0) continue;
+	    }
+	    if (this.head === this.ready.length || this.head > 256) {
+	      this.ready = this.ready.slice(this.head);
+	      this.head = 0;
+	    }
+	  }
+	  Fail(job, error) {
+	    if (this.jobs.get(job.resource) !== job) return;
+	    try {
+	      this.Cancel(job.resource, error);
+	    } catch (notificationError) {
+	      // A listener that throws while being told of a failure must not take the
+	      // rest of the queue down with it: Fail runs from Pump's catch, so an escape
+	      // here skips every remaining job this frame.
+	      console.error("Resource processing cancellation listener failed:", notificationError);
+	    } finally {
+	      job.resource.OnError(error);
 	    }
 	  }
 	}
@@ -54653,8 +54826,8 @@
 	  }
 	}), _class2$7c)) || _class$7$);
 
-	var _dec$7_, _dec2$7g, _dec3$6N, _dec4$5W, _dec5$5k, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$M, _dec20$J, _dec21$E, _dec22$B, _dec23$w, _dec24$v, _class$7_, _class2$7b, _descriptor$7b, _descriptor2$6D, _descriptor3$5L, _descriptor4$51, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
-	var Tw2GeometryMesh = (_dec$7_ = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$M = vector3, _dec20$J = float, _dec21$E = list("String"), _dec22$B = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7_(_class$7_ = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
+	var _dec$7_, _dec2$7g, _dec3$6N, _dec4$5W, _dec5$5k, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$L, _dec20$I, _dec21$D, _dec22$A, _dec23$w, _dec24$v, _class$7_, _class2$7b, _descriptor$7b, _descriptor2$6D, _descriptor3$5L, _descriptor4$51, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
+	var Tw2GeometryMesh = (_dec$7_ = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$L = vector3, _dec20$I = float, _dec21$D = list("String"), _dec22$A = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7_(_class$7_ = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7b, this);
 	    _initializerDefineProperty(this, "declaration", _descriptor2$6D, this);
@@ -55572,28 +55745,28 @@
 	  initializer: function () {
 	    return vec3$3.fromValues(0, 0, 0);
 	  }
-	}), _descriptor10$1F = _applyDecoratedDescriptor(_class2$7b.prototype, "boundsSpherePosition", [_dec19$M], {
+	}), _descriptor10$1F = _applyDecoratedDescriptor(_class2$7b.prototype, "boundsSpherePosition", [_dec19$L], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor11$1u = _applyDecoratedDescriptor(_class2$7b.prototype, "boundsSphereRadius", [_dec20$J], {
+	}), _descriptor11$1u = _applyDecoratedDescriptor(_class2$7b.prototype, "boundsSphereRadius", [_dec20$I], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor12$1m = _applyDecoratedDescriptor(_class2$7b.prototype, "boneBindings", [_dec21$E], {
+	}), _descriptor12$1m = _applyDecoratedDescriptor(_class2$7b.prototype, "boneBindings", [_dec21$D], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor13$1g = _applyDecoratedDescriptor(_class2$7b.prototype, "boneBounds", [_dec22$B], {
+	}), _descriptor13$1g = _applyDecoratedDescriptor(_class2$7b.prototype, "boneBounds", [_dec22$A], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -60578,7 +60751,7 @@
 	 */
 	GsfReader.extension = "gsf";
 
-	var _dec$7U, _class$7U;
+	var _dec$7U, _class$7U, _Tw2GeometryRes;
 
 	// Todo: Change to registration process
 	var readers = {
@@ -60602,7 +60775,7 @@
 	 * @property {Array<Tw2GeometryAnimation>} animations
 	 * @property {Boolean} _boundsDirty
 	 */
-	var Tw2GeometryRes = (_dec$7U = define("Tw2GeometryRes", "TriGeometryRes"), _dec$7U(_class$7U = class Tw2GeometryRes extends Tw2Resource {
+	var Tw2GeometryRes = (_dec$7U = define("Tw2GeometryRes", "TriGeometryRes"), _dec$7U(_class$7U = (_Tw2GeometryRes = class Tw2GeometryRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    this.meshes = [];
@@ -60617,7 +60790,8 @@
 	    this._requestResponseType = null;
 	    this._extension = null;
 	    this._boundsDirty = true;
-	    this._gr2Task = null;
+	    this._gr2DecodeOptions = null;
+	    this._gr2DecodeWarned = false;
 	  }
 	  /**
 	   * Sets system mirror
@@ -60838,7 +61012,8 @@
 	   * Clears the geometry data
 	   */
 	  Clear() {
-	    this.CancelPreparation();
+	    var cancelProcessing = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	    if (cancelProcessing) this.CancelPreparation();
 	    for (var i = 0; i < this.meshes.length; i++) this.meshes[i].Clear();
 	    this.meshes.splice(0);
 	    this.models.splice(0);
@@ -60849,82 +61024,72 @@
 	    this.boundsSphereRadius = 0;
 	  }
 
-	  /**
-	   * Prepares the object
-	   * TODO: Normalize geometry readers
-	   * @param {*} data
-	   * @param {Object} [options]
-	   */
+	  /** Cancels queued, waiting or partially built geometry. */
 	  CancelPreparation() {
-	    var task = this._gr2Task;
-	    this._gr2Task = null;
-	    if (task) {
-	      var _task$cancel, _task$iterator;
-	      (_task$cancel = task.cancel) === null || _task$cancel === void 0 || _task$cancel.call(task);
-	      task.release();
-	      (_task$iterator = task.iterator) === null || _task$iterator === void 0 || _task$iterator.return();
+	    resMan.CancelProcessing(this);
+	  }
+
+	  /**
+	   * The decode options a gr2 load runs with: the reader's class defaults
+	   * under whatever the caller passed.
+	   * @param {Object} [options]
+	   * @returns {{ firstMeshOnly: Boolean, unpackTangents: Boolean }}
+	   */
+	  static GetGr2DecodeOptions(options) {
+	    var merged = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
+	    return {
+	      firstMeshOnly: merged.firstMeshOnly !== false,
+	      unpackTangents: !!merged.unpackTangents
+	    };
+	  }
+
+	  /**
+	   * A prepared gr2 is cached by path and never decoded again, so it keeps
+	   * the mesh set of whatever options were current on its FIRST load. A later
+	   * request under different reader defaults silently gets that first result.
+	   * There is no per-path cache key for options yet; this warns once so the
+	   * mismatch is at least visible.
+	   * @param {Function} [onResolved]
+	   * @param {Function} [onRejected]
+	   */
+	  RegisterCallbacks(onResolved, onRejected) {
+	    if (this._gr2DecodeOptions && !this._gr2DecodeWarned && this.HasCompleted()) {
+	      var wanted = Tw2GeometryRes.GetGr2DecodeOptions();
+	      var used = this._gr2DecodeOptions;
+	      if (wanted.firstMeshOnly !== used.firstMeshOnly || wanted.unpackTangents !== used.unpackTangents) {
+	        this._gr2DecodeWarned = true;
+	        console.warn("Tw2GeometryRes: \"".concat(this.path, "\" was cached with gr2 options ").concat(JSON.stringify(used), " ") + "and is being reused under ".concat(JSON.stringify(wanted), "; the cached mesh set is served as-is"));
+	      }
 	    }
+	    return super.RegisterCallbacks(onResolved, onRejected);
 	  }
-	  OnRequested(log) {
-	    this.CancelPreparation();
-	    return super.OnRequested(log);
-	  }
-	  OnError(error) {
-	    this.CancelPreparation();
-	    return super.OnError(error);
+	  *Process(data, options) {
+	    if (this._extension !== "gr2") {
+	      this.Prepare(data, options, true);
+	      return;
+	    }
+	    this.Clear(false);
+	    // The reader's class defaults apply here as they do on its own entry
+	    // points: a caller that opts out of firstMeshOnly once, for every
+	    // load, must not be overruled by a fetch that passes no options.
+	    var decodeOptions = Tw2GeometryRes.GetGr2DecodeOptions(options);
+	    this._gr2DecodeOptions = decodeOptions;
+	    var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
+	    // Cancellation of the yielded promise is owned by the scheduler.
+	    data = null;
+	    var json = yield decoded;
+	    yield* Gr2Reader.BuildGeometryResSteps(json, this, options);
+	    this.RebuildBounds();
+	    this._custom = null;
+	    if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
 	  }
 	  Prepare(data, options) {
-	    if (options !== null && options !== void 0 && options._gr2Task) {
-	      var task = options._gr2Task;
-	      if (task !== this._gr2Task) return;
-	      var started = resMan.tw2.now;
-	      var budget = Math.max(0, resMan._prepareBudget) * 1000;
-	      while (!task.iterator.next().done) {
-	        if (resMan.tw2.now - started >= budget) {
-	          resMan.Queue(this, null, options);
-	          return;
-	        }
-	      }
-	      this._gr2Task = null;
-	      this.RebuildBounds();
-	      this._custom = null;
-	      if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
-	      this.OnPrepared();
-	      return;
-	    }
-	    this.Clear();
+	    var processing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 	    if (this._extension === "gr2") {
-	      var decodeOptions = {
-	        firstMeshOnly: (options === null || options === void 0 ? void 0 : options.firstMeshOnly) !== false,
-	        unpackTangents: !!(options !== null && options !== void 0 && options.unpackTangents)
-	      };
-	      var _task = {
-	        iterator: null,
-	        cancel: null,
-	        pending: true,
-	        release: () => {
-	          if (_task.pending) {
-	            _task.pending = false;
-	            resMan.RemovePendingLoad(this.path);
-	          }
-	        }
-	      };
-	      this._gr2Task = _task;
-	      resMan.AddPendingLoad(this.path);
-	      var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve().then(() => prepareGr2(data, decodeOptions));
-	      _task.cancel = decoded.cancel;
-	      decoded.then(json => {
-	        if (this._gr2Task !== _task) return;
-	        _task.iterator = Gr2Reader.BuildGeometryResSteps(json, this, options);
-	        resMan.Queue(this, null, {
-	          _gr2Task: _task
-	        });
-	        _task.release();
-	      }, error => {
-	        if (this._gr2Task === _task) this.OnError(error);
-	      });
+	      resMan.Queue(this, data, options);
 	      return;
 	    }
+	    this.Clear(!processing);
 	    var Reader = readers[this._extension];
 	    if (!Reader) throw new ErrResourceFormatUnsupported({
 	      format: this._extension
@@ -60939,7 +61104,7 @@
 	    this.RebuildBounds();
 	    this._custom = null;
 	    if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
-	    this.OnPrepared();
+	    if (!processing) this.OnPrepared();
 	  }
 
 	  /**
@@ -61294,7 +61459,7 @@
 	    res.UpdateFromJSON(json, options);
 	    return res;
 	  }
-	}) || _class$7U);
+	}, _Tw2GeometryRes.requiresProcessing = true, _Tw2GeometryRes)) || _class$7U);
 
 	/**
 	 * Throws when a geometry mesh lacks an element required for a particle system
@@ -66173,11 +66338,14 @@
 	  }
 
 	  /**
-	   * Gets a count of resources waiting to be built.
+	   * Gets outstanding preparation, including runnable and waiting processing jobs.
 	   * @returns {number}
 	   */
 	  get pendingPrepares() {
-	    return this._prepareQueue.length - this._prepareQueueHead;
+	    return this._prepareQueue.length - this._prepareQueueHead + this.pendingProcessing;
+	  }
+	  get pendingProcessing() {
+	    return this.processing.size;
 	  }
 
 	  /**
@@ -66190,6 +66358,9 @@
 	    _this = this;
 	    /** Resource cache and lifecycle root owned by this manager. */
 	    this.motherLode = new Tw2MotherLode();
+	    this.processing = new Tw2ResourceProcessing();
+	    /** Defer shader validation/reflection through the processing scheduler. */
+	    this.useParallelShaders = true;
 	    /** Max seconds per frame spent preparing loaded resources. */
 	    /**
 	     * Seconds of resource preparation allowed per frame.
@@ -66392,7 +66563,7 @@
 	  Register(opt) {
 	    if (!opt) return;
 	    if ("events" in opt) this.AddEvents(opt.events);
-	    assignIfExists(this, opt, ["maxPrepareTime", "maxConcurrentLoads", "workerLoaderUrl", "useGeometryWorkers", "geometryWorkerUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
+	    assignIfExists(this, opt, ["maxPrepareTime", "useParallelShaders", "maxConcurrentLoads", "workerLoaderUrl", "useGeometryWorkers", "geometryWorkerUrl", "fetchOptions", "autoPurgeResources", "purgeTime", "retainLoadingObjects", "retainedObjectTime", "maxRetainedBytes", "maxRetainedSweepTime", "minimumAutoReloadSeconds", "maxAutoReloadsPerTick", "maxWatchedTime", "maxWatchedCount", "maxWatchedUpdateTime", "minimumWatchUpdate"]);
 	    if (opt.useWorkerLoading !== undefined) {
 	      this.UseWorkerLoading(opt.useWorkerLoading);
 	    } else if (opt.workerLoading !== undefined) {
@@ -66560,6 +66731,7 @@
 	   * @param {Function} [onClear] - An optional function which is called on each cleared resource
 	   */
 	  Clear(onClear) {
+	    this.processing.Clear();
 	    this.motherLode.Clear(onClear);
 	  }
 
@@ -66620,7 +66792,13 @@
 	    }
 	    this._prepareBudget = this.maxPrepareTime;
 	    var startTime = this.tw2.now;
+	    // Share the existing budget. Reserve half for legacy preparation when
+	    // both paths have work, so processing cannot starve older resources.
+	    var processingBudget = this.maxPrepareTime * 1000 * (this._prepareQueue.length > this._prepareQueueHead ? 0.5 : 1);
+	    this.processing.Pump(() => this.tw2.now, processingBudget);
+	    this._prepareBudget = this.maxPrepareTime - (this.tw2.now - startTime) * 0.001;
 	    while (this._prepareQueue.length > this._prepareQueueHead) {
+	      if (this.maxPrepareTime > 0 && this._prepareBudget <= 0) break;
 	      var _this$_prepareQueue$t = _slicedToArray(this._prepareQueue[this._prepareQueueHead], 3),
 	        res = _this$_prepareQueue$t[0],
 	        data = _this$_prepareQueue$t[1],
@@ -66752,13 +66930,20 @@
 	  }
 
 	  /**
-	   * Adds a resource and response to the prepare queue
+	   * Routes loaded data to processing for opted-in classes, otherwise preparation.
 	   * @param {Tw2Resource} res
 	   * @param {*} response
 	   * @param {*} [meta]
 	   */
 	  Queue(res, response, meta) {
-	    this._prepareQueue.push([res, response, meta]);
+	    if (res.constructor.requiresProcessing) {
+	      this.processing.Queue(res, response, meta);
+	    } else {
+	      this._prepareQueue.push([res, response, meta]);
+	    }
+	  }
+	  CancelProcessing(res) {
+	    this.processing.Cancel(res);
 	  }
 
 	  /**
@@ -72159,6 +72344,52 @@
 	  }
 
 	  /**
+	   * The top-level values rule for from/set: a plain object, or null for "no
+	   * values".
+	   *
+	   * SetValues and from exist for hydration and dehydration, so what arrives
+	   * at the top is data. A live object there is refused rather than read as
+	   * a bag: measured before this rule, `X.constructor.from(X)` built a new
+	   * object that aliased X's children and flattened its Map-held models.
+	   * Child fields are different - a non-plain value there is a reference, and
+	   * the field's declared type decides that. The one rule lives here so every
+	   * entry point asks the same question in the same place.
+	   *
+	   * @param {*} values Incoming top-level values.
+	   * @param {string} label Entry point named in the error.
+	   * @returns {boolean} False for null (nothing to apply), true for a plain bag.
+	   * @throws {TypeError} For anything that is not a plain object or null.
+	   */
+	  static assertValues(values, label) {
+	    if (values === null) return false;
+	    if (!isPlainObject(values)) {
+	      throw new TypeError("".concat(label, " requires a plain values object; received ").concat(describeValuesInput(values), "."));
+	    }
+	    return true;
+	  }
+
+	  /**
+	   * Copies a source's values into a target - the explicit copy helper.
+	   *
+	   * The top-level from/set rule refuses a live object as values, so copying
+	   * one says so here instead: a plain source already IS values, anything
+	   * else is exported first. Both then go through the target's validated
+	   * setter, so the target keeps its own identity and in-place buffers. This
+	   * is a value copy, not Carbon's Copier: no topology is preserved and
+	   * reference fields carry the source's references across as references.
+	   *
+	   * @param {object} target The object receiving the values.
+	   * @param {object} source A live object or a plain values object.
+	   * @param {object} [options={}] Population options.
+	   * @returns {Set<string>|boolean} Changed fields, or a boolean result.
+	   */
+	  static copy(target, source) {
+	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    var values = isPlainObject(source) ? source : CjsSchema.getValues(source, {}, options);
+	    return CjsSchema.setValues(target, values, options);
+	  }
+
+	  /**
 	   * Applies a plain value bag to a target through its validated setter.
 	   *
 	   * @param {object} target A schema-backed instance.
@@ -72169,6 +72400,7 @@
 	  static setValues(target) {
 	    var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    if (!CjsSchema.assertValues(values, "CjsSchema.setValues")) return false;
 	    var service = _classPrivateFieldLooseBase(CjsSchema, _valuesService)[_valuesService];
 	    return service ? service.setValues(target, values, options) : CjsSchema.setValuesFromSchema(target, values, options);
 	  }
@@ -72212,6 +72444,7 @@
 	  static from(className) {
 	    var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    if (!CjsSchema.assertValues(values, "CjsSchema.from")) values = {};
 	    return _classPrivateFieldLooseBase(CjsSchema, _requireValuesService)[_requireValuesService]("from").from(className, values, options);
 	  }
 
@@ -72322,7 +72555,7 @@
 	  value: createValuesTransport({
 	    GetFields: Constructor => getEffectiveFields(Constructor),
 	    Export: (value, field, options) => exportCarbonValue(value, field.type),
-	    Import: (value, field) => normalizeCarbonValue(value, field.type),
+	    Import: (value, field) => importDeclaredValue(value, field),
 	    CoerceInto: (current, incoming, field) => {
 	      var _coerceCarbonMathInto;
 	      return (_coerceCarbonMathInto = coerceCarbonMathInto(current, incoming, field.type)) != null ? _coerceCarbonMathInto : coerceCarbonTypedArrayInto(current, incoming, field.type);
@@ -73110,6 +73343,53 @@
 	    schema.hiddenInherited.add(_fieldName);
 	  }
 	}
+
+	// The state-free transport's import. A declared REFERENCE field - model or
+	// objectRef, or a list or Map of them - treats a non-plain object as the
+	// reference itself and assigns it, Carbon's IRoot* member (operator ruling,
+	// 2026-09-14). The DECLARED TYPE decides that the field holds references; the
+	// value's class is never inspected. Plain bags, and every other field kind,
+	// import by value exactly as before.
+	function importDeclaredValue(value, field) {
+	  var type = field.type;
+	  switch (type === null || type === void 0 ? void 0 : type.kind) {
+	    case "model":
+	    case "objectRef":
+	      if (isObjectReference(value)) return value;
+	      break;
+	    case "list":
+	    case "array":
+	      if (Array.isArray(value) && isReferenceType(type.itemType)) {
+	        return value.map(item => isObjectReference(item) ? item : cloneCarbonValue(item));
+	      }
+	      break;
+	    case "map":
+	      if (value instanceof Map && isReferenceType(type.valueType)) {
+	        return new Map(Array.from(value, _ref25 => {
+	          var _ref26 = _slicedToArray(_ref25, 2),
+	            key = _ref26[0],
+	            item = _ref26[1];
+	          return [key, isObjectReference(item) ? item : cloneCarbonValue(item)];
+	        }));
+	      }
+	      break;
+	  }
+	  return normalizeCarbonValue(value, type);
+	}
+
+	// A declared item type that holds references: a model or objectRef
+	// descriptor, or a bare name registered as a class. "string" and "unknown"
+	// are not registered, so they stay values.
+	function isReferenceType(type) {
+	  if (typeof type === "string") return CjsSchema.GetConstructor(type) !== null;
+	  return (type === null || type === void 0 ? void 0 : type.kind) === "model" || (type === null || type === void 0 ? void 0 : type.kind) === "objectRef";
+	}
+
+	// Not a values bag: an object that is neither plain, an array nor a typed
+	// array. Asks only what the value is made of, never which class built it.
+	function isObjectReference(value) {
+	  return value !== null && typeof value === "object" && !isPlainObject(value) && !Array.isArray(value) && !ArrayBuffer.isView(value);
+	}
 	function getEffectiveFields(Constructor) {
 	  var ordered = [];
 	  var byName = new Map();
@@ -73154,10 +73434,10 @@
 	  return lineage.reverse();
 	}
 	function mergeMemberMetadata(target, source) {
-	  for (var _ref27 of Object.entries(source)) {
-	    var _ref26 = _slicedToArray(_ref27, 2);
-	    var namespace = _ref26[0];
-	    var value = _ref26[1];
+	  for (var _ref29 of Object.entries(source)) {
+	    var _ref28 = _slicedToArray(_ref29, 2);
+	    var namespace = _ref28[0];
+	    var value = _ref28[1];
 	    if (namespace === "name") continue;
 	    target[namespace] = mergeNamespace(target[namespace], value);
 	  }
@@ -73394,10 +73674,10 @@
 	  // document calls this class on the wire (`CjsLightData`'s `"LightData"`).
 	  // A donor is not a wire name: writing `MetalWorkQueue` there would tell
 	  // dehydration the class serializes under that name.
-	  for (var _ref30 of [["carbon", "replicates"], ["modelledOn", "is modelled on"]]) {
-	    var _ref29 = _slicedToArray(_ref30, 2);
-	    var key = _ref29[0];
-	    var what = _ref29[1];
+	  for (var _ref32 of [["carbon", "replicates"], ["modelledOn", "is modelled on"]]) {
+	    var _ref31 = _slicedToArray(_ref32, 2);
+	    var key = _ref31[0];
+	    var what = _ref31[1];
 	    if (result[key] === undefined || result[key] === null) continue;
 	    if (typeof result[key] !== "string" || !result[key].trim()) {
 	      throw new TypeError("CjsSchema.define ".concat(key, " must be a non-empty Carbon class name when provided."));
@@ -73444,10 +73724,10 @@
 	  if (!isPlainObject(members)) {
 	    throw new TypeError("CjsSchema.define ".concat(memberType, " must be a name-keyed object or an array of named records."));
 	  }
-	  return Object.entries(members).map(_ref31 => {
-	    var _ref32 = _slicedToArray(_ref31, 2),
-	      name = _ref32[0],
-	      definition = _ref32[1];
+	  return Object.entries(members).map(_ref33 => {
+	    var _ref34 = _slicedToArray(_ref33, 2),
+	      name = _ref34[0],
+	      definition = _ref34[1];
 	    if (!name.trim()) {
 	      throw new TypeError("CjsSchema.define ".concat(memberType, " requires a non-empty name."));
 	    }
@@ -73482,10 +73762,10 @@
 	    if (!isPlainObject(entry)) {
 	      throw new TypeError("CjsSchema.define ".concat(memberType, " \"").concat(name, "\" accepts schema decorators, ") + "namespace objects, or an array of them.");
 	    }
-	    for (var _ref35 of Object.entries(entry)) {
-	      var _ref34 = _slicedToArray(_ref35, 2);
-	      var namespace = _ref34[0];
-	      var value = _ref34[1];
+	    for (var _ref37 of Object.entries(entry)) {
+	      var _ref36 = _slicedToArray(_ref37, 2);
+	      var namespace = _ref36[0];
+	      var value = _ref36[1];
 	      member[namespace] = mergeNamespace(member[namespace], value);
 	    }
 	  }
@@ -73545,10 +73825,10 @@
 	  if (!isPlainObject(definition)) {
 	    throw new TypeError("CjsSchema.components requires a plain object definition.");
 	  }
-	  return Object.fromEntries(Object.entries(definition).map(_ref36 => {
-	    var _ref37 = _slicedToArray(_ref36, 2),
-	      swizzle = _ref37[0],
-	      value = _ref37[1];
+	  return Object.fromEntries(Object.entries(definition).map(_ref38 => {
+	    var _ref39 = _slicedToArray(_ref38, 2),
+	      swizzle = _ref39[0],
+	      value = _ref39[1];
 	    return [normalizeSwizzle(swizzle), normalizeComponentEntry(value)];
 	  }));
 	}
@@ -73655,10 +73935,10 @@
 	  var result = {
 	    name: field.name
 	  };
-	  for (var _ref40 of Object.entries(field)) {
-	    var _ref39 = _slicedToArray(_ref40, 2);
-	    var key = _ref39[0];
-	    var value = _ref39[1];
+	  for (var _ref42 of Object.entries(field)) {
+	    var _ref41 = _slicedToArray(_ref42, 2);
+	    var key = _ref41[0];
+	    var value = _ref41[1];
 	    if (key === "name") continue;
 	    if (namespaces && !namespaces.has(key)) continue;
 	    result[key] = value;
@@ -73671,16 +73951,26 @@
 	}
 	function cloneSchemaValue(value) {
 	  if (Array.isArray(value)) return value.map(cloneSchemaValue);
-	  if (isPlainObject(value)) return Object.fromEntries(Object.entries(value).map(_ref41 => {
-	    var _ref42 = _slicedToArray(_ref41, 2),
-	      key = _ref42[0],
-	      item = _ref42[1];
+	  if (isPlainObject(value)) return Object.fromEntries(Object.entries(value).map(_ref43 => {
+	    var _ref44 = _slicedToArray(_ref43, 2),
+	      key = _ref44[0],
+	      item = _ref44[1];
 	    return [key, cloneSchemaValue(item)];
 	  }));
 	  return value;
 	}
 	function isPlainObject(value) {
 	  return Boolean(value) && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype;
+	}
+
+	// Names what arrived where a values bag was required, for assertValues' error.
+	function describeValuesInput(value) {
+	  var _value$constructor;
+	  if (value === undefined) return "undefined";
+	  if (Array.isArray(value)) return "an array";
+	  if (typeof value !== "object") return "a ".concat(typeof value);
+	  var name = (_value$constructor = value.constructor) === null || _value$constructor === void 0 ? void 0 : _value$constructor.name;
+	  return name ? "an instance of ".concat(name) : "an object without Object.prototype";
 	}
 
 	/**
@@ -73709,6 +73999,15 @@
 	 * SetValues is called directly rather than through CjsSchema.setValues so a
 	 * reader works with only the schema layer loaded; the two are the same path
 	 * for every class that has the method.
+	 *
+	 * A schema-declared class without SetValues - one that no longer extends
+	 * CjsModel - populates through CjsSchema.setValues, which answers without the
+	 * model layer. The READER says so, as `ctx.declared`: it resolved the kind to
+	 * a constructor itself and asks CjsSchema whether that class declares fields,
+	 * so the adapter never inspects the object. Raw assignment stays for what
+	 * declares nothing - the reader's fallback carrier, and a caller-supplied
+	 * plain class. Without this arm, taking a class off the base would silently
+	 * drop it to Object.assign: no coercion, no writability gate, no settle.
 	 */
 
 	/**
@@ -73731,6 +74030,10 @@
 	      if (custom && typeof custom.applyValues === "function") return custom.applyValues(instance, values, ctx);
 	      if (instance && typeof instance.SetValues === "function") {
 	        instance.SetValues(values, ctx === null || ctx === void 0 ? void 0 : ctx.options);
+	        return instance;
+	      }
+	      if ((ctx === null || ctx === void 0 ? void 0 : ctx.declared) === true) {
+	        CjsSchema.setValues(instance, values, ctx.options);
 	        return instance;
 	      }
 	      return Object.assign(instance, values);
@@ -74413,7 +74716,7 @@
 	    if (!(out instanceof CjsModel)) {
 	      throw new TypeError("CjsModel.set requires a CjsModel target.");
 	    }
-	    if (!values || typeof values !== "object") return false;
+	    if (!CjsSchema.assertValues(values, "CjsModel.set")) return false;
 	    if (typeof values._type === "string") {
 	      assertTargetTypeMatches(out, values._type, options);
 	    }
@@ -74565,6 +74868,8 @@
 	  static from() {
 	    var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    // null still means "no values": a default instance, as before.
+	    if (!CjsSchema.assertValues(values, "CjsModel.from")) values = {};
 	    if (isReferenceValue(values)) {
 	      throw new TypeError("".concat(CjsSchema.getClassName(this) || this.name, ".from cannot construct from a { _ref } value; references resolve only inside the owning import operation."));
 	    }
@@ -107731,6 +108036,113 @@
 	  }
 	}) || _class$7K);
 
+	/** One permutation's pending driver work and effect bindings. */
+	class Tw2ShaderCompilation extends Tw2Resource {
+	  constructor(resource) {
+	    super();
+	    this.programs = [];
+	    this.stages = new Set();
+	    this.callbacks = [];
+	    this.complete = false;
+	    this.error = null;
+	    this.resource = resource;
+	    this.gl = device.gl;
+	    this.extension = device.GetExtension("KHR_parallel_shader_compile");
+	  }
+	  HasCompleted() {
+	    return this.complete || !!this.error;
+	  }
+	  KeepAlive() {
+	    this.resource.KeepAlive();
+	  }
+	  *Process() {
+	    var gl = this.gl,
+	      extension = this.extension;
+	    if (extension) {
+	      var index = 0;
+	      yield {
+	        poll: (now, deadline) => {
+	          if (device.gl !== gl || gl.isContextLost()) throw new Error("Shader compilation context lost");
+	          if (!this.programs.length) return true;
+	          do {
+	            if (!gl.getProgramParameter(this.programs[index].program, extension.COMPLETION_STATUS_KHR)) return false;
+	            index++;
+	            if (index === this.programs.length) return true;
+	          } while (now() < deadline);
+	          return false;
+	        }
+	      };
+	    }
+	    for (var program of this.programs) {
+	      if (device.gl !== gl || gl.isContextLost()) throw new Error("Shader compilation context lost");
+	      program.FinishCompilation();
+	      yield;
+	    }
+	    this.shader._isReady = true;
+	    // Parameter binding is processing work too, not a promise microtask.
+	    while (this.callbacks.length) {
+	      this.callbacks[0]();
+	      this.callbacks.shift();
+	      yield;
+	    }
+	  }
+	  OnPrepared() {
+	    this.complete = true;
+	    this.programs.length = 0;
+	    this.stages.clear();
+	    // Nothing waits on a finished compilation, and `Tw2Effect.GetResources`
+	    // would otherwise keep handing it out as a pathless resource forever.
+	    if (this.shader && this.shader._compilation === this) this.shader._compilation = null;
+	    super.OnPrepared({
+	      hide: true
+	    });
+	  }
+	  OnError(error) {
+	    this.error = error;
+	    super.OnError(error);
+	    this.resource.OnError(error);
+	  }
+	  OnProcessingCancelled(error) {
+	    if (this.complete) return;
+	    this.error = error || this.error || new Error("Shader compilation cancelled");
+	    if (this.shader) this.shader._isReady = false;
+	    var callbacks = this.callbacks.splice(0);
+	    // Only the programs still awaiting their link result. A program whose
+	    // FinishCompilation has already run is installed on its pass, and deleting
+	    // it here would leave that pass holding a deleted GL program.
+	    for (var program of this.programs) {
+	      if (program.FinishCompilation) this.gl.deleteProgram(program.program);
+	    }
+	    for (var shader of this.stages) this.gl.deleteShader(shader);
+	    this.programs.length = 0;
+	    this.stages.clear();
+	    // ALWAYS notify. Every cancel the engine actually performs - reload, unload,
+	    // purge, error - comes through `CancelProcessing` with no error argument, so
+	    // gating this on the caller's `error` dropped the waiting binds silently and
+	    // left their effects pending forever, never good and never failed. The error
+	    // synthesised above is the one to report.
+	    var notificationError;
+	    for (var callback of callbacks) {
+	      try {
+	        var _callback$onError;
+	        (_callback$onError = callback.onError) === null || _callback$onError === void 0 || _callback$onError.call(callback, this.error);
+	      } catch (err) {
+	        notificationError = notificationError || err;
+	      }
+	    }
+	    if (notificationError) throw notificationError;
+	  }
+	  Queue(shader) {
+	    this.shader = shader;
+	    shader._isReady = false;
+	    shader._compilation = this;
+	    resMan.processing.Queue(this);
+	  }
+	}
+	Tw2ShaderCompilation.requiresProcessing = true;
+	// Scoped to synchronous shader construction, never held across a yield.
+	Tw2ShaderCompilation.current = null;
+
 	var _dec$7J, _dec2$77, _dec3$6E, _dec4$5O, _dec5$5f, _dec6$4E, _dec7$3_, _class$7J, _class2$73, _descriptor$72, _descriptor2$6u, _descriptor3$5F, _descriptor4$4Z, _descriptor5$4j, _descriptor6$3C;
 
 	/*
@@ -108852,7 +109264,8 @@
 	      gl.shaderSource(shader, source);
 	      gl.compileShader(shader);
 	    }
-	    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+	    if (Tw2ShaderCompilation.current) Tw2ShaderCompilation.current.stages.add(shader);
+	    if (!Tw2ShaderCompilation.current && !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 	      if (!skipError) {
 	        var infoLog = gl.getShaderInfoLog(shader) || this.getShaderFailureDetails(gl, shader, shaderCode);
 	        throw new ErrShaderCompile({
@@ -109159,7 +109572,23 @@
 	    gl.attachShader(program.program, vertexShader);
 	    gl.attachShader(program.program, fragmentShader);
 	    gl.linkProgram(program.program);
-
+	    program.FinishCompilation = () => {
+	      try {
+	        var result = this.finish(program, vertexShader, fragmentShader, pass, context, skipError);
+	        if (!result) pass.shadowShaderProgram = pass.shaderProgram;
+	        return result;
+	      } finally {
+	        delete program.FinishCompilation;
+	      }
+	    };
+	    if (Tw2ShaderCompilation.current) {
+	      Tw2ShaderCompilation.current.programs.push(program);
+	      return program;
+	    }
+	    return program.FinishCompilation();
+	  }
+	  static finish(program, vertexShader, fragmentShader, pass, context, skipError) {
+	    var gl = device.gl;
 	    // Ensure shader is good
 	    if (!gl.getProgramParameter(program.program, gl.LINK_STATUS)) {
 	      if (!skipError) {
@@ -109174,6 +109603,7 @@
 	          infoLog
 	        });
 	      }
+	      gl.deleteProgram(program.program);
 	      return null;
 	    }
 	    gl.useProgram(program.program);
@@ -112996,8 +113426,9 @@
 	/**
 	 * Formats decoded DXBC operands as GLSL ES 3.00 expressions and assignments.
 	 *
-	 * Type policy: register files use float `vec4`s. Packed-light shaders also
-	 * retain uint companions for temporary registers; integer reads use those
+	 * Type policy: register files use float `vec4`s. Packed-light shaders and
+	 * shaders reading SV_VertexID/SV_InstanceID also retain uint companions for
+	 * temporary registers; integer reads use those
 	 * companions to avoid losing packed bits through float storage. Other integer and
 	 * unsigned reads/writes bitcast at the use site (`floatBitsToInt` family),
 	 * mirroring HLSLcc's lowering when reflection-driven type analysis is
@@ -113022,6 +113453,10 @@
 	    // bitcast (floatBitsToInt(attr)) - ccpwgl uploads them as plain float
 	    // values, not integer bit patterns (see DxbcGlslEmitter._declareVertexInput).
 	    this.integerInputs = options.integerInputs || null;
+	    // Map of input register index -> GLSL integer built-in (`gl_VertexID`).
+	    // Integer reads use the built-in directly instead of bitcasting its
+	    // float bit-pattern register, which ANGLE/D3D11 does not preserve.
+	    this.systemIntegerInputs = options.systemIntegerInputs || null;
 	    this.names = _objectSpread2({
 	      temp: index => "r".concat(index),
 	      indexableTemp: index => "x".concat(index),
@@ -113091,19 +113526,23 @@
 	    }
 	    if (as !== "float") {
 	      var integerInputKind = operand.type === 1 && this.integerInputs ? this.integerInputs.get(operand.registerIndex) : undefined;
-	      if (operand.type === 0 && this.integerTemps && !floatSpaceModifier) {
+	      var systemInteger = operand.type === 1 && this.systemIntegerInputs ? this.systemIntegerInputs.get(operand.registerIndex) : undefined;
+	      if (systemInteger && !floatSpaceModifier) {
+	        var width = suffix ? suffix.length - 1 : 4;
+	        expression = "".concat(VEC_TYPE_BY_KIND[as][width - 1], "(").concat(systemInteger, ")");
+	      } else if (operand.type === 0 && this.integerTemps && !floatSpaceModifier) {
 	        // Raw integer companion. An integer `neg` applies to it
 	        // directly below; a float-space abs forces the float register
 	        // through the bitcast branch instead.
 	        var raw = "cjsBitsR".concat(operand.registerIndex).concat(suffix);
-	        var width = suffix ? suffix.length - 1 : 4;
-	        expression = as === "uint" ? raw : "".concat(VEC_TYPE_BY_KIND.int[width - 1], "(").concat(raw, ")");
+	        var _width = suffix ? suffix.length - 1 : 4;
+	        expression = as === "uint" ? raw : "".concat(VEC_TYPE_BY_KIND.int[_width - 1], "(").concat(raw, ")");
 	      } else if (integerInputKind) {
 	        // Float-lowered integer vertex attribute (e.g. BLENDINDICES):
 	        // the register holds the value (3.0), not the bit pattern of 3,
 	        // so convert rather than bitcast (which would read garbage).
-	        var _width = suffix ? suffix.length - 1 : 4;
-	        expression = "".concat(VEC_TYPE_BY_KIND[as][_width - 1], "(").concat(expression, ")");
+	        var _width2 = suffix ? suffix.length - 1 : 4;
+	        expression = "".concat(VEC_TYPE_BY_KIND[as][_width2 - 1], "(").concat(expression, ")");
 	      } else {
 	        expression = "".concat(BITCAST_FROM_FLOAT[as], "(").concat(expression, ")");
 	      }
@@ -113994,6 +114433,7 @@
 	  *   dispatch-origin uniform, per-output UAV slice routing).
 	  */
 	  Emit(bytes) {
+	    var _raw$inputSignature;
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    var sourceName = options.source || "memory";
 	    var raw = CjsDxbcFormat.read(bytes, {
@@ -114091,13 +114531,32 @@
 	      this._analyzeUavStores(state);
 	    }
 	    state.integerVertexInputs = new Map();
+	    // Register -> GLSL integer built-in (`gl_VertexID`/`gl_InstanceID`) for
+	    // system-value inputs; filled by _declareSystemInput.
+	    state.systemIntegerInputs = new Map();
+	    // Integer companions for temporaries. Small integers held as float bit
+	    // patterns are denormals, and ANGLE/D3D11 hardware does not preserve
+	    // them in float storage: a vertex-id corner index `r0.x = uintBitsToFloat(id & 3u)`
+	    // reads back 0 for ids 1..3, collapsing every quad (plane sets, the sprite
+	    // pool). Packed-light shaders need the same companions for their words.
+	    //
+	    // Integer vertex inputs arrive as float VALUES (see _declareVertexInput);
+	    // a move into a temporary must value-convert into the companion, or a later
+	    // `floatBitsToInt(r#)` reads the bits of 3.0 instead of 3 (the haze-set box
+	    // corner index, TEXCOORD7).
+	    var integerVertexInputRegisters = new Set(program.programTypeName !== "vertex" ? [] : (((_raw$inputSignature = raw.inputSignature) === null || _raw$inputSignature === void 0 ? void 0 : _raw$inputSignature.elements) || []).filter(element => element.componentTypeName === "uint32" || element.componentTypeName === "int32").map(element => element.registerIndex));
+	    state.integerTemps = !!state.lightPackedTexture || state.decoder.instructions.some(instruction => {
+	      var _instruction$declarat, _instruction$declarat2, _instruction$operands;
+	      return (instruction.opcodeName === "dcl_input_sgv" || instruction.opcodeName === "dcl_input_ps_sgv") && (((_instruction$declarat = instruction.declaration) === null || _instruction$declarat === void 0 ? void 0 : _instruction$declarat.systemValueName) === "vertex_id" || ((_instruction$declarat2 = instruction.declaration) === null || _instruction$declarat2 === void 0 ? void 0 : _instruction$declarat2.systemValueName) === "instance_id") || (instruction.opcodeName === "mov" || instruction.opcodeName === "movc") && ((_instruction$operands = instruction.operands[0]) === null || _instruction$operands === void 0 ? void 0 : _instruction$operands.type) === 0 && instruction.operands.slice(1).some(operand => operand.type === 1 && integerVertexInputRegisters.has(operand.registerIndex));
+	    });
 	    state.formatter = new DxbcGlslOperandFormatter({
 	      // Populated during vertex-input declaration (the declaration loop
 	      // runs before any body emission, so the map is complete before the
 	      // first operand is formatted). Integer reads of these registers
 	      // value-convert instead of bitcast - see _declareVertexInput.
 	      integerInputs: state.integerVertexInputs,
-	      integerTemps: !!state.lightPackedTexture,
+	      integerTemps: state.integerTemps,
+	      systemIntegerInputs: state.systemIntegerInputs,
 	      componentMap: operand => {
 	        if (operand.type === 1) return state.inputMasks.get(operand.registerIndex) || null;
 	        if (operand.type === 2) return state.outputMasks.get(operand.registerIndex) || null;
@@ -114234,11 +114693,11 @@
 	      map.set(register, samplers);
 	    };
 	    for (var instruction of decoder.instructions) {
-	      var _instruction$operands, _instruction$operands2;
-	      var resourceOperand = (_instruction$operands = instruction.operands) === null || _instruction$operands === void 0 ? void 0 : _instruction$operands[2];
+	      var _instruction$operands2, _instruction$operands3;
+	      var resourceOperand = (_instruction$operands2 = instruction.operands) === null || _instruction$operands2 === void 0 ? void 0 : _instruction$operands2[2];
 	      if (!resourceOperand || !Number.isInteger(resourceOperand.registerIndex)) continue;
 	      var register = resourceOperand.registerIndex;
-	      var samplerRegister = (_instruction$operands2 = instruction.operands) === null || _instruction$operands2 === void 0 || (_instruction$operands2 = _instruction$operands2[3]) === null || _instruction$operands2 === void 0 ? void 0 : _instruction$operands2.registerIndex;
+	      var samplerRegister = (_instruction$operands3 = instruction.operands) === null || _instruction$operands3 === void 0 || (_instruction$operands3 = _instruction$operands3[3]) === null || _instruction$operands3 === void 0 ? void 0 : _instruction$operands3.registerIndex;
 	      if (COMPARISON_SAMPLE_OPCODES.has(instruction.opcodeName)) {
 	        recordPair(comparisonResources, register, samplerRegister);
 	        recordPair(pairedSamplers, register, samplerRegister);
@@ -114381,10 +114840,10 @@
 	  * @private
 	  */
 	  _applyEmulatedAddressing(state, instruction, call, coord, coordMask) {
-	    var _instruction$operands3;
+	    var _instruction$operands4;
 	    var profile = state.emulatedAddressing;
 	    if (!profile) return call;
-	    var resourceRegister = (_instruction$operands3 = instruction.operands) === null || _instruction$operands3 === void 0 || (_instruction$operands3 = _instruction$operands3[2]) === null || _instruction$operands3 === void 0 ? void 0 : _instruction$operands3.registerIndex;
+	    var resourceRegister = (_instruction$operands4 = instruction.operands) === null || _instruction$operands4 === void 0 || (_instruction$operands4 = _instruction$operands4[2]) === null || _instruction$operands4 === void 0 ? void 0 : _instruction$operands4.registerIndex;
 	    if (!Number.isInteger(resourceRegister)) return call;
 
 	    // An explicit entry wins; otherwise derive from the sampler this
@@ -114396,8 +114855,8 @@
 	    // declared, and overrides exist precisely to correct a wrong container.
 	    var entry = profile.textures.get(resourceRegister);
 	    if (!entry) {
-	      var _instruction$operands4;
-	      var samplerRegister = (_instruction$operands4 = instruction.operands) === null || _instruction$operands4 === void 0 || (_instruction$operands4 = _instruction$operands4[3]) === null || _instruction$operands4 === void 0 ? void 0 : _instruction$operands4.registerIndex;
+	      var _instruction$operands5;
+	      var samplerRegister = (_instruction$operands5 = instruction.operands) === null || _instruction$operands5 === void 0 || (_instruction$operands5 = _instruction$operands5[3]) === null || _instruction$operands5 === void 0 ? void 0 : _instruction$operands5.registerIndex;
 	      if (!Number.isInteger(samplerRegister)) return call;
 	      if (!profile.samplerModes.has(samplerRegister)) return call;
 	      entry = {
@@ -114822,7 +115281,7 @@
 	      case "dcl_temps":
 	        for (var index = 0; index < declaration.tempCount; index += 1) {
 	          state.declarationLines.push("vec4 r".concat(index, ";"));
-	          if (state.lightPackedTexture) state.declarationLines.push("uvec4 cjsBitsR".concat(index, ";"));
+	          if (state.integerTemps) state.declarationLines.push("uvec4 cjsBitsR".concat(index, ";"));
 	        }
 	        break;
 	      case "dcl_indexable_temp":
@@ -115231,9 +115690,11 @@
 	        break;
 	      case "vertex_id":
 	        state.inputNames.set(register, "vec4(intBitsToFloat(gl_VertexID))");
+	        state.systemIntegerInputs.set(register, "gl_VertexID");
 	        break;
 	      case "instance_id":
 	        state.inputNames.set(register, "vec4(intBitsToFloat(gl_InstanceID))");
+	        state.systemIntegerInputs.set(register, "gl_InstanceID");
 	        break;
 	      default:
 	        throw new WebglReadError("System-generated input is not supported by the WebGL2 emitter", {
@@ -115489,7 +115950,7 @@
 	    // Centralize writes here because several lowerings emit lane writes
 	    // directly rather than going through _assign. This is per assignment,
 	    // not a shader/register-number pattern or a control-flow dataflow guess.
-	    var assignment = state.lightPackedTexture && /^(r(\d+)(?:\.[xyzw]+)?) = ([\s\S]+);$/.exec(text);
+	    var assignment = state.integerTemps && /^(r(\d+)(?:\.[xyzw]+)?) = ([\s\S]+);$/.exec(text);
 	    if (assignment) {
 	      var _assignment = _slicedToArray(assignment, 4),
 	        target = _assignment[1],
@@ -115855,7 +116316,7 @@
 	      mask = _this$_destMask9.mask;
 	    if (!target) return;
 	    var aliases = instruction.operands.slice(1).some(operand => operand.type === destOperand.type && operand.registerIndex === destOperand.registerIndex);
-	    var rawMove = !!state.lightPackedTexture && destOperand.type === 0;
+	    var rawMove = state.integerTemps && destOperand.type === 0;
 	    if (aliases) {
 	      this._line(state, "{");
 	      state.indent += 1;
@@ -115898,10 +116359,10 @@
 	   * @private
 	   */
 	  _sincos(state, instruction) {
-	    var _instruction$operands5 = _slicedToArray(instruction.operands, 3),
-	      sinDest = _instruction$operands5[0],
-	      cosDest = _instruction$operands5[1],
-	      angle = _instruction$operands5[2];
+	    var _instruction$operands6 = _slicedToArray(instruction.operands, 3),
+	      sinDest = _instruction$operands6[0],
+	      cosDest = _instruction$operands6[1],
+	      angle = _instruction$operands6[2];
 	    var emitOne = (destOperand, fn) => {
 	      if (destOperand.type === 13) return;
 	      var target = state.formatter.destination(destOperand);
@@ -116238,7 +116699,7 @@
 	  mov(state, instruction) {
 	    var _this$_destMask10 = this._destMask(state, instruction),
 	      mask = _this$_destMask10.mask;
-	    if (state.lightPackedTexture && instruction.operands[0].type === 0 && !instruction.saturate && !["neg", "abs", "absneg"].includes(instruction.operands[1].modifierName)) {
+	    if (state.integerTemps && instruction.operands[0].type === 0 && !instruction.saturate && !["neg", "abs", "absneg"].includes(instruction.operands[1].modifierName)) {
 	      var raw = this._vecArg(state, instruction.operands[1], mask, "uint");
 	      this._assign(state, instruction, "uintBitsToFloat(".concat(raw, ")"));
 	      return;
@@ -116603,11 +117064,11 @@
 	  udiv(state, instruction) {
 	    // Quotient into operand 0, remainder into operand 1; either may be null.
 	    // Raw `/` and `%` match HLSLcc; divide-by-zero is GLSL-undefined (spec risk noted).
-	    var _instruction$operands6 = _slicedToArray(instruction.operands, 4),
-	      quotient = _instruction$operands6[0],
-	      remainder = _instruction$operands6[1],
-	      a = _instruction$operands6[2],
-	      b = _instruction$operands6[3];
+	    var _instruction$operands7 = _slicedToArray(instruction.operands, 4),
+	      quotient = _instruction$operands7[0],
+	      remainder = _instruction$operands7[1],
+	      a = _instruction$operands7[2],
+	      b = _instruction$operands7[3];
 	    for (var _ref12 of [[quotient, "/"], [remainder, "%"]]) {
 	      var _state$formatter$dest2;
 	      var _ref11 = _slicedToArray(_ref12, 2);
@@ -116781,9 +117242,9 @@
 	    // by the `_analyzeUavStores` pre-pass: a multi-slice UAV routes each
 	    // store to its own per-slice fragment output, a single-store UAV drops
 	    // the slice entirely (the host attaches the target layer).
-	    var _instruction$operands7 = _slicedToArray(instruction.operands, 3),
-	      uavOperand = _instruction$operands7[0],
-	      valueOperand = _instruction$operands7[2];
+	    var _instruction$operands8 = _slicedToArray(instruction.operands, 3),
+	      uavOperand = _instruction$operands8[0],
+	      valueOperand = _instruction$operands8[2];
 	    var target = state.formatter.destination(uavOperand);
 	    if (!target) return;
 	    var mask = target.registerMask || "xyzw";
@@ -129815,7 +130276,8 @@
 	  var shader = gl.createShader(stageType === STAGE_VERTEX ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
 	  gl.shaderSource(shader, shaderCode);
 	  gl.compileShader(shader);
-	  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+	  if (Tw2ShaderCompilation.current) Tw2ShaderCompilation.current.stages.add(shader);
+	  if (!Tw2ShaderCompilation.current && !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 	    throw new ErrShaderCompile({
 	      path,
 	      shaderType: stageType === STAGE_VERTEX ? "vertex" : "fragment",
@@ -130036,6 +130498,7 @@
 	   * @param {ArrayBuffer|Object} data
 	   */
 	  Prepare(data) {
+	    this.CancelShaderCompilations();
 	    this.permutations.splice(0);
 	    this.offsets.splice(0);
 	    this.passes.splice(0);
@@ -130174,6 +130637,55 @@
 	   * @returns {Tw2Shader|null}
 	   */
 	  GetShader(options) {
+	    if (!tw2.resMan.useParallelShaders) return this._GetShader(options);
+	    var previous = Tw2ShaderCompilation.current;
+	    var compilation = new Tw2ShaderCompilation(this);
+	    Tw2ShaderCompilation.current = compilation;
+	    try {
+	      var shader = this._GetShader(options);
+	      if (!shader) {
+	        compilation.OnProcessingCancelled();
+	        return null;
+	      }
+	      if (compilation.programs.length) {
+	        if (this.HasErrored()) {
+	          compilation.OnProcessingCancelled();
+	          return null;
+	        }
+	        compilation.Queue(shader);
+	      }
+	      return shader;
+	    } catch (error) {
+	      compilation.OnProcessingCancelled();
+	      throw error;
+	    } finally {
+	      Tw2ShaderCompilation.current = previous;
+	    }
+	  }
+	  CancelShaderCompilations() {
+	    for (var shader of this.shaders) {
+	      if (shader !== null && shader !== void 0 && shader._compilation && !shader._compilation.HasCompleted()) {
+	        tw2.resMan.CancelProcessing(shader._compilation);
+	      }
+	    }
+	  }
+	  OnRequested(log) {
+	    this.CancelShaderCompilations();
+	    return super.OnRequested(log);
+	  }
+	  OnError(error) {
+	    this.CancelShaderCompilations();
+	    return super.OnError(error);
+	  }
+	  OnUnloaded(log) {
+	    this.CancelShaderCompilations();
+	    return super.OnUnloaded(log);
+	  }
+	  OnPurged(log) {
+	    this.CancelShaderCompilations();
+	    return super.OnPurged(log);
+	  }
+	  _GetShader(options) {
 	    if (!this.IsGood()) {
 	      return null;
 	    }
@@ -130251,7 +130763,7 @@
 	    tw2.AddResource(res.path, res);
 
 	    // Load the shader
-	    res.GetShaderJSON(options);
+	    res.GetShader(options);
 	    return res;
 	  }
 	}, _Tw2EffectRes.DEPTH_RANGE = "reversed", _Tw2EffectRes)) || _class$7z);
@@ -133272,7 +133784,7 @@
 	   */
 	  IsGood() {
 	    this.KeepAlive();
-	    return this.shader !== null;
+	    return this.shader !== null && this.shader._isReady !== false && !this._pendingShaderBinding;
 	  }
 
 	  /**
@@ -133306,9 +133818,13 @@
 	   * @returns {Array.<Tw2Resource>} [out]
 	   */
 	  GetResources() {
+	    var _this$shader;
 	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	    if (this.effectRes && !out.includes(this.effectRes)) {
 	      out.push(this.effectRes);
+	    }
+	    if ((_this$shader = this.shader) !== null && _this$shader !== void 0 && _this$shader._compilation && !out.includes(this.shader._compilation)) {
+	      out.push(this.shader._compilation);
 	    }
 	    this.PerChild(x => {
 	      if (x.struct.GetResources) {
@@ -133362,11 +133878,9 @@
 	      }
 	    }
 	    try {
-	      this.shader = res.GetShader(this.options);
-	      this.BindParameters({
+	      this._BindShader(res.GetShader(this.options), {
 	        controller: res
 	      });
-	      this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
 	      res.UnregisterNotification(this);
 	    } catch (err) {
 	      res.OnError(err);
@@ -133439,10 +133953,9 @@
 	    // OnResPrepared builds the shader from `options` when the
 	    // resource is actually ready.
 	    if (!res || !res.IsGood() || !res.HasPrepared()) return false;
-	    this.shader = res.GetShader(this.options);
-	    if (!this.shader) return false;
-	    this.BindParameters(opt);
-	    this.EmitEvent("rebuilt", this, opt);
+	    var shader = res.GetShader(this.options);
+	    if (!shader) return false;
+	    this._BindShader(shader, opt, () => this.EmitEvent("rebuilt", this, opt));
 	    return true;
 	  }
 
@@ -133552,6 +134065,49 @@
 	   * @param {Object} [opt]
 	   * @returns {Boolean}
 	   */
+	  _BindShader(shader, opt, onBound) {
+	    this.shader = shader;
+	    var token = {};
+	    var resource = this.effectRes;
+	    this._shaderBindingToken = token;
+	    this._pendingShaderBinding = !!shader && shader._isReady === false;
+	    var bind = () => {
+	      if (this._shaderBindingToken !== token || this.shader !== shader || this.effectRes !== resource) return;
+	      this._pendingShaderBinding = false;
+	      if (this.BindParameters(opt)) {
+	        if (!(opt !== null && opt !== void 0 && opt.skipEvents)) {
+	          this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, resource);
+	          this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource);
+	        }
+	        onBound === null || onBound === void 0 || onBound();
+	      }
+	    };
+	    bind.onError = error => {
+	      if (this._shaderBindingToken === token && this.shader === shader && this.effectRes === resource) {
+	        // Clearing this is the point of the callback: the bind will never
+	        // happen, so leaving it pending would keep `IsGood` false for the life
+	        // of the effect. Readiness still comes from the shader itself, which
+	        // stays unready, so this cannot make a failed effect look usable.
+	        this._pendingShaderBinding = false;
+	        this.EmitEvent(Tw2Resource.Event.RES_ERROR, this, resource, error);
+	        this.EmitEvent(Tw2Resource.Event.RES_COMPLETED, this, resource, error);
+	      }
+	    };
+	    if (this._pendingShaderBinding) {
+	      this.UnBindParameters({
+	        skipEvents: true
+	      });
+	      this.techniques = {};
+	      var compilation = shader._compilation;
+	      // A compilation that already failed, or is gone, can never call this back.
+	      // Reporting it here is what keeps the effect from waiting forever: without
+	      // it the pending flag stays set, `IsGood` stays false and nothing is emitted.
+	      if (!compilation || compilation.error) {
+	        this._pendingShaderBinding = false;
+	        bind.onError((compilation === null || compilation === void 0 ? void 0 : compilation.error) || new Error("Shader compilation unavailable"));
+	      } else compilation.callbacks.push(bind);
+	    } else bind();
+	  }
 	  BindParameters(opt) {
 	    if (!this.IsGood()) {
 	      this.UnBindParameters();
@@ -134372,6 +134928,12 @@
 	   * @return {boolean} true if the listener was fired
 	   */
 	  static onListener(effect, eventName, listener, context) {
+	    var _Tw2Resource$Event = Tw2Resource.Event,
+	      RES_PREPARED = _Tw2Resource$Event.RES_PREPARED,
+	      RES_COMPLETED = _Tw2Resource$Event.RES_COMPLETED;
+	    if ((eventName === RES_PREPARED || eventName === RES_COMPLETED) && effect.effectRes && !effect.effectRes.HasErrored() && !effect.IsGood()) {
+	      return false;
+	    }
 	    if (eventName === "rebuilt" && effect.IsGood()) {
 	      listener.call(context, effect, effect.effectRes);
 	      return true;
@@ -134407,13 +134969,10 @@
 	      // TODO: Check if options and current options are the same
 	      a.options = normalizedOptions;
 	      if (a.effectRes) {
-	        a.shader = a.effectRes.GetShader(a.options);
-	        if (a.shader) {
-	          a.BindParameters({
-	            controller: a.effectRes,
-	            skipEvents: opt.skipEvents
-	          });
-	        }
+	        a._BindShader(a.effectRes.GetShader(a.options), {
+	          controller: a.effectRes,
+	          skipEvents: opt.skipEvents
+	        });
 	      }
 	      updated = true;
 	    }
@@ -136009,6 +136568,15 @@
 	    var technique = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : effect.defaultTechnique;
 	    if (!effect || !effect.IsGood()) return false;
 	    var gl = this.gl;
+
+	    // A fullscreen quad must never inherit a batch pass's cull or colour-write
+	    // state (Carbon pass states are not restored): under `carbonRenderStates`
+	    // "all", haze's CULL_CCW culled the canvas blit and the frame went black.
+	    // Pass-declared states still apply afterwards in ApplyPass; blend, depth and
+	    // scissor stay with the caller.
+	    gl.disable(gl.CULL_FACE);
+	    gl.colorMask(true, true, true, true);
+	    this.InvalidateStandardStates();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, this.clipYFlip ? this._quadBufferD3D : this._quadBuffer);
 	    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
 	      effect.ApplyPass(technique, pass);
@@ -165636,6 +166204,113 @@
 	  family: "resource"
 	});
 
+	// Source: trinity/trinity/Resources/Procedural/SolidColorTexture.h
+	// Source: trinity/trinity/Resources/Procedural/SolidColorTexture.cpp
+	//
+	// The free functions of Carbon's solid colour texture: a `dynamic:/color/r,g,b,a`
+	// path names a 1x1 texture of that colour. They live apart from
+	// SolidColorTextureConstructor because TriTextureRes.Initialize calls them, and
+	// the constructor builds a TriTextureRes - one module holding both would be an
+	// import cycle.
+	//
+	// Not ported, for want of a consumer: ColorPathToColor and ColorToColorPath.
+
+	/** `colorPrefix` (SolidColorTexture.cpp:13). */
+	var ColorPrefix = "dynamic:/color/";
+
+	// One `stream >> float` extraction under `std::locale( "C" )`: leading
+	// whitespace, an optional sign, digits with an optional fraction, and an
+	// optional exponent.
+	var FLOAT_EXTRACTION = /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*[\+\x2D]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][\+\x2D]?[0-9]+)?/;
+
+	// `stream >> coma` skips whitespace, then reads one character.
+	var COMMA_EXTRACTION = /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*,/;
+
+	/**
+	 * Parses `r,g,b,a` exactly as Carbon's `ParseColor` does
+	 * (SolidColorTexture.cpp:34-70), or returns null where Carbon logs and returns
+	 * an empty optional.
+	 *
+	 * quirk: the alpha extraction is followed only by `stream.eof()`. When nothing
+	 * but whitespace follows the third comma, `stream >> color.a` fails AT the end
+	 * of the stream, which sets eofbit, and C++11 `num_get` stores 0 on failure - so
+	 * Carbon accepts `1,1,1,` as alpha 0. Reproduced, not corrected: a port never
+	 * silently fixes Carbon.
+	 *
+	 * @param {string} query Text after `dynamic:/color/`.
+	 * @returns {number[]|null} `[r, g, b, a]`, or null when Carbon would reject it.
+	 */
+	function ParseColor(query) {
+	  var rest = String(query);
+	  var color = [];
+	  for (var index = 0; index < 4; index++) {
+	    var extraction = FLOAT_EXTRACTION.exec(rest);
+	    if (!extraction) {
+	      // Only the last component can fail at the end of the stream and still
+	      // pass the eof test; a failed r/g/b leaves the stream in a fail state and
+	      // the following comma is never read.
+	      if (index === 3 && /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*$/.test(rest)) {
+	        color.push(0);
+	        return color;
+	      }
+	      return null;
+	    }
+	    color.push(Number(extraction[0]));
+	    rest = rest.slice(extraction[0].length);
+	    if (index < 3) {
+	      var comma = COMMA_EXTRACTION.exec(rest);
+	      if (!comma) return null;
+	      rest = rest.slice(comma[0].length);
+	    }
+	  }
+	  // `stream.eof()`: the alpha extraction must have reached the end of the query.
+	  return rest.length === 0 ? color : null;
+	}
+
+	/**
+	 * Whether a path names a solid colour texture (SolidColorTexture.cpp:72-75).
+	 *
+	 * @param {string} path Resource path.
+	 * @returns {boolean}
+	 */
+	function IsSolidColorTexturePath(path) {
+	  return String(path).startsWith(ColorPrefix);
+	}
+
+	/**
+	 * Carbon's `RasterizeSolidColor` (SolidColorTexture.cpp:104-126): a 1x1 bitmap of
+	 * the parsed colour, or null where Carbon leaves the bitmap invalid.
+	 *
+	 * Carbon writes `PIXEL_FORMAT_R16G16B16A16_FLOAT`. The resource payload contract
+	 * carries float colour as `rgba32float` only, so each component is quantized
+	 * through the half-float codec first - the stored values are Carbon's, in a
+	 * wider container.
+	 *
+	 * @param {string} path `dynamic:/color/...` path.
+	 * @returns {object|null} An `rgba` payload.
+	 */
+	function RasterizeSolidColor(path) {
+	  if (!IsSolidColorTexturePath(path)) return null;
+	  var color = ParseColor(String(path).slice(ColorPrefix.length));
+	  if (!color) return null;
+	  var data = new Float32Array(4);
+	  for (var index = 0; index < 4; index++) {
+	    data[index] = num$1.fromHalfFloat(num$1.toHalfFloat(color[index]));
+	  }
+	  return {
+	    payloadType: "rgba",
+	    sourceFormat: "dynamic-color",
+	    width: 1,
+	    height: 1,
+	    pixelFormat: "rgba32float",
+	    data,
+	    strideBytes: 16,
+	    origin: "top-left",
+	    colorSpace: "linear",
+	    alphaMode: "straight"
+	  };
+	}
+
 	/**
 	 * The `payloadType` vocabulary shared by the format readers and the resources
 	 * they populate, plus validators for the shapes that carry structure worth
@@ -165854,6 +166529,534 @@
 	  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
 	    throw new TypeError("".concat(label, " must be a non-negative finite number."));
 	  }
+	}
+
+	var _excluded$i = ["format", "read", "output"];
+
+	// Source: trinity/trinity/Resources/TriTextureRes.h
+	// Source: trinity/trinity/Resources/TriTextureRes.cpp
+	// Source: trinity/trinity/Resources/TriTextureRes_Blue.cpp
+
+	/**
+	 * Resource record that owns Carbon-style texture identity and validated
+	 * texture, RGBA, or video payload facts with mirrored dimension/format
+	 * metadata, while engine packages decide what those facts become on a device.
+	 *
+	 * The resource never CREATES a backend texture - it cannot reach a render
+	 * context - but it RETAINS the one Trinity makes for it, as Carbon's does
+	 * (`m_texture`), so every parameter sharing the resource binds one texture.
+	 */
+	var _RasterizeProceduralTexture = /*#__PURE__*/_classPrivateFieldLooseKey("RasterizeProceduralTexture");
+	class TriTextureRes extends CjsResource {
+	  /** Creates a TriTextureRes with caller-provided initial state. */
+	  constructor() {
+	    var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	    super();
+	    /**
+	     * `RasterizeProceduralTexture` (TriTextureRes.cpp:181-212). Carbon creates the
+	     * GPU texture from the bitmap here; this layer cannot reach a render context,
+	     * so it publishes the bitmap as the payload and Trinity makes the texture at
+	     * first bind, as it does for every other texture.
+	     *
+	     * @param {Function} rasterize `(path) => payload | null`.
+	     * @returns {void}
+	     */
+	    Object.defineProperty(this, _RasterizeProceduralTexture, {
+	      value: _RasterizeProceduralTexture2
+	    });
+	    this.format = null;
+	    this.type = null;
+	    this.averageColor = [0, 0, 0, 0];
+	    this.depth = 0;
+	    this.cutoutHeight = 1;
+	    this.height = 0;
+	    this.lodEnabled = false;
+	    this.hadLodRequests = false;
+	    this.cpuMip = 0;
+	    this.gpuMip = 0;
+	    this.wrappedRenderTarget = null;
+	    this.originalResolution = 0;
+	    this.originalMemoryUsage = 0;
+	    this.name = "";
+	    this.arraySize = 0;
+	    this.cutoutWidth = 1;
+	    this.width = 0;
+	    this.cutoutX = 0;
+	    this.cutoutY = 0;
+	    /**
+	     * m_texture: the live `Tr2TextureAL`, or null until an engine makes one.
+	     *
+	     * Carbon creates it in `DoPrepare` through the main-thread context and
+	     * stores it here (`TriTextureRes.cpp:690-704`). This layer cannot reach a
+	     * render context, so Trinity creates it at first bind and stores it here,
+	     * where every parameter sharing the resource finds the one texture.
+	     */
+	    this.texture = null;
+	    this.SetValues(values || {}, {
+	      markDirty: false,
+	      skipUpdate: true,
+	      skipEvents: true
+	    });
+	  }
+
+	  /**
+	   * Carbon's Initialize, with its procedural branch (TriTextureRes.cpp:223-236):
+	   * a `dynamic:/color/` path is rasterized here rather than loaded from source.
+	   * The `dynamic:/gradient_1d/` branch Carbon checks first is not ported yet.
+	   *
+	   * @param {string} path Resource path.
+	   * @param {string|null} [ext] Extension override.
+	   * @param {string} [requirement] Semantic requirement.
+	   * @returns {TriTextureRes} This resource.
+	   */
+	  Initialize(path) {
+	    var ext = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	    var requirement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+	    super.Initialize(path, ext, requirement);
+	    if (IsSolidColorTexturePath(this.path)) _classPrivateFieldLooseBase(this, _RasterizeProceduralTexture)[_RasterizeProceduralTexture](RasterizeSolidColor);
+	    return this;
+	  }
+	  /**
+	   * The live texture, or null while there is none - Carbon returns nullptr
+	   * until the load finishes and the parameter substitutes the fallback
+	   * (`TriTextureRes.cpp:394-405`).
+	   *
+	   * @returns {object|null} A `Tr2TextureAL`.
+	   */
+	  GetTexture() {
+	    return this.texture && this.texture.IsValid() ? this.texture : null;
+	  }
+
+	  /**
+	   * Adopts a texture as this resource's (`TriTextureRes.cpp:1159-1195`).
+	   *
+	   * @param {object|null} texture A `Tr2TextureAL`, or null to drop it.
+	   * @returns {TriTextureRes} This resource.
+	   */
+	  SetTexture(texture) {
+	    if (this.texture && this.texture !== texture) this.texture.Destroy();
+	    this.texture = texture != null ? texture : null;
+	    return this;
+	  }
+
+	  /**
+	   * Attach a plain texture, RGBA, or video payload and mirror Carbon-exposed
+	   * metadata. Invalid payloads are rejected before replacing the current one.
+	   *
+	   * @param {object|null} payload
+	   * @param {object|null} options
+	   * @returns {TriTextureRes}
+	   */
+	  SetPayload() {
+	    var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	    if (payload === null) {
+	      // The bytes are gone; so is the texture made from them.
+	      this.SetTexture(null);
+	      super.SetPayload(null);
+	      return this;
+	    }
+	    var validator = {
+	      [ResourcePayloadType.RGBA]: validateRgbaPayload,
+	      [ResourcePayloadType.TEXTURE]: validateTexturePayload,
+	      [ResourcePayloadType.VIDEO]: validateVideoPayload
+	    }[payload === null || payload === void 0 ? void 0 : payload.payloadType];
+	    if (!validator) {
+	      throw resourcePayloadError("TriTextureRes", 'Expected payloadType "rgba", "texture", or "video".', "payloadType");
+	    }
+	    validateResourcePayload("TriTextureRes", payload, validator);
+	    var values = _objectSpread2({}, options || {});
+	    if (payload.pixelFormat !== undefined || payload.format !== undefined) values.format = payload.pixelFormat || payload.format;
+	    if (payload.width !== undefined) values.width = payload.width;
+	    if (payload.height !== undefined) values.height = payload.height;
+	    if (payload.depth !== undefined) values.depth = payload.depth;
+	    if (payload.arraySize !== undefined) values.arraySize = payload.arraySize;else if (Array.isArray(payload.faces)) values.arraySize = payload.faces.length;
+	    if (payload.mipCount !== undefined) values.cpuMip = payload.mipCount;else if (payload.payloadType === ResourcePayloadType.RGBA) values.cpuMip = 1;
+	    if (payload.hadLodRequests !== undefined) values.hadLodRequests = !!payload.hadLodRequests;
+	    values.originalMemoryUsage = getPayloadMemoryUsage(payload);
+	    values.originalResolution = Math.max(payload.width || 0, payload.height || 0, this.originalResolution || 0);
+	    super.SetPayload(payload);
+	    this.SetValues(values);
+	    return this;
+	  }
+
+	  /**
+	   * Turn source bytes into this texture.
+	   *
+	   * This is the family the route design exists for. One `.dds` is readable as a
+	   * compressed `texture` or decoded `rgba`, and six formats — dds, png, jpeg,
+	   * tga, gif, webp — populate this same resource. Which reader and which
+	   * representation is a registration decision, so neither is written here.
+	   *
+	   * The resource imports none of them. A texture resource that imported its
+	   * formats would drag all six into anything that touches a texture, which is
+	   * the whole reason the store exists.
+	   *
+	   * @param {ArrayBuffer|ArrayBufferView|object} data Source bytes, or a payload already read.
+	   * @param {object|null} [options] `{ format, read, output }` plus values applied after the read.
+	   * @returns {TriTextureRes} This resource.
+	   */
+	  DoLoad(data) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	    var _ref = options || {},
+	      _ref$format = _ref.format,
+	      format = _ref$format === void 0 ? null : _ref$format,
+	      _ref$read = _ref.read,
+	      read = _ref$read === void 0 ? null : _ref$read,
+	      _ref$output = _ref.output,
+	      output = _ref$output === void 0 ? null : _ref$output,
+	      values = _objectWithoutProperties(_ref, _excluded$i);
+
+	    // Already a payload: the manager read it, and there is nothing to route.
+	    if ((data === null || data === void 0 ? void 0 : data.payloadType) !== undefined) return this.SetPayload(data, values);
+	    var route = this.ResolveFormat(data, format ? {
+	      format,
+	      read,
+	      output
+	    } : {
+	      output
+	    });
+	    if (!route) throw resourceFormatRequiredError("TriTextureRes", this.ext, output);
+	    return this.SetPayload(route.Read(data), values);
+	  }
+
+	  /**
+	   * Return the number of mip levels known to this texture resource.
+	   *
+	   * @returns {number}
+	   */
+	  GetMipCount() {
+	    var _this$GetPayload;
+	    return ((_this$GetPayload = this.GetPayload()) === null || _this$GetPayload === void 0 ? void 0 : _this$GetPayload.mipCount) || this.cpuMip || 0;
+	  }
+
+	  /**
+	   * Return the multisample type for this texture.
+	   *
+	   * @returns {number}
+	   */
+	  GetMsaaType() {
+	    var _ref2, _ref3, _payload$multiSampleT;
+	    var payload = this.GetPayload();
+	    return (_ref2 = (_ref3 = (_payload$multiSampleT = payload === null || payload === void 0 ? void 0 : payload.multiSampleType) != null ? _payload$multiSampleT : payload === null || payload === void 0 ? void 0 : payload.msaaType) != null ? _ref3 : payload === null || payload === void 0 ? void 0 : payload.samples) != null ? _ref2 : 1;
+	  }
+
+	  /**
+	   * Return the multisample quality for this texture.
+	   *
+	   * @returns {number}
+	   */
+	  GetMsaaQuality() {
+	    var _ref4, _payload$multiSampleQ;
+	    var payload = this.GetPayload();
+	    return (_ref4 = (_payload$multiSampleQ = payload === null || payload === void 0 ? void 0 : payload.multiSampleQuality) != null ? _payload$multiSampleQ : payload === null || payload === void 0 ? void 0 : payload.msaaQuality) != null ? _ref4 : 0;
+	  }
+
+	  /**
+	   * Return true if this texture has received LOD requests.
+	   *
+	   * @returns {boolean}
+	   */
+	  HadLodRequests() {
+	    return this.hadLodRequests;
+	  }
+
+	  /**
+	   * Return the shader-resource-view heap index when a backend owns one.
+	   *
+	   * @returns {number}
+	   */
+	  GetSrvIndexInHeap() {
+	    throw resourceBoundaryError("TriTextureRes", "GetSrvIndexInHeap", "Runtime-resource does not own descriptor heaps.");
+	  }
+
+	  /**
+	   * Save this texture asynchronously.
+	   *
+	   * @param {string} path
+	   * @returns {boolean}
+	   */
+	  SaveAsync() {
+	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	    throw resourceBoundaryError("TriTextureRes", "SaveAsync", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
+	  }
+
+	  /**
+	   * Save this texture synchronously.
+	   *
+	   * @param {string} path
+	   * @returns {boolean}
+	   */
+	  Save() {
+	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	    throw resourceBoundaryError("TriTextureRes", "Save", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
+	  }
+
+	  /**
+	   * Return true if an asynchronous save is active.
+	   *
+	   * @returns {boolean}
+	   */
+	  IsSaving() {
+	    return false;
+	  }
+
+	  /**
+	   * Return true if the asynchronous save operation has completed.
+	   *
+	   * @returns {boolean}
+	   */
+	  IsSaveCompleted() {
+	    return true;
+	  }
+
+	  /**
+	   * Return true if the asynchronous save operation succeeded.
+	   *
+	   * @returns {boolean}
+	   */
+	  IsSaveSucceeded() {
+	    return false;
+	  }
+
+	  /**
+	   * Wait for an asynchronous save operation.
+	   *
+	   * @returns {boolean}
+	   */
+	  WaitForSave() {
+	    return this.IsSaveCompleted();
+	  }
+
+	  /**
+	   * Device texture allocation belongs to engine-gpu.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateEmptyTexture() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateEmptyTexture", "Use engine-gpu to allocate device textures.");
+	  }
+
+	  /**
+	   * Render-target wrapping belongs to engine-gpu.
+	   *
+	   * @throws {Error}
+	   */
+	  SetFromRenderTarget() {
+	    throw resourceBoundaryError("TriTextureRes", "SetFromRenderTarget", "Runtime-resource does not own render targets.");
+	  }
+
+	  /**
+	   * Create a texture copy from a render target.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateAndCopyFromRenderTarget() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateAndCopyFromRenderTarget", "Runtime-resource does not own render targets.");
+	  }
+
+	  /**
+	   * Create a device texture from a host bitmap.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateFromHostBitmap() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateFromHostBitmap", "Use engine-gpu to allocate and upload texture data.");
+	  }
+
+	  /**
+	   * Create this texture from another texture resource.
+	   *
+	   * @throws {Error}
+	   */
+	  CreateFromTexture() {
+	    throw resourceBoundaryError("TriTextureRes", "CreateFromTexture", "Use engine-gpu to copy device textures.");
+	  }
+
+	  /**
+	   * Return true if this texture owns a backend allocation object.
+	   *
+	   * @param {string|number} type
+	   * @param {string|number} object
+	   * @returns {boolean}
+	   */
+	  HasALObject(type, object) {
+	    return this.HasAdapterResource("".concat(type, ":").concat(object));
+	  }
+
+	  /**
+	   * Return an engine-owned texture pipeline object when attached.
+	   *
+	   * @returns {*}
+	   */
+	  GetPipeline() {
+	    return this.GetAdapterResource("pipeline");
+	  }
+
+	  /**
+	   * Return memory size for the original non-LODed texture.
+	   *
+	   * @returns {number}
+	   */
+	  GetOriginalMemoryUsage() {
+	    return this.originalMemoryUsage || getPayloadMemoryUsage(this.GetPayload());
+	  }
+
+	  /**
+	   * Store the average color reported by decoded texture data.
+	   *
+	   * @param {number} red
+	   * @param {number} green
+	   * @param {number} blue
+	   * @param {number} alpha
+	   * @returns {TriTextureRes}
+	   */
+	  SetAverageColor() {
+	    var red = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	    var green = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	    var blue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	    var alpha = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+	    this.averageColor = [red, green, blue, alpha];
+	    return this;
+	  }
+
+	  /**
+	   * Update a texture subresource.
+	   *
+	   * @throws {Error}
+	   */
+	  UpdateSubresource() {
+	    throw resourceBoundaryError("TriTextureRes", "UpdateSubresource", "Use engine-gpu to upload texture bytes.");
+	  }
+
+	  /**
+	   * Resource preparation does not decide device upload policy.
+	   *
+	   * @returns {boolean}
+	   */
+	  PrepareResources() {
+	    return this.IsPrepared();
+	  }
+	}
+	function _RasterizeProceduralTexture2(rasterize) {
+	  this.MarkLoading();
+	  var payload = rasterize(this.path);
+	  if (!payload) {
+	    // Carbon: "Failed to parse dynamic:/color/%s texture path", and the
+	    // texture is never prepared.
+	    var error = new Error("Failed to parse ".concat(this.path, " texture path"));
+	    error.code = "CJS_TEXTURE_PROCEDURAL_PATH_INVALID";
+	    error.path = this.path;
+	    this.SetError(error);
+	    return;
+	  }
+	  this.SetPayload(payload);
+	  this.MarkPrepared();
+	}
+	TriTextureRes.payload = ResourceRequirement.TEXTURE;
+	function getPayloadMemoryUsage(payload) {
+	  if (!payload || typeof payload !== "object") return 0;
+	  if (Number.isSafeInteger(payload.originalMemoryUsage) && payload.originalMemoryUsage >= 0) {
+	    return payload.originalMemoryUsage;
+	  }
+	  return ArrayBuffer.isView(payload.data) || payload.data instanceof ArrayBuffer ? payload.data.byteLength : 0;
+	}
+
+	// Declared as data rather than with decorators, so the resource tree loads from
+	// source without a transform. Field order is key order, and GetValues() exports
+	// in that order.
+	CjsSchema.define(TriTextureRes, {
+	  className: "TriTextureRes",
+	  family: "resources",
+	  fields: {
+	    format: [type$1.unknown, io$1.read],
+	    type: [type$1.unknown, io$1.persist],
+	    averageColor: [type$1.color, io$1.read],
+	    depth: [type$1.uint32, io$1.read],
+	    cutoutHeight: [type$1.float32, io$1.readwrite],
+	    height: [type$1.uint32, io$1.read],
+	    lodEnabled: [type$1.boolean, io$1.read],
+	    hadLodRequests: [type$1.boolean, io$1.read],
+	    cpuMip: [type$1.uint32, io$1.read],
+	    gpuMip: [type$1.uint32, io$1.read],
+	    wrappedRenderTarget: [type$1.unknown, io$1.read],
+	    originalResolution: [type$1.uint32, io$1.read],
+	    originalMemoryUsage: [type$1.uint64, io$1.read],
+	    name: [type$1.string, io$1.readwrite],
+	    arraySize: [type$1.uint32, io$1.read],
+	    cutoutWidth: [type$1.float32, io$1.readwrite],
+	    width: [type$1.uint32, io$1.read],
+	    cutoutX: [type$1.float32, io$1.readwrite],
+	    cutoutY: [type$1.float32, io$1.readwrite]
+	  },
+	  methods: {
+	    Initialize: [carbon$1.method, impl$1.adapted, impl$1.reason("Carbon rasterizes a procedural path into a half-float HostBitmap and creates the GPU texture inside Initialize; this resource cannot reach a render context, so it publishes the half-float-quantized colour as an rgba32float payload. The gradient_1d branch is not ported.")],
+	    GetMipCount: [carbon$1.method, impl$1.adapted],
+	    GetMsaaType: [carbon$1.method, impl$1.adapted],
+	    GetMsaaQuality: [carbon$1.method, impl$1.adapted],
+	    HadLodRequests: [carbon$1.method, impl$1.adapted],
+	    GetSrvIndexInHeap: [carbon$1.method, impl$1.notSupported],
+	    GetTexture: [carbon$1.method, impl$1.implemented],
+	    SetTexture: [carbon$1.method, impl$1.adapted, impl$1.reason("Carbon also copies the texture's dimensions onto the resource and fires m_onTextureChange; the payload already carries the dimensions here, and the binding parameter arms the resource's completion instead.")],
+	    SaveAsync: [carbon$1.method, impl$1.notSupported],
+	    Save: [carbon$1.method, impl$1.notSupported],
+	    IsSaving: [carbon$1.method, impl$1.noop],
+	    IsSaveCompleted: [carbon$1.method, impl$1.noop],
+	    IsSaveSucceeded: [carbon$1.method, impl$1.noop],
+	    WaitForSave: [carbon$1.method, impl$1.noop],
+	    CreateEmptyTexture: [carbon$1.method, impl$1.notSupported],
+	    SetFromRenderTarget: [carbon$1.method, impl$1.notSupported],
+	    CreateAndCopyFromRenderTarget: [carbon$1.method, impl$1.notSupported],
+	    CreateFromHostBitmap: [carbon$1.method, impl$1.notSupported],
+	    CreateFromTexture: [carbon$1.method, impl$1.notSupported],
+	    HasALObject: [carbon$1.method, impl$1.adapted],
+	    GetPipeline: [carbon$1.method, impl$1.adapted],
+	    GetOriginalMemoryUsage: [carbon$1.method, impl$1.adapted],
+	    SetAverageColor: [carbon$1.method, impl$1.adapted],
+	    UpdateSubresource: [carbon$1.method, impl$1.notSupported],
+	    PrepareResources: [carbon$1.method, impl$1.adapted]
+	  }
+	});
+
+	// Source: trinity/trinity/Resources/Procedural/SolidColorTexture.cpp
+	//
+	// Carbon registers this constructor at static-initialisation time, inside its
+	// own translation unit (SolidColorTexture.cpp:17-32). As with
+	// RegisterShaderResources, we do not self-register at module scope: a module
+	// side effect fires on import rather than on composition and cannot be tested in
+	// isolation. Whoever composes a manager calls RegisterSolidColorTexture.
+
+	/**
+	 * Carbon's `SolidColorTextureConstructor`: builds the texture a
+	 * `dynamic:/color/<query>` path names. TriTextureRes.Initialize recognises the
+	 * prefix and rasterizes the colour itself.
+	 */
+	class SolidColorTextureConstructor {
+	  /**
+	   * `IBlueDynamicResourceConstructor::GetResource` (SolidColorTexture.cpp:23-29).
+	   *
+	   * @param {string} query Text after `dynamic:/color/`.
+	   * @returns {TriTextureRes} The texture resource.
+	   */
+	  GetResource(query) {
+	    var texture = new TriTextureRes();
+	    texture.Initialize(ColorPrefix + query, "");
+	    return texture;
+	  }
+	}
+
+	/**
+	 * Registers the `color` dynamic constructor on one manager.
+	 *
+	 * @param {object} resourceManager Manager to register on.
+	 * @returns {object} The same manager, for chaining.
+	 */
+	function RegisterSolidColorTexture(resourceManager) {
+	  if (typeof (resourceManager === null || resourceManager === void 0 ? void 0 : resourceManager.RegisterResourceConstructor) !== "function") {
+	    throw new TypeError("RegisterSolidColorTexture requires a CjsResMan.");
+	  }
+	  resourceManager.RegisterResourceConstructor("color", new SolidColorTextureConstructor());
+	  return resourceManager;
 	}
 
 	// Source: trinity/trinity/Resources/Tr2ImageRes.h
@@ -166754,446 +167957,6 @@
 	  methods: {
 	    GetResourceDependencies: impl$1.implemented,
 	    Execute: [impl$1.adapted, impl$1.reason("Carbon fills an out-param BGRA HostBitmap per mip; the JS pipeline's canonical payload is a returned single-mip RGBA bitmap.")]
-	  }
-	});
-
-	var _excluded$i = ["format", "read", "output"];
-
-	// Source: trinity/trinity/Resources/TriTextureRes.h
-	// Source: trinity/trinity/Resources/TriTextureRes.cpp
-	// Source: trinity/trinity/Resources/TriTextureRes_Blue.cpp
-
-	/**
-	 * Resource record that owns Carbon-style texture identity and validated
-	 * texture, RGBA, or video payload facts with mirrored dimension/format
-	 * metadata, while engine packages decide what those facts become on a device.
-	 *
-	 * The resource never CREATES a backend texture - it cannot reach a render
-	 * context - but it RETAINS the one Trinity makes for it, as Carbon's does
-	 * (`m_texture`), so every parameter sharing the resource binds one texture.
-	 */
-	class TriTextureRes extends CjsResource {
-	  /** Creates a TriTextureRes with caller-provided initial state. */
-	  constructor() {
-	    var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	    super();
-	    this.format = null;
-	    this.type = null;
-	    this.averageColor = [0, 0, 0, 0];
-	    this.depth = 0;
-	    this.cutoutHeight = 1;
-	    this.height = 0;
-	    this.lodEnabled = false;
-	    this.hadLodRequests = false;
-	    this.cpuMip = 0;
-	    this.gpuMip = 0;
-	    this.wrappedRenderTarget = null;
-	    this.originalResolution = 0;
-	    this.originalMemoryUsage = 0;
-	    this.name = "";
-	    this.arraySize = 0;
-	    this.cutoutWidth = 1;
-	    this.width = 0;
-	    this.cutoutX = 0;
-	    this.cutoutY = 0;
-	    /**
-	     * m_texture: the live `Tr2TextureAL`, or null until an engine makes one.
-	     *
-	     * Carbon creates it in `DoPrepare` through the main-thread context and
-	     * stores it here (`TriTextureRes.cpp:690-704`). This layer cannot reach a
-	     * render context, so Trinity creates it at first bind and stores it here,
-	     * where every parameter sharing the resource finds the one texture.
-	     */
-	    this.texture = null;
-	    this.SetValues(values || {}, {
-	      markDirty: false,
-	      skipUpdate: true,
-	      skipEvents: true
-	    });
-	  }
-	  /**
-	   * The live texture, or null while there is none - Carbon returns nullptr
-	   * until the load finishes and the parameter substitutes the fallback
-	   * (`TriTextureRes.cpp:394-405`).
-	   *
-	   * @returns {object|null} A `Tr2TextureAL`.
-	   */
-	  GetTexture() {
-	    return this.texture && this.texture.IsValid() ? this.texture : null;
-	  }
-
-	  /**
-	   * Adopts a texture as this resource's (`TriTextureRes.cpp:1159-1195`).
-	   *
-	   * @param {object|null} texture A `Tr2TextureAL`, or null to drop it.
-	   * @returns {TriTextureRes} This resource.
-	   */
-	  SetTexture(texture) {
-	    if (this.texture && this.texture !== texture) this.texture.Destroy();
-	    this.texture = texture != null ? texture : null;
-	    return this;
-	  }
-
-	  /**
-	   * Attach a plain texture, RGBA, or video payload and mirror Carbon-exposed
-	   * metadata. Invalid payloads are rejected before replacing the current one.
-	   *
-	   * @param {object|null} payload
-	   * @param {object|null} options
-	   * @returns {TriTextureRes}
-	   */
-	  SetPayload() {
-	    var payload = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	    if (payload === null) {
-	      // The bytes are gone; so is the texture made from them.
-	      this.SetTexture(null);
-	      super.SetPayload(null);
-	      return this;
-	    }
-	    var validator = {
-	      [ResourcePayloadType.RGBA]: validateRgbaPayload,
-	      [ResourcePayloadType.TEXTURE]: validateTexturePayload,
-	      [ResourcePayloadType.VIDEO]: validateVideoPayload
-	    }[payload === null || payload === void 0 ? void 0 : payload.payloadType];
-	    if (!validator) {
-	      throw resourcePayloadError("TriTextureRes", 'Expected payloadType "rgba", "texture", or "video".', "payloadType");
-	    }
-	    validateResourcePayload("TriTextureRes", payload, validator);
-	    var values = _objectSpread2({}, options || {});
-	    if (payload.pixelFormat !== undefined || payload.format !== undefined) values.format = payload.pixelFormat || payload.format;
-	    if (payload.width !== undefined) values.width = payload.width;
-	    if (payload.height !== undefined) values.height = payload.height;
-	    if (payload.depth !== undefined) values.depth = payload.depth;
-	    if (payload.arraySize !== undefined) values.arraySize = payload.arraySize;else if (Array.isArray(payload.faces)) values.arraySize = payload.faces.length;
-	    if (payload.mipCount !== undefined) values.cpuMip = payload.mipCount;else if (payload.payloadType === ResourcePayloadType.RGBA) values.cpuMip = 1;
-	    if (payload.hadLodRequests !== undefined) values.hadLodRequests = !!payload.hadLodRequests;
-	    values.originalMemoryUsage = getPayloadMemoryUsage(payload);
-	    values.originalResolution = Math.max(payload.width || 0, payload.height || 0, this.originalResolution || 0);
-	    super.SetPayload(payload);
-	    this.SetValues(values);
-	    return this;
-	  }
-
-	  /**
-	   * Turn source bytes into this texture.
-	   *
-	   * This is the family the route design exists for. One `.dds` is readable as a
-	   * compressed `texture` or decoded `rgba`, and six formats — dds, png, jpeg,
-	   * tga, gif, webp — populate this same resource. Which reader and which
-	   * representation is a registration decision, so neither is written here.
-	   *
-	   * The resource imports none of them. A texture resource that imported its
-	   * formats would drag all six into anything that touches a texture, which is
-	   * the whole reason the store exists.
-	   *
-	   * @param {ArrayBuffer|ArrayBufferView|object} data Source bytes, or a payload already read.
-	   * @param {object|null} [options] `{ format, read, output }` plus values applied after the read.
-	   * @returns {TriTextureRes} This resource.
-	   */
-	  DoLoad(data) {
-	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	    var _ref = options || {},
-	      _ref$format = _ref.format,
-	      format = _ref$format === void 0 ? null : _ref$format,
-	      _ref$read = _ref.read,
-	      read = _ref$read === void 0 ? null : _ref$read,
-	      _ref$output = _ref.output,
-	      output = _ref$output === void 0 ? null : _ref$output,
-	      values = _objectWithoutProperties(_ref, _excluded$i);
-
-	    // Already a payload: the manager read it, and there is nothing to route.
-	    if ((data === null || data === void 0 ? void 0 : data.payloadType) !== undefined) return this.SetPayload(data, values);
-	    var route = this.ResolveFormat(data, format ? {
-	      format,
-	      read,
-	      output
-	    } : {
-	      output
-	    });
-	    if (!route) throw resourceFormatRequiredError("TriTextureRes", this.ext, output);
-	    return this.SetPayload(route.Read(data), values);
-	  }
-
-	  /**
-	   * Return the number of mip levels known to this texture resource.
-	   *
-	   * @returns {number}
-	   */
-	  GetMipCount() {
-	    var _this$GetPayload;
-	    return ((_this$GetPayload = this.GetPayload()) === null || _this$GetPayload === void 0 ? void 0 : _this$GetPayload.mipCount) || this.cpuMip || 0;
-	  }
-
-	  /**
-	   * Return the multisample type for this texture.
-	   *
-	   * @returns {number}
-	   */
-	  GetMsaaType() {
-	    var _ref2, _ref3, _payload$multiSampleT;
-	    var payload = this.GetPayload();
-	    return (_ref2 = (_ref3 = (_payload$multiSampleT = payload === null || payload === void 0 ? void 0 : payload.multiSampleType) != null ? _payload$multiSampleT : payload === null || payload === void 0 ? void 0 : payload.msaaType) != null ? _ref3 : payload === null || payload === void 0 ? void 0 : payload.samples) != null ? _ref2 : 1;
-	  }
-
-	  /**
-	   * Return the multisample quality for this texture.
-	   *
-	   * @returns {number}
-	   */
-	  GetMsaaQuality() {
-	    var _ref4, _payload$multiSampleQ;
-	    var payload = this.GetPayload();
-	    return (_ref4 = (_payload$multiSampleQ = payload === null || payload === void 0 ? void 0 : payload.multiSampleQuality) != null ? _payload$multiSampleQ : payload === null || payload === void 0 ? void 0 : payload.msaaQuality) != null ? _ref4 : 0;
-	  }
-
-	  /**
-	   * Return true if this texture has received LOD requests.
-	   *
-	   * @returns {boolean}
-	   */
-	  HadLodRequests() {
-	    return this.hadLodRequests;
-	  }
-
-	  /**
-	   * Return the shader-resource-view heap index when a backend owns one.
-	   *
-	   * @returns {number}
-	   */
-	  GetSrvIndexInHeap() {
-	    throw resourceBoundaryError("TriTextureRes", "GetSrvIndexInHeap", "Runtime-resource does not own descriptor heaps.");
-	  }
-
-	  /**
-	   * Save this texture asynchronously.
-	   *
-	   * @param {string} path
-	   * @returns {boolean}
-	   */
-	  SaveAsync() {
-	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-	    throw resourceBoundaryError("TriTextureRes", "SaveAsync", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
-	  }
-
-	  /**
-	   * Save this texture synchronously.
-	   *
-	   * @param {string} path
-	   * @returns {boolean}
-	   */
-	  Save() {
-	    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-	    throw resourceBoundaryError("TriTextureRes", "Save", "Use a format writer and caller-owned destination to save texture payloads".concat(path ? " (".concat(path, ")") : "", "."));
-	  }
-
-	  /**
-	   * Return true if an asynchronous save is active.
-	   *
-	   * @returns {boolean}
-	   */
-	  IsSaving() {
-	    return false;
-	  }
-
-	  /**
-	   * Return true if the asynchronous save operation has completed.
-	   *
-	   * @returns {boolean}
-	   */
-	  IsSaveCompleted() {
-	    return true;
-	  }
-
-	  /**
-	   * Return true if the asynchronous save operation succeeded.
-	   *
-	   * @returns {boolean}
-	   */
-	  IsSaveSucceeded() {
-	    return false;
-	  }
-
-	  /**
-	   * Wait for an asynchronous save operation.
-	   *
-	   * @returns {boolean}
-	   */
-	  WaitForSave() {
-	    return this.IsSaveCompleted();
-	  }
-
-	  /**
-	   * Device texture allocation belongs to engine-gpu.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateEmptyTexture() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateEmptyTexture", "Use engine-gpu to allocate device textures.");
-	  }
-
-	  /**
-	   * Render-target wrapping belongs to engine-gpu.
-	   *
-	   * @throws {Error}
-	   */
-	  SetFromRenderTarget() {
-	    throw resourceBoundaryError("TriTextureRes", "SetFromRenderTarget", "Runtime-resource does not own render targets.");
-	  }
-
-	  /**
-	   * Create a texture copy from a render target.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateAndCopyFromRenderTarget() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateAndCopyFromRenderTarget", "Runtime-resource does not own render targets.");
-	  }
-
-	  /**
-	   * Create a device texture from a host bitmap.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateFromHostBitmap() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateFromHostBitmap", "Use engine-gpu to allocate and upload texture data.");
-	  }
-
-	  /**
-	   * Create this texture from another texture resource.
-	   *
-	   * @throws {Error}
-	   */
-	  CreateFromTexture() {
-	    throw resourceBoundaryError("TriTextureRes", "CreateFromTexture", "Use engine-gpu to copy device textures.");
-	  }
-
-	  /**
-	   * Return true if this texture owns a backend allocation object.
-	   *
-	   * @param {string|number} type
-	   * @param {string|number} object
-	   * @returns {boolean}
-	   */
-	  HasALObject(type, object) {
-	    return this.HasAdapterResource("".concat(type, ":").concat(object));
-	  }
-
-	  /**
-	   * Return an engine-owned texture pipeline object when attached.
-	   *
-	   * @returns {*}
-	   */
-	  GetPipeline() {
-	    return this.GetAdapterResource("pipeline");
-	  }
-
-	  /**
-	   * Return memory size for the original non-LODed texture.
-	   *
-	   * @returns {number}
-	   */
-	  GetOriginalMemoryUsage() {
-	    return this.originalMemoryUsage || getPayloadMemoryUsage(this.GetPayload());
-	  }
-
-	  /**
-	   * Store the average color reported by decoded texture data.
-	   *
-	   * @param {number} red
-	   * @param {number} green
-	   * @param {number} blue
-	   * @param {number} alpha
-	   * @returns {TriTextureRes}
-	   */
-	  SetAverageColor() {
-	    var red = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	    var green = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	    var blue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-	    var alpha = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-	    this.averageColor = [red, green, blue, alpha];
-	    return this;
-	  }
-
-	  /**
-	   * Update a texture subresource.
-	   *
-	   * @throws {Error}
-	   */
-	  UpdateSubresource() {
-	    throw resourceBoundaryError("TriTextureRes", "UpdateSubresource", "Use engine-gpu to upload texture bytes.");
-	  }
-
-	  /**
-	   * Resource preparation does not decide device upload policy.
-	   *
-	   * @returns {boolean}
-	   */
-	  PrepareResources() {
-	    return this.IsPrepared();
-	  }
-	}
-	TriTextureRes.payload = ResourceRequirement.TEXTURE;
-	function getPayloadMemoryUsage(payload) {
-	  if (!payload || typeof payload !== "object") return 0;
-	  if (Number.isSafeInteger(payload.originalMemoryUsage) && payload.originalMemoryUsage >= 0) {
-	    return payload.originalMemoryUsage;
-	  }
-	  return ArrayBuffer.isView(payload.data) || payload.data instanceof ArrayBuffer ? payload.data.byteLength : 0;
-	}
-
-	// Declared as data rather than with decorators, so the resource tree loads from
-	// source without a transform. Field order is key order, and GetValues() exports
-	// in that order.
-	CjsSchema.define(TriTextureRes, {
-	  className: "TriTextureRes",
-	  family: "resources",
-	  fields: {
-	    format: [type$1.unknown, io$1.read],
-	    type: [type$1.unknown, io$1.persist],
-	    averageColor: [type$1.color, io$1.read],
-	    depth: [type$1.uint32, io$1.read],
-	    cutoutHeight: [type$1.float32, io$1.readwrite],
-	    height: [type$1.uint32, io$1.read],
-	    lodEnabled: [type$1.boolean, io$1.read],
-	    hadLodRequests: [type$1.boolean, io$1.read],
-	    cpuMip: [type$1.uint32, io$1.read],
-	    gpuMip: [type$1.uint32, io$1.read],
-	    wrappedRenderTarget: [type$1.unknown, io$1.read],
-	    originalResolution: [type$1.uint32, io$1.read],
-	    originalMemoryUsage: [type$1.uint64, io$1.read],
-	    name: [type$1.string, io$1.readwrite],
-	    arraySize: [type$1.uint32, io$1.read],
-	    cutoutWidth: [type$1.float32, io$1.readwrite],
-	    width: [type$1.uint32, io$1.read],
-	    cutoutX: [type$1.float32, io$1.readwrite],
-	    cutoutY: [type$1.float32, io$1.readwrite]
-	  },
-	  methods: {
-	    GetMipCount: [carbon$1.method, impl$1.adapted],
-	    GetMsaaType: [carbon$1.method, impl$1.adapted],
-	    GetMsaaQuality: [carbon$1.method, impl$1.adapted],
-	    HadLodRequests: [carbon$1.method, impl$1.adapted],
-	    GetSrvIndexInHeap: [carbon$1.method, impl$1.notSupported],
-	    GetTexture: [carbon$1.method, impl$1.implemented],
-	    SetTexture: [carbon$1.method, impl$1.adapted, impl$1.reason("Carbon also copies the texture's dimensions onto the resource and fires m_onTextureChange; the payload already carries the dimensions here, and the binding parameter arms the resource's completion instead.")],
-	    SaveAsync: [carbon$1.method, impl$1.notSupported],
-	    Save: [carbon$1.method, impl$1.notSupported],
-	    IsSaving: [carbon$1.method, impl$1.noop],
-	    IsSaveCompleted: [carbon$1.method, impl$1.noop],
-	    IsSaveSucceeded: [carbon$1.method, impl$1.noop],
-	    WaitForSave: [carbon$1.method, impl$1.noop],
-	    CreateEmptyTexture: [carbon$1.method, impl$1.notSupported],
-	    SetFromRenderTarget: [carbon$1.method, impl$1.notSupported],
-	    CreateAndCopyFromRenderTarget: [carbon$1.method, impl$1.notSupported],
-	    CreateFromHostBitmap: [carbon$1.method, impl$1.notSupported],
-	    CreateFromTexture: [carbon$1.method, impl$1.notSupported],
-	    HasALObject: [carbon$1.method, impl$1.adapted],
-	    GetPipeline: [carbon$1.method, impl$1.adapted],
-	    GetOriginalMemoryUsage: [carbon$1.method, impl$1.adapted],
-	    SetAverageColor: [carbon$1.method, impl$1.adapted],
-	    UpdateSubresource: [carbon$1.method, impl$1.notSupported],
-	    PrepareResources: [carbon$1.method, impl$1.adapted]
 	  }
 	});
 
@@ -169889,6 +170652,31 @@
 	 *
 	 * @typedef {CjsResourceOwnership|CjsResourceReloadCandidate} CjsResourceMutationAuthority
 	 */
+
+	// `dynamic:` protocol (BlueResMan.cpp:219-223): the name is the segment after
+	// this prefix, and everything after the following slash is the query.
+	var DYNAMIC_RESOURCE_PREFIX = "dynamic:/";
+
+	/**
+	 * Carbon logs and returns null for an unknown dynamic name or a constructor that
+	 * yields nothing (BlueResMan.cpp:225-235). There is no log channel here, and a
+	 * null handle breaks every caller that composes on GetResource, so the same
+	 * condition is raised, named.
+	 *
+	 * @param {string} path Normalized dynamic path.
+	 * @param {string} name Constructor name.
+	 * @param {string} code Error code.
+	 * @param {string} message Error message.
+	 * @returns {Error}
+	 */
+	function dynamicResourceError(path, name, code, message) {
+	  var error = new Error("CjsResMan ".concat(message, " (").concat(path, ")"));
+	  error.code = code;
+	  error.path = path;
+	  error.name = "CjsResManDynamicResourceError";
+	  error.constructorName = name;
+	  return error;
+	}
 	var _global = /*#__PURE__*/_classPrivateFieldLooseKey("global");
 	var _autoPurgePolicy = /*#__PURE__*/_classPrivateFieldLooseKey("autoPurgePolicy");
 	var _activeResourceOperations = /*#__PURE__*/_classPrivateFieldLooseKey("activeResourceOperations");
@@ -169907,6 +170695,9 @@
 	var _resourceExtensionRoutes = /*#__PURE__*/_classPrivateFieldLooseKey("resourceExtensionRoutes");
 	var _resourceHandlerModes = /*#__PURE__*/_classPrivateFieldLooseKey("resourceHandlerModes");
 	var _resourceTypeCandidates = /*#__PURE__*/_classPrivateFieldLooseKey("resourceTypeCandidates");
+	var _dynamicConstructors = /*#__PURE__*/_classPrivateFieldLooseKey("dynamicConstructors");
+	var _dynamicResources = /*#__PURE__*/_classPrivateFieldLooseKey("dynamicResources");
+	var _objectBuilders = /*#__PURE__*/_classPrivateFieldLooseKey("objectBuilders");
 	var _GetReloadCandidateObject = /*#__PURE__*/_classPrivateFieldLooseKey("GetReloadCandidateObject");
 	var _RunReloadCandidate = /*#__PURE__*/_classPrivateFieldLooseKey("RunReloadCandidate");
 	var _FinalizeCommittedReload = /*#__PURE__*/_classPrivateFieldLooseKey("FinalizeCommittedReload");
@@ -169917,6 +170708,9 @@
 	var _ResolveResourceObjectRead = /*#__PURE__*/_classPrivateFieldLooseKey("ResolveResourceObjectRead");
 	var _ReadResolvedResourceObjectPayload = /*#__PURE__*/_classPrivateFieldLooseKey("ReadResolvedResourceObjectPayload");
 	var _HydrateExtensionObject = /*#__PURE__*/_classPrivateFieldLooseKey("HydrateExtensionObject");
+	var _HydrateTarget = /*#__PURE__*/_classPrivateFieldLooseKey("HydrateTarget");
+	var _BuildObject = /*#__PURE__*/_classPrivateFieldLooseKey("BuildObject");
+	var _CreateDynamicResource = /*#__PURE__*/_classPrivateFieldLooseKey("CreateDynamicResource");
 	var _PublishResourceObject = /*#__PURE__*/_classPrivateFieldLooseKey("PublishResourceObject");
 	var _PublishResourceObjectValue = /*#__PURE__*/_classPrivateFieldLooseKey("PublishResourceObjectValue");
 	var _BeginReadOperation = /*#__PURE__*/_classPrivateFieldLooseKey("BeginReadOperation");
@@ -170253,6 +171047,44 @@
 	      value: _PublishResourceObject2
 	    });
 	    /**
+	     * `dynamic:` branch of BlueResMan::GetResourceHelper (BlueResMan.cpp:219-245).
+	     * Inserted not cacheable, Carbon's `CACHING_NOT_ALLOWED`: a dynamic resource is
+	     * never admitted to the byte cache.
+	     *
+	     * @param {string} key Normalized `dynamic:/<name>/<query>` path.
+	     * @param {string} cacheKey MotherLode key.
+	     * @returns {CjsResource} Canonical dynamic resource.
+	     * @throws {Error} If no constructor is registered or it yields no resource.
+	     */
+	    Object.defineProperty(this, _CreateDynamicResource, {
+	      value: _CreateDynamicResource2
+	    });
+	    /**
+	     * A fresh object from a resident builder: Carbon's
+	     * `builder->CreateObjectWithYield` (BlueResMan.cpp:785).
+	     *
+	     * @param {CjsResource} resource Resource holding the decoded values as payload.
+	     * @returns {*} A new hydrated object.
+	     */
+	    Object.defineProperty(this, _BuildObject, {
+	      value: _BuildObject2
+	    });
+	    /**
+	     * Build one object from decoded values. Every build receives its own
+	     * structured copy, so no two callers share a nested array, typed array or
+	     * reader carrier however `from` treats its input - Carbon's objects are
+	     * likewise independent, each read out of the cached reader's bytes.
+	     *
+	     * @param {CjsResource} resource Resource whose values are built.
+	     * @param {Function} Target Resolved target constructor.
+	     * @param {*} values Decoded plain values.
+	     * @param {object} context Hydration context captured at publication.
+	     * @returns {*} A new hydrated object.
+	     */
+	    Object.defineProperty(this, _HydrateTarget, {
+	      value: _HydrateTarget2
+	    });
+	    /**
 	     * Apply a fixed target or dynamic identification policy after format reading
 	     * and before payload publication. Worker decoding has settled by this point,
 	     * so constructors and Identify functions remain on the caller thread.
@@ -170447,6 +171279,23 @@
 	    Object.defineProperty(this, _resourceTypeCandidates, {
 	      writable: true,
 	      value: new Map()
+	    });
+	    // BlueResMan::m_dynamicConstructors (BlueResMan.h:154-155).
+	    Object.defineProperty(this, _dynamicConstructors, {
+	      writable: true,
+	      value: new Map()
+	    });
+	    Object.defineProperty(this, _dynamicResources, {
+	      writable: true,
+	      value: new WeakSet()
+	    });
+	    // Carbon caches a LoadObject BUILDER and creates a new object per call
+	    // (BlueResMan.cpp:653-795). For an OBJECT-mode route that hydrates, the
+	    // payload is the decoded plain values - the builder - and this records what
+	    // builds from them.
+	    Object.defineProperty(this, _objectBuilders, {
+	      writable: true,
+	      value: new WeakMap()
 	    });
 	    this.motherLode = new CjsMotherLode();
 	    this.source = null;
@@ -171256,6 +172105,39 @@
 	  }
 
 	  /**
+	   * Registers the constructor that builds `dynamic:/<name>/<query>` resources
+	   * (BlueResMan.cpp:296-305). The name is lowercased, as Carbon's is; the
+	   * constructor's `GetResource(query)` returns a resource for that query.
+	   *
+	   * @param {string} name Name following `dynamic:/`.
+	   * @param {{GetResource: function(string): object}} constructor Resource constructor.
+	   * @returns {CjsResMan} This resource manager.
+	   * @throws {TypeError} If the name is empty or the constructor has no GetResource.
+	   */
+	  RegisterResourceConstructor(name, constructor) {
+	    var key = String(name != null ? name : "").toLowerCase();
+	    if (!key) {
+	      throw new TypeError("CjsResMan.RegisterResourceConstructor requires a name.");
+	    }
+	    if (typeof (constructor === null || constructor === void 0 ? void 0 : constructor.GetResource) !== "function") {
+	      throw new TypeError("CjsResMan dynamic resource constructor \"".concat(key, "\" must implement GetResource."));
+	    }
+	    _classPrivateFieldLooseBase(this, _dynamicConstructors)[_dynamicConstructors].set(key, constructor);
+	    return this;
+	  }
+
+	  /**
+	   * Removes a dynamic resource constructor (BlueResMan.cpp:312-325).
+	   *
+	   * @param {string} name Name following `dynamic:/`.
+	   * @returns {CjsResMan} This resource manager.
+	   */
+	  UnregisterResourceConstructor(name) {
+	    _classPrivateFieldLooseBase(this, _dynamicConstructors)[_dynamicConstructors].delete(String(name != null ? name : "").toLowerCase());
+	    return this;
+	  }
+
+	  /**
 	   * Return registered format facades for one normalized input extension.
 	   *
 	   * @param {string} inputType Input extension with or without a leading dot.
@@ -171320,6 +172202,11 @@
 	      _classPrivateFieldLooseBase(this, _BindResourceLifecycle)[_BindResourceLifecycle](cacheKey, existing);
 	      this.motherLode.KeepAlive(cacheKey);
 	      return existing;
+	    }
+	    // Below the cache lookup, as in BlueResMan::GetResourceHelper, so identical
+	    // queries share one resource.
+	    if (key.startsWith(DYNAMIC_RESOURCE_PREFIX)) {
+	      return _classPrivateFieldLooseBase(this, _CreateDynamicResource)[_CreateDynamicResource](key, cacheKey);
 	    }
 	    if (!existing && options.reload === true) {
 	      this.InvalidateReadCache(key, {
@@ -171393,12 +172280,25 @@
 	    var ownership = _classPrivateFieldLooseBase(this, _RequireResourceOwnership)[_RequireResourceOwnership](resource, "object:begin");
 	    var existing = this.objectOperations.get(resource);
 	    if ((existing === null || existing === void 0 ? void 0 : existing.ownership) === ownership) {
-	      return existing.promise;
+	      // Joining an in-flight load shares its promise - unless the route builds
+	      // per caller, when the load's own caller receives the instance built at
+	      // publication and a joiner gets its own.
+	      var route = _classPrivateFieldLooseBase(this, _resourceExtensionRoutes)[_resourceExtensionRoutes].get(resource);
+	      if (!(route !== null && route !== void 0 && route.Target) && !(route !== null && route !== void 0 && route.Identify)) return existing.promise;
+	      return existing.promise.then(result => _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].has(resource) ? _classPrivateFieldLooseBase(this, _BuildObject)[_BuildObject](resource) : result);
 	    }
 	    if ((_resource$HasPayload = resource.HasPayload) !== null && _resource$HasPayload !== void 0 && _resource$HasPayload.call(resource)) {
 	      var _resource$KeepPayload;
 	      (_resource$KeepPayload = resource.KeepPayloadAlive) === null || _resource$KeepPayload === void 0 || _resource$KeepPayload.call(resource);
+	      if (_classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].has(resource)) {
+	        return Promise.resolve().then(() => _classPrivateFieldLooseBase(this, _BuildObject)[_BuildObject](resource));
+	      }
 	      return Promise.resolve(getPublishedResourceObject(resource, _classPrivateFieldLooseBase(this, _resourceExtensionRoutes)[_resourceExtensionRoutes].get(resource) || null, _classPrivateFieldLooseBase(this, _resourceHandlerModes)[_resourceHandlerModes].get(resource) || null));
+	    }
+	    if (_classPrivateFieldLooseBase(this, _dynamicResources)[_dynamicResources].has(resource)) {
+	      // A dynamic resource is built by its constructor, never read from a
+	      // source: without a payload it failed, and there is nothing to fetch.
+	      return Promise.reject(resource.error || dynamicResourceError(resource.GetPath(), "", "CJS_RESMAN_DYNAMIC_RESOURCE_UNAVAILABLE", "dynamic resource has no payload"));
 	    }
 	    var promise = this.QueueResourceObject(resource, operationOptions);
 	    var operation = {
@@ -172461,6 +173361,7 @@
 	}
 	function _HydrateExtensionObject2(resource, values, options, resolved) {
 	  var _resolved$descriptor;
+	  _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].delete(resource);
 	  var route = resolved.route;
 	  if (!route || !route.Target && !route.Identify) return values;
 	  var Format = ((_resolved$descriptor = resolved.descriptor) === null || _resolved$descriptor === void 0 ? void 0 : _resolved$descriptor.Format) || null;
@@ -172487,8 +173388,26 @@
 	      throw createExtensionTargetError(resource, "Identify returned an invalid target constructor.", error);
 	    }
 	  }
+	  var hydrated = _classPrivateFieldLooseBase(this, _HydrateTarget)[_HydrateTarget](resource, Target, values, context);
+	  // Publication decides whether this route builds per caller: only an
+	  // OBJECT-mode handle hands its object out, so only it keeps the builder.
+	  _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].set(resource, {
+	    Target,
+	    context,
+	    values,
+	    hydrated
+	  });
+	  return hydrated;
+	}
+	function _HydrateTarget2(resource, Target, values, context) {
+	  var copy;
 	  try {
-	    var hydrated = typeof Target.fromYAML === "function" ? Target.fromYAML(values, context) : Target.from(values);
+	    copy = structuredClone(values);
+	  } catch (error) {
+	    throw createExtensionTargetError(resource, "Decoded values could not be copied for a per-caller build.", error);
+	  }
+	  try {
+	    var hydrated = typeof Target.fromYAML === "function" ? Target.fromYAML(copy, context) : Target.from(copy);
 	    if (hydrated && typeof hydrated.then === "function") {
 	      throw new TypeError("Extension target hydration must be synchronous.");
 	    }
@@ -172496,6 +173415,34 @@
 	  } catch (error) {
 	    throw createExtensionTargetError(resource, "Target hydration failed.", error);
 	  }
+	}
+	function _BuildObject2(resource) {
+	  var builder = _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].get(resource);
+	  return _classPrivateFieldLooseBase(this, _HydrateTarget)[_HydrateTarget](resource, builder.Target, resource.GetPayload(), builder.context);
+	}
+	function _CreateDynamicResource2(key, cacheKey) {
+	  var rest = key.slice(DYNAMIC_RESOURCE_PREFIX.length);
+	  var slash = rest.indexOf("/");
+	  var name = slash === -1 ? rest : rest.slice(0, slash);
+	  var query = slash === -1 ? "" : rest.slice(slash + 1);
+	  var constructor = _classPrivateFieldLooseBase(this, _dynamicConstructors)[_dynamicConstructors].get(name);
+	  if (!constructor) {
+	    throw dynamicResourceError(key, name, "CJS_RESMAN_DYNAMIC_CONSTRUCTOR_MISSING", "no dynamic constructor is registered for \"".concat(name, "\""));
+	  }
+	  var resource = constructor.GetResource(query);
+	  if (!resource || typeof resource.Initialize !== "function" || typeof resource.SetObjectLoader !== "function") {
+	    throw dynamicResourceError(key, name, "CJS_RESMAN_DYNAMIC_RESOURCE_UNAVAILABLE", "dynamic constructor \"".concat(name, "\" returned no CjsResource-compatible resource"));
+	  }
+	  _classPrivateFieldLooseBase(this, _dynamicResources)[_dynamicResources].add(resource);
+	  resource.SetObjectLoader(() => this.GetObject(key));
+	  var insertion = this.motherLode.Insert(cacheKey, resource, {
+	    replace: true,
+	    cacheable: false
+	  });
+	  var canonical = (insertion === null || insertion === void 0 ? void 0 : insertion.resource) || resource;
+	  _classPrivateFieldLooseBase(this, _BindResourceLifecycle)[_BindResourceLifecycle](cacheKey, canonical);
+	  this.motherLode.KeepAlive(cacheKey);
+	  return canonical;
 	}
 	function _PublishResourceObject2(ownership, resource, object, options) {
 	  _classPrivateFieldLooseBase(this, _AssertOptionalResourceOwnership)[_AssertOptionalResourceOwnership](ownership, "publish");
@@ -172506,12 +173453,23 @@
 	function _PublishResourceObjectValue2(resource, object, options) {
 	  var _resource$SetPayload, _resource$IsPrepared;
 	  var mode = resolveResourceHandlerMode(resource, _classPrivateFieldLooseBase(this, _resourceExtensionRoutes)[_resourceExtensionRoutes].get(resource) ? _classPrivateFieldLooseBase(this, _resourceHandlerModes)[_resourceHandlerModes].get(resource) : null);
-	  (_resource$SetPayload = resource.SetPayload) === null || _resource$SetPayload === void 0 || _resource$SetPayload.call(resource, object, options);
+	  var builder = _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].get(resource);
+	  var buildsPerCaller = mode === ResourceHandlerMode.OBJECT && (builder === null || builder === void 0 ? void 0 : builder.hydrated) === object;
+	  if (builder && !buildsPerCaller) _classPrivateFieldLooseBase(this, _objectBuilders)[_objectBuilders].delete(resource);
+	  // A per-caller route retains the decoded values - the builder - and hands
+	  // `object` to this publication's caller only. The values then live under the
+	  // payload lease, like any payload.
+	  var payload = buildsPerCaller ? builder.values : object;
+	  if (buildsPerCaller) {
+	    delete builder.values;
+	    delete builder.hydrated;
+	  }
+	  (_resource$SetPayload = resource.SetPayload) === null || _resource$SetPayload === void 0 || _resource$SetPayload.call(resource, payload, options);
 	  // The two modes differ in one thing only: what `object` names and what the
 	  // caller is handed back. RESOURCE publishes the stable handle, so both
 	  // point at the resource; OBJECT publishes the reader outcome.
 	  var published = mode === ResourceHandlerMode.RESOURCE ? resource : object;
-	  resource.object = published;
+	  resource.object = buildsPerCaller ? payload : published;
 	  // PREPARED, not LOADED: `object` is the reader/converter OUTCOME, so the
 	  // bytes have already been turned into whatever they needed to become.
 	  // LOADED means raw source data is in hand and still has to be prepared - a
@@ -208805,7 +209763,7 @@
 	  }
 	}), _class2$6H)) || _class$7i);
 
-	var _dec$7h, _dec2$6K, _dec3$6f, _dec4$5x, _dec5$4_, _dec6$4p, _dec7$3O, _dec8$3j, _dec9$2Q, _dec0$2D, _dec1$2p, _dec10$24, _dec11$1W, _dec12$1I, _dec13$1w, _dec14$1l, _dec15$1g, _dec16$15, _dec17$10, _class$7h, _class2$6G, _descriptor$6F, _descriptor2$65, _descriptor3$5o, _descriptor4$4J, _descriptor5$45, _descriptor6$3r, _descriptor7$2V, _descriptor8$2x, _descriptor9$2j, _descriptor0$25, _descriptor1$1L, _descriptor10$1A, _descriptor11$1p, _descriptor12$1h, _descriptor13$1b, _descriptor14$13, _descriptor15$R, _descriptor16$L;
+	var _dec$7h, _dec2$6K, _dec3$6f, _dec4$5x, _dec5$4_, _dec6$4p, _dec7$3O, _dec8$3j, _dec9$2Q, _dec0$2D, _dec1$2p, _dec10$24, _dec11$1W, _dec12$1I, _dec13$1w, _dec14$1l, _dec15$1g, _dec16$15, _dec17$10, _class$7h, _class2$6G, _descriptor$6F, _descriptor2$65, _descriptor3$5o, _descriptor4$4J, _descriptor5$45, _descriptor6$3r, _descriptor7$2V, _descriptor8$2x, _descriptor9$2j, _descriptor0$25, _descriptor1$1L, _descriptor10$1A, _descriptor11$1p, _descriptor12$1h, _descriptor13$1b, _descriptor14$13, _descriptor15$R, _descriptor16$K;
 	var Tr2TexturedPointLight = (_dec$7h = define("Tr2TexturedPointLight", true), _dec2$6K = string, _dec3$6f = int32$1, _dec4$5x = float, _dec5$4_ = int32$1, _dec6$4p = vector4, _dec7$3O = ushort, _dec8$3j = float, _dec9$2Q = float, _dec0$2D = boolean, _dec1$2p = path, _dec10$24 = float, _dec11$1W = float, _dec12$1I = uint, _dec13$1w = float, _dec14$1l = vector3, _dec15$1g = float, _dec16$15 = quaternion, _dec17$10 = path, _dec$7h(_class$7h = (_class2$6G = class Tr2TexturedPointLight extends Tr2PointLight {
 	  constructor() {
 	    super(...arguments);
@@ -208830,7 +209788,7 @@
 	    _initializerDefineProperty(this, "radius", _descriptor14$13, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor15$R, this);
 	    this.texture = null;
-	    _initializerDefineProperty(this, "texturePath", _descriptor16$L, this);
+	    _initializerDefineProperty(this, "texturePath", _descriptor16$K, this);
 	    this._saturation = 1;
 	  }
 	  OnValueChanged() {
@@ -208973,7 +209931,7 @@
 	  initializer: function () {
 	    return quat$2.create();
 	  }
-	}), _descriptor16$L = _applyDecoratedDescriptor(_class2$6G.prototype, "texturePath", [_dec17$10], {
+	}), _descriptor16$K = _applyDecoratedDescriptor(_class2$6G.prototype, "texturePath", [_dec17$10], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -208982,7 +209940,7 @@
 	  }
 	}), _class2$6G)) || _class$7h);
 
-	var _dec$7g, _dec2$6J, _dec3$6e, _dec4$5w, _dec5$4Z, _dec6$4o, _dec7$3N, _dec8$3i, _dec9$2P, _dec0$2C, _dec1$2o, _dec10$23, _dec11$1V, _dec12$1H, _dec13$1v, _dec14$1k, _dec15$1f, _dec16$14, _dec17$$, _dec18$W, _class$7g, _class2$6F, _descriptor$6E, _descriptor2$64, _descriptor3$5n, _descriptor4$4I, _descriptor5$44, _descriptor6$3q, _descriptor7$2U, _descriptor8$2w, _descriptor9$2i, _descriptor0$24, _descriptor1$1K, _descriptor10$1z, _descriptor11$1o, _descriptor12$1g, _descriptor13$1a, _descriptor14$12, _descriptor15$Q, _descriptor16$K, _descriptor17$G;
+	var _dec$7g, _dec2$6J, _dec3$6e, _dec4$5w, _dec5$4Z, _dec6$4o, _dec7$3N, _dec8$3i, _dec9$2P, _dec0$2C, _dec1$2o, _dec10$23, _dec11$1V, _dec12$1H, _dec13$1v, _dec14$1k, _dec15$1f, _dec16$14, _dec17$$, _dec18$W, _class$7g, _class2$6F, _descriptor$6E, _descriptor2$64, _descriptor3$5n, _descriptor4$4I, _descriptor5$44, _descriptor6$3q, _descriptor7$2U, _descriptor8$2w, _descriptor9$2i, _descriptor0$24, _descriptor1$1K, _descriptor10$1z, _descriptor11$1o, _descriptor12$1g, _descriptor13$1a, _descriptor14$12, _descriptor15$Q, _descriptor16$J, _descriptor17$G;
 	var Tr2FactionLight = (_dec$7g = define("Tr2FactionLight", true), _dec2$6J = vector3, _dec3$6e = rotation, _dec4$5w = int32$1, _dec5$4Z = float, _dec6$4o = int32$1, _dec7$3N = int32$1, _dec8$3i = ushort, _dec9$2P = float, _dec0$2C = float, _dec1$2o = boolean, _dec10$23 = boolean, _dec11$1V = path, _dec12$1H = string, _dec13$1v = float, _dec14$1k = float, _dec15$1f = uint, _dec16$14 = float, _dec17$$ = float, _dec18$W = float, _dec$7g(_class$7g = (_class2$6F = class Tr2FactionLight extends Tr2Light {
 	  constructor() {
 	    super(...arguments);
@@ -209004,7 +209962,7 @@
 	    _initializerDefineProperty(this, "noiseFrequency", _descriptor13$1a, this);
 	    _initializerDefineProperty(this, "noiseOctaves", _descriptor14$12, this);
 	    _initializerDefineProperty(this, "outerAngle", _descriptor15$Q, this);
-	    _initializerDefineProperty(this, "radius", _descriptor16$K, this);
+	    _initializerDefineProperty(this, "radius", _descriptor16$J, this);
 	    _initializerDefineProperty(this, "saturation", _descriptor17$G, this);
 	    this._parentColorSet = null;
 	    this._resolvedFactionColor = vec4$2.create();
@@ -209164,7 +210122,7 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor16$K = _applyDecoratedDescriptor(_class2$6F.prototype, "radius", [_dec17$$], {
+	}), _descriptor16$J = _applyDecoratedDescriptor(_class2$6F.prototype, "radius", [_dec17$$], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -209311,8 +210269,8 @@
 	  }
 	}), _class2$6E)) || _class$7f) || _class$7f);
 
-	var _dec$7e, _dec2$6H, _dec3$6c, _dec4$5u, _dec5$4X, _dec6$4m, _dec7$3L, _dec8$3g, _dec9$2N, _dec0$2A, _dec1$2m, _dec10$21, _dec11$1T, _dec12$1F, _dec13$1u, _dec14$1j, _dec15$1e, _dec16$13, _dec17$_, _dec18$V, _dec19$L, _dec20$I, _dec21$D, _dec22$A, _dec23$v, _dec24$u, _class$7e, _class2$6D, _descriptor$6C, _descriptor2$62, _descriptor3$5l, _descriptor4$4G, _descriptor5$42, _descriptor6$3o, _descriptor7$2S, _descriptor8$2u, _descriptor9$2g, _descriptor0$23, _descriptor1$1J, _descriptor10$1y, _descriptor11$1n, _descriptor12$1f, _descriptor13$19, _descriptor14$11, _descriptor15$P, _descriptor16$J, _descriptor17$F;
-	var Tw2Mesh = (_dec$7e = define("Tw2Mesh", "Tr2Mesh"), _dec2$6H = string, _dec3$6c = list("Tw2MeshArea"), _dec4$5u = list("Tw2MeshArea"), _dec5$4X = notImplemented, _dec6$4m = boolean, _dec7$3L = list("Tw2MeshArea"), _dec8$3g = list("Tw2MeshArea"), _dec9$2N = boolean, _dec0$2A = list("Tw2MeshArea"), _dec1$2m = path, _dec10$21 = uint, _dec11$1T = list("Tw2MeshArea"), _dec12$1F = notImplemented, _dec13$1u = list("Tw2MeshArea"), _dec14$1j = list("Tw2MeshArea"), _dec15$1e = list("Tw2MeshArea"), _dec16$13 = plain, _dec17$_ = struct("Tw2GeometryRes"), _dec18$V = isPrivate, _dec19$L = float, _dec20$I = notImplemented, _dec21$D = boolean, _dec22$A = notImplemented, _dec23$v = float, _dec24$u = notImplemented, _dec$7e(_class$7e = (_class2$6D = class Tw2Mesh extends Model$1 {
+	var _dec$7e, _dec2$6H, _dec3$6c, _dec4$5u, _dec5$4X, _dec6$4m, _dec7$3L, _dec8$3g, _dec9$2N, _dec0$2A, _dec1$2m, _dec10$21, _dec11$1T, _dec12$1F, _dec13$1u, _dec14$1j, _dec15$1e, _dec16$13, _dec17$_, _dec18$V, _dec19$K, _dec20$H, _dec21$C, _dec22$z, _dec23$v, _dec24$u, _class$7e, _class2$6D, _descriptor$6C, _descriptor2$62, _descriptor3$5l, _descriptor4$4G, _descriptor5$42, _descriptor6$3o, _descriptor7$2S, _descriptor8$2u, _descriptor9$2g, _descriptor0$23, _descriptor1$1J, _descriptor10$1y, _descriptor11$1n, _descriptor12$1f, _descriptor13$19, _descriptor14$11, _descriptor15$P, _descriptor16$I, _descriptor17$F;
+	var Tw2Mesh = (_dec$7e = define("Tw2Mesh", "Tr2Mesh"), _dec2$6H = string, _dec3$6c = list("Tw2MeshArea"), _dec4$5u = list("Tw2MeshArea"), _dec5$4X = notImplemented, _dec6$4m = boolean, _dec7$3L = list("Tw2MeshArea"), _dec8$3g = list("Tw2MeshArea"), _dec9$2N = boolean, _dec0$2A = list("Tw2MeshArea"), _dec1$2m = path, _dec10$21 = uint, _dec11$1T = list("Tw2MeshArea"), _dec12$1F = notImplemented, _dec13$1u = list("Tw2MeshArea"), _dec14$1j = list("Tw2MeshArea"), _dec15$1e = list("Tw2MeshArea"), _dec16$13 = plain, _dec17$_ = struct("Tw2GeometryRes"), _dec18$V = isPrivate, _dec19$K = float, _dec20$H = notImplemented, _dec21$C = boolean, _dec22$z = notImplemented, _dec23$v = float, _dec24$u = notImplemented, _dec$7e(_class$7e = (_class2$6D = class Tw2Mesh extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6C, this);
@@ -209332,7 +210290,7 @@
 	    _initializerDefineProperty(this, "visible", _descriptor13$19, this);
 	    _initializerDefineProperty(this, "geometryResource", _descriptor14$11, this);
 	    _initializerDefineProperty(this, "maxVertexScale", _descriptor15$P, this);
-	    _initializerDefineProperty(this, "rotatesVertices", _descriptor16$J, this);
+	    _initializerDefineProperty(this, "rotatesVertices", _descriptor16$I, this);
 	    _initializerDefineProperty(this, "maxVertexDisplacement", _descriptor17$F, this);
 	  }
 	  /**
@@ -209881,14 +210839,14 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor15$P = _applyDecoratedDescriptor(_class2$6D.prototype, "maxVertexScale", [_dec19$L, _dec20$I], {
+	}), _descriptor15$P = _applyDecoratedDescriptor(_class2$6D.prototype, "maxVertexScale", [_dec19$K, _dec20$H], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0.0;
 	  }
-	}), _descriptor16$J = _applyDecoratedDescriptor(_class2$6D.prototype, "rotatesVertices", [_dec21$D, _dec22$A], {
+	}), _descriptor16$I = _applyDecoratedDescriptor(_class2$6D.prototype, "rotatesVertices", [_dec21$C, _dec22$z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -209904,8 +210862,8 @@
 	  }
 	}), _class2$6D)) || _class$7e);
 
-	var _dec$7d, _dec2$6G, _dec3$6b, _dec4$5t, _dec5$4W, _dec6$4l, _dec7$3K, _dec8$3f, _dec9$2M, _dec0$2z, _dec1$2l, _dec10$20, _dec11$1S, _dec12$1E, _dec13$1t, _dec14$1i, _dec15$1d, _dec16$12, _dec17$Z, _dec18$U, _dec19$K, _dec20$H, _dec21$C, _dec22$z, _class$7d, _class2$6C, _descriptor$6B, _descriptor2$61, _descriptor3$5k, _descriptor4$4F, _descriptor5$41, _descriptor6$3n, _descriptor7$2R, _descriptor8$2t, _descriptor9$2f, _descriptor0$22, _descriptor1$1I, _descriptor10$1x, _descriptor11$1m, _descriptor12$1e, _descriptor13$18, _descriptor14$10, _descriptor15$O, _descriptor16$I, _descriptor17$E, _descriptor18$A, _Tw2InstancedMesh;
-	var Tw2InstancedMesh = (_dec$7d = todo("Is this deprecated?"), _dec2$6G = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$6b = string, _dec4$5t = boolean, _dec5$4W = list("Tw2MeshArea"), _dec6$4l = struct(), _dec7$3K = list("Tw2MeshArea"), _dec8$3f = list("Tw2MeshArea"), _dec9$2M = list("Tw2MeshArea"), _dec0$2z = struct("Tw2GeometryResource"), _dec1$2l = isPrivate, _dec10$20 = path, _dec11$1S = struct(), _dec12$1E = path, _dec13$1t = uint, _dec14$1i = vector3, _dec15$1d = notImplemented, _dec16$12 = uint, _dec17$Z = vector3, _dec18$U = list("Tw2MeshArea"), _dec19$K = list("Tw2MeshArea"), _dec20$H = list("Tw2MeshArea"), _dec21$C = list("Tw2MeshArea"), _dec22$z = plain, _dec$7d(_class$7d = _dec2$6G(_class$7d = (_class2$6C = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model$1 {
+	var _dec$7d, _dec2$6G, _dec3$6b, _dec4$5t, _dec5$4W, _dec6$4l, _dec7$3K, _dec8$3f, _dec9$2M, _dec0$2z, _dec1$2l, _dec10$20, _dec11$1S, _dec12$1E, _dec13$1t, _dec14$1i, _dec15$1d, _dec16$12, _dec17$Z, _dec18$U, _dec19$J, _dec20$G, _dec21$B, _dec22$y, _class$7d, _class2$6C, _descriptor$6B, _descriptor2$61, _descriptor3$5k, _descriptor4$4F, _descriptor5$41, _descriptor6$3n, _descriptor7$2R, _descriptor8$2t, _descriptor9$2f, _descriptor0$22, _descriptor1$1I, _descriptor10$1x, _descriptor11$1m, _descriptor12$1e, _descriptor13$18, _descriptor14$10, _descriptor15$O, _descriptor16$H, _descriptor17$E, _descriptor18$A, _Tw2InstancedMesh;
+	var Tw2InstancedMesh = (_dec$7d = todo("Is this deprecated?"), _dec2$6G = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$6b = string, _dec4$5t = boolean, _dec5$4W = list("Tw2MeshArea"), _dec6$4l = struct(), _dec7$3K = list("Tw2MeshArea"), _dec8$3f = list("Tw2MeshArea"), _dec9$2M = list("Tw2MeshArea"), _dec0$2z = struct("Tw2GeometryResource"), _dec1$2l = isPrivate, _dec10$20 = path, _dec11$1S = struct(), _dec12$1E = path, _dec13$1t = uint, _dec14$1i = vector3, _dec15$1d = notImplemented, _dec16$12 = uint, _dec17$Z = vector3, _dec18$U = list("Tw2MeshArea"), _dec19$J = list("Tw2MeshArea"), _dec20$G = list("Tw2MeshArea"), _dec21$B = list("Tw2MeshArea"), _dec22$y = plain, _dec$7d(_class$7d = _dec2$6G(_class$7d = (_class2$6C = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6B, this);
@@ -209925,7 +210883,7 @@
 	    _initializerDefineProperty(this, "minBounds", _descriptor13$18, this);
 	    _initializerDefineProperty(this, "opaqueAreas", _descriptor14$10, this);
 	    _initializerDefineProperty(this, "pickableAreas", _descriptor15$O, this);
-	    _initializerDefineProperty(this, "transparentAreas", _descriptor16$I, this);
+	    _initializerDefineProperty(this, "transparentAreas", _descriptor16$H, this);
 	    // CCPWGL only
 	    _initializerDefineProperty(this, "depthNormalAreas", _descriptor17$E, this);
 	    _initializerDefineProperty(this, "visible", _descriptor18$A, this);
@@ -210497,28 +211455,28 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor15$O = _applyDecoratedDescriptor(_class2$6C.prototype, "pickableAreas", [_dec19$K], {
+	}), _descriptor15$O = _applyDecoratedDescriptor(_class2$6C.prototype, "pickableAreas", [_dec19$J], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor16$I = _applyDecoratedDescriptor(_class2$6C.prototype, "transparentAreas", [_dec20$H], {
+	}), _descriptor16$H = _applyDecoratedDescriptor(_class2$6C.prototype, "transparentAreas", [_dec20$G], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor17$E = _applyDecoratedDescriptor(_class2$6C.prototype, "depthNormalAreas", [_dec21$C], {
+	}), _descriptor17$E = _applyDecoratedDescriptor(_class2$6C.prototype, "depthNormalAreas", [_dec21$B], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor18$A = _applyDecoratedDescriptor(_class2$6C.prototype, "visible", [_dec22$z], {
+	}), _descriptor18$A = _applyDecoratedDescriptor(_class2$6C.prototype, "visible", [_dec22$y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -212163,7 +213121,7 @@
 	  }
 	}), _class2$6s)) || _class$73);
 
-	var _dec$72, _dec2$6v, _dec3$61, _dec4$5m, _dec5$4Q, _dec6$4g, _dec7$3F, _dec8$3b, _dec9$2I, _dec0$2v, _dec1$2h, _dec10$1_, _dec11$1Q, _dec12$1C, _dec13$1r, _dec14$1h, _dec15$1c, _dec16$11, _dec17$Y, _dec18$T, _dec19$J, _dec20$G, _class$72, _class2$6r, _descriptor$6q, _descriptor2$5T, _descriptor3$5d, _descriptor4$4A, _descriptor5$3Y, _descriptor6$3j, _descriptor7$2O, _descriptor8$2r, _descriptor9$2e, _descriptor0$21, _descriptor1$1H, _descriptor10$1w, _descriptor11$1l, _descriptor12$1d, _descriptor13$17, _descriptor14$$, _descriptor15$N, _descriptor16$H, _descriptor17$D, _descriptor18$z, _descriptor19$t;
+	var _dec$72, _dec2$6v, _dec3$61, _dec4$5m, _dec5$4Q, _dec6$4g, _dec7$3F, _dec8$3b, _dec9$2I, _dec0$2v, _dec1$2h, _dec10$1_, _dec11$1Q, _dec12$1C, _dec13$1r, _dec14$1h, _dec15$1c, _dec16$11, _dec17$Y, _dec18$T, _dec19$I, _dec20$F, _class$72, _class2$6r, _descriptor$6q, _descriptor2$5T, _descriptor3$5d, _descriptor4$4A, _descriptor5$3Y, _descriptor6$3j, _descriptor7$2O, _descriptor8$2r, _descriptor9$2e, _descriptor0$21, _descriptor1$1H, _descriptor10$1w, _descriptor11$1l, _descriptor12$1d, _descriptor13$17, _descriptor14$$, _descriptor15$N, _descriptor16$G, _descriptor17$D, _descriptor18$z, _descriptor19$t;
 
 	/**
 	 * Six-step bloom, composited into the image before the tone curve
@@ -212181,7 +213139,7 @@
 	 *
 	 * @ccp Tr2PPBloomEffect
 	 */
-	var Tr2PPBloomEffect = (_dec$72 = define("Tr2PPBloomEffect", true), _dec2$6v = float, _dec3$61 = float, _dec4$5m = float, _dec5$4Q = boolean, _dec6$4g = float, _dec7$3F = path, _dec8$3b = uint, _dec9$2I = float, _dec0$2v = float, _dec1$2h = float, _dec10$1_ = float, _dec11$1Q = float, _dec12$1C = float, _dec13$1r = float, _dec14$1h = float, _dec15$1c = color$2, _dec16$11 = color$2, _dec17$Y = color$2, _dec18$T = color$2, _dec19$J = color$2, _dec20$G = color$2, _dec$72(_class$72 = (_class2$6r = class Tr2PPBloomEffect extends Tr2PPEffect {
+	var Tr2PPBloomEffect = (_dec$72 = define("Tr2PPBloomEffect", true), _dec2$6v = float, _dec3$61 = float, _dec4$5m = float, _dec5$4Q = boolean, _dec6$4g = float, _dec7$3F = path, _dec8$3b = uint, _dec9$2I = float, _dec0$2v = float, _dec1$2h = float, _dec10$1_ = float, _dec11$1Q = float, _dec12$1C = float, _dec13$1r = float, _dec14$1h = float, _dec15$1c = color$2, _dec16$11 = color$2, _dec17$Y = color$2, _dec18$T = color$2, _dec19$I = color$2, _dec20$F = color$2, _dec$72(_class$72 = (_class2$6r = class Tr2PPBloomEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "luminanceThreshold", _descriptor$6q, this);
@@ -212201,7 +213159,7 @@
 	    _initializerDefineProperty(this, "step6Size", _descriptor13$17, this);
 	    _initializerDefineProperty(this, "step1Tint", _descriptor14$$, this);
 	    _initializerDefineProperty(this, "step2Tint", _descriptor15$N, this);
-	    _initializerDefineProperty(this, "step3Tint", _descriptor16$H, this);
+	    _initializerDefineProperty(this, "step3Tint", _descriptor16$G, this);
 	    _initializerDefineProperty(this, "step4Tint", _descriptor17$D, this);
 	    _initializerDefineProperty(this, "step5Tint", _descriptor18$z, this);
 	    _initializerDefineProperty(this, "step6Tint", _descriptor19$t, this);
@@ -212325,7 +213283,7 @@
 	  initializer: function () {
 	    return vec4$2.fromValues(0.138, 0.138, 0.138, 0.138);
 	  }
-	}), _descriptor16$H = _applyDecoratedDescriptor(_class2$6r.prototype, "step3Tint", [_dec17$Y], {
+	}), _descriptor16$G = _applyDecoratedDescriptor(_class2$6r.prototype, "step3Tint", [_dec17$Y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -212339,14 +213297,14 @@
 	  initializer: function () {
 	    return vec4$2.fromValues(0.066, 0.066, 0.066, 0.066);
 	  }
-	}), _descriptor18$z = _applyDecoratedDescriptor(_class2$6r.prototype, "step5Tint", [_dec19$J], {
+	}), _descriptor18$z = _applyDecoratedDescriptor(_class2$6r.prototype, "step5Tint", [_dec19$I], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.fromValues(0.066, 0.066, 0.066, 0.066);
 	  }
-	}), _descriptor19$t = _applyDecoratedDescriptor(_class2$6r.prototype, "step6Tint", [_dec20$G], {
+	}), _descriptor19$t = _applyDecoratedDescriptor(_class2$6r.prototype, "step6Tint", [_dec20$F], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -212800,7 +213758,7 @@
 	  }
 	}), _class2$6l)) || _class$6Y);
 
-	var _dec$6X, _dec2$6o, _dec3$5X, _dec4$5h, _dec5$4L, _dec6$4b, _dec7$3A, _dec8$36, _dec9$2G, _dec0$2t, _dec1$2f, _dec10$1Y, _dec11$1O, _dec12$1B, _dec13$1q, _dec14$1g, _dec15$1b, _dec16$10, _dec17$X, _dec18$S, _dec19$I, _dec20$F, _dec21$B, _dec22$y, _dec23$u, _dec24$t, _dec25$r, _dec26$n, _class$6X, _class2$6k, _descriptor$6j, _descriptor2$5N, _descriptor3$58, _descriptor4$4v, _descriptor5$3T, _descriptor6$3e, _descriptor7$2J, _descriptor8$2p, _descriptor9$2c, _descriptor0$1$, _descriptor1$1F, _descriptor10$1u, _descriptor11$1k, _descriptor12$1c, _descriptor13$16, _descriptor14$_, _descriptor15$M, _descriptor16$G, _descriptor17$C, _descriptor18$y, _descriptor19$s, _descriptor20$q, _descriptor21$p, _descriptor22$o, _descriptor23$n, _descriptor24$k, _descriptor25$i;
+	var _dec$6X, _dec2$6o, _dec3$5X, _dec4$5h, _dec5$4L, _dec6$4b, _dec7$3A, _dec8$36, _dec9$2G, _dec0$2t, _dec1$2f, _dec10$1Y, _dec11$1O, _dec12$1B, _dec13$1q, _dec14$1g, _dec15$1b, _dec16$10, _dec17$X, _dec18$S, _dec19$H, _dec20$E, _dec21$A, _dec22$x, _dec23$u, _dec24$t, _dec25$r, _dec26$n, _class$6X, _class2$6k, _descriptor$6j, _descriptor2$5N, _descriptor3$58, _descriptor4$4v, _descriptor5$3T, _descriptor6$3e, _descriptor7$2J, _descriptor8$2p, _descriptor9$2c, _descriptor0$1$, _descriptor1$1F, _descriptor10$1u, _descriptor11$1k, _descriptor12$1c, _descriptor13$16, _descriptor14$_, _descriptor15$M, _descriptor16$F, _descriptor17$C, _descriptor18$y, _descriptor19$s, _descriptor20$q, _descriptor21$p, _descriptor22$o, _descriptor23$n, _descriptor24$k, _descriptor25$i;
 
 	/**
 	 * Environment fog, a separate two-effect pass rather than part of the composite
@@ -212814,7 +213772,7 @@
 	 *
 	 * @ccp Tr2PPFogEffect
 	 */
-	var Tr2PPFogEffect = (_dec$6X = define("Tr2PPFogEffect", true), _dec2$6o = float, _dec3$5X = float, _dec4$5h = float, _dec5$4L = float, _dec6$4b = float, _dec7$3A = float, _dec8$36 = float, _dec9$2G = float, _dec0$2t = float, _dec1$2f = float, _dec10$1Y = float, _dec11$1O = float, _dec12$1B = float, _dec13$1q = float, _dec14$1g = float, _dec15$1b = float, _dec16$10 = float, _dec17$X = float, _dec18$S = float, _dec19$I = vector3, _dec20$F = vector2, _dec21$B = vector3, _dec22$y = float, _dec23$u = color$2, _dec24$t = float, _dec25$r = float, _dec26$n = float, _dec$6X(_class$6X = (_class2$6k = class Tr2PPFogEffect extends Tr2PPEffect {
+	var Tr2PPFogEffect = (_dec$6X = define("Tr2PPFogEffect", true), _dec2$6o = float, _dec3$5X = float, _dec4$5h = float, _dec5$4L = float, _dec6$4b = float, _dec7$3A = float, _dec8$36 = float, _dec9$2G = float, _dec0$2t = float, _dec1$2f = float, _dec10$1Y = float, _dec11$1O = float, _dec12$1B = float, _dec13$1q = float, _dec14$1g = float, _dec15$1b = float, _dec16$10 = float, _dec17$X = float, _dec18$S = float, _dec19$H = vector3, _dec20$E = vector2, _dec21$A = vector3, _dec22$x = float, _dec23$u = color$2, _dec24$t = float, _dec25$r = float, _dec26$n = float, _dec$6X(_class$6X = (_class2$6k = class Tr2PPFogEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "intensity", _descriptor$6j, this);
@@ -212834,7 +213792,7 @@
 	    _initializerDefineProperty(this, "blendPower1", _descriptor13$16, this);
 	    _initializerDefineProperty(this, "blendDistance2", _descriptor14$_, this);
 	    _initializerDefineProperty(this, "blendBias2", _descriptor15$M, this);
-	    _initializerDefineProperty(this, "blendAmount2", _descriptor16$G, this);
+	    _initializerDefineProperty(this, "blendAmount2", _descriptor16$F, this);
 	    _initializerDefineProperty(this, "blendPower2", _descriptor17$C, this);
 	    _initializerDefineProperty(this, "areaSize", _descriptor18$y, this);
 	    _initializerDefineProperty(this, "areaScale", _descriptor19$s, this);
@@ -212971,7 +213929,7 @@
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor16$G = _applyDecoratedDescriptor(_class2$6k.prototype, "blendAmount2", [_dec17$X], {
+	}), _descriptor16$F = _applyDecoratedDescriptor(_class2$6k.prototype, "blendAmount2", [_dec17$X], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -212985,28 +213943,28 @@
 	  initializer: function () {
 	    return 0.2;
 	  }
-	}), _descriptor18$y = _applyDecoratedDescriptor(_class2$6k.prototype, "areaSize", [_dec19$I], {
+	}), _descriptor18$y = _applyDecoratedDescriptor(_class2$6k.prototype, "areaSize", [_dec19$H], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.fromValues(69142.0859375, 13828.4169922, 66337.203125);
 	  }
-	}), _descriptor19$s = _applyDecoratedDescriptor(_class2$6k.prototype, "areaScale", [_dec20$F], {
+	}), _descriptor19$s = _applyDecoratedDescriptor(_class2$6k.prototype, "areaScale", [_dec20$E], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec2$2.fromValues(30, 20);
 	  }
-	}), _descriptor20$q = _applyDecoratedDescriptor(_class2$6k.prototype, "areaCenter", [_dec21$B], {
+	}), _descriptor20$q = _applyDecoratedDescriptor(_class2$6k.prototype, "areaCenter", [_dec21$A], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.fromValues(-27042.2988281, -633.4446411, 11896.0957031);
 	  }
-	}), _descriptor21$p = _applyDecoratedDescriptor(_class2$6k.prototype, "colorInfluence", [_dec22$y], {
+	}), _descriptor21$p = _applyDecoratedDescriptor(_class2$6k.prototype, "colorInfluence", [_dec22$x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -213957,7 +214915,7 @@
 	  }
 	}), _class2$6c)) || _class$6P);
 
-	var _dec$6O, _dec2$6f, _dec3$5P, _dec4$5b, _dec5$4H, _dec6$47, _dec7$3w, _dec8$32, _dec9$2D, _dec0$2q, _dec1$2c, _dec10$1V, _dec11$1L, _dec12$1z, _dec13$1o, _dec14$1e, _dec15$19, _dec16$$, _dec17$W, _dec18$R, _class$6O, _class2$6b, _descriptor$6a, _descriptor2$5F, _descriptor3$52, _descriptor4$4r, _descriptor5$3P, _descriptor6$3a, _descriptor7$2F, _descriptor8$2m, _descriptor9$29, _descriptor0$1Y, _descriptor1$1C, _descriptor10$1r, _descriptor11$1i, _descriptor12$1a, _descriptor13$14, _descriptor14$Y, _descriptor15$L, _descriptor16$F, _descriptor17$B;
+	var _dec$6O, _dec2$6f, _dec3$5P, _dec4$5b, _dec5$4H, _dec6$47, _dec7$3w, _dec8$32, _dec9$2D, _dec0$2q, _dec1$2c, _dec10$1V, _dec11$1L, _dec12$1z, _dec13$1o, _dec14$1e, _dec15$19, _dec16$$, _dec17$W, _dec18$R, _class$6O, _class2$6b, _descriptor$6a, _descriptor2$5F, _descriptor3$52, _descriptor4$4r, _descriptor5$3P, _descriptor6$3a, _descriptor7$2F, _descriptor8$2m, _descriptor9$29, _descriptor0$1Y, _descriptor1$1C, _descriptor10$1r, _descriptor11$1i, _descriptor12$1a, _descriptor13$14, _descriptor14$Y, _descriptor15$L, _descriptor16$E, _descriptor17$B;
 
 	/**
 	 * Holds the post process effects a scene wants applied
@@ -214005,7 +214963,7 @@
 	    _initializerDefineProperty(this, "signalLoss", _descriptor13$14, this);
 	    _initializerDefineProperty(this, "taa", _descriptor14$Y, this);
 	    _initializerDefineProperty(this, "tonemapping", _descriptor15$L, this);
-	    _initializerDefineProperty(this, "vignette", _descriptor16$F, this);
+	    _initializerDefineProperty(this, "vignette", _descriptor16$E, this);
 	    _initializerDefineProperty(this, "exposureAdjustment", _descriptor17$B, this);
 	  }
 	  /**
@@ -214164,7 +215122,7 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor16$F = _applyDecoratedDescriptor(_class2$6b.prototype, "vignette", [_dec17$W], {
+	}), _descriptor16$E = _applyDecoratedDescriptor(_class2$6b.prototype, "vignette", [_dec17$W], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -220168,7 +221126,7 @@
 	  return fracPart * length + first;
 	}
 
-	var _dec$6w, _class$6w, _descriptor$5Z, _dec2$62, _dec3$5D, _dec4$51, _dec5$4x, _dec6$3$, _dec7$3o, _dec8$2Y, _class2$5$, _class3$x, _descriptor2$5t, _descriptor3$4T, _descriptor4$4h, _descriptor5$3I, _descriptor6$35, _descriptor7$2A, _dec9$2y, _dec0$2m, _dec1$29, _dec10$1S, _dec11$1K, _class4$v, _descriptor8$2i, _descriptor9$26, _descriptor0$1V, _descriptor1$1A, _descriptor10$1q, _dec12$1y, _dec13$1n, _dec14$1d, _dec15$18, _dec16$_, _class5$8, _descriptor11$1h, _descriptor12$19, _descriptor13$13, _descriptor14$X, _descriptor15$K, _dec17$V, _dec18$Q, _dec19$H, _dec20$E, _dec21$A, _class6$6, _descriptor16$E, _descriptor17$A, _descriptor18$x, _descriptor19$r, _descriptor20$p, _dec22$x, _dec23$t, _dec24$s, _dec25$q, _dec26$m, _class7$1, _descriptor21$o, _descriptor22$n, _descriptor23$m, _descriptor24$j, _descriptor25$h, _dec27$l, _dec28$k, _dec29$f, _class8, _descriptor26$d, _descriptor27$a, _descriptor28$a;
+	var _dec$6w, _class$6w, _descriptor$5Z, _dec2$62, _dec3$5D, _dec4$51, _dec5$4x, _dec6$3$, _dec7$3o, _dec8$2Y, _class2$5$, _class3$x, _descriptor2$5t, _descriptor3$4T, _descriptor4$4h, _descriptor5$3I, _descriptor6$35, _descriptor7$2A, _dec9$2y, _dec0$2m, _dec1$29, _dec10$1S, _dec11$1K, _class4$v, _descriptor8$2i, _descriptor9$26, _descriptor0$1V, _descriptor1$1A, _descriptor10$1q, _dec12$1y, _dec13$1n, _dec14$1d, _dec15$18, _dec16$_, _class5$8, _descriptor11$1h, _descriptor12$19, _descriptor13$13, _descriptor14$X, _descriptor15$K, _dec17$V, _dec18$Q, _dec19$G, _dec20$D, _dec21$z, _class6$6, _descriptor16$D, _descriptor17$A, _descriptor18$x, _descriptor19$r, _descriptor20$p, _dec22$w, _dec23$t, _dec24$s, _dec25$q, _dec26$m, _class7, _descriptor21$o, _descriptor22$n, _descriptor23$m, _descriptor24$j, _descriptor25$h, _dec27$l, _dec28$j, _dec29$f, _class8, _descriptor26$d, _descriptor27$a, _descriptor28$a;
 	var Tr2CurveKey = (_dec$6w = float, _class$6w = class Tr2CurveKey extends Model$1 {
 	  constructor() {
 	    super(...arguments);
@@ -220375,10 +221333,10 @@
 	    return 0;
 	  }
 	}), _class5$8);
-	var Tr2CurveVector3Key = (_dec17$V = vector3, _dec18$Q = vector3, _dec19$H = vector3, _dec20$E = uint, _dec21$A = uint, _class6$6 = class Tr2CurveVector3Key extends Tr2CurveKey {
+	var Tr2CurveVector3Key = (_dec17$V = vector3, _dec18$Q = vector3, _dec19$G = vector3, _dec20$D = uint, _dec21$z = uint, _class6$6 = class Tr2CurveVector3Key extends Tr2CurveKey {
 	  constructor() {
 	    super(...arguments);
-	    _initializerDefineProperty(this, "value", _descriptor16$E, this);
+	    _initializerDefineProperty(this, "value", _descriptor16$D, this);
 	    _initializerDefineProperty(this, "leftTangent", _descriptor17$A, this);
 	    _initializerDefineProperty(this, "rightTangent", _descriptor18$x, this);
 	    _initializerDefineProperty(this, "interpolation", _descriptor19$r, this);
@@ -220394,7 +221352,7 @@
 	    item.tangentType = reader.ReadU32();
 	    return item;
 	  }
-	}, _descriptor16$E = _applyDecoratedDescriptor(_class6$6.prototype, "value", [_dec17$V], {
+	}, _descriptor16$D = _applyDecoratedDescriptor(_class6$6.prototype, "value", [_dec17$V], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -220408,21 +221366,21 @@
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor18$x = _applyDecoratedDescriptor(_class6$6.prototype, "rightTangent", [_dec19$H], {
+	}), _descriptor18$x = _applyDecoratedDescriptor(_class6$6.prototype, "rightTangent", [_dec19$G], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor19$r = _applyDecoratedDescriptor(_class6$6.prototype, "interpolation", [_dec20$E], {
+	}), _descriptor19$r = _applyDecoratedDescriptor(_class6$6.prototype, "interpolation", [_dec20$D], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor20$p = _applyDecoratedDescriptor(_class6$6.prototype, "tangentType", [_dec21$A], {
+	}), _descriptor20$p = _applyDecoratedDescriptor(_class6$6.prototype, "tangentType", [_dec21$z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -220430,7 +221388,7 @@
 	    return 0;
 	  }
 	}), _class6$6);
-	var Tr2CurveEulerRotationKey = (_dec22$x = vector3, _dec23$t = vector3, _dec24$s = vector3, _dec25$q = uint, _dec26$m = uint, _class7$1 = class Tr2CurveEulerRotationKey extends Tr2CurveKey {
+	var Tr2CurveEulerRotationKey = (_dec22$w = vector3, _dec23$t = vector3, _dec24$s = vector3, _dec25$q = uint, _dec26$m = uint, _class7 = class Tr2CurveEulerRotationKey extends Tr2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor21$o, this);
@@ -220449,43 +221407,43 @@
 	    item.tangentType = reader.ReadU32();
 	    return item;
 	  }
-	}, _descriptor21$o = _applyDecoratedDescriptor(_class7$1.prototype, "value", [_dec22$x], {
+	}, _descriptor21$o = _applyDecoratedDescriptor(_class7.prototype, "value", [_dec22$w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor22$n = _applyDecoratedDescriptor(_class7$1.prototype, "leftTangent", [_dec23$t], {
+	}), _descriptor22$n = _applyDecoratedDescriptor(_class7.prototype, "leftTangent", [_dec23$t], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor23$m = _applyDecoratedDescriptor(_class7$1.prototype, "rightTangent", [_dec24$s], {
+	}), _descriptor23$m = _applyDecoratedDescriptor(_class7.prototype, "rightTangent", [_dec24$s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor24$j = _applyDecoratedDescriptor(_class7$1.prototype, "interpolation", [_dec25$q], {
+	}), _descriptor24$j = _applyDecoratedDescriptor(_class7.prototype, "interpolation", [_dec25$q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor25$h = _applyDecoratedDescriptor(_class7$1.prototype, "tangentType", [_dec26$m], {
+	}), _descriptor25$h = _applyDecoratedDescriptor(_class7.prototype, "tangentType", [_dec26$m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _class7$1);
-	var Tr2CurveQuaternionKey = (_dec27$l = quaternion, _dec28$k = ushort, _dec29$f = ushort, _class8 = class Tr2CurveQuaternionKey extends Tr2CurveKey {
+	}), _class7);
+	var Tr2CurveQuaternionKey = (_dec27$l = quaternion, _dec28$j = ushort, _dec29$f = ushort, _class8 = class Tr2CurveQuaternionKey extends Tr2CurveKey {
 	  constructor(options) {
 	    super();
 	    _initializerDefineProperty(this, "value", _descriptor26$d, this);
@@ -220520,7 +221478,7 @@
 	  initializer: function () {
 	    return quat$2.create();
 	  }
-	}), _descriptor27$a = _applyDecoratedDescriptor(_class8.prototype, "id", [_dec28$k], {
+	}), _descriptor27$a = _applyDecoratedDescriptor(_class8.prototype, "id", [_dec28$j], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -228418,8 +229376,8 @@
 	  return duration;
 	}
 
-	var _dec$5M, _dec2$5k, _dec3$4V, _dec4$4k, _dec5$3Q, _dec6$3l, _dec7$2U, _dec8$2x, _dec9$2a, _dec0$1$, _dec1$1S, _dec10$1D, _dec11$1w, _dec12$1n, _dec13$1e, _dec14$16, _dec15$11, _dec16$U, _dec17$P, _dec18$K, _dec19$G, _dec20$D, _dec21$z, _dec22$w, _dec23$s, _dec24$r, _dec25$p, _dec26$l, _dec27$k, _dec28$j, _dec29$e, _dec30$c, _dec31$b, _dec32$b, _dec33$9, _dec34$8, _dec35$8, _dec36$7, _dec37$6, _dec38$6, _dec39$5, _dec40$5, _dec41$4, _dec42$4, _dec43$4, _dec44$4, _dec45$4, _class$5M, _class2$5h, _descriptor$5e, _descriptor2$4L, _descriptor3$4a, _descriptor4$3E, _descriptor5$3b, _descriptor6$2G, _descriptor7$2e, _descriptor8$1Z, _descriptor9$1Q, _descriptor0$1K, _descriptor1$1s, _descriptor10$1j, _descriptor11$1a, _descriptor12$12, _descriptor13$Z, _descriptor14$R, _descriptor15$J, _descriptor16$D, _descriptor17$z, _descriptor18$w, _descriptor19$q, _descriptor20$o, _descriptor21$n, _descriptor22$m, _descriptor23$l, _descriptor24$i, _descriptor25$g, _descriptor26$c, _descriptor27$9, _descriptor28$9, _descriptor29$7, _descriptor30$7, _descriptor31$6, _descriptor32$5, _descriptor33$5, _descriptor34$5, _descriptor35$5, _descriptor36$5, _descriptor37$4, _descriptor38$4, _descriptor39$4, _descriptor40$4, _descriptor41$4, _descriptor42$4, _descriptor43$2;
-	var EveChildInheritProperties = (_dec$5M = partialImplementation, _dec2$5k = define("EveChildInheritProperties", true), _dec3$4V = struct, _dec4$4k = color$2, _dec5$3Q = color$2, _dec6$3l = color$2, _dec7$2U = color$2, _dec8$2x = color$2, _dec9$2a = color$2, _dec0$1$ = color$2, _dec1$1S = color$2, _dec10$1D = color$2, _dec11$1w = color$2, _dec12$1n = color$2, _dec13$1e = color$2, _dec14$16 = color$2, _dec15$11 = color$2, _dec16$U = color$2, _dec17$P = color$2, _dec18$K = color$2, _dec19$G = color$2, _dec20$D = color$2, _dec21$z = color$2, _dec22$w = color$2, _dec23$s = color$2, _dec24$r = color$2, _dec25$p = color$2, _dec26$l = color$2, _dec27$k = color$2, _dec28$j = color$2, _dec29$e = color$2, _dec30$c = color$2, _dec31$b = color$2, _dec32$b = color$2, _dec33$9 = color$2, _dec34$8 = color$2, _dec35$8 = color$2, _dec36$7 = color$2, _dec37$6 = color$2, _dec38$6 = color$2, _dec39$5 = color$2, _dec40$5 = color$2, _dec41$4 = color$2, _dec42$4 = color$2, _dec43$4 = color$2, _dec44$4 = color$2, _dec45$4 = color$2, _dec$5M(_class$5M = _dec2$5k(_class$5M = (_class2$5h = class EveChildInheritProperties extends Model$1 {
+	var _dec$5M, _dec2$5k, _dec3$4V, _dec4$4k, _dec5$3Q, _dec6$3l, _dec7$2U, _dec8$2x, _dec9$2a, _dec0$1$, _dec1$1S, _dec10$1D, _dec11$1w, _dec12$1n, _dec13$1e, _dec14$16, _dec15$11, _dec16$U, _dec17$P, _dec18$K, _dec19$F, _dec20$C, _dec21$y, _dec22$v, _dec23$s, _dec24$r, _dec25$p, _dec26$l, _dec27$k, _dec28$i, _dec29$e, _dec30$c, _dec31$b, _dec32$b, _dec33$9, _dec34$8, _dec35$8, _dec36$7, _dec37$6, _dec38$6, _dec39$5, _dec40$5, _dec41$5, _dec42$4, _dec43$4, _dec44$4, _dec45$4, _class$5M, _class2$5h, _descriptor$5e, _descriptor2$4L, _descriptor3$4a, _descriptor4$3E, _descriptor5$3b, _descriptor6$2G, _descriptor7$2e, _descriptor8$1Z, _descriptor9$1Q, _descriptor0$1K, _descriptor1$1s, _descriptor10$1j, _descriptor11$1a, _descriptor12$12, _descriptor13$Z, _descriptor14$R, _descriptor15$J, _descriptor16$C, _descriptor17$z, _descriptor18$w, _descriptor19$q, _descriptor20$o, _descriptor21$n, _descriptor22$m, _descriptor23$l, _descriptor24$i, _descriptor25$g, _descriptor26$c, _descriptor27$9, _descriptor28$9, _descriptor29$7, _descriptor30$7, _descriptor31$6, _descriptor32$6, _descriptor33$5, _descriptor34$5, _descriptor35$5, _descriptor36$5, _descriptor37$4, _descriptor38$4, _descriptor39$4, _descriptor40$4, _descriptor41$4, _descriptor42$4, _descriptor43$2;
+	var EveChildInheritProperties = (_dec$5M = partialImplementation, _dec2$5k = define("EveChildInheritProperties", true), _dec3$4V = struct, _dec4$4k = color$2, _dec5$3Q = color$2, _dec6$3l = color$2, _dec7$2U = color$2, _dec8$2x = color$2, _dec9$2a = color$2, _dec0$1$ = color$2, _dec1$1S = color$2, _dec10$1D = color$2, _dec11$1w = color$2, _dec12$1n = color$2, _dec13$1e = color$2, _dec14$16 = color$2, _dec15$11 = color$2, _dec16$U = color$2, _dec17$P = color$2, _dec18$K = color$2, _dec19$F = color$2, _dec20$C = color$2, _dec21$y = color$2, _dec22$v = color$2, _dec23$s = color$2, _dec24$r = color$2, _dec25$p = color$2, _dec26$l = color$2, _dec27$k = color$2, _dec28$i = color$2, _dec29$e = color$2, _dec30$c = color$2, _dec31$b = color$2, _dec32$b = color$2, _dec33$9 = color$2, _dec34$8 = color$2, _dec35$8 = color$2, _dec36$7 = color$2, _dec37$6 = color$2, _dec38$6 = color$2, _dec39$5 = color$2, _dec40$5 = color$2, _dec41$5 = color$2, _dec42$4 = color$2, _dec43$4 = color$2, _dec44$4 = color$2, _dec45$4 = color$2, _dec$5M(_class$5M = _dec2$5k(_class$5M = (_class2$5h = class EveChildInheritProperties extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "source", _descriptor$5e, this);
@@ -228443,7 +229401,7 @@
 	    _initializerDefineProperty(this, "Reactor", _descriptor13$Z, this);
 	    _initializerDefineProperty(this, "Red", _descriptor14$R, this);
 	    _initializerDefineProperty(this, "Secondary", _descriptor15$J, this);
-	    _initializerDefineProperty(this, "SecondaryLight", _descriptor16$D, this);
+	    _initializerDefineProperty(this, "SecondaryLight", _descriptor16$C, this);
 	    _initializerDefineProperty(this, "Tertiary", _descriptor17$z, this);
 	    _initializerDefineProperty(this, "TertiaryLight", _descriptor18$w, this);
 	    _initializerDefineProperty(this, "White", _descriptor19$q, this);
@@ -228459,7 +229417,7 @@
 	    _initializerDefineProperty(this, "State1", _descriptor29$7, this);
 	    _initializerDefineProperty(this, "State2", _descriptor30$7, this);
 	    _initializerDefineProperty(this, "State3", _descriptor31$6, this);
-	    _initializerDefineProperty(this, "StateVulnerable", _descriptor32$5, this);
+	    _initializerDefineProperty(this, "StateVulnerable", _descriptor32$6, this);
 	    _initializerDefineProperty(this, "StateInvulnerable", _descriptor33$5, this);
 	    _initializerDefineProperty(this, "PrimaryForcefield", _descriptor34$5, this);
 	    _initializerDefineProperty(this, "SecondaryForcefield", _descriptor35$5, this);
@@ -228605,35 +229563,35 @@
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor16$D = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryLight", [_dec18$K], {
+	}), _descriptor16$C = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryLight", [_dec18$K], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor17$z = _applyDecoratedDescriptor(_class2$5h.prototype, "Tertiary", [_dec19$G], {
+	}), _descriptor17$z = _applyDecoratedDescriptor(_class2$5h.prototype, "Tertiary", [_dec19$F], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor18$w = _applyDecoratedDescriptor(_class2$5h.prototype, "TertiaryLight", [_dec20$D], {
+	}), _descriptor18$w = _applyDecoratedDescriptor(_class2$5h.prototype, "TertiaryLight", [_dec20$C], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor19$q = _applyDecoratedDescriptor(_class2$5h.prototype, "White", [_dec21$z], {
+	}), _descriptor19$q = _applyDecoratedDescriptor(_class2$5h.prototype, "White", [_dec21$y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor20$o = _applyDecoratedDescriptor(_class2$5h.prototype, "WhiteLight", [_dec22$w], {
+	}), _descriptor20$o = _applyDecoratedDescriptor(_class2$5h.prototype, "WhiteLight", [_dec22$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -228675,7 +229633,7 @@
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor26$c = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryHologram", [_dec28$j], {
+	}), _descriptor26$c = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryHologram", [_dec28$i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -228717,7 +229675,7 @@
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor32$5 = _applyDecoratedDescriptor(_class2$5h.prototype, "StateVulnerable", [_dec34$8], {
+	}), _descriptor32$6 = _applyDecoratedDescriptor(_class2$5h.prototype, "StateVulnerable", [_dec34$8], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -228766,7 +229724,7 @@
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor39$4 = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryFx", [_dec41$4], {
+	}), _descriptor39$4 = _applyDecoratedDescriptor(_class2$5h.prototype, "SecondaryFx", [_dec41$5], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -228803,8 +229761,8 @@
 	  }
 	}), _class2$5h)) || _class$5M) || _class$5M);
 
-	var _dec$5L, _dec2$5j, _dec3$4U, _dec4$4j, _dec5$3P, _dec6$3k, _dec7$2T, _dec8$2w, _dec9$29, _dec0$1_, _dec1$1R, _dec10$1C, _dec11$1v, _dec12$1m, _dec13$1d, _dec14$15, _dec15$10, _dec16$T, _dec17$O, _dec18$J, _dec19$F, _dec20$C, _dec21$y, _dec22$v, _dec23$r, _dec24$q, _dec25$o, _dec26$k, _dec27$j, _dec28$i, _class$5L, _class2$5g, _descriptor$5d, _descriptor2$4K, _descriptor3$49, _descriptor4$3D, _descriptor5$3a, _descriptor6$2F, _descriptor7$2d, _descriptor8$1Y, _descriptor9$1P, _descriptor0$1J, _descriptor1$1r, _descriptor10$1i, _descriptor11$19, _descriptor12$11, _descriptor13$Y, _descriptor14$Q, _descriptor15$I, _descriptor16$C, _descriptor17$y, _descriptor18$v, _descriptor19$p, _descriptor20$n;
-	var EveChildContainer = (_dec$5L = define("EveChildContainer", true), _dec2$5j = stage(2), _dec3$4U = string, _dec4$4j = notImplemented, _dec5$3P = boolean, _dec6$3k = int32$1, _dec7$2T = list("Tr2Controller"), _dec8$2w = list("Tw2CurveSet"), _dec9$29 = boolean, _dec0$1_ = notImplemented, _dec1$1R = int32$1, _dec10$1C = list(), _dec11$1v = notImplemented, _dec12$1m = boolean, _dec13$1d = partialImplementation, _dec14$15 = struct("EveChildInheritProperties"), _dec15$10 = list("Tr2PointLight"), _dec16$T = matrix4, _dec17$O = list("EveChild"), _dec18$J = notImplemented, _dec19$F = list("TriObserverLocal"), _dec20$C = quaternion, _dec21$y = vector3, _dec22$v = notImplemented, _dec23$r = boolean, _dec24$q = boolean, _dec25$o = boolean, _dec26$k = list("EveChildModifier"), _dec27$j = vector3, _dec28$i = boolean, _dec$5L(_class$5L = _dec2$5j(_class$5L = (_class2$5g = class EveChildContainer extends EveChild {
+	var _dec$5L, _dec2$5j, _dec3$4U, _dec4$4j, _dec5$3P, _dec6$3k, _dec7$2T, _dec8$2w, _dec9$29, _dec0$1_, _dec1$1R, _dec10$1C, _dec11$1v, _dec12$1m, _dec13$1d, _dec14$15, _dec15$10, _dec16$T, _dec17$O, _dec18$J, _dec19$E, _dec20$B, _dec21$x, _dec22$u, _dec23$r, _dec24$q, _dec25$o, _dec26$k, _dec27$j, _class$5L, _class2$5g, _descriptor$5d, _descriptor2$4K, _descriptor3$49, _descriptor4$3D, _descriptor5$3a, _descriptor6$2F, _descriptor7$2d, _descriptor8$1Y, _descriptor9$1P, _descriptor0$1J, _descriptor1$1r, _descriptor10$1i, _descriptor11$19, _descriptor12$11, _descriptor13$Y, _descriptor14$Q, _descriptor15$I, _descriptor16$B, _descriptor17$y, _descriptor18$v, _descriptor19$p, _descriptor20$n, _EveChildContainer;
+	var EveChildContainer = (_dec$5L = define("EveChildContainer", true), _dec2$5j = stage(2), _dec3$4U = string, _dec4$4j = notImplemented, _dec5$3P = boolean, _dec6$3k = int32$1, _dec7$2T = list("Tr2Controller"), _dec8$2w = list("Tw2CurveSet"), _dec9$29 = boolean, _dec0$1_ = int32$1, _dec1$1R = list(), _dec10$1C = notImplemented, _dec11$1v = boolean, _dec12$1m = partialImplementation, _dec13$1d = struct("EveChildInheritProperties"), _dec14$15 = list("Tr2PointLight"), _dec15$10 = matrix4, _dec16$T = list("EveChild"), _dec17$O = notImplemented, _dec18$J = list("TriObserverLocal"), _dec19$E = quaternion, _dec20$B = vector3, _dec21$x = notImplemented, _dec22$u = boolean, _dec23$r = boolean, _dec24$q = boolean, _dec25$o = list("EveChildModifier"), _dec26$k = vector3, _dec27$j = boolean, _dec$5L(_class$5L = _dec2$5j(_class$5L = (_class2$5g = (_EveChildContainer = class EveChildContainer extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$5d, this);
@@ -228826,6 +229784,9 @@
 	    this.controllerVariables = new Map();
 	    _initializerDefineProperty(this, "curveSets", _descriptor5$3a, this);
 	    _initializerDefineProperty(this, "display", _descriptor6$2F, this);
+	    /** Carbon `m_updateOnDisplay`, default true (`EveChildContainer.cpp:34`). */
+	    this.updateOnDisplay = true;
+	    /** Carbon `DisplayQualityModifier`, default SHADER_ALL (`EveChildContainer.cpp:31`). */
 	    _initializerDefineProperty(this, "displayFilter", _descriptor7$2d, this);
 	    _initializerDefineProperty(this, "fxAttributes", _descriptor8$1Y, this);
 	    _initializerDefineProperty(this, "hideOnLowQuality", _descriptor9$1P, this);
@@ -228837,7 +229798,7 @@
 	    _initializerDefineProperty(this, "rotation", _descriptor13$Y, this);
 	    _initializerDefineProperty(this, "scaling", _descriptor14$Q, this);
 	    _initializerDefineProperty(this, "staticTransform", _descriptor15$I, this);
-	    _initializerDefineProperty(this, "useStaticRotation", _descriptor16$C, this);
+	    _initializerDefineProperty(this, "useStaticRotation", _descriptor16$B, this);
 	    _initializerDefineProperty(this, "useStaticScale", _descriptor17$y, this);
 	    _initializerDefineProperty(this, "transformModifiers", _descriptor18$v, this);
 	    _initializerDefineProperty(this, "translation", _descriptor19$p, this);
@@ -228866,6 +229827,47 @@
 	     */
 	    this._childUpdateParams = new EveChildUpdateParams();
 	  }
+	  /**
+	   * Carbon EveChildContainer::IsRendering (`EveChildContainer.cpp:338-366`): whether
+	   * the children draw at the current shader model. ccpwgl has no authoring model.
+	   * @returns {Boolean}
+	   */
+	  IsRendering() {
+	    var _EveChildContainer$Sh;
+	    var settings = (_EveChildContainer$Sh = EveChildContainer.ShaderModel[device.shaderModel]) != null ? _EveChildContainer$Sh : EveChildContainer.ShaderModel.hi;
+	    var DisplayFilter = EveChildContainer.DisplayFilter;
+	    switch (this.displayFilter) {
+	      case DisplayFilter.SHADER_LOW:
+	        return settings === EveChildContainer.ShaderModel.lo;
+	      case DisplayFilter.SHADER_LOWMID:
+	        return settings <= EveChildContainer.ShaderModel.hi;
+	      case DisplayFilter.SHADER_MED:
+	        return settings === EveChildContainer.ShaderModel.hi;
+	      case DisplayFilter.SHADER_HIGHMID:
+	        return settings >= EveChildContainer.ShaderModel.hi;
+	      case DisplayFilter.SHADER_HIGH:
+	        return settings === EveChildContainer.ShaderModel.depth;
+	      case DisplayFilter.SHADER_ALL:
+	        return true;
+	      case DisplayFilter.ONLY_REFLECTIONS:
+	        return false;
+	    }
+	    return false;
+	  }
+
+	  /**
+	   * Carbon EveChildContainer::IsUpdating (`EveChildContainer.cpp:368-371`).
+	   * @returns {Boolean}
+	   */
+	  IsUpdating() {
+	    return (this.display || !this.updateOnDisplay) && (this.IsRendering() || this.displayFilter === EveChildContainer.DisplayFilter.ONLY_REFLECTIONS);
+	  }
+
+	  /**
+	   * Carbon `DisplayQualityModifier` (`EveSOFData.h:2017-2026`).
+	   * @type {Object<String, Number>}
+	   */
+
 	  /**
 	   * Links this container's controllers with the container as their owner, mirroring
 	   * CarbonEngine's EveChildContainer::Initialize (controller->Link(*GetRawRoot())).
@@ -229491,7 +230493,12 @@
 	   */
 	  GetBatches(mode, accumulator, perObjectData) {
 	    var _accumulator$GetCurre;
-	    if (!this.display) return false;
+	    // ccpwgl has no reflection pass, so ONLY_REFLECTIONS containers never draw.
+	    // Divergence: Carbon gates on IsRendering(), i.e. the shader-quality filters
+	    // too. Enforcing SHADER_MED etc. hid layout geometry ("MediumOnly") at
+	    // quality=depth whose high-quality counterpart ccpwgl does not build yet, so
+	    // only ONLY_REFLECTIONS is enforced until that path exists.
+	    if (!this.display || this.displayFilter === EveChildContainer.DisplayFilter.ONLY_REFLECTIONS) return false;
 	    perObjectData = perObjectData || ((_accumulator$GetCurre = accumulator.GetCurrentPerObjectData) === null || _accumulator$GetCurre === void 0 ? void 0 : _accumulator$GetCurre.call(accumulator));
 	    var c = accumulator.length;
 	    for (var i = 0; i < this.objects.length; i++) {
@@ -229507,7 +230514,19 @@
 
 	    return accumulator.length !== c;
 	  }
-	}, _descriptor$5d = _applyDecoratedDescriptor(_class2$5g.prototype, "name", [_dec3$4U], {
+	}, _EveChildContainer.DisplayFilter = {
+	  SHADER_LOW: 0,
+	  SHADER_LOWMID: 1,
+	  SHADER_MED: 2,
+	  SHADER_HIGHMID: 3,
+	  SHADER_HIGH: 4,
+	  SHADER_ALL: 5,
+	  ONLY_REFLECTIONS: 6
+	}, _EveChildContainer.ShaderModel = {
+	  lo: 0,
+	  hi: 1,
+	  depth: 2
+	}, _EveChildContainer), _descriptor$5d = _applyDecoratedDescriptor(_class2$5g.prototype, "name", [_dec3$4U], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -229549,112 +230568,112 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor7$2d = _applyDecoratedDescriptor(_class2$5g.prototype, "displayFilter", [_dec0$1_, _dec1$1R], {
+	}), _descriptor7$2d = _applyDecoratedDescriptor(_class2$5g.prototype, "displayFilter", [_dec0$1_], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return -1;
+	    return 5;
 	  }
-	}), _descriptor8$1Y = _applyDecoratedDescriptor(_class2$5g.prototype, "fxAttributes", [_dec10$1C], {
+	}), _descriptor8$1Y = _applyDecoratedDescriptor(_class2$5g.prototype, "fxAttributes", [_dec1$1R], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor9$1P = _applyDecoratedDescriptor(_class2$5g.prototype, "hideOnLowQuality", [_dec11$1v, _dec12$1m], {
+	}), _descriptor9$1P = _applyDecoratedDescriptor(_class2$5g.prototype, "hideOnLowQuality", [_dec10$1C, _dec11$1v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor0$1J = _applyDecoratedDescriptor(_class2$5g.prototype, "inheritProperties", [_dec13$1d, _dec14$15], {
+	}), _descriptor0$1J = _applyDecoratedDescriptor(_class2$5g.prototype, "inheritProperties", [_dec12$1m, _dec13$1d], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor1$1r = _applyDecoratedDescriptor(_class2$5g.prototype, "lights", [_dec15$10], {
+	}), _descriptor1$1r = _applyDecoratedDescriptor(_class2$5g.prototype, "lights", [_dec14$15], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor10$1i = _applyDecoratedDescriptor(_class2$5g.prototype, "localTransform", [_dec16$T], {
+	}), _descriptor10$1i = _applyDecoratedDescriptor(_class2$5g.prototype, "localTransform", [_dec15$10], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$2.create();
 	  }
-	}), _descriptor11$19 = _applyDecoratedDescriptor(_class2$5g.prototype, "objects", [_dec17$O], {
+	}), _descriptor11$19 = _applyDecoratedDescriptor(_class2$5g.prototype, "objects", [_dec16$T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor12$11 = _applyDecoratedDescriptor(_class2$5g.prototype, "observers", [_dec18$J, _dec19$F], {
+	}), _descriptor12$11 = _applyDecoratedDescriptor(_class2$5g.prototype, "observers", [_dec17$O, _dec18$J], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor13$Y = _applyDecoratedDescriptor(_class2$5g.prototype, "rotation", [_dec20$C], {
+	}), _descriptor13$Y = _applyDecoratedDescriptor(_class2$5g.prototype, "rotation", [_dec19$E], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return quat$2.create();
 	  }
-	}), _descriptor14$Q = _applyDecoratedDescriptor(_class2$5g.prototype, "scaling", [_dec21$y], {
+	}), _descriptor14$Q = _applyDecoratedDescriptor(_class2$5g.prototype, "scaling", [_dec20$B], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.fromValues(1, 1, 1);
 	  }
-	}), _descriptor15$I = _applyDecoratedDescriptor(_class2$5g.prototype, "staticTransform", [_dec22$v, _dec23$r], {
+	}), _descriptor15$I = _applyDecoratedDescriptor(_class2$5g.prototype, "staticTransform", [_dec21$x, _dec22$u], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor16$C = _applyDecoratedDescriptor(_class2$5g.prototype, "useStaticRotation", [_dec24$q], {
+	}), _descriptor16$B = _applyDecoratedDescriptor(_class2$5g.prototype, "useStaticRotation", [_dec23$r], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor17$y = _applyDecoratedDescriptor(_class2$5g.prototype, "useStaticScale", [_dec25$o], {
+	}), _descriptor17$y = _applyDecoratedDescriptor(_class2$5g.prototype, "useStaticScale", [_dec24$q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor18$v = _applyDecoratedDescriptor(_class2$5g.prototype, "transformModifiers", [_dec26$k], {
+	}), _descriptor18$v = _applyDecoratedDescriptor(_class2$5g.prototype, "transformModifiers", [_dec25$o], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor19$p = _applyDecoratedDescriptor(_class2$5g.prototype, "translation", [_dec27$j], {
+	}), _descriptor19$p = _applyDecoratedDescriptor(_class2$5g.prototype, "translation", [_dec26$k], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor20$n = _applyDecoratedDescriptor(_class2$5g.prototype, "useSRT", [_dec28$i], {
+	}), _descriptor20$n = _applyDecoratedDescriptor(_class2$5g.prototype, "useSRT", [_dec27$j], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -229663,7 +230682,7 @@
 	  }
 	}), _class2$5g)) || _class$5L) || _class$5L);
 
-	var _dec$5K, _dec2$5i, _dec3$4T, _dec4$4i, _dec5$3O, _class$5K, _class2$5f, _descriptor$5c, _descriptor2$4J, _descriptor3$48, _descriptor4$3C, _dec6$3j, _dec7$2S, _dec8$2v, _dec9$28, _dec0$1Z, _dec1$1Q, _dec10$1B, _dec11$1u, _dec12$1l, _dec13$1c, _dec14$14, _dec15$$, _dec16$S, _dec17$N, _dec18$I, _dec19$E, _dec20$B, _dec21$x, _class3$l, _class4$j, _descriptor5$39, _descriptor6$2E, _descriptor7$2c, _descriptor8$1X, _descriptor9$1O, _descriptor0$1I, _descriptor1$1q, _descriptor10$1h, _descriptor11$18, _descriptor12$10, _descriptor13$X, _descriptor14$P, _descriptor15$H, _descriptor16$B, _descriptor17$x, _EveChildInstanceContainer;
+	var _dec$5K, _dec2$5i, _dec3$4T, _dec4$4i, _dec5$3O, _class$5K, _class2$5f, _descriptor$5c, _descriptor2$4J, _descriptor3$48, _descriptor4$3C, _dec6$3j, _dec7$2S, _dec8$2v, _dec9$28, _dec0$1Z, _dec1$1Q, _dec10$1B, _dec11$1u, _dec12$1l, _dec13$1c, _dec14$14, _dec15$$, _dec16$S, _dec17$N, _dec18$I, _dec19$D, _dec20$A, _dec21$w, _class3$l, _class4$j, _descriptor5$39, _descriptor6$2E, _descriptor7$2c, _descriptor8$1X, _descriptor9$1O, _descriptor0$1I, _descriptor1$1q, _descriptor10$1h, _descriptor11$18, _descriptor12$10, _descriptor13$X, _descriptor14$P, _descriptor15$H, _descriptor16$A, _descriptor17$x, _EveChildInstanceContainer;
 
 	/**
 	 * One placement of a source child, as authored.
@@ -229733,7 +230752,7 @@
 	 * modifier to reach the same field. Same result through the path that is already
 	 * exercised.
 	 */
-	var EveChildInstanceContainer = (_dec6$3j = define("EveChildInstanceContainer", true), _dec7$2S = stage(2), _dec8$2v = string, _dec9$28 = boolean, _dec0$1Z = boolean, _dec1$1Q = struct(), _dec10$1B = string, _dec11$1u = list("EveChildInstanceTransform"), _dec12$1l = list("EveChildModifier"), _dec13$1c = notImplemented, _dec14$14 = struct("EveChildInheritProperties"), _dec15$$ = vector3, _dec16$S = quaternion, _dec17$N = vector3, _dec18$I = matrix4, _dec19$E = boolean, _dec20$B = boolean, _dec21$x = boolean, _dec6$3j(_class3$l = _dec7$2S(_class3$l = (_class4$j = (_EveChildInstanceContainer = class EveChildInstanceContainer extends EveChild {
+	var EveChildInstanceContainer = (_dec6$3j = define("EveChildInstanceContainer", true), _dec7$2S = stage(2), _dec8$2v = string, _dec9$28 = boolean, _dec0$1Z = boolean, _dec1$1Q = struct(), _dec10$1B = string, _dec11$1u = list("EveChildInstanceTransform"), _dec12$1l = list("EveChildModifier"), _dec13$1c = notImplemented, _dec14$14 = struct("EveChildInheritProperties"), _dec15$$ = vector3, _dec16$S = quaternion, _dec17$N = vector3, _dec18$I = matrix4, _dec19$D = boolean, _dec20$A = boolean, _dec21$w = boolean, _dec6$3j(_class3$l = _dec7$2S(_class3$l = (_class4$j = (_EveChildInstanceContainer = class EveChildInstanceContainer extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor5$39, this);
@@ -229755,7 +230774,7 @@
 	    _initializerDefineProperty(this, "scaling", _descriptor13$X, this);
 	    _initializerDefineProperty(this, "localTransform", _descriptor14$P, this);
 	    _initializerDefineProperty(this, "useSRT", _descriptor15$H, this);
-	    _initializerDefineProperty(this, "staticTransform", _descriptor16$B, this);
+	    _initializerDefineProperty(this, "staticTransform", _descriptor16$A, this);
 	    _initializerDefineProperty(this, "useStaticRotation", _descriptor17$x, this);
 	    /** The built instances - each an `EveChildContainer` holding a copy of `source`. */
 	    this.instances = [];
@@ -230279,21 +231298,21 @@
 	  initializer: function () {
 	    return mat4$2.create();
 	  }
-	}), _descriptor15$H = _applyDecoratedDescriptor(_class4$j.prototype, "useSRT", [_dec19$E], {
+	}), _descriptor15$H = _applyDecoratedDescriptor(_class4$j.prototype, "useSRT", [_dec19$D], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor16$B = _applyDecoratedDescriptor(_class4$j.prototype, "staticTransform", [_dec20$B], {
+	}), _descriptor16$A = _applyDecoratedDescriptor(_class4$j.prototype, "staticTransform", [_dec20$A], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor17$x = _applyDecoratedDescriptor(_class4$j.prototype, "useStaticRotation", [_dec21$x], {
+	}), _descriptor17$x = _applyDecoratedDescriptor(_class4$j.prototype, "useStaticRotation", [_dec21$w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -230302,7 +231321,7 @@
 	  }
 	}), _class4$j)) || _class3$l) || _class3$l);
 
-	var _dec$5J, _dec2$5h, _dec3$4S, _dec4$4h, _dec5$3N, _dec6$3i, _dec7$2R, _dec8$2u, _dec9$27, _dec0$1Y, _dec1$1P, _dec10$1A, _dec11$1t, _dec12$1k, _dec13$1b, _dec14$13, _dec15$_, _dec16$R, _dec17$M, _dec18$H, _dec19$D, _dec20$A, _dec21$w, _dec22$u, _dec23$q, _dec24$p, _dec25$n, _class$5J, _class2$5e, _descriptor$5b, _descriptor2$4I, _descriptor3$47, _descriptor4$3B, _descriptor5$38, _descriptor6$2D, _descriptor7$2b, _descriptor8$1W, _descriptor9$1N, _descriptor0$1H, _descriptor1$1p, _descriptor10$1g, _descriptor11$17, _descriptor12$$, _descriptor13$W, _descriptor14$O, _descriptor15$G, _descriptor16$A, _descriptor17$w, _descriptor18$u, _descriptor19$o, _descriptor20$m, _descriptor21$m, _descriptor22$l, _descriptor23$k, _EveChildEffectPropagator;
+	var _dec$5J, _dec2$5h, _dec3$4S, _dec4$4h, _dec5$3N, _dec6$3i, _dec7$2R, _dec8$2u, _dec9$27, _dec0$1Y, _dec1$1P, _dec10$1A, _dec11$1t, _dec12$1k, _dec13$1b, _dec14$13, _dec15$_, _dec16$R, _dec17$M, _dec18$H, _dec19$C, _dec20$z, _dec21$v, _dec22$t, _dec23$q, _dec24$p, _dec25$n, _class$5J, _class2$5e, _descriptor$5b, _descriptor2$4I, _descriptor3$47, _descriptor4$3B, _descriptor5$38, _descriptor6$2D, _descriptor7$2b, _descriptor8$1W, _descriptor9$1N, _descriptor0$1H, _descriptor1$1p, _descriptor10$1g, _descriptor11$17, _descriptor12$$, _descriptor13$W, _descriptor14$O, _descriptor15$G, _descriptor16$z, _descriptor17$w, _descriptor18$u, _descriptor19$o, _descriptor20$m, _descriptor21$m, _descriptor22$l, _descriptor23$k, _EveChildEffectPropagator;
 
 	/**
 	 * Carbon `TriQuaternionDirVector` (`TriMath.cpp:262-269`): stores the NORMALISED
@@ -230364,7 +231383,7 @@
 	 * the component registry, none of which exist on ccpwgl's child path - and the
 	 * debug renderer holds the only three matrix compositions in the class.
 	 */
-	var EveChildEffectPropagator = (_dec$5J = define("EveChildEffectPropagator", true), _dec2$5h = stage(2), _dec3$4S = uint, _dec4$4h = uint, _dec5$3N = struct("EveChildInstanceContainer"), _dec6$3i = struct("Tr2CurveScalar"), _dec7$2R = struct("EveLocatorSets"), _dec8$2u = float, _dec9$27 = vector3, _dec0$1Y = vector3, _dec1$1P = float, _dec10$1A = float, _dec11$1t = float, _dec12$1k = boolean, _dec13$1b = boolean, _dec14$13 = uint, _dec15$_ = float, _dec16$R = float, _dec17$M = float, _dec18$H = string, _dec19$D = float, _dec20$A = float, _dec21$w = float, _dec22$u = boolean, _dec23$q = boolean, _dec24$p = float, _dec25$n = float, _dec$5J(_class$5J = _dec2$5h(_class$5J = (_class2$5e = (_EveChildEffectPropagator = class EveChildEffectPropagator extends EveChildContainer {
+	var EveChildEffectPropagator = (_dec$5J = define("EveChildEffectPropagator", true), _dec2$5h = stage(2), _dec3$4S = uint, _dec4$4h = uint, _dec5$3N = struct("EveChildInstanceContainer"), _dec6$3i = struct("Tr2CurveScalar"), _dec7$2R = struct("EveLocatorSets"), _dec8$2u = float, _dec9$27 = vector3, _dec0$1Y = vector3, _dec1$1P = float, _dec10$1A = float, _dec11$1t = float, _dec12$1k = boolean, _dec13$1b = boolean, _dec14$13 = uint, _dec15$_ = float, _dec16$R = float, _dec17$M = float, _dec18$H = string, _dec19$C = float, _dec20$z = float, _dec21$v = float, _dec22$t = boolean, _dec23$q = boolean, _dec24$p = float, _dec25$n = float, _dec$5J(_class$5J = _dec2$5h(_class$5J = (_class2$5e = (_EveChildEffectPropagator = class EveChildEffectPropagator extends EveChildContainer {
 	  constructor() {
 	    super(...arguments);
 	    /** How spawn points are chosen. @see EveChildEffectPropagator.PropagationType */
@@ -230396,7 +231415,7 @@
 	    _initializerDefineProperty(this, "minRangeThreshold", _descriptor14$O, this);
 	    /** Capital C is the wire name (`_Blue.cpp:65`). */
 	    _initializerDefineProperty(this, "ClosenessPreference", _descriptor15$G, this);
-	    _initializerDefineProperty(this, "locatorSetName", _descriptor16$A, this);
+	    _initializerDefineProperty(this, "locatorSetName", _descriptor16$z, this);
 	    _initializerDefineProperty(this, "frequency", _descriptor17$w, this);
 	    _initializerDefineProperty(this, "durationPerEffect", _descriptor18$u, this);
 	    _initializerDefineProperty(this, "stopAfterNumTriggers", _descriptor19$o, this);
@@ -230998,35 +232017,35 @@
 	  initializer: function () {
 	    return 0.25;
 	  }
-	}), _descriptor16$A = _applyDecoratedDescriptor(_class2$5e.prototype, "locatorSetName", [_dec18$H], {
+	}), _descriptor16$z = _applyDecoratedDescriptor(_class2$5e.prototype, "locatorSetName", [_dec18$H], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor17$w = _applyDecoratedDescriptor(_class2$5e.prototype, "frequency", [_dec19$D], {
+	}), _descriptor17$w = _applyDecoratedDescriptor(_class2$5e.prototype, "frequency", [_dec19$C], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor18$u = _applyDecoratedDescriptor(_class2$5e.prototype, "durationPerEffect", [_dec20$A], {
+	}), _descriptor18$u = _applyDecoratedDescriptor(_class2$5e.prototype, "durationPerEffect", [_dec20$z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 3;
 	  }
-	}), _descriptor19$o = _applyDecoratedDescriptor(_class2$5e.prototype, "stopAfterNumTriggers", [_dec21$w], {
+	}), _descriptor19$o = _applyDecoratedDescriptor(_class2$5e.prototype, "stopAfterNumTriggers", [_dec21$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor20$m = _applyDecoratedDescriptor(_class2$5e.prototype, "trigger", [_dec22$u], {
+	}), _descriptor20$m = _applyDecoratedDescriptor(_class2$5e.prototype, "trigger", [_dec22$t], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -231694,7 +232713,7 @@
 	  }
 	}), _applyDecoratedDescriptor(_class2$5d.prototype, "GetBatches", [_dec6$3h], Object.getOwnPropertyDescriptor(_class2$5d.prototype, "GetBatches"), _class2$5d.prototype), _applyDecoratedDescriptor(_class2$5d.prototype, "Render", [_dec7$2Q], Object.getOwnPropertyDescriptor(_class2$5d.prototype, "Render"), _class2$5d.prototype), _class2$5d);
 
-	var _dec$5H, _dec2$5f, _dec3$4Q, _dec4$4f, _dec5$3L, _dec6$3g, _dec7$2P, _dec8$2t, _dec9$26, _dec0$1X, _dec1$1O, _dec10$1z, _dec11$1s, _dec12$1j, _dec13$1a, _class$5H, _class2$5c, _descriptor$59, _descriptor2$4G, _descriptor3$45, _descriptor4$3A, _descriptor5$37, _descriptor6$2C, _descriptor7$2a, _descriptor8$1V, _descriptor9$1M, _descriptor0$1G, _descriptor1$1o, _descriptor10$1f, _descriptor11$16, _EveCurveLineSetItem, _dec14$12, _dec15$Z, _dec16$Q, _dec17$L, _dec18$G, _dec19$C, _dec20$z, _dec21$v, _dec22$t, _dec23$p, _dec24$o, _dec25$m, _dec26$j, _dec27$i, _dec28$h, _dec29$d, _dec30$b, _class3$k, _class4$i, _descriptor12$_, _descriptor13$V, _descriptor14$N, _descriptor15$F, _descriptor16$z, _descriptor17$v, _descriptor18$t, _descriptor19$n, _descriptor20$l, _descriptor21$l, _descriptor22$k, _descriptor23$j, _descriptor24$h, _descriptor25$f, _EveCurveLineSet, _dec31$a, _dec32$a, _class5$7, _class6$5, _descriptor26$b;
+	var _dec$5H, _dec2$5f, _dec3$4Q, _dec4$4f, _dec5$3L, _dec6$3g, _dec7$2P, _dec8$2t, _dec9$26, _dec0$1X, _dec1$1O, _dec10$1z, _dec11$1s, _dec12$1j, _dec13$1a, _class$5H, _class2$5c, _descriptor$59, _descriptor2$4G, _descriptor3$45, _descriptor4$3A, _descriptor5$37, _descriptor6$2C, _descriptor7$2a, _descriptor8$1V, _descriptor9$1M, _descriptor0$1G, _descriptor1$1o, _descriptor10$1f, _descriptor11$16, _EveCurveLineSetItem, _dec14$12, _dec15$Z, _dec16$Q, _dec17$L, _dec18$G, _dec19$B, _dec20$y, _dec21$u, _dec22$s, _dec23$p, _dec24$o, _dec25$m, _dec26$j, _dec27$i, _dec28$h, _dec29$d, _dec30$b, _class3$k, _class4$i, _descriptor12$_, _descriptor13$V, _descriptor14$N, _descriptor15$F, _descriptor16$y, _descriptor17$v, _descriptor18$t, _descriptor19$n, _descriptor20$l, _descriptor21$l, _descriptor22$k, _descriptor23$j, _descriptor24$h, _descriptor25$f, _EveCurveLineSet, _dec31$a, _dec32$a, _class5$7, _class6$5, _descriptor26$b;
 	var LineType = {
 	  INVALID: 0,
 	  STRAIGHT: 1,
@@ -232003,7 +233022,7 @@
 	    return LineType.INVALID;
 	  }
 	}), _applyDecoratedDescriptor(_class2$5c.prototype, "GetBoundingBox", [_dec13$1a], Object.getOwnPropertyDescriptor(_class2$5c.prototype, "GetBoundingBox"), _class2$5c.prototype), _class2$5c)) || _class$5H);
-	var EveCurveLineSet = (_dec14$12 = define("EveCurveLineSet", true), _dec15$Z = boolean, _dec16$Q = struct("Tw2Effect"), _dec17$L = struct("Tw2Effect"), _dec18$G = notImplemented, _dec19$C = float, _dec20$z = float, _dec21$v = notImplemented, _dec22$t = float, _dec23$p = boolean, _dec24$o = quaternion, _dec25$m = vector3, _dec26$j = vector3, _dec27$i = matrix4, _dec28$h = int32$1, _dec29$d = boolean, _dec30$b = boolean, _dec14$12(_class3$k = (_class4$i = (_EveCurveLineSet = class EveCurveLineSet extends EveObjectSet {
+	var EveCurveLineSet = (_dec14$12 = define("EveCurveLineSet", true), _dec15$Z = boolean, _dec16$Q = struct("Tw2Effect"), _dec17$L = struct("Tw2Effect"), _dec18$G = notImplemented, _dec19$B = float, _dec20$y = float, _dec21$u = notImplemented, _dec22$s = float, _dec23$p = boolean, _dec24$o = quaternion, _dec25$m = vector3, _dec26$j = vector3, _dec27$i = matrix4, _dec28$h = int32$1, _dec29$d = boolean, _dec30$b = boolean, _dec14$12(_class3$k = (_class4$i = (_EveCurveLineSet = class EveCurveLineSet extends EveObjectSet {
 	  /**
 	   * Constructor
 	   */
@@ -232014,7 +233033,7 @@
 	    _initializerDefineProperty(this, "pickEffect", _descriptor14$N, this);
 	    _initializerDefineProperty(this, "scrollSpeed", _descriptor15$F, this);
 	    // CCPWGL only?
-	    _initializerDefineProperty(this, "lineWidthFactor", _descriptor16$z, this);
+	    _initializerDefineProperty(this, "lineWidthFactor", _descriptor16$y, this);
 	    _initializerDefineProperty(this, "depthOffset", _descriptor17$v, this);
 	    _initializerDefineProperty(this, "pickable", _descriptor18$t, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor19$n, this);
@@ -233064,21 +234083,21 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor15$F = _applyDecoratedDescriptor(_class4$i.prototype, "scrollSpeed", [_dec18$G, _dec19$C], {
+	}), _descriptor15$F = _applyDecoratedDescriptor(_class4$i.prototype, "scrollSpeed", [_dec18$G, _dec19$B], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor16$z = _applyDecoratedDescriptor(_class4$i.prototype, "lineWidthFactor", [_dec20$z], {
+	}), _descriptor16$y = _applyDecoratedDescriptor(_class4$i.prototype, "lineWidthFactor", [_dec20$y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor17$v = _applyDecoratedDescriptor(_class4$i.prototype, "depthOffset", [_dec21$v, _dec22$t], {
+	}), _descriptor17$v = _applyDecoratedDescriptor(_class4$i.prototype, "depthOffset", [_dec21$u, _dec22$s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -233188,14 +234207,14 @@
 	  }
 	}), _class6$5)) || _class5$7);
 
-	var _dec$5G, _dec2$5e, _dec3$4P, _dec4$4e, _dec5$3K, _dec6$3f, _dec7$2O, _dec8$2s, _dec9$25, _dec0$1W, _dec1$1N, _dec10$1y, _dec11$1r, _dec12$1i, _dec13$19, _dec14$11, _dec15$Y, _dec16$P, _dec17$K, _dec18$F, _dec19$B, _dec20$y, _dec21$u, _class$5G, _class2$5b, _descriptor$58, _descriptor2$4F, _descriptor3$44, _descriptor4$3z, _descriptor5$36, _descriptor6$2B, _descriptor7$29, _descriptor8$1U, _descriptor9$1L, _descriptor0$1F, _descriptor1$1n, _descriptor10$1e, _descriptor11$15, _descriptor12$Z, _descriptor13$U, _descriptor14$M, _descriptor15$E, _descriptor16$y, _descriptor17$u, _descriptor18$s, _descriptor19$m, _EveChildLineSet;
+	var _dec$5G, _dec2$5e, _dec3$4P, _dec4$4e, _dec5$3K, _dec6$3f, _dec7$2O, _dec8$2s, _dec9$25, _dec0$1W, _dec1$1N, _dec10$1y, _dec11$1r, _dec12$1i, _dec13$19, _dec14$11, _dec15$Y, _dec16$P, _dec17$K, _dec18$F, _dec19$A, _dec20$x, _dec21$t, _class$5G, _class2$5b, _descriptor$58, _descriptor2$4F, _descriptor3$44, _descriptor4$3z, _descriptor5$36, _descriptor6$2B, _descriptor7$29, _descriptor8$1U, _descriptor9$1L, _descriptor0$1F, _descriptor1$1n, _descriptor10$1e, _descriptor11$15, _descriptor12$Z, _descriptor13$U, _descriptor14$M, _descriptor15$E, _descriptor16$x, _descriptor17$u, _descriptor18$s, _descriptor19$m, _EveChildLineSet;
 
 	/**
 	 * Authored paths rendered as lines, animated mesh instances, or both.
 	 * The instance stream holds three float4 rows of each transposed local matrix;
 	 * the child world transform is supplied separately through per-object data.
 	 */
-	var EveChildLineSet = (_dec$5G = define("EveChildLineSet", true), _dec2$5e = stage(2), _dec3$4P = string, _dec4$4e = boolean, _dec5$3K = boolean, _dec6$3f = vector4, _dec7$2O = vector4, _dec8$2s = float, _dec9$25 = float, _dec0$1W = boolean, _dec1$1N = list(), _dec10$1y = struct("EveCurveLineSet"), _dec11$1r = struct("Tw2Mesh", "Tr2Mesh"), _dec12$1i = float, _dec13$19 = uint, _dec14$11 = quaternion, _dec15$Y = vector3, _dec16$P = float, _dec17$K = vector3, _dec18$F = matrix4, _dec19$B = boolean, _dec20$y = boolean, _dec21$u = boolean, _dec$5G(_class$5G = _dec2$5e(_class$5G = (_class2$5b = (_EveChildLineSet = class EveChildLineSet extends EveChild {
+	var EveChildLineSet = (_dec$5G = define("EveChildLineSet", true), _dec2$5e = stage(2), _dec3$4P = string, _dec4$4e = boolean, _dec5$3K = boolean, _dec6$3f = vector4, _dec7$2O = vector4, _dec8$2s = float, _dec9$25 = float, _dec0$1W = boolean, _dec1$1N = list(), _dec10$1y = struct("EveCurveLineSet"), _dec11$1r = struct("Tw2Mesh", "Tr2Mesh"), _dec12$1i = float, _dec13$19 = uint, _dec14$11 = quaternion, _dec15$Y = vector3, _dec16$P = float, _dec17$K = vector3, _dec18$F = matrix4, _dec19$A = boolean, _dec20$x = boolean, _dec21$t = boolean, _dec$5G(_class$5G = _dec2$5e(_class$5G = (_class2$5b = (_EveChildLineSet = class EveChildLineSet extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$58, this);
@@ -233215,7 +234234,7 @@
 	    _initializerDefineProperty(this, "scaling", _descriptor13$U, this);
 	    _initializerDefineProperty(this, "scrollSpeed", _descriptor14$M, this);
 	    _initializerDefineProperty(this, "translation", _descriptor15$E, this);
-	    _initializerDefineProperty(this, "localTransform", _descriptor16$y, this);
+	    _initializerDefineProperty(this, "localTransform", _descriptor16$x, this);
 	    _initializerDefineProperty(this, "isVisible", _descriptor17$u, this);
 	    _initializerDefineProperty(this, "useSRT", _descriptor18$s, this);
 	    _initializerDefineProperty(this, "staticTransform", _descriptor19$m, this);
@@ -233737,28 +234756,28 @@
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor16$y = _applyDecoratedDescriptor(_class2$5b.prototype, "localTransform", [_dec18$F], {
+	}), _descriptor16$x = _applyDecoratedDescriptor(_class2$5b.prototype, "localTransform", [_dec18$F], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$2.create();
 	  }
-	}), _descriptor17$u = _applyDecoratedDescriptor(_class2$5b.prototype, "isVisible", [_dec19$B], {
+	}), _descriptor17$u = _applyDecoratedDescriptor(_class2$5b.prototype, "isVisible", [_dec19$A], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor18$s = _applyDecoratedDescriptor(_class2$5b.prototype, "useSRT", [_dec20$y], {
+	}), _descriptor18$s = _applyDecoratedDescriptor(_class2$5b.prototype, "useSRT", [_dec20$x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor19$m = _applyDecoratedDescriptor(_class2$5b.prototype, "staticTransform", [_dec21$u], {
+	}), _descriptor19$m = _applyDecoratedDescriptor(_class2$5b.prototype, "staticTransform", [_dec21$t], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -233767,8 +234786,8 @@
 	  }
 	}), _class2$5b)) || _class$5G) || _class$5G);
 
-	var _dec$5F, _dec2$5d, _dec3$4O, _dec4$4d, _dec5$3J, _dec6$3e, _dec7$2N, _dec8$2r, _dec9$24, _dec0$1V, _dec1$1M, _dec10$1x, _dec11$1q, _dec12$1h, _dec13$18, _dec14$10, _dec15$X, _dec16$O, _dec17$J, _dec18$E, _dec19$A, _dec20$x, _dec21$t, _dec22$s, _dec23$o, _dec24$n, _dec25$l, _dec26$i, _dec27$h, _dec28$g, _dec29$c, _dec30$a, _class$5F, _class2$5a, _descriptor$57, _descriptor2$4E, _descriptor3$43, _descriptor4$3y, _descriptor5$35, _descriptor6$2A, _descriptor7$28, _descriptor8$1T, _descriptor9$1K, _descriptor0$1E, _descriptor1$1m, _descriptor10$1d, _descriptor11$14, _descriptor12$Y, _descriptor13$T, _descriptor14$L, _descriptor15$D, _descriptor16$x, _descriptor17$t, _descriptor18$r, _descriptor19$l, _descriptor20$k, _descriptor21$k, _descriptor22$j, _descriptor23$i, _descriptor24$g, _descriptor25$e, _EveChildMesh;
-	var EveChildMesh = (_dec$5F = define("EveChildMesh", true), _dec2$5d = string, _dec3$4O = boolean, _dec4$4d = boolean, _dec5$3J = list(), _dec6$3e = list("EveObjectSet"), _dec7$2N = list("EveSpaceObjectDecal"), _dec8$2r = list("EveMeshOverlayEffect"), _dec9$24 = boolean, _dec0$1V = matrix4, _dec1$1M = uint, _dec10$1x = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec11$1q = struct("Tr2GrannyAnimation"), _dec12$1h = float, _dec13$18 = float, _dec14$10 = float, _dec15$X = notImplemented, _dec16$O = uint, _dec17$J = quaternion, _dec18$E = vector3, _dec19$A = notImplemented, _dec20$x = float, _dec21$t = float, _dec22$s = notImplemented, _dec23$o = boolean, _dec24$n = list("EveChildModifier"), _dec25$l = vector3, _dec26$i = boolean, _dec27$h = boolean, _dec28$g = boolean, _dec29$c = uint, _dec30$a = notImplemented, _dec$5F(_class$5F = (_class2$5a = (_EveChildMesh = class EveChildMesh extends EveChild {
+	var _dec$5F, _dec2$5d, _dec3$4O, _dec4$4d, _dec5$3J, _dec6$3e, _dec7$2N, _dec8$2r, _dec9$24, _dec0$1V, _dec1$1M, _dec10$1x, _dec11$1q, _dec12$1h, _dec13$18, _dec14$10, _dec15$X, _dec16$O, _dec17$J, _dec18$E, _dec19$z, _dec20$w, _dec21$s, _dec22$r, _dec23$o, _dec24$n, _dec25$l, _dec26$i, _dec27$h, _dec28$g, _dec29$c, _dec30$a, _class$5F, _class2$5a, _descriptor$57, _descriptor2$4E, _descriptor3$43, _descriptor4$3y, _descriptor5$35, _descriptor6$2A, _descriptor7$28, _descriptor8$1T, _descriptor9$1K, _descriptor0$1E, _descriptor1$1m, _descriptor10$1d, _descriptor11$14, _descriptor12$Y, _descriptor13$T, _descriptor14$L, _descriptor15$D, _descriptor16$w, _descriptor17$t, _descriptor18$r, _descriptor19$l, _descriptor20$k, _descriptor21$k, _descriptor22$j, _descriptor23$i, _descriptor24$g, _descriptor25$e, _EveChildMesh;
+	var EveChildMesh = (_dec$5F = define("EveChildMesh", true), _dec2$5d = string, _dec3$4O = boolean, _dec4$4d = boolean, _dec5$3J = list(), _dec6$3e = list("EveObjectSet"), _dec7$2N = list("EveSpaceObjectDecal"), _dec8$2r = list("EveMeshOverlayEffect"), _dec9$24 = boolean, _dec0$1V = matrix4, _dec1$1M = uint, _dec10$1x = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec11$1q = struct("Tr2GrannyAnimation"), _dec12$1h = float, _dec13$18 = float, _dec14$10 = float, _dec15$X = notImplemented, _dec16$O = uint, _dec17$J = quaternion, _dec18$E = vector3, _dec19$z = notImplemented, _dec20$w = float, _dec21$s = float, _dec22$r = notImplemented, _dec23$o = boolean, _dec24$n = list("EveChildModifier"), _dec25$l = vector3, _dec26$i = boolean, _dec27$h = boolean, _dec28$g = boolean, _dec29$c = uint, _dec30$a = notImplemented, _dec$5F(_class$5F = (_class2$5a = (_EveChildMesh = class EveChildMesh extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$57, this);
@@ -233805,7 +234824,7 @@
 	    _initializerDefineProperty(this, "currentInstanceScreenSize", _descriptor13$T, this);
 	    _initializerDefineProperty(this, "reflectionType", _descriptor14$L, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor15$D, this);
-	    _initializerDefineProperty(this, "scaling", _descriptor16$x, this);
+	    _initializerDefineProperty(this, "scaling", _descriptor16$w, this);
 	    _initializerDefineProperty(this, "sortValueOffset", _descriptor17$t, this);
 	    _initializerDefineProperty(this, "sortValueScale", _descriptor18$r, this);
 	    _initializerDefineProperty(this, "staticTransform", _descriptor19$l, this);
@@ -234422,28 +235441,28 @@
 	  initializer: function () {
 	    return quat$2.create();
 	  }
-	}), _descriptor16$x = _applyDecoratedDescriptor(_class2$5a.prototype, "scaling", [_dec18$E], {
+	}), _descriptor16$w = _applyDecoratedDescriptor(_class2$5a.prototype, "scaling", [_dec18$E], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.fromValues(1, 1, 1);
 	  }
-	}), _descriptor17$t = _applyDecoratedDescriptor(_class2$5a.prototype, "sortValueOffset", [_dec19$A, _dec20$x], {
+	}), _descriptor17$t = _applyDecoratedDescriptor(_class2$5a.prototype, "sortValueOffset", [_dec19$z, _dec20$w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor18$r = _applyDecoratedDescriptor(_class2$5a.prototype, "sortValueScale", [_dec21$t], {
+	}), _descriptor18$r = _applyDecoratedDescriptor(_class2$5a.prototype, "sortValueScale", [_dec21$s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor19$l = _applyDecoratedDescriptor(_class2$5a.prototype, "staticTransform", [_dec22$s, _dec23$o], {
+	}), _descriptor19$l = _applyDecoratedDescriptor(_class2$5a.prototype, "staticTransform", [_dec22$r, _dec23$o], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -235635,8 +236654,8 @@
 	});
 	var TEXTURES$1 = [ParticlePositionMap$1, ParticleVelocityMap$1, ParticleAttributeMap$1, ParticleParamsMap$1, ParticleAtlasMap];
 	var CONSTANTS$4 = [ParticleDrawData, ParticleTable];
-	var vs$c = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb1[24];            // per frame; 4-7 view-projection, 12-15 projection\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n// CCP's clip-space Y flip (see the end of main): (0,0,-1) while a Y-flipped\n// session draws offscreen, (0,0,1) otherwise. Tw2Device.ApplyClipYFlip sets it.\nuniform vec3 ssyf;\n\nout vec2 cornerUv;\nout float lifeFraction;\nflat out float emitterRow;\n\n// See the note in particleUpdate: this layout belongs to\n// Tw2GpuParticleParams.Pack and the two must be edited together.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n    vec4 attributes = texture(s2, uv);\n\n    emitterRow = attributes.x;\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // ---- size, from this particle's own emitter -----------------------------\n    float rows = cb7[1].x;\n\n    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint\n    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex\n\n    // A QUADRATIC BEZIER over the three size keys, which is what Carbon does -\n    // decoded from the shipped quads.sm_hi vertex shader, where it appears as\n    // (1-t)^2*s0 + 2(1-t)t*s1 + t^2*s2 spelled out in registers.\n    //\n    // NOT linear interpolation through the keys. A Bezier does not pass through\n    // its middle control point, it only leans toward it: with keys of\n    // (1, 3, 0) a linear reading peaks at 3 and this peaks near 1.75. That\n    // difference is most of why authored sizes came out too large.\n    float t = lifeFraction;\n    float u = 1.0 - t;\n    float size = u * u * sizeRow.x + 2.0 * u * t * sizeRow.y + t * t * sizeRow.z;\n\n    // Variance is ONE-SIDED in Carbon - 1 + variance * phase, with the phase\n    // in [0,1) - so it only ever grows a particle. A symmetric spread would\n    // shrink half of them and halve the mean size.\n    //\n    // The birth seed rather than a hash of the slot: a slot is reused, and\n    // every particle born in it would otherwise be exactly the same size.\n    size *= 1.0 + physics.x * attributes.y;\n\n    // Carbon's flat quarter, applied right before the corner offsets. Its\n    // corners are +/-1 like these, so this is a straight factor of four and not\n    // a difference in how the quad is built.\n    size *= 0.25;\n\n    size *= cb7[0].z;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing, and is not scaled by w, so the perspective divide\n    // shrinks distant particles.\n    //\n    // SCALED BY THE PROJECTION, which it was not before. A world-space quad of\n    // half-size s lands at s * P / w in normalised coordinates, where P is the\n    // projection's scale - roughly 1/tan(fov/2). Adding the size raw made every\n    // particle P times too small: with a 1 radian field of view that is a\n    // factor of about 1.8, and it is why authored sizes came out sub-pixel on a\n    // hull hundreds of units across.\n    //\n    // Rows 12-15 are ProjectionMat (EveSpaceScene.perFrameData.vs). Only the\n    // diagonal is needed, and the diagonal is unaffected by the transpose the\n    // scene uploads.\n    clip.xy += offset * size * vec2(cb1[12].x, cb1[13].y);\n\n    gl_Position = clip;\n\n    // Same tail as CCP's gles2 bodies and the translated dx11 stages, so the\n    // particles land on the same (possibly flipped) render target as the scene.\n    gl_Position.xy += ssyf.xy * gl_Position.w;\n    gl_Position.y *= ssyf.z;\n}\n");
-	var ps$a = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\nuniform sampler2D s4;            // ParticleAtlasMap\n\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float rows = cb7[1].x;\n    float tiles = cb7[1].y;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    vec4 sprite;\n\n    if (tiles >= 1.0)\n    {\n        // A strip of tiles across one texture, so only the horizontal\n        // coordinate is divided.\n        float tile = clamp(floor(emitterParam(emitterRow, 5.0, rows).w), 0.0, tiles - 1.0);\n\n        vec2 tileUv = cornerUv * 0.5 + 0.5;\n        sprite = texture(s4, vec2((tile + tileUv.x) / tiles, tileUv.y));\n    }\n    else\n    {\n        // NO ATLAS BOUND. A round dot from the corner coordinates, so the\n        // simulation can be looked at before there is any art - which is how\n        // every stage of this was built. Without the branch an unbound sampler\n        // reads black and the whole system is invisible for a reason that has\n        // nothing to do with particles.\n        float r = length(cornerUv);\n        if (r > 1.0) discard;\n        // Alpha as well as rgb, because the blend weights by alpha.\n        float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n        sprite = vec4(falloff);\n    }\n\n    // Carbon's own arithmetic: the atlas multiplies the particle colour on rgb\n    // AND alpha - quads.sm_hi does r0 = texture2D(s0, uv) * colour and writes\n    // both. The fade therefore rides on alpha and the blend applies it.\n    //\n    // (No backticks in here: this GLSL is a JS template literal, and one would\n    // end the string.)\n    //\n    // NOT reproduced: that shader then encodes rgb to sRGB with the scene\n    // gamma from cb2[21].w. ccpwgl handles output transfer elsewhere, and\n    // adding a second encode here would double it.\n    outColor = color * sprite;\n}\n");
+	var vs$d = "#version 300 es\n\nprecision highp float;\n\n// Vertex texture fetch. Guaranteed in WebGL2 - MAX_VERTEX_TEXTURE_IMAGE_UNITS is\n// at least 16 - and the reason the state can live in a texture at all.\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\nuniform sampler2D s2;            // ParticleAttributeMap\nuniform sampler2D s3;            // ParticleParamsMap\n\nuniform vec4 cb1[24];            // per frame; 4-7 view-projection, 12-15 projection\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n// CCP's clip-space Y flip (see the end of main): (0,0,-1) while a Y-flipped\n// session draws offscreen, (0,0,1) otherwise. Tw2Device.ApplyClipYFlip sets it.\nuniform vec3 ssyf;\n\nout vec2 cornerUv;\nout float lifeFraction;\nflat out float emitterRow;\n\n// See the note in particleUpdate: this layout belongs to\n// Tw2GpuParticleParams.Pack and the two must be edited together.\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float width = cb7[0].x;\n    float height = cb7[0].y;\n\n    int particle = gl_VertexID / 6;\n    int corner = gl_VertexID % 6;\n\n    // Texel centres, not texel corners. Sampling at the edge of a texel with\n    // NEAREST is a coin flip between two particles.\n    float x = (mod(float(particle), width) + 0.5) / width;\n    float y = (floor(float(particle) / width) + 0.5) / height;\n    vec2 uv = vec2(x, y);\n\n    vec4 state = texture(s0, uv);\n    vec4 motion = texture(s1, uv);\n    vec4 attributes = texture(s2, uv);\n\n    emitterRow = attributes.x;\n\n    float age = state.w;\n    float lifetime = max(motion.w, 1e-6);\n    lifeFraction = clamp(age / lifetime, 0.0, 1.0);\n\n    // Two triangles: 0,1,2 and 2,1,3 in a quad's corner numbering.\n    vec2 offsets[6] = vec2[6](\n        vec2(-1.0, -1.0), vec2( 1.0, -1.0), vec2(-1.0,  1.0),\n        vec2(-1.0,  1.0), vec2( 1.0, -1.0), vec2( 1.0,  1.0)\n    );\n\n    vec2 offset = offsets[corner];\n    cornerUv = offset;\n\n    // ---- size, from this particle's own emitter -----------------------------\n    float rows = cb7[1].x;\n\n    vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint\n    vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex\n\n    // A QUADRATIC BEZIER over the three size keys, which is what Carbon does -\n    // decoded from the shipped quads.sm_hi vertex shader, where it appears as\n    // (1-t)^2*s0 + 2(1-t)t*s1 + t^2*s2 spelled out in registers.\n    //\n    // NOT linear interpolation through the keys. A Bezier does not pass through\n    // its middle control point, it only leans toward it: with keys of\n    // (1, 3, 0) a linear reading peaks at 3 and this peaks near 1.75. That\n    // difference is most of why authored sizes came out too large.\n    float t = lifeFraction;\n    float u = 1.0 - t;\n    float size = u * u * sizeRow.x + 2.0 * u * t * sizeRow.y + t * t * sizeRow.z;\n\n    // Variance is ONE-SIDED in Carbon - 1 + variance * phase, with the phase\n    // in [0,1) - so it only ever grows a particle. A symmetric spread would\n    // shrink half of them and halve the mean size.\n    //\n    // The birth seed rather than a hash of the slot: a slot is reused, and\n    // every particle born in it would otherwise be exactly the same size.\n    size *= 1.0 + physics.x * attributes.y;\n\n    // Carbon's flat quarter, applied right before the corner offsets. Its\n    // corners are +/-1 like these, so this is a straight factor of four and not\n    // a difference in how the quad is built.\n    size *= 0.25;\n\n    size *= cb7[0].z;\n\n    // Dead collapses to a point and covers nothing.\n    if (age < 0.0) offset = vec2(0.0);\n\n    vec4 world = vec4(state.xyz, 1.0);\n\n    vec4 clip;\n    clip.x = dot(world, cb1[4]);\n    clip.y = dot(world, cb1[5]);\n    clip.z = dot(world, cb1[6]);\n    clip.w = dot(world, cb1[7]);\n\n    // The offset goes on in CLIP space, so the quad faces the camera whatever\n    // the particle is doing, and is not scaled by w, so the perspective divide\n    // shrinks distant particles.\n    //\n    // SCALED BY THE PROJECTION, which it was not before. A world-space quad of\n    // half-size s lands at s * P / w in normalised coordinates, where P is the\n    // projection's scale - roughly 1/tan(fov/2). Adding the size raw made every\n    // particle P times too small: with a 1 radian field of view that is a\n    // factor of about 1.8, and it is why authored sizes came out sub-pixel on a\n    // hull hundreds of units across.\n    //\n    // Rows 12-15 are ProjectionMat (EveSpaceScene.perFrameData.vs). Only the\n    // diagonal is needed, and the diagonal is unaffected by the transpose the\n    // scene uploads.\n    clip.xy += offset * size * vec2(cb1[12].x, cb1[13].y);\n\n    gl_Position = clip;\n\n    // Same tail as CCP's gles2 bodies and the translated dx11 stages, so the\n    // particles land on the same (possibly flipped) render target as the scene.\n    gl_Position.xy += ssyf.xy * gl_Position.w;\n    gl_Position.y *= ssyf.z;\n}\n");
+	var ps$b = "#version 300 es\n\nprecision highp float;\n\nuniform sampler2D s3;            // ParticleParamsMap\nuniform sampler2D s4;            // ParticleAtlasMap\n\nuniform vec4 cb7[".concat(CONSTANTS$4.length, "];\n\nin vec2 cornerUv;\nin float lifeFraction;\nflat in float emitterRow;\n\nout vec4 outColor;\n\nvec4 emitterParam(float row, float texel, float rows)\n{\n    return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));\n}\n\nvoid main()\n{\n    float rows = cb7[1].x;\n    float tiles = cb7[1].y;\n\n    // FOUR colour keys with a movable midpoint, which is Carbon's curve and not\n    // a gradient between two ends. The midpoint is what lets an effect flash\n    // and then fade slowly, rather than crossing its whole range at a constant\n    // rate.\n    vec4 color0 = emitterParam(emitterRow, 0.0, rows);\n    vec4 color1 = emitterParam(emitterRow, 1.0, rows);\n    vec4 color2 = emitterParam(emitterRow, 2.0, rows);\n    vec4 color3 = emitterParam(emitterRow, 3.0, rows);\n\n    float midpoint = clamp(emitterParam(emitterRow, 4.0, rows).w, 0.001, 0.999);\n\n    vec4 color;\n\n    if (lifeFraction < midpoint)\n    {\n        float t = lifeFraction / midpoint;\n        color = mix(color0, mix(color1, color2, t), t);\n    }\n    else\n    {\n        float t = (lifeFraction - midpoint) / (1.0 - midpoint);\n        color = mix(color2, color3, t);\n    }\n\n    vec4 sprite;\n\n    if (tiles >= 1.0)\n    {\n        // A strip of tiles across one texture, so only the horizontal\n        // coordinate is divided.\n        float tile = clamp(floor(emitterParam(emitterRow, 5.0, rows).w), 0.0, tiles - 1.0);\n\n        vec2 tileUv = cornerUv * 0.5 + 0.5;\n        sprite = texture(s4, vec2((tile + tileUv.x) / tiles, tileUv.y));\n    }\n    else\n    {\n        // NO ATLAS BOUND. A round dot from the corner coordinates, so the\n        // simulation can be looked at before there is any art - which is how\n        // every stage of this was built. Without the branch an unbound sampler\n        // reads black and the whole system is invisible for a reason that has\n        // nothing to do with particles.\n        float r = length(cornerUv);\n        if (r > 1.0) discard;\n        // Alpha as well as rgb, because the blend weights by alpha.\n        float falloff = 1.0 - smoothstep(0.4, 1.0, r);\n        sprite = vec4(falloff);\n    }\n\n    // Carbon's own arithmetic: the atlas multiplies the particle colour on rgb\n    // AND alpha - quads.sm_hi does r0 = texture2D(s0, uv) * colour and writes\n    // both. The fade therefore rides on alpha and the blend applies it.\n    //\n    // (No backticks in here: this GLSL is a JS template literal, and one would\n    // end the string.)\n    //\n    // NOT reproduced: that shader then encodes rgb to sRGB with the scene\n    // gamma from cb2[21].w. ccpwgl handles output transfer elsewhere, and\n    // adding a second encode here would double it.\n    outColor = color * sprite;\n}\n");
 	var definition$2 = {
 	  name: "tw2particledraw",
 	  description: "GPU particle draw",
@@ -235647,12 +236666,12 @@
 	        // NO INPUTS. Every vertex is derived from gl_VertexID, so there
 	        // is nothing to bind and nothing to keep in sync.
 	        inputDefinitions: [],
-	        shader: vs$c
+	        shader: vs$d
 	      },
 	      ps: {
 	        constants: CONSTANTS$4,
 	        textures: TEXTURES$1,
-	        shader: ps$a
+	        shader: ps$b
 	      },
 	      states: {
 	        // Additive and depth-read-only, which is what a particle system
@@ -236125,8 +237144,8 @@
 	 */
 	Tw2GpuParticleRenderer.NOISE = "res:/texture/global/noise32cube_volume.dds";
 
-	var _dec$5D, _dec2$5b, _dec3$4M, _dec4$4b, _dec5$3I, _dec6$3d, _dec7$2M, _dec8$2q, _dec9$23, _dec0$1U, _dec1$1L, _dec10$1w, _dec11$1p, _dec12$1g, _dec13$17, _dec14$$, _dec15$W, _dec16$N, _dec17$I, _dec18$D, _dec19$z, _dec20$w, _class$5D, _class2$58, _descriptor$55, _descriptor2$4C, _descriptor3$41, _descriptor4$3x, _descriptor5$34, _descriptor6$2z, _descriptor7$27, _descriptor8$1S, _descriptor9$1J, _descriptor0$1D, _descriptor1$1l, _descriptor10$1c, _descriptor11$13, _descriptor12$X, _descriptor13$S, _descriptor14$K, _descriptor15$C, _descriptor16$w, _descriptor17$s, _descriptor18$q, _EveChildParticleSystem;
-	var EveChildParticleSystem = (_dec$5D = define("EveChildParticleSystem", true), _dec2$5b = stage(1), _dec3$4M = string, _dec4$4b = boolean, _dec5$3I = matrix4, _dec6$3d = float, _dec7$2M = uint, _dec8$2q = float, _dec9$23 = float, _dec0$1U = struct("Tw2InstancedMesh"), _dec1$1L = float, _dec10$1w = float, _dec11$1p = list("Tw2ParticleEmitter"), _dec12$1g = list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec13$17 = uint, _dec14$$ = quaternion, _dec15$W = vector3, _dec16$N = vector3, _dec17$I = list(), _dec18$D = boolean, _dec19$z = boolean, _dec20$w = boolean, _dec$5D(_class$5D = _dec2$5b(_class$5D = (_class2$58 = (_EveChildParticleSystem = class EveChildParticleSystem extends EveChild {
+	var _dec$5D, _dec2$5b, _dec3$4M, _dec4$4b, _dec5$3I, _dec6$3d, _dec7$2M, _dec8$2q, _dec9$23, _dec0$1U, _dec1$1L, _dec10$1w, _dec11$1p, _dec12$1g, _dec13$17, _dec14$$, _dec15$W, _dec16$N, _dec17$I, _dec18$D, _dec19$y, _dec20$v, _class$5D, _class2$58, _descriptor$55, _descriptor2$4C, _descriptor3$41, _descriptor4$3x, _descriptor5$34, _descriptor6$2z, _descriptor7$27, _descriptor8$1S, _descriptor9$1J, _descriptor0$1D, _descriptor1$1l, _descriptor10$1c, _descriptor11$13, _descriptor12$X, _descriptor13$S, _descriptor14$K, _descriptor15$C, _descriptor16$v, _descriptor17$s, _descriptor18$q, _EveChildParticleSystem;
+	var EveChildParticleSystem = (_dec$5D = define("EveChildParticleSystem", true), _dec2$5b = stage(1), _dec3$4M = string, _dec4$4b = boolean, _dec5$3I = matrix4, _dec6$3d = float, _dec7$2M = uint, _dec8$2q = float, _dec9$23 = float, _dec0$1U = struct("Tw2InstancedMesh"), _dec1$1L = float, _dec10$1w = float, _dec11$1p = list("Tw2ParticleEmitter"), _dec12$1g = list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec13$17 = uint, _dec14$$ = quaternion, _dec15$W = vector3, _dec16$N = vector3, _dec17$I = list(), _dec18$D = boolean, _dec19$y = boolean, _dec20$v = boolean, _dec$5D(_class$5D = _dec2$5b(_class$5D = (_class2$58 = (_EveChildParticleSystem = class EveChildParticleSystem extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$55, this);
@@ -236146,12 +237165,13 @@
 	    _initializerDefineProperty(this, "scaling", _descriptor13$S, this);
 	    _initializerDefineProperty(this, "translation", _descriptor14$K, this);
 	    _initializerDefineProperty(this, "transformModifiers", _descriptor15$C, this);
-	    _initializerDefineProperty(this, "useDynamicLod", _descriptor16$w, this);
+	    _initializerDefineProperty(this, "useDynamicLod", _descriptor16$v, this);
 	    _initializerDefineProperty(this, "staticTransform", _descriptor17$s, this);
 	    _initializerDefineProperty(this, "useSRT", _descriptor18$q, this);
 	    this._worldTransform = mat4$2.create();
 	    this._worldTransformLast = mat4$2.create();
 	    this._perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
+	    this._spaceObjectData = null;
 	    this._lodSphere = sph3$2.create();
 	    this._isVisible = true;
 	    this._hasUpdated = false;
@@ -236329,12 +237349,38 @@
 	   * Gets render batches
 	   * @param {number} mode
 	   * @param {Tw2BatchAccumulator} accumulator
+	   * @param {Tw2PerObjectData} [perObjectData] - the owner's values, inherited into cb3
 	   * @returns {Boolean} true if batches accumulated
 	   */
-	  GetBatches(mode, accumulator) {
+	  GetBatches(mode, accumulator, perObjectData) {
+	    var _accumulator$GetCurre;
 	    if (!this.display || !this._isVisible || !this.mesh) return false;
 	    mat4$2.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
 	    mat4$2.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+
+	    // The ffe block above feeds cb5 and serves the legacy bind path only: the
+	    // Carbon path never reads it (`Tw2Effect` gates that upload behind
+	    // `!rp.isCarbon`). A Carbon particle shader takes its world transform from
+	    // cb3 / PerObjectVS instead, which `Tw2CarbonData.PackPerObjectVS` fills from
+	    // `pod.vs` - and a particle system supplied no `vs` block at all, so cb3
+	    // arrived as zeros. Measured on angbc1_t1 crisis_angel, dx11, 2026-09-15:
+	    // `cb3[0..3]` all zero, every particle projected to w = 0 and clipped away,
+	    // while cb1 (view and projection) was correct and the instance data healthy.
+	    //
+	    // Same shape as `EveChildLineSet.GetBatches`: inherit the parent's values so
+	    // ship data, clip planes and the rest carry through, then override only this
+	    // child's own transforms.
+	    var parent = perObjectData || ((_accumulator$GetCurre = accumulator.GetCurrentPerObjectData) === null || _accumulator$GetCurre === void 0 ? void 0 : _accumulator$GetCurre.call(accumulator));
+	    if (parent) {
+	      if (!this._spaceObjectData) this._spaceObjectData = new GLESPerObjectDataEveSpaceObject();
+	      var bag = GLESPerObjectDataEveSpaceObject.Unpack(parent);
+	      bag.worldTransform = this._worldTransform;
+	      bag.worldTransformLast = this._worldTransformLast;
+	      bag.inverseWorldTransformTranspose = null;
+	      GLESPerObjectDataEveSpaceObject.Pack(bag, this._spaceObjectData);
+	      this._spaceObjectData.ffe = this._perObjectData.ffe;
+	      return this.mesh.GetBatches(mode, accumulator, this._spaceObjectData);
+	    }
 	    return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
 	  }
 	}, _EveChildParticleSystem.global = {
@@ -236462,21 +237508,21 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor16$w = _applyDecoratedDescriptor(_class2$58.prototype, "useDynamicLod", [_dec18$D], {
+	}), _descriptor16$v = _applyDecoratedDescriptor(_class2$58.prototype, "useDynamicLod", [_dec18$D], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor17$s = _applyDecoratedDescriptor(_class2$58.prototype, "staticTransform", [_dec19$z], {
+	}), _descriptor17$s = _applyDecoratedDescriptor(_class2$58.prototype, "staticTransform", [_dec19$y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor18$q = _applyDecoratedDescriptor(_class2$58.prototype, "useSRT", [_dec20$w], {
+	}), _descriptor18$q = _applyDecoratedDescriptor(_class2$58.prototype, "useSRT", [_dec20$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -237243,8 +238289,8 @@
 	  }
 	}), _class2$54)) || _class$5z);
 
-	var _dec$5y, _dec2$56, _dec3$4H, _dec4$48, _dec5$3F, _dec6$3b, _dec7$2K, _dec8$2p, _dec9$22, _dec0$1T, _dec1$1K, _dec10$1v, _dec11$1o, _dec12$1f, _dec13$16, _dec14$_, _dec15$V, _dec16$M, _dec17$H, _dec18$C, _dec19$y, _dec20$v, _dec21$s, _dec22$r, _dec23$n, _class$5y, _class2$53, _descriptor$50, _descriptor2$4y, _descriptor3$3_, _descriptor4$3w, _descriptor5$33, _descriptor6$2y, _descriptor7$26, _descriptor8$1R, _descriptor9$1I, _descriptor0$1C, _descriptor1$1k, _descriptor10$1b, _descriptor11$12, _descriptor12$W, _descriptor13$R, _descriptor14$J, _descriptor15$B, _descriptor16$v, _descriptor17$r, _descriptor18$p, _descriptor19$k, _EveLensflare;
-	var EveLensflare = (_dec$5y = define("EveLensflare", true), _dec2$56 = string, _dec3$4H = notImplemented, _dec4$48 = list("EveOccluder"), _dec5$3F = list("Tw2ValueBinding"), _dec6$3b = list("Tw2Curve"), _dec7$2K = list("Tw2Curve"), _dec8$2p = struct("Tw2Mesh"), _dec9$22 = list("EveOccluder"), _dec0$1T = vector3, _dec1$1K = list("Tw2Curve"), _dec10$1v = list("Tw2Curve"), _dec11$1o = list("Tw2Curve"), _dec12$1f = list("Tw2Curve"), _dec13$16 = boolean, _dec14$_ = boolean, _dec15$V = boolean, _dec16$M = boolean, _dec17$H = float, _dec18$C = list("EveTransform"), _dec19$y = todo("Deprecated?"), _dec20$v = float, _dec21$s = float, _dec22$r = list("Tw2CurveSet"), _dec23$n = todo("Deprecated?"), _dec$5y(_class$5y = (_class2$53 = (_EveLensflare = class EveLensflare extends Model$1 {
+	var _dec$5y, _dec2$56, _dec3$4H, _dec4$48, _dec5$3F, _dec6$3b, _dec7$2K, _dec8$2p, _dec9$22, _dec0$1T, _dec1$1K, _dec10$1v, _dec11$1o, _dec12$1f, _dec13$16, _dec14$_, _dec15$V, _dec16$M, _dec17$H, _dec18$C, _dec19$x, _dec20$u, _dec21$r, _dec22$q, _dec23$n, _class$5y, _class2$53, _descriptor$50, _descriptor2$4y, _descriptor3$3_, _descriptor4$3w, _descriptor5$33, _descriptor6$2y, _descriptor7$26, _descriptor8$1R, _descriptor9$1I, _descriptor0$1C, _descriptor1$1k, _descriptor10$1b, _descriptor11$12, _descriptor12$W, _descriptor13$R, _descriptor14$J, _descriptor15$B, _descriptor16$u, _descriptor17$r, _descriptor18$p, _descriptor19$k, _EveLensflare;
+	var EveLensflare = (_dec$5y = define("EveLensflare", true), _dec2$56 = string, _dec3$4H = notImplemented, _dec4$48 = list("EveOccluder"), _dec5$3F = list("Tw2ValueBinding"), _dec6$3b = list("Tw2Curve"), _dec7$2K = list("Tw2Curve"), _dec8$2p = struct("Tw2Mesh"), _dec9$22 = list("EveOccluder"), _dec0$1T = vector3, _dec1$1K = list("Tw2Curve"), _dec10$1v = list("Tw2Curve"), _dec11$1o = list("Tw2Curve"), _dec12$1f = list("Tw2Curve"), _dec13$16 = boolean, _dec14$_ = boolean, _dec15$V = boolean, _dec16$M = boolean, _dec17$H = float, _dec18$C = list("EveTransform"), _dec19$x = todo("Deprecated?"), _dec20$u = float, _dec21$r = float, _dec22$q = list("Tw2CurveSet"), _dec23$n = todo("Deprecated?"), _dec$5y(_class$5y = (_class2$53 = (_EveLensflare = class EveLensflare extends Model$1 {
 	  /**
 	   * Constructor
 	   */
@@ -237268,7 +238314,7 @@
 	    _initializerDefineProperty(this, "useSceneSunDirection", _descriptor13$R, this);
 	    _initializerDefineProperty(this, "doOcclusionQueries", _descriptor14$J, this);
 	    _initializerDefineProperty(this, "cameraFactor", _descriptor15$B, this);
-	    _initializerDefineProperty(this, "flares", _descriptor16$v, this);
+	    _initializerDefineProperty(this, "flares", _descriptor16$u, this);
 	    _initializerDefineProperty(this, "occlusionIntensity", _descriptor17$r, this);
 	    _initializerDefineProperty(this, "backgroundOcclusionIntensity", _descriptor18$p, this);
 	    _initializerDefineProperty(this, "curveSets", _descriptor19$k, this);
@@ -237610,28 +238656,28 @@
 	  initializer: function () {
 	    return 20;
 	  }
-	}), _descriptor16$v = _applyDecoratedDescriptor(_class2$53.prototype, "flares", [_dec18$C, _dec19$y], {
+	}), _descriptor16$u = _applyDecoratedDescriptor(_class2$53.prototype, "flares", [_dec18$C, _dec19$x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor17$r = _applyDecoratedDescriptor(_class2$53.prototype, "occlusionIntensity", [_dec20$v], {
+	}), _descriptor17$r = _applyDecoratedDescriptor(_class2$53.prototype, "occlusionIntensity", [_dec20$u], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor18$p = _applyDecoratedDescriptor(_class2$53.prototype, "backgroundOcclusionIntensity", [_dec21$s], {
+	}), _descriptor18$p = _applyDecoratedDescriptor(_class2$53.prototype, "backgroundOcclusionIntensity", [_dec21$r], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor19$k = _applyDecoratedDescriptor(_class2$53.prototype, "curveSets", [_dec22$r, _dec23$n], {
+	}), _descriptor19$k = _applyDecoratedDescriptor(_class2$53.prototype, "curveSets", [_dec22$q, _dec23$n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -237924,8 +238970,8 @@
 	EveLODHelper.lowUpdateRate = 1;
 	EveLODHelper.mediumUpdateRate = 0.1;
 
-	var _dec$5w, _dec2$54, _dec3$4F, _dec4$46, _dec5$3D, _dec6$39, _dec7$2I, _dec8$2n, _dec9$20, _dec0$1R, _dec1$1I, _dec10$1u, _dec11$1n, _dec12$1e, _dec13$15, _dec14$Z, _dec15$U, _dec16$L, _dec17$G, _dec18$B, _dec19$x, _class$5w, _class2$51, _descriptor$4_, _descriptor2$4w, _descriptor3$3Y, _descriptor4$3u, _descriptor5$31, _descriptor6$2w, _descriptor7$24, _descriptor8$1P, _descriptor9$1G, _descriptor0$1A, _descriptor1$1j, _descriptor10$1a, _descriptor11$11, _descriptor12$V, _descriptor13$Q, _EveStretch$2;
-	var EveStretch = (_dec$5w = define("EveStretch", true), _dec2$54 = string, _dec3$4F = list("Tw2CurveSet"), _dec4$46 = boolean, _dec5$3D = struct(), _dec6$39 = notOwned, _dec7$2I = struct(), _dec8$2n = struct("Tw2Float"), _dec9$20 = notImplemented, _dec0$1R = struct("Tw2CurveSet"), _dec1$1I = notImplemented, _dec10$1u = struct(), _dec11$1n = notImplemented, _dec12$1e = struct("Tw2Curve"), _dec13$15 = struct(), _dec14$Z = list("Tr2PointLight"), _dec15$U = notOwned, _dec16$L = struct(), _dec17$G = struct(), _dec18$B = boolean, _dec19$x = boolean, _dec$5w(_class$5w = (_class2$51 = (_EveStretch$2 = class EveStretch extends Model$1 {
+	var _dec$5w, _dec2$54, _dec3$4F, _dec4$46, _dec5$3D, _dec6$39, _dec7$2I, _dec8$2n, _dec9$20, _dec0$1R, _dec1$1I, _dec10$1u, _dec11$1n, _dec12$1e, _dec13$15, _dec14$Z, _dec15$U, _dec16$L, _dec17$G, _dec18$B, _dec19$w, _class$5w, _class2$51, _descriptor$4_, _descriptor2$4w, _descriptor3$3Y, _descriptor4$3u, _descriptor5$31, _descriptor6$2w, _descriptor7$24, _descriptor8$1P, _descriptor9$1G, _descriptor0$1A, _descriptor1$1j, _descriptor10$1a, _descriptor11$11, _descriptor12$V, _descriptor13$Q, _EveStretch$2;
+	var EveStretch = (_dec$5w = define("EveStretch", true), _dec2$54 = string, _dec3$4F = list("Tw2CurveSet"), _dec4$46 = boolean, _dec5$3D = struct(), _dec6$39 = notOwned, _dec7$2I = struct(), _dec8$2n = struct("Tw2Float"), _dec9$20 = notImplemented, _dec0$1R = struct("Tw2CurveSet"), _dec1$1I = notImplemented, _dec10$1u = struct(), _dec11$1n = notImplemented, _dec12$1e = struct("Tw2Curve"), _dec13$15 = struct(), _dec14$Z = list("Tr2PointLight"), _dec15$U = notOwned, _dec16$L = struct(), _dec17$G = struct(), _dec18$B = boolean, _dec19$w = boolean, _dec$5w(_class$5w = (_class2$51 = (_EveStretch$2 = class EveStretch extends Model$1 {
 	  /**
 	   * Constructor
 	   */
@@ -238382,7 +239428,7 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor13$Q = _applyDecoratedDescriptor(_class2$51.prototype, "useCurveLod", [_dec19$x], {
+	}), _descriptor13$Q = _applyDecoratedDescriptor(_class2$51.prototype, "useCurveLod", [_dec19$w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -239124,7 +240170,7 @@
 	  }
 	}), _class2$50)) || _class$5v);
 
-	var _dec$5u, _dec2$52, _dec3$4D, _dec4$44, _dec5$3B, _dec6$37, _dec7$2G, _dec8$2l, _dec9$1_, _dec0$1P, _dec1$1G, _dec10$1s, _dec11$1l, _dec12$1c, _dec13$13, _dec14$X, _dec15$S, _dec16$J, _dec17$E, _dec18$z, _dec19$w, _dec20$u, _dec21$r, _dec22$q, _dec23$m, _dec24$m, _dec25$k, _dec26$h, _dec27$g, _dec28$f, _dec29$b, _dec30$9, _dec31$9, _dec32$9, _dec33$8, _class$5u, _class2$4$, _descriptor$4Y, _descriptor2$4u, _descriptor3$3W, _descriptor4$3s, _descriptor5$2$, _descriptor6$2u, _descriptor7$22, _descriptor8$1N, _descriptor9$1E, _descriptor0$1y, _descriptor1$1h, _descriptor10$18, _descriptor11$$, _descriptor12$U, _descriptor13$P, _descriptor14$I, _descriptor15$A, _descriptor16$u, _descriptor17$q, _descriptor18$o, _descriptor19$j, _descriptor20$j, _descriptor21$j, _descriptor22$i, _descriptor23$h, _EveTurretFiringFX;
+	var _dec$5u, _dec2$52, _dec3$4D, _dec4$44, _dec5$3B, _dec6$37, _dec7$2G, _dec8$2l, _dec9$1_, _dec0$1P, _dec1$1G, _dec10$1s, _dec11$1l, _dec12$1c, _dec13$13, _dec14$X, _dec15$S, _dec16$J, _dec17$E, _dec18$z, _dec19$v, _dec20$t, _dec21$q, _dec22$p, _dec23$m, _dec24$m, _dec25$k, _dec26$h, _dec27$g, _dec28$f, _dec29$b, _dec30$9, _dec31$9, _dec32$9, _dec33$8, _class$5u, _class2$4$, _descriptor$4Y, _descriptor2$4u, _descriptor3$3W, _descriptor4$3s, _descriptor5$2$, _descriptor6$2u, _descriptor7$22, _descriptor8$1N, _descriptor9$1E, _descriptor0$1y, _descriptor1$1h, _descriptor10$18, _descriptor11$$, _descriptor12$U, _descriptor13$P, _descriptor14$I, _descriptor15$A, _descriptor16$t, _descriptor17$q, _descriptor18$o, _descriptor19$j, _descriptor20$j, _descriptor21$j, _descriptor22$i, _descriptor23$h, _EveTurretFiringFX;
 	class EvePerMuzzleData {
 	  constructor() {
 	    this.constantDelay = 0;
@@ -239136,7 +240182,7 @@
 	    this.started = false;
 	  }
 	}
-	var EveTurretFiringFX = (_dec$5u = define("EveTurretFiringFX", true), _dec2$52 = stage(2), _dec3$4D = string, _dec4$44 = string, _dec5$3B = boolean, _dec6$37 = notImplemented, _dec7$2G = struct("TriObserverLocal"), _dec8$2l = float, _dec9$1_ = float, _dec0$1P = float, _dec1$1G = float, _dec10$1s = float, _dec11$1l = todo("Deprecated?"), _dec12$1c = float, _dec13$13 = todo("Deprecated?"), _dec14$X = float, _dec15$S = todo("Deprecated?"), _dec16$J = float, _dec17$E = todo("Deprecated?"), _dec18$z = float, _dec19$w = float, _dec20$u = boolean, _dec21$r = float, _dec22$q = float, _dec23$m = float, _dec24$m = float, _dec25$k = boolean, _dec26$h = notImplemented, _dec27$g = struct("TriObserverLocal"), _dec28$f = notImplemented, _dec29$b = struct("Tw2CurveSet"), _dec30$9 = notImplemented, _dec31$9 = struct("Tw2CurveSet"), _dec32$9 = list(["EveStretch", "EveStretch2"]), _dec33$8 = boolean, _dec$5u(_class$5u = _dec2$52(_class$5u = (_class2$4$ = (_EveTurretFiringFX = class EveTurretFiringFX extends Model$1 {
+	var EveTurretFiringFX = (_dec$5u = define("EveTurretFiringFX", true), _dec2$52 = stage(2), _dec3$4D = string, _dec4$44 = string, _dec5$3B = boolean, _dec6$37 = notImplemented, _dec7$2G = struct("TriObserverLocal"), _dec8$2l = float, _dec9$1_ = float, _dec0$1P = float, _dec1$1G = float, _dec10$1s = float, _dec11$1l = todo("Deprecated?"), _dec12$1c = float, _dec13$13 = todo("Deprecated?"), _dec14$X = float, _dec15$S = todo("Deprecated?"), _dec16$J = float, _dec17$E = todo("Deprecated?"), _dec18$z = float, _dec19$v = float, _dec20$t = boolean, _dec21$q = float, _dec22$p = float, _dec23$m = float, _dec24$m = float, _dec25$k = boolean, _dec26$h = notImplemented, _dec27$g = struct("TriObserverLocal"), _dec28$f = notImplemented, _dec29$b = struct("Tw2CurveSet"), _dec30$9 = notImplemented, _dec31$9 = struct("Tw2CurveSet"), _dec32$9 = list(["EveStretch", "EveStretch2"]), _dec33$8 = boolean, _dec$5u(_class$5u = _dec2$52(_class$5u = (_class2$4$ = (_EveTurretFiringFX = class EveTurretFiringFX extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4Y, this);
@@ -239156,7 +240202,7 @@
 	    _initializerDefineProperty(this, "isLoopFiring", _descriptor13$P, this);
 	    _initializerDefineProperty(this, "maxRadius", _descriptor14$I, this);
 	    _initializerDefineProperty(this, "maxScale", _descriptor15$A, this);
-	    _initializerDefineProperty(this, "minRadius", _descriptor16$u, this);
+	    _initializerDefineProperty(this, "minRadius", _descriptor16$t, this);
 	    _initializerDefineProperty(this, "minScale", _descriptor17$q, this);
 	    _initializerDefineProperty(this, "scaleEffectTarget", _descriptor18$o, this);
 	    _initializerDefineProperty(this, "sourceObserver", _descriptor19$j, this);
@@ -239581,35 +240627,35 @@
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor12$U = _applyDecoratedDescriptor(_class2$4$.prototype, "firingPeakTime", [_dec19$w], {
+	}), _descriptor12$U = _applyDecoratedDescriptor(_class2$4$.prototype, "firingPeakTime", [_dec19$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor13$P = _applyDecoratedDescriptor(_class2$4$.prototype, "isLoopFiring", [_dec20$u], {
+	}), _descriptor13$P = _applyDecoratedDescriptor(_class2$4$.prototype, "isLoopFiring", [_dec20$t], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor14$I = _applyDecoratedDescriptor(_class2$4$.prototype, "maxRadius", [_dec21$r], {
+	}), _descriptor14$I = _applyDecoratedDescriptor(_class2$4$.prototype, "maxRadius", [_dec21$q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor15$A = _applyDecoratedDescriptor(_class2$4$.prototype, "maxScale", [_dec22$q], {
+	}), _descriptor15$A = _applyDecoratedDescriptor(_class2$4$.prototype, "maxScale", [_dec22$p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor16$u = _applyDecoratedDescriptor(_class2$4$.prototype, "minRadius", [_dec23$m], {
+	}), _descriptor16$t = _applyDecoratedDescriptor(_class2$4$.prototype, "minRadius", [_dec23$m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -239830,7 +240876,7 @@
 	  return out;
 	}
 
-	var _dec$5t, _dec2$51, _dec3$4C, _dec4$43, _dec5$3A, _dec6$36, _dec7$2F, _dec8$2k, _dec9$1Z, _dec0$1O, _dec1$1F, _dec10$1r, _dec11$1k, _dec12$1b, _dec13$12, _dec14$W, _dec15$R, _dec16$I, _dec17$D, _dec18$y, _dec19$v, _class$5t, _class2$4_, _descriptor$4X, _descriptor2$4t, _descriptor3$3V, _descriptor4$3r, _descriptor5$2_, _descriptor6$2t, _descriptor7$21, _descriptor8$1M, _descriptor9$1D, _descriptor0$1x, _descriptor1$1g, _descriptor10$17, _descriptor11$_, _descriptor12$T, _descriptor13$O, _descriptor14$H, _descriptor15$z, _descriptor16$t, _dec20$t, _dec21$q, _dec22$p, _dec23$l, _dec24$l, _dec25$j, _dec26$g, _dec27$f, _dec28$e, _dec29$a, _dec30$8, _class3$j, _class4$h, _descriptor17$p, _descriptor18$n, _descriptor19$i, _descriptor20$i, _descriptor21$i, _descriptor22$h, _descriptor23$g, _descriptor24$f, _descriptor25$d, _EvePlaneLight, _dec31$8, _dec32$8, _dec33$7, _dec34$7, _dec35$7, _dec36$6, _dec37$5, _dec38$5, _dec39$4, _dec40$4, _class5$6, _class6$4, _descriptor26$a, _descriptor27$8, _descriptor28$8, _descriptor29$6, _descriptor30$6, _descriptor31$5, _EvePlaneSet;
+	var _dec$5t, _dec2$51, _dec3$4C, _dec4$43, _dec5$3A, _dec6$36, _dec7$2F, _dec8$2k, _dec9$1Z, _dec0$1O, _dec1$1F, _dec10$1r, _dec11$1k, _dec12$1b, _dec13$12, _dec14$W, _dec15$R, _dec16$I, _dec17$D, _dec18$y, _dec19$u, _class$5t, _class2$4_, _descriptor$4X, _descriptor2$4t, _descriptor3$3V, _descriptor4$3r, _descriptor5$2_, _descriptor6$2t, _descriptor7$21, _descriptor8$1M, _descriptor9$1D, _descriptor0$1x, _descriptor1$1g, _descriptor10$17, _descriptor11$_, _descriptor12$T, _descriptor13$O, _descriptor14$H, _descriptor15$z, _descriptor16$s, _dec20$s, _dec21$p, _dec22$o, _dec23$l, _dec24$l, _dec25$j, _dec26$g, _dec27$f, _dec28$e, _dec29$a, _dec30$8, _class3$j, _class4$h, _descriptor17$p, _descriptor18$n, _descriptor19$i, _descriptor20$i, _descriptor21$i, _descriptor22$h, _descriptor23$g, _descriptor24$f, _descriptor25$d, _EvePlaneLight, _dec31$8, _dec32$8, _dec33$7, _dec34$7, _dec35$7, _dec36$6, _dec37$5, _dec38$5, _dec39$4, _dec40$4, _dec41$4, _class5$6, _class6$4, _descriptor26$a, _descriptor27$8, _descriptor28$8, _descriptor29$6, _descriptor30$6, _descriptor31$5, _descriptor32$5, _EvePlaneSet;
 	class EvePlaneSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
@@ -239854,7 +240900,7 @@
 	    return this.planeSet.effect && this.planeSet.effect.HasTechnique(technique);
 	  }
 	}
-	var EvePlaneSetItem = (_dec$5t = define("EvePlaneSetItem", true), _dec2$51 = string, _dec3$4C = int32$1, _dec4$43 = color$2, _dec5$3A = vector4, _dec6$36 = vector4, _dec7$2F = vector4, _dec8$2k = vector4, _dec9$1Z = uint, _dec0$1O = vector3, _dec1$1F = quaternion, _dec10$1r = vector3, _dec11$1k = int32$1, _dec12$1b = float, _dec13$12 = float, _dec14$W = uint, _dec15$R = float, _dec16$I = notImplemented, _dec17$D = float, _dec18$y = int32$1, _dec19$v = alias("maskAtlasID"), _dec$5t(_class$5t = (_class2$4_ = class EvePlaneSetItem extends EveObjectSetItem {
+	var EvePlaneSetItem = (_dec$5t = define("EvePlaneSetItem", true), _dec2$51 = string, _dec3$4C = int32$1, _dec4$43 = color$2, _dec5$3A = vector4, _dec6$36 = vector4, _dec7$2F = vector4, _dec8$2k = vector4, _dec9$1Z = uint, _dec0$1O = vector3, _dec1$1F = quaternion, _dec10$1r = vector3, _dec11$1k = int32$1, _dec12$1b = float, _dec13$12 = float, _dec14$W = uint, _dec15$R = float, _dec16$I = notImplemented, _dec17$D = float, _dec18$y = int32$1, _dec19$u = alias("maskAtlasID"), _dec$5t(_class$5t = (_class2$4_ = class EvePlaneSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4X, this);
@@ -239880,7 +240926,7 @@
 	    // Not implemented
 	    _initializerDefineProperty(this, "rate", _descriptor15$z, this);
 	    // ccpwgl only
-	    _initializerDefineProperty(this, "colorType", _descriptor16$t, this);
+	    _initializerDefineProperty(this, "colorType", _descriptor16$s, this);
 	    this._localTransform = mat4$2.create();
 	    this._bone = null;
 	  }
@@ -239925,7 +240971,9 @@
 	   */
 	  GetTransform(out) {
 	    mat4$2.copy(out, this._localTransform);
-	    if (this._bone) mat4$2.multiply(out, this._bone.offsetTransform, out);
+	    // Carbon uses the bone only when the SET is skinned (EvePlaneSet.cpp:191-207, :338);
+	    // soec1_t1 plane items carry boneIndex 0 on non-skinned sets and rode that bone.
+	    if (this._bone && this._parent && this._parent.skinned) mat4$2.multiply(out, this._bone.offsetTransform, out);
 	    return out;
 	  }
 
@@ -239936,7 +240984,7 @@
 	   */
 	  GetBoundingBox(out) {
 	    box3$2.fromTransform(out, this._localTransform);
-	    if (this._bone) box3$2.transformMat4(out, out, this._bone.offsetTransform);
+	    if (this._bone && this._parent && this._parent.skinned) box3$2.transformMat4(out, out, this._bone.offsetTransform);
 	    return out;
 	  }
 
@@ -240080,14 +241128,14 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor16$t = _applyDecoratedDescriptor(_class2$4_.prototype, "colorType", [_dec18$y], {
+	}), _descriptor16$s = _applyDecoratedDescriptor(_class2$4_.prototype, "colorType", [_dec18$y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _applyDecoratedDescriptor(_class2$4_.prototype, "maskMapAtlasIndex", [_dec19$v], Object.getOwnPropertyDescriptor(_class2$4_.prototype, "maskMapAtlasIndex"), _class2$4_.prototype), _class2$4_)) || _class$5t);
+	}), _applyDecoratedDescriptor(_class2$4_.prototype, "maskMapAtlasIndex", [_dec19$u], Object.getOwnPropertyDescriptor(_class2$4_.prototype, "maskMapAtlasIndex"), _class2$4_.prototype), _class2$4_)) || _class$5t);
 
 	/**
 	 * The light one plane contributes.
@@ -240098,7 +241146,7 @@
 	 * lights. Its `lightData` radii were derived from the SOF multipliers and the
 	 * owning item's scale (see `EveSOFDataPointLightAttachment.AsLightData`).
 	 */
-	var EvePlaneLight = (_dec20$t = define("EvePlaneLight", true), _dec21$q = struct("CjsLightData"), _dec22$p = float, _dec23$l = notOwned, _dec24$l = struct(), _dec25$j = uint, _dec26$g = float, _dec27$f = float, _dec28$e = uint, _dec29$a = matrix4, _dec30$8 = path, _dec20$t(_class3$j = (_class4$h = (_EvePlaneLight = class EvePlaneLight extends Model$1 {
+	var EvePlaneLight = (_dec20$s = define("EvePlaneLight", true), _dec21$p = struct("CjsLightData"), _dec22$o = float, _dec23$l = notOwned, _dec24$l = struct(), _dec25$j = uint, _dec26$g = float, _dec27$f = float, _dec28$e = uint, _dec29$a = matrix4, _dec30$8 = path, _dec20$s(_class3$j = (_class4$h = (_EvePlaneLight = class EvePlaneLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor17$p, this);
@@ -240118,14 +241166,14 @@
 	      this.lightProfile = Tr2LightProfileRes$1.Resolve(this.lightProfilePath);
 	    }
 	  }
-	}, _EvePlaneLight.FadeType = FadeType, _EvePlaneLight), _descriptor17$p = _applyDecoratedDescriptor(_class4$h.prototype, "lightData", [_dec21$q], {
+	}, _EvePlaneLight.FadeType = FadeType, _EvePlaneLight), _descriptor17$p = _applyDecoratedDescriptor(_class4$h.prototype, "lightData", [_dec21$p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return new CjsLightData();
 	  }
-	}), _descriptor18$n = _applyDecoratedDescriptor(_class4$h.prototype, "saturation", [_dec22$p], {
+	}), _descriptor18$n = _applyDecoratedDescriptor(_class4$h.prototype, "saturation", [_dec22$o], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -240182,7 +241230,7 @@
 	    return "";
 	  }
 	}), _class4$h)) || _class3$j);
-	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$6 = notImplemented, _dec37$5 = byte, _dec38$5 = uint, _dec39$4 = list("EvePlaneSetItem"), _dec40$4 = list("EvePlaneLight"), _dec31$8(_class5$6 = (_class6$4 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
+	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$6 = notImplemented, _dec37$5 = byte, _dec38$5 = uint, _dec39$4 = boolean, _dec40$4 = list("EvePlaneSetItem"), _dec41$4 = list("EvePlaneLight"), _dec31$8(_class5$6 = (_class6$4 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor26$a, this);
@@ -240201,8 +241249,13 @@
 	     * @type {Number}
 	     */
 	    _initializerDefineProperty(this, "usage", _descriptor30$6, this);
+	    /** Carbon `m_isSkinned` / `SetIsSkinned` (EvePlaneSet.cpp:74,144; EveSOF.cpp:1242). */
+	    _initializerDefineProperty(this, "skinned", _descriptor31$5, this);
 	    this._vertexBuffer = null;
 	    this._indexBuffer = null;
+	    this._vertexArray = null;
+	    this._activationStrength = 1;
+	    this._worldScratch = mat4$2.create();
 	    this._decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
 	    /**
 	     * The plane set's item constructor
@@ -240213,7 +241266,7 @@
 	     * (`EvePlaneSet.h:87`).
 	     * @type {Array<EvePlaneLight>}
 	     */
-	    _initializerDefineProperty(this, "lights", _descriptor31$5, this);
+	    _initializerDefineProperty(this, "lights", _descriptor32$5, this);
 	    this._activationStrength = 1;
 	  }
 	  /** Carbon EvePlaneSet::SetShaderOption. */
@@ -240340,6 +241393,7 @@
 	        array[vtxOffset + 39] = item.blinkMode;
 	      }
 	    }
+	    this._vertexArray = array;
 	    var gl = device.gl,
 	      rebuildVertexBuffer = !this._vertexBuffer || this._vertexBuffer.count !== itemCount;
 	    if (!this._vertexBuffer) this._vertexBuffer = gl.createBuffer();
@@ -240395,6 +241449,69 @@
 	  }
 
 	  /**
+	   * Per frame update
+	   * @param {mat4} parentTransform
+	   * @param {Array<Tw2Bone>} bones
+	   * @param {Number} [spriteScale]
+	   * @param {Number} [activationStrength=1]
+	   */
+	  UpdateViewDependentData(parentTransform, bones, spriteScale) {
+	    var activationStrength = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+	    this._activationStrength = activationStrength;
+	    super.UpdateViewDependentData(parentTransform, bones);
+	  }
+
+	  /**
+	   * Rewrites the transform rows and colour of every quad in world space.
+	   *
+	   * Carbon `EvePlaneSet::AddToQuadRenderer` (`EvePlaneSet.cpp:173-230`) does
+	   * this every frame: `transform = data.transform [* bone] * parentTransform`
+	   * (row-vector; gl-matrix order is parent * bone * local) and
+	   * `color = data.color * activation`.
+	   * @private
+	   */
+	  _UploadWorldRows() {
+	    var array = this._vertexArray,
+	      items = this._visibleItems,
+	      vertexSize = EvePlaneSet.vertexSize,
+	      world = this._worldScratch,
+	      activation = this._activationStrength;
+	    if (!array || array.length !== items.length * 4 * vertexSize) return;
+	    for (var i = 0; i < items.length; ++i) {
+	      var item = items[i];
+	      // Carbon applies a bone only in the skinned branch, and only for an item that
+	      // has one (EvePlaneSet.cpp:191-207, :338): `data.transform * bone * parent`,
+	      // which reverses to `parent * bone * local` in gl-matrix order.
+	      var bone = this.skinned && item.boneIndex >= 0 ? item._bone : null;
+	      mat4$2.copy(world, item._localTransform);
+	      if (bone) mat4$2.multiply(world, bone.offsetTransform, world);
+	      mat4$2.multiply(world, this._parentTransform, world);
+	      for (var j = 0; j < 4; ++j) {
+	        var vtxOffset = (i * 4 + j) * vertexSize;
+	        array[vtxOffset] = world[0];
+	        array[vtxOffset + 1] = world[4];
+	        array[vtxOffset + 2] = world[8];
+	        array[vtxOffset + 3] = world[12];
+	        array[vtxOffset + 4] = world[1];
+	        array[vtxOffset + 5] = world[5];
+	        array[vtxOffset + 6] = world[9];
+	        array[vtxOffset + 7] = world[13];
+	        array[vtxOffset + 8] = world[2];
+	        array[vtxOffset + 9] = world[6];
+	        array[vtxOffset + 10] = world[10];
+	        array[vtxOffset + 11] = world[14];
+	        array[vtxOffset + 12] = item.color[0] * activation;
+	        array[vtxOffset + 13] = item.color[1] * activation;
+	        array[vtxOffset + 14] = item.color[2] * activation;
+	        array[vtxOffset + 15] = item.color[3] * EvePlaneSet.alphaMultiplier * activation;
+	      }
+	    }
+	    var gl = device.gl;
+	    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+	    gl.bufferSubData(gl.ARRAY_BUFFER, 0, array);
+	  }
+
+	  /**
 	   * Renders the plane set
 	   * @param {String} technique - technique name
 	   */
@@ -240402,6 +241519,12 @@
 	    if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
 	    var gl = device.gl;
 	    device.SetStandardStates(device.RM_ADDITIVE);
+
+	    // Carbon planeglow has no world matrix: its rows must already be in
+	    // world space. The gles2 shader applies the per-object world itself and
+	    // keeps the local rows written by Rebuild.
+	    var techniqueRes = this.effect.shader.techniques[technique];
+	    if (techniqueRes && techniqueRes.passes[0] && techniqueRes.passes[0].isCarbon) this._UploadWorldRows();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 	    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
@@ -240640,7 +241763,14 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _applyDecoratedDescriptor(_class6$4.prototype, "planes", [_dec39$4], Object.getOwnPropertyDescriptor(_class6$4.prototype, "planes"), _class6$4.prototype), _descriptor31$5 = _applyDecoratedDescriptor(_class6$4.prototype, "lights", [_dec40$4], {
+	}), _descriptor31$5 = _applyDecoratedDescriptor(_class6$4.prototype, "skinned", [_dec39$4], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return false;
+	  }
+	}), _applyDecoratedDescriptor(_class6$4.prototype, "planes", [_dec40$4], Object.getOwnPropertyDescriptor(_class6$4.prototype, "planes"), _class6$4.prototype), _descriptor32$5 = _applyDecoratedDescriptor(_class6$4.prototype, "lights", [_dec41$4], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -241260,7 +242390,7 @@
 	  }
 	}), _class2$4Y)) || _class$5r) || _class$5r);
 
-	var _dec$5q, _dec2$4_, _dec3$4z, _dec4$40, _dec5$3x, _dec6$33, _dec7$2C, _dec8$2h, _dec9$1W, _dec0$1M, _dec1$1D, _dec10$1p, _dec11$1i, _dec12$19, _class$5q, _class2$4X, _descriptor$4U, _descriptor2$4q, _descriptor3$3S, _descriptor4$3o, _descriptor5$2X, _descriptor6$2q, _descriptor7$1$, _descriptor8$1K, _descriptor9$1B, _descriptor0$1v, _descriptor1$1e, _descriptor10$16, _descriptor11$Z, _EveSpriteSetItem, _dec13$10, _dec14$V, _dec15$Q, _dec16$H, _dec17$C, _dec18$x, _dec19$u, _dec20$s, _dec21$p, _class3$h, _class4$f, _descriptor12$S, _descriptor13$N, _descriptor14$G, _descriptor15$y, _descriptor16$s, _descriptor17$o, _descriptor18$m, _descriptor19$h, _dec22$o, _dec23$k, _dec24$k, _dec25$i, _dec26$f, _dec27$e, _dec28$d, _class5$5, _class6$3, _descriptor20$h, _descriptor21$h, _descriptor22$g, _descriptor23$f, _descriptor24$e, _EveSpriteSet;
+	var _dec$5q, _dec2$4_, _dec3$4z, _dec4$40, _dec5$3x, _dec6$33, _dec7$2C, _dec8$2h, _dec9$1W, _dec0$1M, _dec1$1D, _dec10$1p, _dec11$1i, _dec12$19, _class$5q, _class2$4X, _descriptor$4U, _descriptor2$4q, _descriptor3$3S, _descriptor4$3o, _descriptor5$2X, _descriptor6$2q, _descriptor7$1$, _descriptor8$1K, _descriptor9$1B, _descriptor0$1v, _descriptor1$1e, _descriptor10$16, _descriptor11$Z, _EveSpriteSetItem, _dec13$10, _dec14$V, _dec15$Q, _dec16$H, _dec17$C, _dec18$x, _dec19$t, _dec20$r, _dec21$o, _class3$h, _class4$f, _descriptor12$S, _descriptor13$N, _descriptor14$G, _descriptor15$y, _descriptor16$r, _descriptor17$o, _descriptor18$m, _descriptor19$h, _dec22$n, _dec23$k, _dec24$k, _dec25$i, _dec26$f, _dec27$e, _dec28$d, _class5$5, _class6$3, _descriptor20$h, _descriptor21$h, _descriptor22$g, _descriptor23$f, _descriptor24$e, _EveSpriteSet;
 	class EveSpriteSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
@@ -241497,14 +242627,14 @@
 	}), _class2$4X)) || _class$5q);
 
 	/** Carbon EveSpriteLight: runtime SOF light record, separate from drawable items. */
-	var EveSpriteLight = (_dec13$10 = define("EveSpriteLight"), _dec14$V = struct("CjsLightData"), _dec15$Q = uint, _dec16$H = matrix4, _dec17$C = path, _dec18$x = float, _dec19$u = float, _dec20$s = float, _dec21$p = float, _dec13$10(_class3$h = (_class4$f = class EveSpriteLight extends Model$1 {
+	var EveSpriteLight = (_dec13$10 = define("EveSpriteLight"), _dec14$V = struct("CjsLightData"), _dec15$Q = uint, _dec16$H = matrix4, _dec17$C = path, _dec18$x = float, _dec19$t = float, _dec20$r = float, _dec21$o = float, _dec13$10(_class3$h = (_class4$f = class EveSpriteLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor12$S, this);
 	    _initializerDefineProperty(this, "index", _descriptor13$N, this);
 	    _initializerDefineProperty(this, "boneMatrix", _descriptor14$G, this);
 	    _initializerDefineProperty(this, "lightProfilePath", _descriptor15$y, this);
-	    _initializerDefineProperty(this, "blinkPhase", _descriptor16$s, this);
+	    _initializerDefineProperty(this, "blinkPhase", _descriptor16$r, this);
 	    _initializerDefineProperty(this, "blinkRate", _descriptor17$o, this);
 	    _initializerDefineProperty(this, "minScale", _descriptor18$m, this);
 	    _initializerDefineProperty(this, "maxScale", _descriptor19$h, this);
@@ -241545,28 +242675,28 @@
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor16$s = _applyDecoratedDescriptor(_class4$f.prototype, "blinkPhase", [_dec18$x], {
+	}), _descriptor16$r = _applyDecoratedDescriptor(_class4$f.prototype, "blinkPhase", [_dec18$x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor17$o = _applyDecoratedDescriptor(_class4$f.prototype, "blinkRate", [_dec19$u], {
+	}), _descriptor17$o = _applyDecoratedDescriptor(_class4$f.prototype, "blinkRate", [_dec19$t], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor18$m = _applyDecoratedDescriptor(_class4$f.prototype, "minScale", [_dec20$s], {
+	}), _descriptor18$m = _applyDecoratedDescriptor(_class4$f.prototype, "minScale", [_dec20$r], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor19$h = _applyDecoratedDescriptor(_class4$f.prototype, "maxScale", [_dec21$p], {
+	}), _descriptor19$h = _applyDecoratedDescriptor(_class4$f.prototype, "maxScale", [_dec21$o], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -241574,7 +242704,7 @@
 	    return 0;
 	  }
 	}), _class4$f)) || _class3$h);
-	var EveSpriteSet = (_dec22$o = define("EveSpriteSet", true), _dec23$k = list("EveSpriteLight"), _dec24$k = string, _dec25$i = struct("Tw2Effect"), _dec26$f = boolean, _dec27$e = boolean, _dec28$d = list("EveSpriteSetItem"), _dec22$o(_class5$5 = (_class6$3 = (_EveSpriteSet = class EveSpriteSet extends EveObjectSet {
+	var EveSpriteSet = (_dec22$n = define("EveSpriteSet", true), _dec23$k = list("EveSpriteLight"), _dec24$k = string, _dec25$i = struct("Tw2Effect"), _dec26$f = boolean, _dec27$e = boolean, _dec28$d = list("EveSpriteSetItem"), _dec22$n(_class5$5 = (_class6$3 = (_EveSpriteSet = class EveSpriteSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lights", _descriptor20$h, this);
@@ -241587,6 +242717,7 @@
 	    this._vertexBuffer = null;
 	    this._indexBuffer = null;
 	    this._instanceBuffer = null;
+	    this._quadIndexBuffer = null;
 	    this._decl = null;
 	    this._vdecl = Tw2VertexDeclaration.from([{
 	      usage: "TEXCOORD",
@@ -241740,6 +242871,10 @@
 	      gl.deleteBuffer(this._instanceBuffer);
 	      this._instanceBuffer = null;
 	    }
+	    if (this._quadIndexBuffer) {
+	      gl.deleteBuffer(this._quadIndexBuffer);
+	      this._quadIndexBuffer = null;
+	    }
 	    super.Unload(opt);
 	  }
 
@@ -241758,8 +242893,15 @@
 	    if (this.useQuads) {
 	      this._vertexBuffer = gl.createBuffer();
 	      gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-	      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 2, 2, 3, 0]), gl.STATIC_DRAW);
+	      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 2, 3]), gl.STATIC_DRAW);
 	      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+	      // Carbon draws the pool indexed (Tr2QuadRenderer.cpp:206-235, 297-318): the
+	      // dx11 shader takes the corner from SV_VertexID, which must stay in 0..3.
+	      if (this._quadIndexBuffer) gl.deleteBuffer(this._quadIndexBuffer);
+	      this._quadIndexBuffer = gl.createBuffer();
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+	      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 2, 1, 0, 3, 2]), gl.STATIC_DRAW);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 	      this._instanceBuffer = gl.createBuffer();
 	      super.Rebuild(opt);
 	      return;
@@ -241942,7 +243084,8 @@
 	      gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
 	      var resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
 	      d.ApplyShadowState();
-	      gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+	      gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, itemCount);
 	      this._decl.ResetInstanceDivisors(d, resetData);
 	    }
 	    return true;
@@ -241998,7 +243141,8 @@
 	      gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
 	      var resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
 	      d.ApplyShadowState();
-	      gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._quadIndexBuffer);
+	      gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, itemCount);
 	      this._decl.ResetInstanceDivisors(d, resetData);
 	    }
 	    return true;
@@ -242122,7 +243266,7 @@
 	  }
 	}), _applyDecoratedDescriptor(_class6$3.prototype, "sprites", [_dec28$d], Object.getOwnPropertyDescriptor(_class6$3.prototype, "sprites"), _class6$3.prototype), _class6$3)) || _class5$5);
 
-	var _dec$5p, _dec2$4Z, _dec3$4y, _dec4$3$, _dec5$3w, _dec6$32, _dec7$2B, _dec8$2g, _dec9$1V, _dec0$1L, _class$5p, _class2$4W, _descriptor$4T, _descriptor2$4p, _descriptor3$3R, _descriptor4$3n, _descriptor5$2W, _descriptor6$2p, _descriptor7$1_, _descriptor8$1J, _descriptor9$1A, _dec1$1C, _dec10$1o, _dec11$1h, _dec12$18, _dec13$$, _dec14$U, _dec15$P, _dec16$G, _dec17$B, _dec18$w, _dec19$t, _dec20$r, _dec21$o, _dec22$n, _dec23$j, _dec24$j, _dec25$h, _dec26$e, _dec27$d, _dec28$c, _dec29$9, _class3$g, _class4$e, _descriptor0$1u, _descriptor1$1d, _descriptor10$15, _descriptor11$Y, _descriptor12$R, _descriptor13$M, _descriptor14$F, _descriptor15$x, _descriptor16$r, _descriptor17$n, _descriptor18$l, _descriptor19$g, _descriptor20$g, _descriptor21$g, _descriptor22$f, _descriptor23$e, _descriptor24$d, _descriptor25$c, _EveBoosterSet$1;
+	var _dec$5p, _dec2$4Z, _dec3$4y, _dec4$3$, _dec5$3w, _dec6$32, _dec7$2B, _dec8$2g, _dec9$1V, _dec0$1L, _class$5p, _class2$4W, _descriptor$4T, _descriptor2$4p, _descriptor3$3R, _descriptor4$3n, _descriptor5$2W, _descriptor6$2p, _descriptor7$1_, _descriptor8$1J, _descriptor9$1A, _dec1$1C, _dec10$1o, _dec11$1h, _dec12$18, _dec13$$, _dec14$U, _dec15$P, _dec16$G, _dec17$B, _dec18$w, _dec19$s, _dec20$q, _dec21$n, _dec22$m, _dec23$j, _dec24$j, _dec25$h, _dec26$e, _dec27$d, _dec28$c, _dec29$9, _class3$g, _class4$e, _descriptor0$1u, _descriptor1$1d, _descriptor10$15, _descriptor11$Y, _descriptor12$R, _descriptor13$M, _descriptor14$F, _descriptor15$x, _descriptor16$q, _descriptor17$n, _descriptor18$l, _descriptor19$g, _descriptor20$g, _descriptor21$g, _descriptor22$f, _descriptor23$e, _descriptor24$d, _descriptor25$c, _EveBoosterSet$1;
 
 	/**
 	 * Booster render batch
@@ -242293,7 +243437,7 @@
 	 * Todo: replace locator update with bones...
 	 */
 
-	var EveBoosterSet = (_dec1$1C = define("EveBoosterSet", true), _dec10$1o = notImplemented, _dec11$1h = boolean, _dec12$18 = struct("Tw2Effect"), _dec13$$ = color$2, _dec14$U = struct("EveSpriteSet"), _dec15$P = float, _dec16$G = color$2, _dec17$B = float, _dec18$w = float, _dec19$t = notImplemented, _dec20$r = float, _dec21$o = float, _dec22$n = color$2, _dec23$j = vector4, _dec24$j = color$2, _dec25$h = color$2, _dec26$e = float, _dec27$d = float, _dec28$c = float, _dec29$9 = plain, _dec1$1C(_class3$g = (_class4$e = (_EveBoosterSet$1 = class EveBoosterSet extends EveObjectSet {
+	var EveBoosterSet = (_dec1$1C = define("EveBoosterSet", true), _dec10$1o = notImplemented, _dec11$1h = boolean, _dec12$18 = struct("Tw2Effect"), _dec13$$ = color$2, _dec14$U = struct("EveSpriteSet"), _dec15$P = float, _dec16$G = color$2, _dec17$B = float, _dec18$w = float, _dec19$s = notImplemented, _dec20$q = float, _dec21$n = float, _dec22$m = color$2, _dec23$j = vector4, _dec24$j = color$2, _dec25$h = color$2, _dec26$e = float, _dec27$d = float, _dec28$c = float, _dec29$9 = plain, _dec1$1C(_class3$g = (_class4$e = (_EveBoosterSet$1 = class EveBoosterSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "alwaysOn", _descriptor0$1u, this);
@@ -242306,7 +243450,7 @@
 	    // 1.0; (ugly)
 	    _initializerDefineProperty(this, "haloScaleY", _descriptor15$x, this);
 	    // 1.0; (ugly)
-	    _initializerDefineProperty(this, "maxVel", _descriptor16$r, this);
+	    _initializerDefineProperty(this, "maxVel", _descriptor16$q, this);
 	    _initializerDefineProperty(this, "symHaloScale", _descriptor17$n, this);
 	    // 1.0 (ugly)
 	    _initializerDefineProperty(this, "trailColor", _descriptor18$l, this);
@@ -242837,21 +243981,21 @@
 	  initializer: function () {
 	    return 0.0;
 	  }
-	}), _descriptor16$r = _applyDecoratedDescriptor(_class4$e.prototype, "maxVel", [_dec19$t, _dec20$r], {
+	}), _descriptor16$q = _applyDecoratedDescriptor(_class4$e.prototype, "maxVel", [_dec19$s, _dec20$q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 250;
 	  }
-	}), _descriptor17$n = _applyDecoratedDescriptor(_class4$e.prototype, "symHaloScale", [_dec21$o], {
+	}), _descriptor17$n = _applyDecoratedDescriptor(_class4$e.prototype, "symHaloScale", [_dec21$n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0.0;
 	  }
-	}), _descriptor18$l = _applyDecoratedDescriptor(_class4$e.prototype, "trailColor", [_dec22$n], {
+	}), _descriptor18$l = _applyDecoratedDescriptor(_class4$e.prototype, "trailColor", [_dec22$m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -244562,7 +245706,7 @@
 	  }
 	}), _class2$4S)) || _class$5l);
 
-	var _dec$5k, _dec2$4U, _dec3$4t, _dec4$3W, _dec5$3r, _dec6$2Z, _dec7$2w, _dec8$2b, _dec9$1Q, _dec0$1G, _dec1$1x, _dec10$1j, _dec11$1c, _dec12$13, _dec13$X, _class$5k, _class2$4R, _descriptor$4O, _descriptor2$4k, _descriptor3$3M, _descriptor4$3i, _descriptor5$2R, _descriptor6$2k, _descriptor7$1V, _descriptor8$1F, _descriptor9$1w, _descriptor0$1q, _descriptor1$1b, _descriptor10$13, _descriptor11$W, _descriptor12$Q, _dec14$S, _dec15$O, _dec16$F, _dec17$A, _dec18$v, _dec19$s, _class3$d, _class4$c, _descriptor13$L, _descriptor14$E, _descriptor15$w, _descriptor16$q, _descriptor17$m, _dec20$q, _dec21$n, _dec22$m, _dec23$i, _dec24$i, _dec25$g, _dec26$d, _dec27$c, _dec28$b, _class5$3, _class6$1, _descriptor18$k, _descriptor19$f, _descriptor20$f, _descriptor21$f, _descriptor22$e, _descriptor23$d, _descriptor24$c, _EveSpotlightSet;
+	var _dec$5k, _dec2$4U, _dec3$4t, _dec4$3W, _dec5$3r, _dec6$2Z, _dec7$2w, _dec8$2b, _dec9$1Q, _dec0$1G, _dec1$1x, _dec10$1j, _dec11$1c, _dec12$13, _dec13$X, _class$5k, _class2$4R, _descriptor$4O, _descriptor2$4k, _descriptor3$3M, _descriptor4$3i, _descriptor5$2R, _descriptor6$2k, _descriptor7$1V, _descriptor8$1F, _descriptor9$1w, _descriptor0$1q, _descriptor1$1b, _descriptor10$13, _descriptor11$W, _descriptor12$Q, _dec14$S, _dec15$O, _dec16$F, _dec17$A, _dec18$v, _dec19$r, _class3$d, _class4$c, _descriptor13$L, _descriptor14$E, _descriptor15$w, _descriptor16$p, _descriptor17$m, _dec20$p, _dec21$m, _dec22$l, _dec23$i, _dec24$i, _dec25$g, _dec26$d, _dec27$c, _dec28$b, _class5$3, _class6$1, _descriptor18$k, _descriptor19$f, _descriptor20$f, _descriptor21$f, _descriptor22$e, _descriptor23$d, _descriptor24$c, _EveSpotlightSet;
 	class EveSpotlightSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
@@ -244765,13 +245909,13 @@
 	}), _class2$4R)) || _class$5k);
 
 	/** Carbon EveSpotlightLight: runtime SOF light record, separate from drawable items. */
-	var EveSpotlightLight = (_dec14$S = define("EveSpotlightLight"), _dec15$O = struct("CjsLightData"), _dec16$F = uint, _dec17$A = matrix4, _dec18$v = path, _dec19$s = boolean, _dec14$S(_class3$d = (_class4$c = class EveSpotlightLight extends Model$1 {
+	var EveSpotlightLight = (_dec14$S = define("EveSpotlightLight"), _dec15$O = struct("CjsLightData"), _dec16$F = uint, _dec17$A = matrix4, _dec18$v = path, _dec19$r = boolean, _dec14$S(_class3$d = (_class4$c = class EveSpotlightLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor13$L, this);
 	    _initializerDefineProperty(this, "index", _descriptor14$E, this);
 	    _initializerDefineProperty(this, "boneMatrix", _descriptor15$w, this);
-	    _initializerDefineProperty(this, "lightProfilePath", _descriptor16$q, this);
+	    _initializerDefineProperty(this, "lightProfilePath", _descriptor16$p, this);
 	    _initializerDefineProperty(this, "boosterGainInfluence", _descriptor17$m, this);
 	    this.lightProfile = null;
 	    this._resolvedProfilePath = "";
@@ -244803,14 +245947,14 @@
 	  initializer: function () {
 	    return mat4$2.create();
 	  }
-	}), _descriptor16$q = _applyDecoratedDescriptor(_class4$c.prototype, "lightProfilePath", [_dec18$v], {
+	}), _descriptor16$p = _applyDecoratedDescriptor(_class4$c.prototype, "lightProfilePath", [_dec18$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor17$m = _applyDecoratedDescriptor(_class4$c.prototype, "boosterGainInfluence", [_dec19$s], {
+	}), _descriptor17$m = _applyDecoratedDescriptor(_class4$c.prototype, "boosterGainInfluence", [_dec19$r], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -244818,7 +245962,7 @@
 	    return false;
 	  }
 	}), _class4$c)) || _class3$d);
-	var EveSpotlightSet = (_dec20$q = define("EveSpotlightSet", true), _dec21$n = list("EveSpotlightLight"), _dec22$m = string, _dec23$i = struct("Tw2Effect"), _dec24$i = struct("Tw2Effect"), _dec25$g = float, _dec26$d = boolean, _dec27$c = boolean, _dec28$b = list("EveSpotlightSetItem"), _dec20$q(_class5$3 = (_class6$1 = (_EveSpotlightSet = class EveSpotlightSet extends EveObjectSet {
+	var EveSpotlightSet = (_dec20$p = define("EveSpotlightSet", true), _dec21$m = list("EveSpotlightLight"), _dec22$l = string, _dec23$i = struct("Tw2Effect"), _dec24$i = struct("Tw2Effect"), _dec25$g = float, _dec26$d = boolean, _dec27$c = boolean, _dec28$b = list("EveSpotlightSetItem"), _dec20$p(_class5$3 = (_class6$1 = (_EveSpotlightSet = class EveSpotlightSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lights", _descriptor18$k, this);
@@ -245268,14 +246412,14 @@
 	  usage: "TEXCOORD",
 	  usageIndex: 4,
 	  elements: 3
-	}], _EveSpotlightSet), _descriptor18$k = _applyDecoratedDescriptor(_class6$1.prototype, "lights", [_dec21$n], {
+	}], _EveSpotlightSet), _descriptor18$k = _applyDecoratedDescriptor(_class6$1.prototype, "lights", [_dec21$m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor19$f = _applyDecoratedDescriptor(_class6$1.prototype, "name", [_dec22$m], {
+	}), _descriptor19$f = _applyDecoratedDescriptor(_class6$1.prototype, "name", [_dec22$l], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -245657,7 +246801,7 @@
 	  return out ? vec3$3.copy(out, value) : value;
 	}
 
-	var _dec$5i, _dec2$4S, _dec3$4r, _dec4$3U, _dec5$3p, _dec6$2X, _class$5i, _class2$4P, _descriptor$4M, _descriptor2$4i, _descriptor3$3K, _descriptor4$3g, _descriptor5$2P, _dec7$2u, _dec8$29, _dec9$1P, _dec0$1F, _dec1$1w, _dec10$1i, _dec11$1b, _dec12$12, _dec13$W, _dec14$R, _dec15$N, _dec16$E, _dec17$z, _dec18$u, _dec19$r, _dec20$p, _dec21$m, _dec22$l, _dec23$h, _dec24$h, _dec25$f, _dec26$c, _dec27$b, _dec28$a, _dec29$8, _dec30$7, _dec31$7, _dec32$7, _dec33$6, _dec34$6, _dec35$6, _dec36$5, _dec37$4, _dec38$4, _dec39$3, _dec40$3, _dec41$3, _dec42$3, _dec43$3, _dec44$3, _dec45$3, _dec46$2, _dec47$1, _dec48$1, _dec49$1, _dec50$1, _dec51$1, _dec52$1, _dec53$1, _dec54$1, _dec55$1, _dec56$1, _dec57$1, _dec58$1, _dec59$1, _dec60$1, _dec61$1, _class3$c, _class4$b, _descriptor6$2i, _descriptor7$1U, _descriptor8$1E, _descriptor9$1v, _descriptor0$1p, _descriptor1$1a, _descriptor10$12, _descriptor11$V, _descriptor12$P, _descriptor13$K, _descriptor14$D, _descriptor15$v, _descriptor16$p, _descriptor17$l, _descriptor18$j, _descriptor19$e, _descriptor20$e, _descriptor21$e, _descriptor22$d, _descriptor23$c, _descriptor24$b, _descriptor25$b, _descriptor26$9, _descriptor27$7, _descriptor28$7, _descriptor29$5, _descriptor30$5, _descriptor31$4, _descriptor32$4, _descriptor33$4, _descriptor34$4, _descriptor35$4, _descriptor36$4, _descriptor37$3, _descriptor38$3, _descriptor39$3, _descriptor40$3, _descriptor41$3, _descriptor42$3, _descriptor43$1, _descriptor44$1, _descriptor45$1, _descriptor46$1, _descriptor47$1, _EveTurretSet;
+	var _dec$5i, _dec2$4S, _dec3$4r, _dec4$3U, _dec5$3p, _dec6$2X, _class$5i, _class2$4P, _descriptor$4M, _descriptor2$4i, _descriptor3$3K, _descriptor4$3g, _descriptor5$2P, _dec7$2u, _dec8$29, _dec9$1P, _dec0$1F, _dec1$1w, _dec10$1i, _dec11$1b, _dec12$12, _dec13$W, _dec14$R, _dec15$N, _dec16$E, _dec17$z, _dec18$u, _dec19$q, _dec20$o, _dec21$l, _dec22$k, _dec23$h, _dec24$h, _dec25$f, _dec26$c, _dec27$b, _dec28$a, _dec29$8, _dec30$7, _dec31$7, _dec32$7, _dec33$6, _dec34$6, _dec35$6, _dec36$5, _dec37$4, _dec38$4, _dec39$3, _dec40$3, _dec41$3, _dec42$3, _dec43$3, _dec44$3, _dec45$3, _dec46$2, _dec47$1, _dec48$1, _dec49$1, _dec50$1, _dec51$1, _dec52$1, _dec53$1, _dec54$1, _dec55$1, _dec56$1, _dec57$1, _dec58$1, _dec59$1, _dec60$1, _dec61$1, _class3$c, _class4$b, _descriptor6$2i, _descriptor7$1U, _descriptor8$1E, _descriptor9$1v, _descriptor0$1p, _descriptor1$1a, _descriptor10$12, _descriptor11$V, _descriptor12$P, _descriptor13$K, _descriptor14$D, _descriptor15$v, _descriptor16$o, _descriptor17$l, _descriptor18$j, _descriptor19$e, _descriptor20$e, _descriptor21$e, _descriptor22$d, _descriptor23$c, _descriptor24$b, _descriptor25$b, _descriptor26$9, _descriptor27$7, _descriptor28$7, _descriptor29$5, _descriptor30$5, _descriptor31$4, _descriptor32$4, _descriptor33$4, _descriptor34$4, _descriptor35$4, _descriptor36$4, _descriptor37$3, _descriptor38$3, _descriptor39$3, _descriptor40$3, _descriptor41$3, _descriptor42$3, _descriptor43$1, _descriptor44$1, _descriptor45$1, _descriptor46$1, _descriptor47$1, _EveTurretSet;
 
 	/**
 	 * Todo: update with bone offset?
@@ -245766,7 +246910,7 @@
 	    return quat$2.create();
 	  }
 	}), _class2$4P)) || _class$5i);
-	var EveTurretSet = (_dec7$2u = define("EveTurretSet", true), _dec8$29 = stage(1), _dec9$1P = string, _dec0$1F = float, _dec1$1w = vector4, _dec10$1i = boolean, _dec11$1b = uint, _dec12$12 = path, _dec13$W = path, _dec14$R = string, _dec15$N = string, _dec16$E = notImplemented, _dec17$z = boolean, _dec18$u = float, _dec19$r = uint, _dec20$p = notImplemented, _dec21$m = boolean, _dec22$l = notImplemented, _dec23$h = vector3, _dec24$h = notImplemented, _dec25$f = quaternion, _dec26$c = notImplemented, _dec27$b = vector3, _dec28$a = notImplemented, _dec29$8 = boolean, _dec30$7 = notImplemented, _dec31$7 = struct(), _dec32$7 = uint, _dec33$6 = float, _dec34$6 = boolean, _dec35$6 = string, _dec36$5 = uint, _dec37$4 = notImplemented, _dec38$4 = struct(), _dec39$3 = boolean, _dec40$3 = float, _dec41$3 = float, _dec42$3 = float, _dec43$3 = float, _dec44$3 = float, _dec45$3 = float, _dec46$2 = float, _dec47$1 = float, _dec48$1 = float, _dec49$1 = float, _dec50$1 = float, _dec51$1 = struct("Tw2Effect"), _dec52$1 = boolean, _dec53$1 = notImplemented, _dec54$1 = boolean, _dec55$1 = boolean, _dec56$1 = struct(), _dec57$1 = struct("EveTurretTarget"), _dec58$1 = struct("Tw2GeometryResource"), _dec59$1 = todo("Make private"), _dec60$1 = plain, _dec61$1 = todo("Update parent class and replace with direct value"), _dec7$2u(_class3$c = _dec8$29(_class3$c = (_class4$b = (_EveTurretSet = class EveTurretSet extends EveObjectSet {
+	var EveTurretSet = (_dec7$2u = define("EveTurretSet", true), _dec8$29 = stage(1), _dec9$1P = string, _dec0$1F = float, _dec1$1w = vector4, _dec10$1i = boolean, _dec11$1b = uint, _dec12$12 = path, _dec13$W = path, _dec14$R = string, _dec15$N = string, _dec16$E = notImplemented, _dec17$z = boolean, _dec18$u = float, _dec19$q = uint, _dec20$o = notImplemented, _dec21$l = boolean, _dec22$k = notImplemented, _dec23$h = vector3, _dec24$h = notImplemented, _dec25$f = quaternion, _dec26$c = notImplemented, _dec27$b = vector3, _dec28$a = notImplemented, _dec29$8 = boolean, _dec30$7 = notImplemented, _dec31$7 = struct(), _dec32$7 = uint, _dec33$6 = float, _dec34$6 = boolean, _dec35$6 = string, _dec36$5 = uint, _dec37$4 = notImplemented, _dec38$4 = struct(), _dec39$3 = boolean, _dec40$3 = float, _dec41$3 = float, _dec42$3 = float, _dec43$3 = float, _dec44$3 = float, _dec45$3 = float, _dec46$2 = float, _dec47$1 = float, _dec48$1 = float, _dec49$1 = float, _dec50$1 = float, _dec51$1 = struct("Tw2Effect"), _dec52$1 = boolean, _dec53$1 = notImplemented, _dec54$1 = boolean, _dec55$1 = boolean, _dec56$1 = struct(), _dec57$1 = struct("EveTurretTarget"), _dec58$1 = struct("Tw2GeometryResource"), _dec59$1 = todo("Make private"), _dec60$1 = plain, _dec61$1 = todo("Update parent class and replace with direct value"), _dec7$2u(_class3$c = _dec8$29(_class3$c = (_class4$b = (_EveTurretSet = class EveTurretSet extends EveObjectSet {
 	  /**
 	   * Attaches the Carbon packer and its buffers to both per-object data sets.
 	   *
@@ -245810,7 +246954,7 @@
 	     */
 	    _initializerDefineProperty(this, "state", _descriptor15$v, this);
 	    /** m_useLowLodFiringTransform (bool) [RW, PERSIST] (ctor cpp:131). */
-	    _initializerDefineProperty(this, "useLowLodFiringTransform", _descriptor16$p, this);
+	    _initializerDefineProperty(this, "useLowLodFiringTransform", _descriptor16$o, this);
 	    /** m_lowLodFiringEffectScale (Vector3) [RW, PERSIST] - 0 keeps default behaviour (cpp:129). */
 	    _initializerDefineProperty(this, "lowLodFiringEffectScale", _descriptor17$l, this);
 	    /** m_lowLodFiringEffectRotation (Quaternion) [RW, PERSIST] (cpp:130). */
@@ -247302,21 +248446,21 @@
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor15$v = _applyDecoratedDescriptor(_class4$b.prototype, "state", [_dec19$r], {
+	}), _descriptor15$v = _applyDecoratedDescriptor(_class4$b.prototype, "state", [_dec19$q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 2;
 	  }
-	}), _descriptor16$p = _applyDecoratedDescriptor(_class4$b.prototype, "useLowLodFiringTransform", [_dec20$p, _dec21$m], {
+	}), _descriptor16$o = _applyDecoratedDescriptor(_class4$b.prototype, "useLowLodFiringTransform", [_dec20$o, _dec21$l], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor17$l = _applyDecoratedDescriptor(_class4$b.prototype, "lowLodFiringEffectScale", [_dec22$l, _dec23$h], {
+	}), _descriptor17$l = _applyDecoratedDescriptor(_class4$b.prototype, "lowLodFiringEffectScale", [_dec22$k, _dec23$h], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -248189,7 +249333,7 @@
 	  sph3_0: sph3$2.create()
 	}, _IEveLineSetPath.IDENTITY = mat4$2.create(), _IEveLineSetPath)) || _class$5f);
 
-	var _dec$5e, _dec2$4Q, _dec3$4p, _dec4$3S, _dec5$3n, _dec6$2V, _dec7$2s, _dec8$27, _dec9$1N, _dec0$1D, _dec1$1v, _dec10$1h, _dec11$1a, _dec12$11, _dec13$V, _dec14$Q, _dec15$M, _dec16$D, _dec17$y, _dec18$t, _class$5e, _class2$4N, _descriptor$4K, _descriptor2$4g, _descriptor3$3I, _descriptor4$3e, _descriptor5$2N, _descriptor6$2g, _descriptor7$1S, _descriptor8$1C, _descriptor9$1t, _descriptor0$1o, _descriptor1$19, _descriptor10$11, _descriptor11$U, _descriptor12$O, _descriptor13$J, _descriptor14$C, _descriptor15$u, _descriptor16$o, _descriptor17$k;
+	var _dec$5e, _dec2$4Q, _dec3$4p, _dec4$3S, _dec5$3n, _dec6$2V, _dec7$2s, _dec8$27, _dec9$1N, _dec0$1D, _dec1$1v, _dec10$1h, _dec11$1a, _dec12$11, _dec13$V, _dec14$Q, _dec15$M, _dec16$D, _dec17$y, _dec18$t, _class$5e, _class2$4N, _descriptor$4K, _descriptor2$4g, _descriptor3$3I, _descriptor4$3e, _descriptor5$2N, _descriptor6$2g, _descriptor7$1S, _descriptor8$1C, _descriptor9$1t, _descriptor0$1o, _descriptor1$19, _descriptor10$11, _descriptor11$U, _descriptor12$O, _descriptor13$J, _descriptor14$C, _descriptor15$u, _descriptor16$n, _descriptor17$k;
 
 	/**
 	 * A quadratic bezier for an `EveChildLineSet` to draw along: `point1` to
@@ -248218,7 +249362,7 @@
 	    _initializerDefineProperty(this, "point1", _descriptor13$J, this);
 	    _initializerDefineProperty(this, "point2", _descriptor14$C, this);
 	    _initializerDefineProperty(this, "scaleEndpoints", _descriptor15$u, this);
-	    _initializerDefineProperty(this, "scaleSegmentsByCompleteness", _descriptor16$o, this);
+	    _initializerDefineProperty(this, "scaleSegmentsByCompleteness", _descriptor16$n, this);
 	    _initializerDefineProperty(this, "segments", _descriptor17$k, this);
 	    /** Remembered mesh size, see `CalculateBoundingSphere`. */
 	    this._meshSize = 0;
@@ -248473,7 +249617,7 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor16$o = _applyDecoratedDescriptor(_class2$4N.prototype, "scaleSegmentsByCompleteness", [_dec17$y], {
+	}), _descriptor16$n = _applyDecoratedDescriptor(_class2$4N.prototype, "scaleSegmentsByCompleteness", [_dec17$y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -248489,7 +249633,7 @@
 	  }
 	}), _class2$4N)) || _class$5e);
 
-	var _dec$5d, _dec2$4P, _dec3$4o, _dec4$3R, _dec5$3m, _dec6$2U, _dec7$2r, _dec8$26, _dec9$1M, _dec0$1C, _dec1$1u, _dec10$1g, _dec11$19, _dec12$10, _dec13$U, _dec14$P, _dec15$L, _dec16$C, _dec17$x, _class$5d, _class2$4M, _descriptor$4J, _descriptor2$4f, _descriptor3$3H, _descriptor4$3d, _descriptor5$2M, _descriptor6$2f, _descriptor7$1R, _descriptor8$1B, _descriptor9$1s, _descriptor0$1n, _descriptor1$18, _descriptor10$10, _descriptor11$T, _descriptor12$N, _descriptor13$I, _descriptor14$B, _descriptor15$t, _descriptor16$n;
+	var _dec$5d, _dec2$4P, _dec3$4o, _dec4$3R, _dec5$3m, _dec6$2U, _dec7$2r, _dec8$26, _dec9$1M, _dec0$1C, _dec1$1u, _dec10$1g, _dec11$19, _dec12$10, _dec13$U, _dec14$P, _dec15$L, _dec16$C, _dec17$x, _class$5d, _class2$4M, _descriptor$4J, _descriptor2$4f, _descriptor3$3H, _descriptor4$3d, _descriptor5$2M, _descriptor6$2f, _descriptor7$1R, _descriptor8$1B, _descriptor9$1s, _descriptor0$1n, _descriptor1$18, _descriptor10$10, _descriptor11$T, _descriptor12$N, _descriptor13$I, _descriptor14$B, _descriptor15$t, _descriptor16$m;
 
 	/**
 	 * A ring of points for an `EveChildLineSet` to draw along, optionally squashed
@@ -248519,7 +249663,7 @@
 	    _initializerDefineProperty(this, "billboardObjects", _descriptor13$I, this);
 	    _initializerDefineProperty(this, "objectScale", _descriptor14$B, this);
 	    _initializerDefineProperty(this, "movementSpeed", _descriptor15$t, this);
-	    _initializerDefineProperty(this, "animValue", _descriptor16$n, this);
+	    _initializerDefineProperty(this, "animValue", _descriptor16$m, this);
 	    /** Remembered mesh size, see `CalculateBoundingSphere`. */
 	    this._meshSize = 0;
 	  }
@@ -248752,7 +249896,7 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor16$n = _applyDecoratedDescriptor(_class2$4M.prototype, "animValue", [_dec17$x], {
+	}), _descriptor16$m = _applyDecoratedDescriptor(_class2$4M.prototype, "animValue", [_dec17$x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -249148,7 +250292,7 @@
 	  }
 	}), _applyDecoratedDescriptor(_class$5b.prototype, "GetResources", [_dec4$3P], Object.getOwnPropertyDescriptor(_class$5b.prototype, "GetResources"), _class$5b.prototype), _applyDecoratedDescriptor(_class$5b.prototype, "Update", [_dec5$3k], Object.getOwnPropertyDescriptor(_class$5b.prototype, "Update"), _class$5b.prototype), _applyDecoratedDescriptor(_class$5b.prototype, "UpdateViewDependentData", [_dec6$2S], Object.getOwnPropertyDescriptor(_class$5b.prototype, "UpdateViewDependentData"), _class$5b.prototype), _applyDecoratedDescriptor(_class$5b.prototype, "GetBatches", [_dec7$2p], Object.getOwnPropertyDescriptor(_class$5b.prototype, "GetBatches"), _class$5b.prototype), _class$5b);
 
-	var _dec$5a, _dec2$4M, _dec3$4l, _dec4$3O, _dec5$3j, _dec6$2R, _dec7$2o, _dec8$24, _dec9$1L, _dec0$1B, _dec1$1t, _dec10$1f, _dec11$18, _dec12$$, _dec13$T, _dec14$O, _dec15$K, _dec16$B, _dec17$w, _dec18$s, _dec19$q, _dec20$o, _dec21$l, _dec22$k, _dec23$g, _dec24$g, _dec25$e, _class$5a, _class2$4K, _descriptor$4G, _descriptor2$4c, _descriptor3$3E, _descriptor4$3b, _descriptor5$2K, _descriptor6$2d, _descriptor7$1P, _descriptor8$1A, _descriptor9$1r, _descriptor0$1m, _descriptor1$17, _descriptor10$$, _descriptor11$S, _descriptor12$M, _descriptor13$H, _descriptor14$A, _descriptor15$s, _descriptor16$m, _descriptor17$j, _descriptor18$i, _EveTransform;
+	var _dec$5a, _dec2$4M, _dec3$4l, _dec4$3O, _dec5$3j, _dec6$2R, _dec7$2o, _dec8$24, _dec9$1L, _dec0$1B, _dec1$1t, _dec10$1f, _dec11$18, _dec12$$, _dec13$T, _dec14$O, _dec15$K, _dec16$B, _dec17$w, _dec18$s, _dec19$p, _dec20$n, _dec21$k, _dec22$j, _dec23$g, _dec24$g, _dec25$e, _class$5a, _class2$4K, _descriptor$4G, _descriptor2$4c, _descriptor3$3E, _descriptor4$3b, _descriptor5$2K, _descriptor6$2d, _descriptor7$1P, _descriptor8$1A, _descriptor9$1r, _descriptor0$1m, _descriptor1$17, _descriptor10$$, _descriptor11$S, _descriptor12$M, _descriptor13$H, _descriptor14$A, _descriptor15$s, _descriptor16$l, _descriptor17$j, _descriptor18$i, _EveTransform;
 	var Modifier = {
 	  NONE: 0,
 	  BILLBOARD: 1,
@@ -249160,7 +250304,7 @@
 	  EVE_SIMPLE_HALO: 102,
 	  EVE_CAMERA_ROTATION: 103
 	};
-	var EveTransform = (_dec$5a = define("EveTransform", true), _dec2$4M = string, _dec3$4l = list("EveObject"), _dec4$3O = list("Tw2CurveSet"), _dec5$3j = boolean, _dec6$2R = notImplemented, _dec7$2o = float, _dec8$24 = notImplemented, _dec9$1L = float, _dec0$1B = notImplemented, _dec1$1t = boolean, _dec10$1f = struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec11$18 = uint, _dec12$$ = enums(Modifier), _dec13$T = list("Tr2ObserverLocal"), _dec14$O = vector3, _dec15$K = vector3, _dec16$B = list("EveParticleEmitter"), _dec17$w = list("EveParticleSystem"), _dec18$s = notImplemented, _dec19$q = float, _dec20$o = boolean, _dec21$l = notImplemented, _dec22$k = boolean, _dec23$g = boolean, _dec24$g = float, _dec25$e = plain, _dec$5a(_class$5a = (_class2$4K = (_EveTransform = class EveTransform extends EveObject {
+	var EveTransform = (_dec$5a = define("EveTransform", true), _dec2$4M = string, _dec3$4l = list("EveObject"), _dec4$3O = list("Tw2CurveSet"), _dec5$3j = boolean, _dec6$2R = notImplemented, _dec7$2o = float, _dec8$24 = notImplemented, _dec9$1L = float, _dec0$1B = notImplemented, _dec1$1t = boolean, _dec10$1f = struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec11$18 = uint, _dec12$$ = enums(Modifier), _dec13$T = list("Tr2ObserverLocal"), _dec14$O = vector3, _dec15$K = vector3, _dec16$B = list("EveParticleEmitter"), _dec17$w = list("EveParticleSystem"), _dec18$s = notImplemented, _dec19$p = float, _dec20$n = boolean, _dec21$k = notImplemented, _dec22$j = boolean, _dec23$g = boolean, _dec24$g = float, _dec25$e = plain, _dec$5a(_class$5a = (_class2$4K = (_EveTransform = class EveTransform extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4G, this);
@@ -249180,7 +250324,7 @@
 	    _initializerDefineProperty(this, "sortValueMultiplier", _descriptor13$H, this);
 	    _initializerDefineProperty(this, "update", _descriptor14$A, this);
 	    _initializerDefineProperty(this, "useDistanceBasedScale", _descriptor15$s, this);
-	    _initializerDefineProperty(this, "useLodLevel", _descriptor16$m, this);
+	    _initializerDefineProperty(this, "useLodLevel", _descriptor16$l, this);
 	    _initializerDefineProperty(this, "visibilityThreshold", _descriptor17$j, this);
 	    _initializerDefineProperty(this, "visible", _descriptor18$i, this);
 	    this._parentTransform = mat4$2.create();
@@ -249884,28 +251028,28 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor13$H = _applyDecoratedDescriptor(_class2$4K.prototype, "sortValueMultiplier", [_dec18$s, _dec19$q], {
+	}), _descriptor13$H = _applyDecoratedDescriptor(_class2$4K.prototype, "sortValueMultiplier", [_dec18$s, _dec19$p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1.0;
 	  }
-	}), _descriptor14$A = _applyDecoratedDescriptor(_class2$4K.prototype, "update", [_dec20$o], {
+	}), _descriptor14$A = _applyDecoratedDescriptor(_class2$4K.prototype, "update", [_dec20$n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor15$s = _applyDecoratedDescriptor(_class2$4K.prototype, "useDistanceBasedScale", [_dec21$l, _dec22$k], {
+	}), _descriptor15$s = _applyDecoratedDescriptor(_class2$4K.prototype, "useDistanceBasedScale", [_dec21$k, _dec22$j], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor16$m = _applyDecoratedDescriptor(_class2$4K.prototype, "useLodLevel", [_dec23$g], {
+	}), _descriptor16$l = _applyDecoratedDescriptor(_class2$4K.prototype, "useLodLevel", [_dec23$g], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -250199,7 +251343,7 @@
 	  }
 	}), _class2$4J)) || _class$59) || _class$59);
 
-	var _dec$58, _dec2$4K, _dec3$4j, _dec4$3M, _dec5$3h, _dec6$2P, _dec7$2m, _dec8$22, _dec9$1J, _dec0$1z, _dec1$1r, _dec10$1d, _dec11$16, _dec12$Z, _dec13$S, _dec14$N, _dec15$J, _dec16$A, _dec17$v, _dec18$r, _dec19$p, _dec20$n, _dec21$k, _dec22$j, _dec23$f, _dec24$f, _dec25$d, _class$58, _class2$4I, _descriptor$4E, _descriptor2$4a, _descriptor3$3C, _descriptor4$39, _descriptor5$2I, _descriptor6$2b, _descriptor7$1N, _descriptor8$1y, _descriptor9$1q, _descriptor0$1l, _descriptor1$16, _descriptor10$_, _descriptor11$R, _descriptor12$L, _descriptor13$G, _descriptor14$z, _descriptor15$r, _descriptor16$l, _descriptor17$i;
+	var _dec$58, _dec2$4K, _dec3$4j, _dec4$3M, _dec5$3h, _dec6$2P, _dec7$2m, _dec8$22, _dec9$1J, _dec0$1z, _dec1$1r, _dec10$1d, _dec11$16, _dec12$Z, _dec13$S, _dec14$N, _dec15$J, _dec16$A, _dec17$v, _dec18$r, _dec19$o, _dec20$m, _dec21$j, _dec22$i, _dec23$f, _dec24$f, _dec25$d, _class$58, _class2$4I, _descriptor$4E, _descriptor2$4a, _descriptor3$3C, _descriptor4$39, _descriptor5$2I, _descriptor6$2b, _descriptor7$1N, _descriptor8$1y, _descriptor9$1q, _descriptor0$1l, _descriptor1$16, _descriptor10$_, _descriptor11$R, _descriptor12$L, _descriptor13$G, _descriptor14$z, _descriptor15$r, _descriptor16$k, _descriptor17$i;
 
 	/**
 	 * A standalone effect: a transform that owns effect children, curve sets,
@@ -250227,7 +251371,7 @@
 	 * inert here because nothing wires a registry yet (see the note in
 	 * `EveObject.GetLights`).
 	 */
-	var EveEffectRoot2 = (_dec$58 = define("EveEffectRoot2", true), _dec2$4K = stage(2), _dec3$4j = vector3, _dec4$3M = float, _dec5$3h = list("Tr2Controller"), _dec6$2P = list("Tw2CurveSet"), _dec7$2m = float, _dec8$22 = boolean, _dec9$1J = list("EveChild"), _dec0$1z = notImplemented, _dec1$1r = list("Tr2ExternalParameter"), _dec10$1d = list("Tr2PointLight"), _dec11$16 = notImplemented, _dec12$Z = struct(), _dec13$S = notImplemented, _dec14$N = struct(), _dec15$J = notImplemented, _dec16$A = list("TriObserverLocal"), _dec17$v = quaternion, _dec18$r = notImplemented, _dec19$p = struct(), _dec20$n = vector3, _dec21$k = color$2, _dec22$j = float, _dec23$f = vector3, _dec24$f = notImplemented, _dec25$d = struct(), _dec$58(_class$58 = _dec2$4K(_class$58 = (_class2$4I = class EveEffectRoot2 extends EveObject {
+	var EveEffectRoot2 = (_dec$58 = define("EveEffectRoot2", true), _dec2$4K = stage(2), _dec3$4j = vector3, _dec4$3M = float, _dec5$3h = list("Tr2Controller"), _dec6$2P = list("Tw2CurveSet"), _dec7$2m = float, _dec8$22 = boolean, _dec9$1J = list("EveChild"), _dec0$1z = notImplemented, _dec1$1r = list("Tr2ExternalParameter"), _dec10$1d = list("Tr2PointLight"), _dec11$16 = notImplemented, _dec12$Z = struct(), _dec13$S = notImplemented, _dec14$N = struct(), _dec15$J = notImplemented, _dec16$A = list("TriObserverLocal"), _dec17$v = quaternion, _dec18$r = notImplemented, _dec19$o = struct(), _dec20$m = vector3, _dec21$j = color$2, _dec22$i = float, _dec23$f = vector3, _dec24$f = notImplemented, _dec25$d = struct(), _dec$58(_class$58 = _dec2$4K(_class$58 = (_class2$4I = class EveEffectRoot2 extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    /**
@@ -250286,7 +251430,7 @@
 	     * Carbon defaults this to 0.5, not 0 (`cpp:37`).
 	     */
 	    _initializerDefineProperty(this, "secondaryLightingSphereRadius", _descriptor15$r, this);
-	    _initializerDefineProperty(this, "translation", _descriptor16$l, this);
+	    _initializerDefineProperty(this, "translation", _descriptor16$k, this);
 	    /** Carbon's `m_ballPosition`, exposed as `translationCurve` (`_Blue.cpp:64`). */
 	    _initializerDefineProperty(this, "translationCurve", _descriptor17$i, this);
 	    // Sticky record of controller variables, so one set before a controller
@@ -250962,35 +252106,35 @@
 	  initializer: function () {
 	    return quat$2.create();
 	  }
-	}), _descriptor12$L = _applyDecoratedDescriptor(_class2$4I.prototype, "rotationCurve", [_dec18$r, _dec19$p], {
+	}), _descriptor12$L = _applyDecoratedDescriptor(_class2$4I.prototype, "rotationCurve", [_dec18$r, _dec19$o], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor13$G = _applyDecoratedDescriptor(_class2$4I.prototype, "scaling", [_dec20$n], {
+	}), _descriptor13$G = _applyDecoratedDescriptor(_class2$4I.prototype, "scaling", [_dec20$m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.fromValues(1, 1, 1);
 	  }
-	}), _descriptor14$z = _applyDecoratedDescriptor(_class2$4I.prototype, "secondaryLightingEmissiveColor", [_dec21$k], {
+	}), _descriptor14$z = _applyDecoratedDescriptor(_class2$4I.prototype, "secondaryLightingEmissiveColor", [_dec21$j], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor15$r = _applyDecoratedDescriptor(_class2$4I.prototype, "secondaryLightingSphereRadius", [_dec22$j], {
+	}), _descriptor15$r = _applyDecoratedDescriptor(_class2$4I.prototype, "secondaryLightingSphereRadius", [_dec22$i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0.5;
 	  }
-	}), _descriptor16$l = _applyDecoratedDescriptor(_class2$4I.prototype, "translation", [_dec23$f], {
+	}), _descriptor16$k = _applyDecoratedDescriptor(_class2$4I.prototype, "translation", [_dec23$f], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -253026,7 +254170,7 @@
 	var vec3_view = vec3$3.create();
 	var sph3_0$1 = sph3$2.create();
 
-	var _dec$53, _dec2$4F, _dec3$4e, _dec4$3H, _dec5$3c, _dec6$2L, _dec7$2i, _dec8$1_, _dec9$1F, _dec0$1v, _dec1$1n, _class$53, _class2$4D, _descriptor$4z, _descriptor2$45, _descriptor3$3x, _descriptor4$34, _descriptor5$2E, _descriptor6$27, _descriptor7$1J, _descriptor8$1u, _descriptor9$1m, _descriptor0$1i, _dec10$1a, _dec11$14, _dec12$X, _dec13$Q, _dec14$L, _dec15$H, _dec16$y, _dec17$t, _dec18$q, _dec19$o, _dec20$m, _dec21$j, _dec22$i, _dec23$e, _dec24$e, _dec25$c, _dec26$b, _dec27$a, _dec28$9, _dec29$7, _dec30$6, _dec31$6, _dec32$6, _dec33$5, _dec34$5, _dec35$5, _dec36$4, _dec37$3, _dec38$3, _class3$b, _class4$a, _descriptor1$13, _descriptor10$Y, _descriptor11$P, _descriptor12$K, _descriptor13$F, _descriptor14$y, _descriptor15$q, _descriptor16$k, _descriptor17$h, _descriptor18$h, _descriptor19$d, _descriptor20$d, _descriptor21$d, _descriptor22$c, _descriptor23$b, _descriptor24$a, _descriptor25$a, _descriptor26$8, _descriptor27$6, _descriptor28$6, _descriptor29$4, _descriptor30$4, _descriptor31$3, _descriptor32$3, _descriptor33$3, _descriptor34$3, _descriptor35$3, _descriptor36$3, _EveBoosterSet;
+	var _dec$53, _dec2$4F, _dec3$4e, _dec4$3H, _dec5$3c, _dec6$2L, _dec7$2i, _dec8$1_, _dec9$1F, _dec0$1v, _dec1$1n, _class$53, _class2$4D, _descriptor$4z, _descriptor2$45, _descriptor3$3x, _descriptor4$34, _descriptor5$2E, _descriptor6$27, _descriptor7$1J, _descriptor8$1u, _descriptor9$1m, _descriptor0$1i, _dec10$1a, _dec11$14, _dec12$X, _dec13$Q, _dec14$L, _dec15$H, _dec16$y, _dec17$t, _dec18$q, _dec19$n, _dec20$l, _dec21$i, _dec22$h, _dec23$e, _dec24$e, _dec25$c, _dec26$b, _dec27$a, _dec28$9, _dec29$7, _dec30$6, _dec31$6, _dec32$6, _dec33$5, _dec34$5, _dec35$5, _dec36$4, _dec37$3, _dec38$3, _class3$b, _class4$a, _descriptor1$13, _descriptor10$Y, _descriptor11$P, _descriptor12$K, _descriptor13$F, _descriptor14$y, _descriptor15$q, _descriptor16$j, _descriptor17$h, _descriptor18$h, _descriptor19$d, _descriptor20$d, _descriptor21$d, _descriptor22$c, _descriptor23$b, _descriptor24$a, _descriptor25$a, _descriptor26$8, _descriptor27$6, _descriptor28$6, _descriptor29$4, _descriptor30$4, _descriptor31$3, _descriptor32$3, _descriptor33$3, _descriptor34$3, _descriptor35$3, _descriptor36$3, _EveBoosterSet;
 
 	/**
 	 * Booster set 2 render batch
@@ -253192,7 +254336,7 @@
 	 *
 	 * Ported from `EveBoosterSet2.h` / `EveBoosterSet2.cpp`.
 	 */
-	var EveBoosterSet2 = (_dec10$1a = define("EveBoosterSet2", true), _dec11$14 = boolean, _dec12$X = float, _dec13$Q = struct("Tw2Effect"), _dec14$L = struct("Tw2Effect"), _dec15$H = color$2, _dec16$y = float, _dec17$t = struct("EveSpriteSet"), _dec18$q = color$2, _dec19$o = float, _dec20$m = float, _dec21$j = color$2, _dec22$i = float, _dec23$e = float, _dec24$e = float, _dec25$c = float, _dec26$b = color$2, _dec27$a = float, _dec28$9 = float, _dec29$7 = float, _dec30$6 = struct("EveTrailsSet"), _dec31$6 = color$2, _dec32$6 = color$2, _dec33$5 = float, _dec34$5 = float, _dec35$5 = float, _dec36$4 = boolean, _dec37$3 = boolean, _dec38$3 = boolean, _dec10$1a(_class3$b = (_class4$a = (_EveBoosterSet = class EveBoosterSet2 extends EveObjectSet {
+	var EveBoosterSet2 = (_dec10$1a = define("EveBoosterSet2", true), _dec11$14 = boolean, _dec12$X = float, _dec13$Q = struct("Tw2Effect"), _dec14$L = struct("Tw2Effect"), _dec15$H = color$2, _dec16$y = float, _dec17$t = struct("EveSpriteSet"), _dec18$q = color$2, _dec19$n = float, _dec20$l = float, _dec21$i = color$2, _dec22$h = float, _dec23$e = float, _dec24$e = float, _dec25$c = float, _dec26$b = color$2, _dec27$a = float, _dec28$9 = float, _dec29$7 = float, _dec30$6 = struct("EveTrailsSet"), _dec31$6 = color$2, _dec32$6 = color$2, _dec33$5 = float, _dec34$5 = float, _dec35$5 = float, _dec36$4 = boolean, _dec37$3 = boolean, _dec38$3 = boolean, _dec10$1a(_class3$b = (_class4$a = (_EveBoosterSet = class EveBoosterSet2 extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "alwaysOn", _descriptor1$13, this);
@@ -253202,7 +254346,7 @@
 	    _initializerDefineProperty(this, "glowColor", _descriptor13$F, this);
 	    _initializerDefineProperty(this, "glowScale", _descriptor14$y, this);
 	    _initializerDefineProperty(this, "glows", _descriptor15$q, this);
-	    _initializerDefineProperty(this, "haloColor", _descriptor16$k, this);
+	    _initializerDefineProperty(this, "haloColor", _descriptor16$j, this);
 	    _initializerDefineProperty(this, "haloScaleX", _descriptor17$h, this);
 	    _initializerDefineProperty(this, "haloScaleY", _descriptor18$h, this);
 	    _initializerDefineProperty(this, "lightColor", _descriptor19$d, this);
@@ -254004,35 +255148,35 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor16$k = _applyDecoratedDescriptor(_class4$a.prototype, "haloColor", [_dec18$q], {
+	}), _descriptor16$j = _applyDecoratedDescriptor(_class4$a.prototype, "haloColor", [_dec18$q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor17$h = _applyDecoratedDescriptor(_class4$a.prototype, "haloScaleX", [_dec19$o], {
+	}), _descriptor17$h = _applyDecoratedDescriptor(_class4$a.prototype, "haloScaleX", [_dec19$n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor18$h = _applyDecoratedDescriptor(_class4$a.prototype, "haloScaleY", [_dec20$m], {
+	}), _descriptor18$h = _applyDecoratedDescriptor(_class4$a.prototype, "haloScaleY", [_dec20$l], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor19$d = _applyDecoratedDescriptor(_class4$a.prototype, "lightColor", [_dec21$j], {
+	}), _descriptor19$d = _applyDecoratedDescriptor(_class4$a.prototype, "lightColor", [_dec21$i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.create();
 	  }
-	}), _descriptor20$d = _applyDecoratedDescriptor(_class4$a.prototype, "lightFlickerAmplitude", [_dec22$i], {
+	}), _descriptor20$d = _applyDecoratedDescriptor(_class4$a.prototype, "lightFlickerAmplitude", [_dec22$h], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -254207,8 +255351,8 @@
 	var quat_0$1 = quat$2.create();
 	var sph3_0 = sph3$2.create();
 
-	var _dec$52, _class$52, _dec2$4E, _dec3$4d, _dec4$3G, _dec5$3b, _dec6$2K, _dec7$2h, _dec8$1Z, _dec9$1E, _dec0$1u, _dec1$1m, _dec10$19, _dec11$13, _class2$4C, _class3$a, _descriptor$4y, _descriptor2$44, _descriptor3$3w, _descriptor4$33, _descriptor5$2D, _descriptor6$26, _descriptor7$1I, _descriptor8$1t, _descriptor9$1l, _descriptor0$1h, _dec12$W, _dec13$P, _dec14$K, _dec15$G, _dec16$x, _dec17$s, _class4$9, _class5$2, _descriptor1$12, _descriptor10$X, _descriptor11$O, _descriptor12$J, _descriptor13$E, _dec18$p, _dec19$n, _dec20$l, _dec21$i, _dec22$h, _class6, _class7, _descriptor14$x, _descriptor15$p, _descriptor16$j, _EveHazeSet;
-	var EveHazeSetBatch = (_dec$52 = notImplemented, _dec$52(_class$52 = class EveHazeSetBatch extends Tw2RenderBatch {
+	var _dec$52, _dec2$4E, _dec3$4d, _dec4$3G, _dec5$3b, _dec6$2K, _dec7$2h, _dec8$1Z, _dec9$1E, _class$52, _class2$4C, _descriptor$4y, _descriptor2$44, _descriptor3$3w, _descriptor4$33, _descriptor5$2D, _descriptor6$26, _descriptor7$1I, _descriptor8$1t, _dec0$1u, _dec1$1m, _dec10$19, _dec11$13, _dec12$W, _dec13$P, _class3$a, _class4$9, _descriptor9$1l, _descriptor0$1h, _descriptor1$12, _descriptor10$X, _descriptor11$O, _dec14$K, _dec15$G, _dec16$x, _dec17$s, _dec18$p, _class5$2, _class6, _descriptor12$J, _descriptor13$E, _descriptor14$x, _descriptor15$p, _EveHazeSet;
+	class EveHazeSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
 	    this.hazeSet = null;
@@ -254230,26 +255374,27 @@
 	  HasTechnique(technique) {
 	    return this.hazeSet && this.hazeSet.effect && this.hazeSet.effect.HasTechnique(technique);
 	  }
-	}) || _class$52);
-	var EveHazeSetItem = (_dec2$4E = notImplemented, _dec3$4d = define("EveHazeSetItem", true), _dec4$3G = boolean, _dec5$3b = boolean, _dec6$2K = color$2, _dec7$2h = float, _dec8$1Z = float, _dec9$1E = vector3, _dec0$1u = quaternion, _dec1$1m = vector3, _dec10$19 = float, _dec11$13 = float, _dec2$4E(_class2$4C = _dec3$4d(_class2$4C = (_class3$a = class EveHazeSetItem extends EveObjectSetItem {
+	}
+
+	/**
+	 * Carbon EveHazeSetItem (`EveHazeSetItem.h`). `color` and `hazeData` arrive
+	 * resolved from SOF: `EveSOF::SetupHazeSets` folds hazeBrightness, falloff,
+	 * source size/brightness and booster influence into them (`EveSOF.cpp:1508,1518`).
+	 */
+	var EveHazeSetItem = (_dec$52 = define("EveHazeSetItem", true), _dec2$4E = string, _dec3$4d = boolean, _dec4$3G = int32$1, _dec5$3b = color$2, _dec6$2K = vector4, _dec7$2h = vector3, _dec8$1Z = quaternion, _dec9$1E = vector3, _dec$52(_class$52 = (_class2$4C = class EveHazeSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
-	    _initializerDefineProperty(this, "display", _descriptor$4y, this);
-	    _initializerDefineProperty(this, "boosterGainInfluence", _descriptor2$44, this);
-	    _initializerDefineProperty(this, "color", _descriptor3$3w, this);
-	    _initializerDefineProperty(this, "hazeBrightness", _descriptor4$33, this);
-	    _initializerDefineProperty(this, "hazeFalloff", _descriptor5$2D, this);
+	    _initializerDefineProperty(this, "name", _descriptor$4y, this);
+	    _initializerDefineProperty(this, "display", _descriptor2$44, this);
+	    _initializerDefineProperty(this, "boneIndex", _descriptor3$3w, this);
+	    _initializerDefineProperty(this, "color", _descriptor4$33, this);
+	    /** [hazeFalloff, sourceSize, sourceBrightness, boosterGainInfluence ? 1 : 0] */
+	    _initializerDefineProperty(this, "hazeData", _descriptor5$2D, this);
 	    _initializerDefineProperty(this, "position", _descriptor6$26, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor7$1I, this);
 	    _initializerDefineProperty(this, "scaling", _descriptor8$1t, this);
-	    _initializerDefineProperty(this, "sourceBrightness", _descriptor9$1l, this);
-	    _initializerDefineProperty(this, "sourceSize", _descriptor0$1h, this);
 	    /**
 	     * The item's own transform, rebuilt whenever its srt changes.
-	     *
-	     * Was USED by OnValueChanged and never declared, so the first value change
-	     * handed `mat4.fromRotationTranslationScale` an undefined output. Nothing
-	     * had hit it because the class is marked notImplemented and never runs.
 	     * @type {mat4}
 	     */
 	    this._transform = mat4$2.create();
@@ -254259,18 +255404,28 @@
 	  /**
 	   * Fires on value changes
 	   */
-	  OnValueChanged() {
+	  OnValueChanged(opt) {
+	    // Carbon TransformationMatrix(scaling, rotation, position) (`EveHazeSet.cpp:172`).
 	    mat4$2.fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
-	    this._dirty = true;
+	    // Marks the item dirty and tells the parent set, which rebuilds its buffer.
+	    super.OnValueChanged(opt);
+	  }
+
+	  /**
+	   * Fires when the item is updated by the parent
+	   * @param parent
+	   */
+	  OnRebuiltByParent(parent) {
+	    this._parent = parent;
+	    this._bone = parent ? parent.GetBone(this.boneIndex) : null;
+	    this._dirty = false;
 	  }
 
 	  /**
 	   * Gets the item's bounding box.
 	   *
 	   * A box rather than a sphere: haze is placed with a full srt and is not
-	   * camera-facing, so rotating it covers different space - and a sphere big
-	   * enough to hold it in any orientation is mostly empty, which reads as
-	   * haze you can select from well outside it. Same reasoning as spotlights.
+	   * camera-facing, so rotating it covers different space.
 	   *
 	   * @param {box3} box
 	   * @returns {box3} box
@@ -254280,87 +255435,73 @@
 	    if (this._bone) box3$2.transformMat4(box, box, this._bone.offsetTransform);
 	    return box;
 	  }
-	}, _descriptor$4y = _applyDecoratedDescriptor(_class3$a.prototype, "display", [_dec4$3G], {
+	}, _descriptor$4y = _applyDecoratedDescriptor(_class2$4C.prototype, "name", [_dec2$4E], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "";
+	  }
+	}), _descriptor2$44 = _applyDecoratedDescriptor(_class2$4C.prototype, "display", [_dec3$4d], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor2$44 = _applyDecoratedDescriptor(_class3$a.prototype, "boosterGainInfluence", [_dec5$3b], {
+	}), _descriptor3$3w = _applyDecoratedDescriptor(_class2$4C.prototype, "boneIndex", [_dec4$3G], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return false;
+	    return -1;
 	  }
-	}), _descriptor3$3w = _applyDecoratedDescriptor(_class3$a.prototype, "color", [_dec6$2K], {
+	}), _descriptor4$33 = _applyDecoratedDescriptor(_class2$4C.prototype, "color", [_dec5$3b], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$2.fromValues(0, 0, 0, 1);
 	  }
-	}), _descriptor4$33 = _applyDecoratedDescriptor(_class3$a.prototype, "hazeBrightness", [_dec7$2h], {
+	}), _descriptor5$2D = _applyDecoratedDescriptor(_class2$4C.prototype, "hazeData", [_dec6$2K], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return vec4$2.create();
 	  }
-	}), _descriptor5$2D = _applyDecoratedDescriptor(_class3$a.prototype, "hazeFalloff", [_dec8$1Z], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor6$26 = _applyDecoratedDescriptor(_class3$a.prototype, "position", [_dec9$1E], {
+	}), _descriptor6$26 = _applyDecoratedDescriptor(_class2$4C.prototype, "position", [_dec7$2h], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor7$1I = _applyDecoratedDescriptor(_class3$a.prototype, "rotation", [_dec0$1u], {
+	}), _descriptor7$1I = _applyDecoratedDescriptor(_class2$4C.prototype, "rotation", [_dec8$1Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return quat$2.create();
 	  }
-	}), _descriptor8$1t = _applyDecoratedDescriptor(_class3$a.prototype, "scaling", [_dec1$1m], {
+	}), _descriptor8$1t = _applyDecoratedDescriptor(_class2$4C.prototype, "scaling", [_dec9$1E], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.fromValues(1, 1, 1);
 	  }
-	}), _descriptor9$1l = _applyDecoratedDescriptor(_class3$a.prototype, "sourceBrightness", [_dec10$19], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor0$1h = _applyDecoratedDescriptor(_class3$a.prototype, "sourceSize", [_dec11$13], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _class3$a)) || _class2$4C) || _class2$4C);
+	}), _class2$4C)) || _class$52);
 
 	/** Carbon EveHazeSetLight: runtime SOF light record, separate from drawable items. */
-	var EveHazeSetLight = (_dec12$W = define("EveHazeSetLight"), _dec13$P = struct("CjsLightData"), _dec14$K = uint, _dec15$G = matrix4, _dec16$x = path, _dec17$s = boolean, _dec12$W(_class4$9 = (_class5$2 = class EveHazeSetLight extends Model$1 {
+	var EveHazeSetLight = (_dec0$1u = define("EveHazeSetLight"), _dec1$1m = struct("CjsLightData"), _dec10$19 = uint, _dec11$13 = matrix4, _dec12$W = path, _dec13$P = boolean, _dec0$1u(_class3$a = (_class4$9 = class EveHazeSetLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
-	    _initializerDefineProperty(this, "lightData", _descriptor1$12, this);
-	    _initializerDefineProperty(this, "index", _descriptor10$X, this);
-	    _initializerDefineProperty(this, "boneMatrix", _descriptor11$O, this);
-	    _initializerDefineProperty(this, "lightProfilePath", _descriptor12$J, this);
-	    _initializerDefineProperty(this, "boosterGainInfluence", _descriptor13$E, this);
+	    _initializerDefineProperty(this, "lightData", _descriptor9$1l, this);
+	    _initializerDefineProperty(this, "index", _descriptor0$1h, this);
+	    _initializerDefineProperty(this, "boneMatrix", _descriptor1$12, this);
+	    _initializerDefineProperty(this, "lightProfilePath", _descriptor10$X, this);
+	    _initializerDefineProperty(this, "boosterGainInfluence", _descriptor11$O, this);
 	    this.lightProfile = null;
 	    this._resolvedProfilePath = "";
 	  }
@@ -254370,54 +255511,64 @@
 	      this.lightProfile = Tr2LightProfileRes$1.Resolve(this.lightProfilePath);
 	    }
 	  }
-	}, _descriptor1$12 = _applyDecoratedDescriptor(_class5$2.prototype, "lightData", [_dec13$P], {
+	}, _descriptor9$1l = _applyDecoratedDescriptor(_class4$9.prototype, "lightData", [_dec1$1m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return new CjsLightData();
 	  }
-	}), _descriptor10$X = _applyDecoratedDescriptor(_class5$2.prototype, "index", [_dec14$K], {
+	}), _descriptor0$1h = _applyDecoratedDescriptor(_class4$9.prototype, "index", [_dec10$19], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor11$O = _applyDecoratedDescriptor(_class5$2.prototype, "boneMatrix", [_dec15$G], {
+	}), _descriptor1$12 = _applyDecoratedDescriptor(_class4$9.prototype, "boneMatrix", [_dec11$13], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$2.create();
 	  }
-	}), _descriptor12$J = _applyDecoratedDescriptor(_class5$2.prototype, "lightProfilePath", [_dec16$x], {
+	}), _descriptor10$X = _applyDecoratedDescriptor(_class4$9.prototype, "lightProfilePath", [_dec12$W], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor13$E = _applyDecoratedDescriptor(_class5$2.prototype, "boosterGainInfluence", [_dec17$s], {
+	}), _descriptor11$O = _applyDecoratedDescriptor(_class4$9.prototype, "boosterGainInfluence", [_dec13$P], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _class5$2)) || _class4$9);
-	var EveHazeSet = (_dec18$p = define("EveHazeSet", true), _dec19$n = partialImplementation, _dec20$l = list("EveHazeSetLight"), _dec21$i = boolean, _dec22$h = struct(), _dec18$p(_class6 = _dec19$n(_class6 = (_class7 = (_EveHazeSet = class EveHazeSet extends EveObjectSet {
+	}), _class4$9)) || _class3$a);
+
+	/**
+	 * Carbon EveHazeSet (`Attachments/Sets/EveHazeSet.cpp`). One box of 24 vertices
+	 * per item; the vertex shader places the box corners from the effect's
+	 * `BoxCornerOffset` table and ray-marches the haze in item space through the
+	 * inverse item transform.
+	 */
+	var EveHazeSet = (_dec14$K = define("EveHazeSet", true), _dec15$G = list("EveHazeSetLight"), _dec16$x = string, _dec17$s = boolean, _dec18$p = struct(), _dec14$K(_class5$2 = (_class6 = (_EveHazeSet = class EveHazeSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
-	    _initializerDefineProperty(this, "lights", _descriptor14$x, this);
+	    _initializerDefineProperty(this, "lights", _descriptor12$J, this);
 	    this._activationStrength = 1;
 	    this._boosterGain = 0;
-	    _initializerDefineProperty(this, "display", _descriptor15$p, this);
-	    _initializerDefineProperty(this, "effect", _descriptor16$j, this);
+	    _initializerDefineProperty(this, "name", _descriptor13$E, this);
+	    _initializerDefineProperty(this, "display", _descriptor14$x, this);
+	    /** Set by the SOF builder (Carbon `EveHazeSet::Setup`). */
+	    _initializerDefineProperty(this, "effect", _descriptor15$p, this);
 	    this._decl = Tw2VertexDeclaration.from(EveHazeSet.vertexDeclarations);
 	    this._vertexBuffer = null;
 	    this._indexBuffer = null;
-	    this._indexOrder = [0, 2, 1, 0, 3, 2];
+	    this._transformScratch = mat4$2.create();
+	    this._inverseScratch = mat4$2.create();
 	  }
 	  /** Carbon EveHazeSet::AddLightFromSOF. */
 	  AddLightFromSOF(light) {
@@ -254470,29 +255621,25 @@
 	      collector.Collect([record]);
 	    }
 	  }
+	  /**
+	   * Carbon's name for the items
+	   * @return {Array<EveHazeSetItem>}
+	   */
+	  get hazes() {
+	    return this.items;
+	  }
 
 	  /**
-	   * Whether haze sets draw at all, independent of the authored `display`.
-	   *
-	   * OFF: the port is unfinished and what it draws is wrong - large
-	   * semi-translucent boxes where the haze should be, which is worse than
-	   * nothing because it obscures what is behind them. The sof builder already
-	   * declines to make these (`EveSOFData.SetupHazeSets` only logs), but a
-	   * `.black` can carry one directly and the reader constructs it, so the
-	   * build path is not where this can be stopped.
-	   *
-	   * Separate from `display` because `display` is `@meta.boolean` and comes
-	   * from the file - the data says true and would override any default set
-	   * here. Reading still constructs the object, so nothing throws; it simply
-	   * never reaches the accumulator.
-	   *
-	   * Flip to true to work on them.
-	   * @type {Boolean}
+	   * Carbon's name for the items
+	   * @param {Array<EveHazeSetItem>} arr
 	   */
+	  set hazes(arr) {
+	    this.items = arr;
+	  }
 
 	  /**
 	   * Alias for items
-	   * @return {[]}
+	   * @return {Array<EveHazeSetItem>}
 	   */
 	  get hazeItems() {
 	    return this.items;
@@ -254500,7 +255647,7 @@
 
 	  /**
 	   * Alias for items
-	   * @param {[]} arr
+	   * @param {Array<EveHazeSetItem>} arr
 	   */
 	  set hazeItems(arr) {
 	    this.items = arr;
@@ -254523,7 +255670,7 @@
 
 	  /**
 	   * Unloads the haze set
-	   * @param {Object} [opt]]
+	   * @param {Object} [opt]
 	   */
 	  Unload(opt) {
 	    if (this._vertexBuffer) {
@@ -254538,130 +255685,99 @@
 	  }
 
 	  /**
-	   * Sets the order of the index buffer
-	   * @param {Number} a
-	   * @param {Number} b
-	   * @param {Number} c
-	   * @param {Number} d
-	   * @param {Number} e
-	   * @param {Number} f
+	   * Rebuilds the haze set's buffers (Carbon `EveHazeSet::OnPrepareResources`,
+	   * `EveHazeSet.cpp:117-201`).
+	   * @param {Object} [opt]
 	   */
-	  SetIndexOrder(a, b, c, d, e, f) {
-	    this._indexOrder[0] = a;
-	    this._indexOrder[1] = b;
-	    this._indexOrder[2] = c;
-	    this._indexOrder[3] = d;
-	    this._indexOrder[4] = e;
-	    this._indexOrder[5] = f;
-	    this._dirty = true;
-	  }
 	  Rebuild(opt) {
-	    // SOF now creates these owners for lighting. Keep disabled haze geometry
-	    // out of the GPU until the separate renderer implementation is usable.
-	    if (!EveHazeSet.enabled) {
-	      this.RebuildItems();
-	      super.Rebuild(opt);
-	      return;
-	    }
-	    this.Unload(true);
-	    this.RebuildItems();
+	    this.RebuildItems(opt);
 	    this._dirty = false;
 	    var itemCount = this._visibleItems.length;
 	    if (!itemCount) {
 	      super.Rebuild(opt);
 	      return;
 	    }
-	    var _EveObjectSet$global = EveObjectSet.global,
-	      mat4_0 = _EveObjectSet$global.mat4_0,
-	      vec3_0 = _EveObjectSet$global.vec3_0;
-	    var vertexSize = 35,
-	      array = new Float32Array(itemCount * vertexSize * 4);
+	    var mat4_0 = this._transformScratch,
+	      mat4_1 = this._inverseScratch,
+	      vertexSize = EveHazeSet.vertexSize,
+	      boxIndices = EveHazeSet.boxIndices,
+	      array = new Float32Array(itemCount * 24 * vertexSize);
 	    for (var i = 0; i < itemCount; i++) {
-	      var item = this._visibleItems[i],
-	        offset = i * 4 * vertexSize;
-	      mat4$2.fromRotationTranslationScale(mat4_0, item.rotation, item.position, item.scaling);
-	      for (var j = 0; j < 4; j++) {
-	        var vo = offset + j * vertexSize;
+	      var item = this._visibleItems[i];
+	      var transform = mat4$2.fromRotationTranslationScale(mat4_0, item.rotation, item.position, item.scaling);
+	      var inverse = mat4$2.invert(mat4_1, transform) || mat4$2.identity(mat4_1);
+	      for (var s = 0; s < 6; s++) {
+	        for (var j = 0; j < 4; j++) {
+	          var vo = (i * 24 + s * 4 + j) * vertexSize;
 
-	        // Transform 1
-	        // attr0
-	        array[vo + 0] = mat4_0[0];
-	        array[vo + 1] = mat4_0[4];
-	        array[vo + 2] = mat4_0[8];
-	        array[vo + 3] = mat4_0[12];
-	        // attr1
-	        array[vo + 4] = mat4_0[1];
-	        array[vo + 5] = mat4_0[5];
-	        array[vo + 6] = mat4_0[9];
-	        array[vo + 7] = mat4_0[13];
-	        // attr2
-	        array[vo + 8] = mat4_0[2];
-	        array[vo + 9] = mat4_0[6];
-	        array[vo + 10] = mat4_0[10];
-	        array[vo + 11] = mat4_0[14];
+	          // Carbon `_1k, _2k, _3k, _4k` rows; same byte layout in gl-matrix.
+	          for (var k = 0; k < 3; k++) {
+	            array[vo + k * 4] = transform[k];
+	            array[vo + k * 4 + 1] = transform[4 + k];
+	            array[vo + k * 4 + 2] = transform[8 + k];
+	            array[vo + k * 4 + 3] = transform[12 + k];
+	            array[vo + 12 + k * 4] = inverse[k];
+	            array[vo + 12 + k * 4 + 1] = inverse[4 + k];
+	            array[vo + 12 + k * 4 + 2] = inverse[8 + k];
+	            array[vo + 12 + k * 4 + 3] = inverse[12 + k];
+	          }
+	          array[vo + 24] = item.hazeData[0];
+	          array[vo + 25] = item.hazeData[1];
+	          array[vo + 26] = item.hazeData[2];
+	          array[vo + 27] = item.hazeData[3];
+	          array[vo + 28] = item.color[0];
+	          array[vo + 29] = item.color[1];
+	          array[vo + 30] = item.color[2];
+	          array[vo + 31] = item.color[3];
 
-	        // Transform 2
-	        vec3$3.multiply(vec3_0, item.scaling, [item.sourceSize, item.sourceSize, item.sourceSize]);
-	        mat4$2.fromRotationTranslationScale(mat4_0, item.rotation, item.position, vec3_0);
-
-	        //attr3
-	        array[vo + 12] = mat4_0[0]; // Unknown mat4
-	        array[vo + 13] = mat4_0[4]; // Unknown mat4
-	        array[vo + 14] = mat4_0[8]; // Unknown mat4
-	        array[vo + 15] = mat4_0[12]; // Unknown mat4
-	        //attr4
-	        array[vo + 16] = mat4_0[1]; // unknown mat4
-	        array[vo + 17] = mat4_0[5]; // unknown mat4
-	        array[vo + 18] = mat4_0[9]; // unknown mat4
-	        array[vo + 19] = mat4_0[13]; // unknown mat4
-	        //attr5
-	        array[vo + 20] = mat4_0[2]; // unknown mat4
-	        array[vo + 21] = mat4_0[6]; // unknown mat4
-	        array[vo + 22] = mat4_0[10]; // unknown mat4
-	        array[vo + 23] = mat4_0[14]; // unknown mat4
-	        //attr6
-	        array[vo + 24] = item.hazeBrightness; // Unknown
-	        array[vo + 25] = item.hazeFalloff; // Unknown
-	        array[vo + 26] = item.sourceSize; // Unknown
-	        array[vo + 27] = item.sourceBrightness; // Unknown Multiplied by unknown0.x  ?
-	        //attr7
-	        array[vo + 28] = item.color[0];
-	        array[vo + 29] = item.color[1];
-	        array[vo + 30] = item.color[2];
-	        array[vo + 31] = item.color[3];
-	        //attr8
-	        array[vo + 32] = 1; // changes constant vertex position?
-	        array[vo + 33] = 1; // -1;  // Unknown
-	        array[vo + 34] = 1; //item.boosterGainInfluence ? 255 : 0; // Unknown
+	          // TEXCOORD7 - [index, boneIndex, pad, pad]
+	          array[vo + 32] = boxIndices[s * 4 + j];
+	          array[vo + 33] = item.boneIndex;
+	          array[vo + 34] = 0;
+	          array[vo + 35] = 0;
+	        }
 	      }
 	    }
-	    var gl = device.gl;
-	    this._vertexBuffer = gl.createBuffer();
+	    var gl = device.gl,
+	      vertexCount = itemCount * 24,
+	      rebuildVertexBuffer = !this._vertexBuffer || this._vertexBuffer.count !== vertexCount;
+	    if (!this._vertexBuffer) this._vertexBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-	    gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
-	    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-	    var order = this._indexOrder,
-	      indexes = new Uint16Array(itemCount * 6);
-	    for (var _i = 0; _i < itemCount; ++_i) {
-	      var _offset = _i * 6,
-	        vtxOffset = _i * 4;
-	      indexes[_offset] = vtxOffset + order[0];
-	      indexes[_offset + 1] = vtxOffset + order[1];
-	      indexes[_offset + 2] = vtxOffset + order[2];
-	      indexes[_offset + 3] = vtxOffset + order[3];
-	      indexes[_offset + 4] = vtxOffset + order[4];
-	      indexes[_offset + 5] = vtxOffset + order[5];
+	    if (rebuildVertexBuffer) {
+	      gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+	      this._vertexBuffer.count = vertexCount;
+	    } else {
+	      gl.bufferSubData(gl.ARRAY_BUFFER, 0, array);
 	    }
-	    this._indexBuffer = gl.createBuffer();
-	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
-	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-	    this._indexBuffer.count = itemCount * 6;
+	    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+	    var quadCount = vertexCount / 4;
+	    if (!this._indexBuffer || this._indexBuffer.count !== quadCount * 6) {
+	      // Carbon quad-list index buffer: per quad 0,2,1, 0,3,2 (`Tr2Renderer.cpp:294-310`).
+	      var wide = vertexCount > 0xffff,
+	        indexes = wide ? new Uint32Array(quadCount * 6) : new Uint16Array(quadCount * 6);
+	      for (var q = 0; q < quadCount; ++q) {
+	        var offset = q * 6,
+	          base = q * 4;
+	        indexes[offset] = base;
+	        indexes[offset + 1] = base + 2;
+	        indexes[offset + 2] = base + 1;
+	        indexes[offset + 3] = base;
+	        indexes[offset + 4] = base + 3;
+	        indexes[offset + 5] = base + 2;
+	      }
+	      if (!this._indexBuffer) this._indexBuffer = gl.createBuffer();
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+	      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
+	      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+	      this._indexBuffer.count = quadCount * 6;
+	      this._indexBuffer.type = wide ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT;
+	    }
 	    super.Rebuild(opt);
 	  }
 
 	  /**
-	   * Gets the haze set's render batch
+	   * Gets the haze set's render batch (Carbon `EveHazeSet::GetBatches`,
+	   * `EveHazeSet.cpp:254-292`).
 	   * @param {Number} mode
 	   * @param {Tw2BatchAccumulator}  accumulator
 	   * @param {Tw2PerObjectData}  perObjectData
@@ -254669,13 +255785,13 @@
 	   */
 	  GetBatches(mode, accumulator, perObjectData) {
 	    var _accumulator$GetCurre;
-	    if (!EveHazeSet.enabled) return false;
 	    perObjectData = perObjectData || ((_accumulator$GetCurre = accumulator.GetCurrentPerObjectData) === null || _accumulator$GetCurre === void 0 ? void 0 : _accumulator$GetCurre.call(accumulator));
-	    if (this.display && mode === device.RM_ADDITIVE && this._vertexBuffer && this._indexBuffer) {
+	    if (this.display && mode === device.RM_ADDITIVE && this.effect && this.effect.IsGood() && this._vertexBuffer && this._indexBuffer && this._visibleItems.length) {
 	      var batch = new EveHazeSetBatch();
 	      batch.renderMode = device.RM_ADDITIVE;
 	      batch.hazeSet = this;
 	      batch.perObjectData = perObjectData;
+	      batch.effect = this.effect;
 	      accumulator.Commit(batch);
 	      return true;
 	    }
@@ -254684,7 +255800,7 @@
 
 	  /**
 	   * Renders the haze set
-	   * @param technique
+	   * @param {String} technique
 	   * @return {boolean}
 	   */
 	  Render(technique) {
@@ -254697,9 +255813,9 @@
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 	    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
 	      this.effect.ApplyPass(technique, pass);
-	      if (!this._decl.SetDeclaration(device, this.effect.GetPassInput(technique, pass), 140)) return false;
+	      if (!this._decl.SetDeclaration(device, this.effect.GetPassInput(technique, pass), EveHazeSet.vertexSize * 4)) return false;
 	      device.ApplyShadowState();
-	      gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0);
+	      gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, this._indexBuffer.type, 0);
 	    }
 	    return true;
 	  }
@@ -254708,75 +255824,71 @@
 	   * Haze set item constructor
 	   * @type {EveHazeSetItem}
 	   */
-	}, _EveHazeSet.enabled = false, _EveHazeSet.Item = EveHazeSetItem, _EveHazeSet.vertexDeclarations = [{
+	}, _EveHazeSet.Item = EveHazeSetItem, _EveHazeSet.vertexSize = 36, _EveHazeSet.boxIndices = [0, 1, 2, 3, 7, 6, 5, 4, 0, 4, 5, 1, 3, 2, 6, 7, 1, 5, 6, 2, 4, 0, 3, 7], _EveHazeSet.vertexDeclarations = [{
 	  usage: "TEXCOORD",
 	  usageIndex: 0,
-	  elements: 4,
-	  attr: "attr0"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 1,
-	  elements: 4,
-	  attr: "attr1"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 2,
-	  elements: 4,
-	  attr: "attr2"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 3,
-	  elements: 4,
-	  attr: "attr3"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 4,
-	  elements: 4,
-	  attr: "attr4"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 5,
-	  elements: 4,
-	  attr: "attr5"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 6,
-	  elements: 4,
-	  attr: "attr6"
+	  elements: 4
 	}, {
 	  usage: "COLOR",
 	  usageIndex: 0,
-	  elements: 4,
-	  attr: "attr7"
+	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
 	  usageIndex: 7,
-	  elements: 3,
-	  attr: "attr8"
-	}], _EveHazeSet), _descriptor14$x = _applyDecoratedDescriptor(_class7.prototype, "lights", [_dec20$l], {
+	  elements: 4
+	}], _EveHazeSet), _descriptor12$J = _applyDecoratedDescriptor(_class6.prototype, "lights", [_dec15$G], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor15$p = _applyDecoratedDescriptor(_class7.prototype, "display", [_dec21$i], {
+	}), _descriptor13$E = _applyDecoratedDescriptor(_class6.prototype, "name", [_dec16$x], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "";
+	  }
+	}), _descriptor14$x = _applyDecoratedDescriptor(_class6.prototype, "display", [_dec17$s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor16$j = _applyDecoratedDescriptor(_class7.prototype, "effect", [_dec22$h], {
+	}), _descriptor15$p = _applyDecoratedDescriptor(_class6.prototype, "effect", [_dec18$p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return Tw2Effect.from({
-	      effectFilePath: "res:/graphics/effect.gles2/managed/space/spaceobject/fx/hazespherical.fx"
-	    });
+	    return null;
 	  }
-	}), _class7)) || _class6) || _class6);
+	}), _class6)) || _class5$2);
 
 	var _dec$51, _class$51, _dec2$4D, _dec3$4c, _dec4$3F, _dec5$3a, _dec6$2J, _dec7$2g, _dec8$1Y, _dec9$1D, _dec0$1t, _dec1$1l, _dec10$18, _dec11$12, _dec12$V, _dec13$O, _dec14$J, _dec15$F, _dec16$w, _dec17$r, _class2$4B, _class3$9, _descriptor$4x, _descriptor2$43, _descriptor3$3v, _descriptor4$32, _descriptor5$2C, _descriptor6$25, _descriptor7$1H, _descriptor8$1s, _descriptor9$1k, _descriptor0$1g, _descriptor1$11, _descriptor10$W, _descriptor11$N, _descriptor12$I, _descriptor13$D, _descriptor14$w, _dec18$o, _dec19$m, _dec20$k, _class4$8, _class5$1, _descriptor15$o, _EveSpriteLineSet;
 	var EveSpriteLineSetBatch = (_dec$51 = notImplemented, _dec$51(_class$51 = class EveSpriteLineSetBatch {
@@ -256796,7 +257908,11 @@
 	    delete out.clipSphereSignedRadiusSq;
 	    delete out.customMaskBlending;
 	    delete out.jointMatrices;
-	    var boosterGain = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
+	    var
+	      // Carbon's base shipData.x is 1 (EveSpaceObject2.cpp:197); only EveShip2
+	      // writes booster glow intensity there (EveShip2.cpp:285). Non-ship objects
+	      // have no boosterGain, which made this NaN and every haze set NaN.
+	      boosterGain = this.boosterGain === undefined ? 1 : Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
 	      activationStrength = Math.max(Math.min(this.activationStrength, 1), 0),
 	      dirtLevel = Math.max(EveSpaceObject2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0),
 	      modelScale = this.modelScale === 0 ? 1 : this.modelScale,
@@ -257011,7 +258127,7 @@
 	    }
 	    for (var _i25 = 0; _i25 < this.attachments.length; _i25++) {
 	      if ("UpdateViewDependentData" in this.attachments[_i25]) {
-	        this.attachments[_i25].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
+	        this.attachments[_i25].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale, Math.max(Math.min(this.activationStrength, 1), 0));
 	      }
 	    }
 	    for (var _i26 = 0; _i26 < this.locatorSets.length; _i26++) {
@@ -272562,6 +273678,7 @@
 	    this._carbonShadowRenderer = null;
 	    this._carbonShadowError = null;
 	    this._distortionAccumulator = null;
+	    this._distortionFrameBuffer = null;
 	    this._distortionContext = null;
 	    this._distortionContextReport = null;
 	    this._distortionPostProcess = null;
@@ -274161,6 +275278,96 @@
 	   * @param {Number} dt
 	   * @returns {boolean} true if completed
 	   */
+	  /**
+	   * Clears the distortion map to the value its shaders are written against.
+	   *
+	   * Carbon clears it to `0x007f7f00` (`EveSpaceScene.cpp:1243`,
+	   * `RenderDistortionBatches`) - red and green at 0x7f, blue and alpha at zero -
+	   * because a distortion shader writes a SIGNED screen offset with no bias of its
+	   * own and blends it additively, so the destination has to start at the midpoint.
+	   * `1layerdyndistortionv2`'s pixel shader is the proof: it writes
+	   * `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` and nothing more, while the
+	   * apply pass decodes `rg - 0.5`.
+	   *
+	   * Clearing to black instead - which is what the shared `ClearBufferBits` did,
+	   * since it uses whatever `clearColor` the last pass left behind - clamped every
+	   * negative offset to zero and left the apply pass reading a half-unit negative
+	   * bias on every written pixel.
+	   *
+	   * Blue stays at zero deliberately: it is the "distortion was written here" flag,
+	   * and the apply pass gates on `>= 1/256`, so an untouched pixel must read zero.
+	   */
+	  ClearDistortionMap() {
+	    var gl = tw2.device.gl;
+	    var previous = gl.getParameter(gl.COLOR_CLEAR_VALUE);
+	    gl.clearColor(0.498039215686, 0.498039215686, 0, 0);
+	    tw2.ClearBufferBits(true, false, true);
+	    gl.clearColor(previous[0], previous[1], previous[2], previous[3]);
+	  }
+
+	  /**
+	   * Renders the distortion batches into the distortion map, against the depth the
+	   * MAIN PASS already wrote.
+	   *
+	   * Carbon never re-renders depth for this: `RenderDistortionBatches`
+	   * (`EveSpaceScene.cpp:1234-1249`) pushes the distortion map as the render target
+	   * and binds the same depth buffer it handed to `RenderMainPass`, so distortion
+	   * behind hull is occluded by hull.
+	   *
+	   * ccpwgl instead called `RenderDepth(dt, true)` into the shared internal target and
+	   * tested against that. Measured on dx11 (`_dev/cppc/probe-depth-pass.local.mjs`):
+	   * that pass collects ZERO batches and issues ZERO draws, so the depth attachment
+	   * held nothing but its clear value - and with the reversed buffer's GEQUAL test,
+	   * every distortion fragment passed. That is the "distortion ignores depth" report.
+	   *
+	   * So borrow the scene target's depth renderbuffer for one FBO whose colour is the
+	   * distortion map. It is the same size and, on a reversed session, the same
+	   * DEPTH_COMPONENT32F the main pass just filled. Depth is never cleared here and
+	   * never written to (the batches run with depth writes off), so the borrowed buffer
+	   * is only read.
+	   *
+	   * Falls back to the old path when there is no scene target - a gles2 session with
+	   * neither HDR nor the clip flip draws the scene straight onto the canvas, and the
+	   * canvas depth buffer cannot be attached to an FBO. gles2 therefore keeps exactly
+	   * the behaviour it has today.
+	   *
+	   * @param {Function} render - draws the distortion batches
+	   * @returns {Boolean} true if the batches were rendered
+	   */
+	  RenderDistortionBatches(render) {
+	    var gl = tw2.device.gl,
+	      target = this._internalRenderTarget,
+	      sceneDepth = this._sceneTarget && this._sceneTarget.hasDepth ? this._sceneTarget._renderBuffer : null,
+	      colorTexture = target && target._colorTexture ? target._colorTexture.texture : null;
+	    if (!sceneDepth || !colorTexture) {
+	      return target.SetCallUnset(() => {
+	        this.ClearDistortionMap();
+	        render();
+	      });
+	    }
+	    if (!this._distortionFrameBuffer) this._distortionFrameBuffer = gl.createFramebuffer();
+	    var previousFrameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING),
+	      previousViewport = gl.getParameter(gl.VIEWPORT);
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._distortionFrameBuffer);
+	    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorTexture, 0);
+	    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, sceneDepth);
+
+	    // A mismatched attachment pair leaves nothing drawable, and silently: fall back
+	    // rather than render the frame into an incomplete buffer.
+	    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+	      gl.bindFramebuffer(gl.FRAMEBUFFER, previousFrameBuffer);
+	      return target.SetCallUnset(() => {
+	        this.ClearDistortionMap();
+	        render();
+	      });
+	    }
+	    gl.viewport(0, 0, target.width, target.height);
+	    this.ClearDistortionMap();
+	    render();
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, previousFrameBuffer);
+	    gl.viewport(previousViewport[0], previousViewport[1], previousViewport[2], previousViewport[3]);
+	    return true;
+	  }
 	  RenderDistortion(dt) {
 	    if (tw2.settings.GetValue("enableExperimentalBatchContext")) {
 	      return this.RenderDistortionWithBatchContext(dt);
@@ -274231,8 +275438,7 @@
 	    if (!this._depthRendered) {
 	      this.RenderDepth(dt, true);
 	    }
-	    this._internalRenderTarget.SetCallUnset(() => {
-	      tw2.ClearBufferBits(true, false, true);
+	    this.RenderDistortionBatches(() => {
 	      if (useBatchContext) {
 	        distortionContext.Render();
 	      } else {
@@ -274310,10 +275516,7 @@
 	      }, distortionContext.GetReport());
 	      return false;
 	    }
-	    var rendered = this._internalRenderTarget.SetCallUnset(() => {
-	      tw2.ClearBufferBits(true, false, true);
-	      distortionContext.Render();
-	    });
+	    var rendered = this.RenderDistortionBatches(() => distortionContext.Render());
 	    this._distortionContextReport = _objectSpread2({
 	      path: "experimental",
 	      ok: rendered,
@@ -288408,9 +289611,13 @@
 	}), _class2$2G)) || _class$32);
 
 	var _dec$31, _dec2$2G, _dec3$2v, _dec4$29, _dec5$1S, _dec6$1B, _dec7$1i, _dec8$1b, _dec9$Z, _dec0$T, _dec1$L, _dec10$D, _dec11$y, _class$31, _class2$2F, _descriptor$2E, _descriptor2$2n, _descriptor3$20, _descriptor4$1K, _descriptor5$1u, _descriptor6$1b, _descriptor7$$, _descriptor8$R, _descriptor9$L, _descriptor0$H, _descriptor1$w, _descriptor10$s;
-	var EveSOFDataHullAnimation = (_dec$31 = define("EveSOFDataHullAnimation", true), _dec2$2G = string, _dec3$2v = float, _dec4$29 = float, _dec5$1S = quaternion, _dec6$1B = float, _dec7$1i = vector3, _dec8$1b = uint, _dec9$Z = float, _dec0$T = float, _dec1$L = quaternion, _dec10$D = float, _dec11$y = vector3, _dec$31(_class$31 = (_class2$2F = class EveSOFDataHullAnimation extends Model$1 {
+	var EveSOFDataHullAnimation = (_dec$31 = define("EveSOFDataHullAnimation", true), _dec2$2G = string, _dec3$2v = float, _dec4$29 = float, _dec5$1S = quaternion, _dec6$1B = float, _dec7$1i = vector3, _dec8$1b = int32$1, _dec9$Z = float, _dec0$T = float, _dec1$L = quaternion, _dec10$D = float, _dec11$y = vector3, _dec$31(_class$31 = (_class2$2F = class EveSOFDataHullAnimation extends Model$1 {
 	  constructor() {
 	    super(...arguments);
+	    // Carbon defaults every time, rate and id to -1 (`EveSOFData.cpp:529-543`); each is a
+	    // sentinel `SetupChildrenAndAnimations` tests before it builds a curve
+	    // (`EveSOF.cpp:2063`, `:2086`, `:2119`), so a zero default builds curves the hull
+	    // never authored
 	    _initializerDefineProperty(this, "name", _descriptor$2E, this);
 	    _initializerDefineProperty(this, "endRate", _descriptor2$2n, this);
 	    _initializerDefineProperty(this, "endRotationTime", _descriptor3$20, this);
@@ -288436,14 +289643,14 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor3$20 = _applyDecoratedDescriptor(_class2$2F.prototype, "endRotationTime", [_dec4$29], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor4$1K = _applyDecoratedDescriptor(_class2$2F.prototype, "endRotationValue", [_dec5$1S], {
 	  configurable: true,
@@ -288457,7 +289664,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor6$1b = _applyDecoratedDescriptor(_class2$2F.prototype, "endTranslationValue", [_dec7$1i], {
 	  configurable: true,
@@ -288471,21 +289678,21 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor8$R = _applyDecoratedDescriptor(_class2$2F.prototype, "startRate", [_dec9$Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor9$L = _applyDecoratedDescriptor(_class2$2F.prototype, "startRotationTime", [_dec0$T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor0$H = _applyDecoratedDescriptor(_class2$2F.prototype, "startRotationValue", [_dec1$L], {
 	  configurable: true,
@@ -288499,7 +289706,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor10$s = _applyDecoratedDescriptor(_class2$2F.prototype, "startTranslationValue", [_dec11$y], {
 	  configurable: true,
@@ -289015,12 +290222,14 @@
 	}), _class2$2y)) || _class$2W);
 
 	var _dec$2V, _dec2$2y, _dec3$2n, _dec4$21, _dec5$1M, _dec6$1v, _dec7$1c, _dec8$15, _dec9$V, _dec0$P, _dec1$I, _class$2V, _class2$2x, _descriptor$2w, _descriptor2$2f, _descriptor3$1U, _descriptor4$1E, _descriptor5$1o, _descriptor6$15, _descriptor7$W, _descriptor8$N, _descriptor9$I, _descriptor0$E;
-	var EveSOFDataHullChild = (_dec$2V = define("EveSOFDataHullChild", true), _dec2$2y = string, _dec3$2n = int32$1, _dec4$21 = int32$1, _dec5$1M = uint, _dec6$1v = uint, _dec7$1c = path, _dec8$15 = quaternion, _dec9$V = vector3, _dec0$P = vector3, _dec1$I = string, _dec$2V(_class$2V = (_class2$2x = class EveSOFDataHullChild extends Model$1 {
+	var EveSOFDataHullChild = (_dec$2V = define("EveSOFDataHullChild", true), _dec2$2y = string, _dec3$2n = int32$1, _dec4$21 = int32$1, _dec5$1M = int32$1, _dec6$1v = uint, _dec7$1c = path, _dec8$15 = quaternion, _dec9$V = vector3, _dec0$P = vector3, _dec1$I = string, _dec$2V(_class$2V = (_class2$2x = class EveSOFDataHullChild extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2w, this);
 	    _initializerDefineProperty(this, "buildFilter", _descriptor2$2f, this);
 	    _initializerDefineProperty(this, "groupIndex", _descriptor3$1U, this);
+	    // Carbon `m_id( -1 )` (`EveSOFData.cpp:506`): -1 means the child binds to no hull
+	    // animation, and `SetupChildrenAndAnimations` tests `id != -1` before binding it
 	    _initializerDefineProperty(this, "id", _descriptor4$1E, this);
 	    _initializerDefineProperty(this, "lowestLodVisible", _descriptor5$1o, this);
 	    _initializerDefineProperty(this, "redFilePath", _descriptor6$15, this);
@@ -289055,7 +290264,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return -1;
 	  }
 	}), _descriptor5$1o = _applyDecoratedDescriptor(_class2$2x.prototype, "lowestLodVisible", [_dec6$1v], {
 	  configurable: true,
@@ -289711,6 +290920,8 @@
 	    _initializerDefineProperty(this, "boneIndex", _descriptor$2p, this);
 	    _initializerDefineProperty(this, "boosterGainInfluence", _descriptor2$28, this);
 	    _initializerDefineProperty(this, "colorType", _descriptor3$1O, this);
+	    // Carbon defaults (EveSOFData.cpp:672-685). SOF data omits default values,
+	    // so a 0 here reached the shader as a flat, falloff-less haze.
 	    _initializerDefineProperty(this, "hazeBrightness", _descriptor4$1A, this);
 	    _initializerDefineProperty(this, "hazeFalloff", _descriptor5$1k, this);
 	    /**
@@ -289752,14 +290963,14 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 1;
 	  }
 	}), _descriptor5$1k = _applyDecoratedDescriptor(_class2$2q.prototype, "hazeFalloff", [_dec6$1r], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 6;
 	  }
 	}), _descriptor6$12 = _applyDecoratedDescriptor(_class2$2q.prototype, "lights", [_dec7$19], {
 	  configurable: true,
@@ -289787,7 +290998,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 1;
 	  }
 	}), _descriptor0$C = _applyDecoratedDescriptor(_class2$2q.prototype, "scaling", [_dec1$G], {
 	  configurable: true,
@@ -289801,14 +291012,14 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 2;
 	  }
 	}), _descriptor10$p = _applyDecoratedDescriptor(_class2$2q.prototype, "sourceSize", [_dec11$v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 0.2;
 	  }
 	}), _class2$2q)) || _class$2O);
 
@@ -290202,6 +291413,8 @@
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2h, this);
+	    // Carbon defaults (EveSOFData.cpp:596-597). SOF data omits default values,
+	    // and the dx11 planeglow shader divides mask UVs by floor(atlasAspectRatio).
 	    _initializerDefineProperty(this, "atlasSize", _descriptor2$20, this);
 	    _initializerDefineProperty(this, "atlasAspectRatio", _descriptor3$1J, this);
 	    _initializerDefineProperty(this, "items", _descriptor4$1v, this);
@@ -290240,14 +291453,14 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 1;
 	  }
 	}), _descriptor3$1J = _applyDecoratedDescriptor(_class2$2i.prototype, "atlasAspectRatio", [_dec4$1S], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return vec2$2.create();
+	    return vec2$2.fromValues(1, 1);
 	  }
 	}), _descriptor4$1v = _applyDecoratedDescriptor(_class2$2i.prototype, "items", [_dec5$1D], {
 	  configurable: true,
@@ -290308,6 +291521,7 @@
 	    _initializerDefineProperty(this, "blinkPhase", _descriptor2$1$, this);
 	    _initializerDefineProperty(this, "blinkMode", _descriptor3$1I, this);
 	    _initializerDefineProperty(this, "boneIndex", _descriptor4$1u, this);
+	    // Carbon defaults (EveSOFData.cpp:602-624); SOF data omits default values.
 	    _initializerDefineProperty(this, "color", _descriptor5$1e, this);
 	    _initializerDefineProperty(this, "colorType", _descriptor6$Y, this);
 	    // Assumes the default colour type is "Primary"
@@ -290370,7 +291584,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return vec4$2.create();
+	    return vec4$2.fromValues(1, 1, 1, 1);
 	  }
 	}), _descriptor6$Y = _applyDecoratedDescriptor(_class2$2h.prototype, "colorType", [_dec8$Z], {
 	  configurable: true,
@@ -290384,7 +291598,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 1;
 	  }
 	}), _descriptor8$H = _applyDecoratedDescriptor(_class2$2h.prototype, "groupIndex", [_dec0$J], {
 	  configurable: true,
@@ -290398,7 +291612,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0.0;
+	    return 1;
 	  }
 	}), _descriptor0$y = _applyDecoratedDescriptor(_class2$2h.prototype, "layer1Scroll", [_dec10$y], {
 	  configurable: true,
@@ -290454,7 +291668,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0;
+	    return 1;
 	  }
 	}), _descriptor16$4 = _applyDecoratedDescriptor(_class2$2h.prototype, "rotation", [_dec18$5], {
 	  configurable: true,
@@ -290468,7 +291682,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 0.0;
+	    return 1;
 	  }
 	}), _descriptor18$4 = _applyDecoratedDescriptor(_class2$2h.prototype, "scaling", [_dec20$4], {
 	  configurable: true,
@@ -293279,8 +294493,7 @@
 	        boosterSymHalo: 0.125,
 	        boosterBrightness: 1,
 	        boosterScale: [0.9, 0.9, 0.9],
-	        boosterAlpha: 0.5,
-	        maxDistortionOffset: 1 / 1000
+	        boosterAlpha: 0.5
 	      },
 	      effect: {
 	        sprite: null,
@@ -293305,6 +294518,10 @@
 	        boosterGlow: "res:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
 	        boosterTrails: "res:/graphics/effect/managed/space/booster/volumetrictrails.fx",
 	        spriteSet: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+	        // Carbon EveSOF.cpp:141-154
+	        hazeSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx",
+	        hazeSkinnedSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/skinned_hazespherical.fx",
+	        hazeHalfSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazehalfspherical.fx",
 	        banner: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
 	      },
 	      texturePath: {
@@ -295434,12 +296651,19 @@
 	              area.effect.name = area.name + "_effect";
 	            }
 
-	            // Handle distortion
-	            // Todo: Update shaders so this isn't required
+	            // A distortion area that authored no MAX_DISTORTION_OFFSET still needs
+	            // one, because its shader DIVIDES by the value when writing the map:
+	            // `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET`. 128 is the authored
+	            // default these materials are written against.
+	            //
+	            // ccpwgl used to scale this by 1/1000 as well, which left `soef1_t1`'s
+	            // effective value at 0.128 - about 1000x off what the material authors,
+	            // and 500x out of line with hulls the scaling never reached, such as
+	            // `angbc1_t1` (whose materials keep their authored 64). Operator
+	            // 2026-09-17: the EVE client is not over-distorted on those hulls, and
+	            // the client runs the authored values, so the scaling went.
 	            if (eff.parameters.MAX_DISTORTION_OFFSET || areasName === "distortionAreas") {
-	              var value = eff.parameters.MAX_DISTORTION_OFFSET || [128, 0, 0, 0];
-	              value[0] *= options.multiplier.maxDistortionOffset;
-	              eff.parameters.MAX_DISTORTION_OFFSET = value;
+	              eff.parameters.MAX_DISTORTION_OFFSET = eff.parameters.MAX_DISTORTION_OFFSET || [128, 0, 0, 0];
 	            }
 
 	            // Update effect
@@ -295639,7 +296863,7 @@
 	                  ImageMap
 	              }
 	          };
-	       bannerShader.Assign(effectSettings);
+	        bannerShader.Assign(effectSettings);
 	      set.effect.SetValues(effectSettings);
 	       */
 
@@ -295979,13 +297203,21 @@
 	          MaskMap: srcSet.maskMapResPath
 	        }
 	      });
+	      set.skinned = isSkinned && srcSet.skinned;
 	      srcSet.items.forEach(item => set.CreateItem(item));
 
 	      // Update faction colours
-	      set.items.forEach(item => {
+	      set.items.forEach((item, itemIndex) => {
+	        var src = srcSet.items[itemIndex];
+	        // Carbon blinkData = (rate, phase, dutyCycle, blinkMode) (EveSOF.cpp:1266).
+	        item.blinkRate = src.rate;
+	        item.dutyCycle = src.dutyCycle;
 	        if (sof6) {
+	          // Carbon: Saturate(intensity * colorSet[colorType], saturation) (EveSOF.cpp:1271).
 	          vec4$2.copy(item.color, [0, 0, 0, 1]);
 	          sof.faction.GetColorType(item.colorType, item.color, 0);
+	          vec4$2.scale(item.color, item.color, src.intensity);
+	          Saturate(item.color, item.color, src.saturation);
 	        } else {
 	          var faction = sof.faction.FindPlaneSetByGroupIndex(item.groupIndex);
 	          if (faction) vec4$2.copy(item.color, faction.color);
@@ -296693,7 +297925,7 @@
 	   * @param options
 	   */
 	  static SetupHazeSets(data, obj, sof, options) {
-	    // Populate light owners while the known-broken haze renderer stays disabled.
+	    // Carbon EveSOF::SetupHazeSets (EveSOF.cpp:1451-1552).
 	    var arr = obj.attachments;
 	    var toRemove = EveSOFData.FindObjectsByConstructor(arr, EveHazeSet);
 	    var _loop6 = function (srcSet) {
@@ -296707,15 +297939,31 @@
 	      set.ClearItems();
 	      set.lights = [];
 	      set.skinned = srcSet.skinned && sof.hull.isSkinned;
+
+	      // Effect by haze type and skinning (EveSOF.cpp:1474-1489).
+	      var effectFilePath;
+	      if (srcSet.hazeType === 1) effectFilePath = options.effectPath.hazeHalfSpherical;else effectFilePath = set.skinned ? options.effectPath.hazeSkinnedSpherical : options.effectPath.hazeSpherical;
+	      set.effect = set.effect || new Tw2Effect();
+	      set.effect.SetValues({
+	        effectFilePath,
+	        autoParameter: true
+	      });
 	      for (var index = 0; index < srcSet.items.length; index++) {
 	        var src = srcSet.items[index];
 	        var color = vec4$2.create();
 	        sof.faction.GetColorType(src.colorType, color, 0);
+	        // EveSOF.cpp:1508, saturation only under SOF6 (:1520-1522).
 	        var hazeColor = vec4$2.scale(vec4$2.create(), color, src.hazeBrightness);
-	        Saturate(hazeColor, hazeColor, src.saturation);
-	        set.CreateItem(_objectSpread2(_objectSpread2({}, src), {}, {
-	          color: hazeColor
-	        }));
+	        if (sof.hull.sof6 && data.enableSof6) Saturate(hazeColor, hazeColor, src.saturation);
+	        set.CreateItem({
+	          position: src.position,
+	          rotation: src.rotation,
+	          scaling: src.scaling,
+	          boneIndex: src.boneIndex,
+	          color: hazeColor,
+	          // EveSOF.cpp:1518
+	          hazeData: [src.hazeFalloff, src.sourceSize, src.sourceBrightness, src.boosterGainInfluence ? 1 : 0]
+	        });
 	        if (!(sof.hull.sof6 && data.enableSof6)) continue;
 	        for (var raw of src.lights) {
 	          var light = raw.AsLightData ? raw : EveSOFDataPointLightAttachment.from(raw);
@@ -297002,12 +298250,12 @@
 
 	      /*
 	      const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
-	       function onChildLoaded(child)
+	        function onChildLoaded(child)
 	      {
 	          return function(loaded)
 	          {
 	              loaded.name = child.name;
-	               if (loaded.isEffectChild)
+	                if (loaded.isEffectChild)
 	              {
 	                  obj.effectChildren.push(loaded);
 	              }
@@ -297015,17 +298263,17 @@
 	              {
 	                  obj.children.push(loaded);
 	              }
-	               vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
+	                vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
 	              quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
 	              vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
-	               const id = get(child, "id", -1);
+	                const id = get(child, "id", -1);
 	              if (id !== -1 && curves[id])
 	              {
 	                  EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
 	              }
 	          };
 	      }
-	       const { children = [] } = sof.hull;
+	        const { children = [] } = sof.hull;
 	      for (let i = 0; i < children.length; ++i)
 	      {
 	          const { redFilePath } = children[i];
@@ -297397,7 +298645,7 @@
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
-	    return 5;
+	    return 2;
 	  }
 	}), _descriptor4$19 = _applyDecoratedDescriptor(_class2$1R.prototype, "fallbackMaterialName", [_dec7$V, _dec8$P], {
 	  configurable: true,
@@ -328838,7 +330086,7 @@
 	var shadowHeader$1 = "\n\n    #ifdef PS\n    uniform vec4 ssi;\n    varying float ssv;\n    #endif\n\n";
 	var shadowFooter$1 = "\n\n    #ifdef PS\n    float av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\n    if(ssi.z==0.0)\n    {\n        if(av*ssi.x+ssi.y<0.0) discard;\n    }\n    else\n    {\n        if(ssi.x>0.0)\n        {\n            if(av==ssi.y) discard;\n        }\n        else\n        {\n            if(av!=ssi.y) discard;\n        }\n    }\n    if(ssv<0.0)discard;\n    #endif\n\n";
 
-	var ps$9 = {
+	var ps$a = {
 		__proto__: null,
 		shadowFooter: shadowFooter$1,
 		shadowHeader: shadowHeader$1
@@ -328948,14 +330196,14 @@
 	var headerNoShadow = "\n\n    ".concat(texture2DLod, "\n    ").concat(precision, "\n    ").concat(texture2DLodPolyfill, "\n    ").concat(saturate, "\n\n");
 	var header = "\n\n    ".concat(headerNoShadow, "\n    ").concat(shadowHeader$1, "\n\n");
 
-	var ps$8 = {
+	var ps$9 = {
 		__proto__: null,
 		header: header,
 		headerNoShadow: headerNoShadow,
 		shadowFooter: shadowFooter$1
 	};
 
-	var ps$7 = {
+	var ps$8 = {
 		__proto__: null,
 		header: header,
 		shadowFooter: shadowFooter$1,
@@ -328965,7 +330213,7 @@
 	var shadowHeader = "\n\n    #ifdef PS\n    uniform vec4 ssf[4];\n    varying float ssv;\n    #endif\n\n";
 	var shadowFooter = "\n\n    #ifdef PS\n    ssv=dot(ssf[0],gl_Position);\n    #endif\n\n    gl_Position.xy+=ssyf.xy*gl_Position.w;\n    gl_Position.y*=ssyf.z;\n    gl_Position.z=gl_Position.z*2.0-gl_Position.w;\n\n";
 
-	var vs$b = {
+	var vs$c = {
 		__proto__: null,
 		shadowFooter: shadowFooter,
 		shadowHeader: shadowHeader
@@ -329323,7 +330571,7 @@
 	  shader: "\n\n        ".concat(shadowHeader, "\n\n        attribute vec4 attr0;\n        attribute vec4 attr1;\n        attribute vec4 attr2;\n        attribute vec4 attr3;\n        attribute vec4 attr4;\n\n        varying vec4 texcoord;\n        varying vec4 texcoord1;\n\n        uniform vec4 cb1[8];\n        uniform vec4 cb3[4];\n        uniform vec3 ssyf;\n\n        void main()\n        {\n            vec4 v0;\n            vec4 v1;\n            vec4 v2;\n            vec4 v3;\n            vec4 v4;\n            vec4 r0;\n            vec4 r1;\n\n            vec4 c0=vec4(1,0,0,0);\n\n            v0=attr0;\n            v1=attr1;\n            v2=attr2;\n            v3=attr3;\n            v4=attr4;\n\n            r0.w=c0.x;\n            r1=v0.xyzx*c0.xxxy+c0.yyyx;\n            r0.x=dot(r1,v2);\n            r0.y=dot(r1,v3);\n            r0.z=dot(r1,v4);\n            r1.x=dot(r0,cb3[0]);\n            r1.y=dot(r0,cb3[1]);\n            r1.z=dot(r0,cb3[2]);\n            r1.w=dot(r0,cb3[3]);\n            texcoord.xyz=r0.xyz;\n            gl_Position.x=dot(r1,cb1[4]);\n            gl_Position.y=dot(r1,cb1[5]);\n            gl_Position.z=dot(r1,cb1[6]);\n            gl_Position.w=dot(r1,cb1[7]);\n\n            texcoord.w=c0.y;\n            texcoord1.xy=v1.xy;\n\n            ").concat(shadowFooter, "\n        }\n\n    ")
 	};
 
-	var vs$a = {
+	var vs$b = {
 		__proto__: null,
 		quadInstancedV5_PosTexTanTexTexTexTex: quadInstancedV5_PosTexTanTexTexTexTex,
 		quadInstancedV5_PosTexTanTexTexTexTexL01: quadInstancedV5_PosTexTanTexTexTexTexL01,
@@ -329352,7 +330600,7 @@
 	  shader: "\n\n        ".concat(shadowHeader, "\n\n        attribute vec4 attr0;\n        attribute vec4 attr1;\n        attribute vec4 attr2;\n\n        varying vec4 texcoord;\n        varying vec4 texcoord1;\n        varying vec4 texcoord2;\n        varying vec4 texcoord3;\n        varying vec4 texcoord4;\n        varying vec4 texcoord5;\n        varying vec4 texcoord7;\n        varying vec4 texcoord8;\n        varying vec4 texcoord9;\n        varying vec4 texcoord10;\n\n        uniform vec4 cb1[24];\n        uniform vec4 cb3[20];\n        uniform vec3 ssyf;\n\n        void main()\n        {\n            vec4 v0;\n            vec4 v1;\n            vec4 v2;\n            vec4 r0;\n            vec4 r1;\n            vec4 r2;\n            vec4 r3;\n            vec4 r4;\n            vec4 r5;\n            vec4 r6;\n            vec4 r7;\n            vec4 r8;\n\n            vec4 c0=vec4(6.28318548,-3.14159274,0.159154937,0.5);\n            vec4 c1=vec4(0,1,0,0);\n\n            v0=attr0;\n            v1=attr1;\n            v2=attr2;\n\n            r0=cb3[17];\n            r1=r0*cb3[3].yyyy;\n            r2=cb3[16];\n            r1=r2*cb3[3].xxxx+r1;\n            r3=cb3[18];\n            r1=r3*cb3[3].zzzz+r1;\n            r4=cb3[19];\n            r1=r4*cb3[3].wwww+r1;\n            r5=v0.xyzx*c1.yyyx+c1.xxxy;\n            r1.w=dot(r5,r1);\n            r6=r0*cb3[0].yyyy;\n            r6=r2*cb3[0].xxxx+r6;\n            r6=r3*cb3[0].zzzz+r6;\n            r6=r4*cb3[0].wwww+r6;\n            r1.x=dot(r5,r6);\n            r7=r0*cb3[1].yyyy;\n            r7=r2*cb3[1].xxxx+r7;\n            r7=r3*cb3[1].zzzz+r7;\n            r7=r4*cb3[1].wwww+r7;\n            r1.y=dot(r5,r7);\n            r0=r0*cb3[2].yyyy;\n            r0=r2*cb3[2].xxxx+r0;\n            r0=r3*cb3[2].zzzz+r0;\n            r0=r4*cb3[2].wwww+r0;\n            r1.z=dot(r5,r0);\n            gl_Position.x=dot(r1,cb1[4]);\n            gl_Position.y=dot(r1,cb1[5]);\n            gl_Position.z=dot(r1,cb1[6]);\n            gl_Position.w=dot(r1,cb1[7]);\n            r2=v2*c0.xxxx+c0.yyyy;\n            {\n                bvec4 tmp=lessThan(c1.xxxx,r2.ywzw);\n                r3.xy=(vec4(tmp.x?1.0:0.0,tmp.y?1.0:0.0,tmp.z?1.0:0.0,tmp.w?1.0:0.0)).xy;\n            }\n            r2=r2*c0.zzzz+c0.wwww;\n            r2=fract(r2);\n            r2=r2*c0.xxxx+c0.yyyy;\n            r0.w=r3.y*r3.x;\n            r3.xy=vec2(cos(r2.x), sin(r2.x));\n            r4.xy=vec2(cos(r2.y), sin(r2.y));\n            r3.xy=r3.xy*abs(r4.yy);\n            r3.z=r4.x;\n            r4.xy=vec2(cos(r2.z), sin(r2.z));\n            r8.xy=vec2(cos(r2.w), sin(r2.w));\n            r2.xy=r4.xy*abs(r8.yy);\n            r2.z=r8.x;\n            r4.xyz=r2.yzx*r3.zxy;\n            r4.xyz=r3.yzx*r2.zxy+(-r4.xyz);\n            r8.xyz=mix((-r4.xyz),r4.xyz,r0.www);\n            texcoord1.x=dot(r8.xyz,r6.xyz);\n            texcoord1.y=dot(r8.xyz,r7.xyz);\n            texcoord1.z=dot(r8.xyz,r0.xyz);\n            texcoord2.x=dot(r3.xyz,r6.xyz);\n            texcoord3.x=dot(r2.xyz,r6.xyz);\n            texcoord2.y=dot(r3.xyz,r7.xyz);\n            texcoord3.y=dot(r2.xyz,r7.xyz);\n            texcoord3.z=dot(r2.xyz,r0.xyz);\n            texcoord2.z=dot(r3.xyz,r0.xyz);\n            r0.xyz=(-r1.xyz)+cb1[3].xyz;\n            r0.w=dot(r0.xyz,r0.xyz);\n            r0.w=r0.w==0.0?3.402823466e+38:inversesqrt(abs(r0.w));\n            texcoord4.xyz=r0.www*r0.xyz;\n            r0.x=1.0/r0.w;\n            texcoord7.x=dot(r1,cb1[16]);\n            texcoord7.y=dot(r1,cb1[17]);\n            texcoord7.z=dot(r1,cb1[18]);\n            texcoord7.w=dot(r1,cb1[19]);\n            texcoord8.x=dot(r1,cb1[20]);\n            texcoord8.y=dot(r1,cb1[21]);\n            texcoord8.z=dot(r1,cb1[22]);\n            texcoord8.w=dot(r1,cb1[23]);\n            texcoord9.w=dot(r5,cb3[12]);\n            texcoord.z=dot(r5,cb3[13]);\n            texcoord.w=dot(r5,cb3[14]);\n            r1.x=cb3[8].y;\n            r1.y=cb3[9].y;\n            r1.z=cb3[10].y;\n            r1.w=cb3[11].y;\n            r2.x=dot(r1,cb3[16]);\n            r2.y=dot(r1,cb3[17]);\n            r2.z=dot(r1,cb3[18]);\n            r2.w=dot(r1,cb3[19]);\n            r1.x=dot(r2,cb3[0]);\n            r1.y=dot(r2,cb3[1]);\n            r1.z=dot(r2,cb3[2]);\n            r0.y=dot(r1.xyz,r1.xyz);\n            r0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\n            texcoord9.xyz=r0.yyy*r1.xyz;\n            r1.x=cb3[8].z;\n            r1.y=cb3[9].z;\n            r1.z=cb3[10].z;\n            r1.w=cb3[11].z;\n            r2.x=dot(r1,cb3[16]);\n            r2.y=dot(r1,cb3[17]);\n            r2.z=dot(r1,cb3[18]);\n            r2.w=dot(r1,cb3[19]);\n            r1.x=dot(r2,cb3[0]);\n            r1.y=dot(r2,cb3[1]);\n            r1.z=dot(r2,cb3[2]);\n            r0.y=dot(r1.xyz,r1.xyz);\n            r0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\n            texcoord10.xyz=r0.yyy*r1.xyz;\n            texcoord.xy=v1.xy;\n            texcoord4.w=r0.x;\n            texcoord5.w=r0.x;\n            texcoord5.xyz=v0.xyz;\n            texcoord10.w=c1.x;\n\n            ").concat(shadowFooter, "\n        }\n    ")
 	};
 
-	var vs$9 = {
+	var vs$a = {
 		__proto__: null,
 		decal_PosTexTan: decal_PosTexTan,
 		decal_PosTexTanL01: decal_PosTexTanL01,
@@ -332011,8 +333259,8 @@
 	 * that was authored from it.
 	 */
 
-	var vs$8 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb0[1];\nuniform vec4 cb1[16];\nuniform vec4 cb3[5];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r14;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c1=vec4(0.5,1,0,9.99999975e-005);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nr0.w=dot(v4,cb3[0]);\nr1.x=r0.w;\nr2.w=dot(v4,cb3[1]);\nr1.y=r2.w;\nr3.x=dot(v4,cb3[3]);\nr1.w=r3.x;\nr4.w=dot(v4,cb3[2]);\nr1.z=r4.w;\ntexcoord6.w=dot(r1,cb1[11]);\nr5.x=saturate(cb3[4].x);\nr5.y=r5.x*c1.x+c1.x;\nr6=cb0[0].xxxx*v1;\nr3.w=dot(r6,cb3[3]);\nr7.w=r3.w;\nr0.x=dot(r6,cb3[0]);\nr7.x=r0.x;\nr2.x=dot(r6,cb3[1]);\nr7.y=r2.x;\nr4.x=dot(r6,cb3[2]);\nr7.z=r4.x;\ntexcoord3.w=dot(r7,cb1[11]);\nr8=cb0[0].yyyy*v2;\nr3.y=dot(r8,cb3[3]);\nr9=cb0[0].zzzz*v3;\nr9=r5.yyyy*r9;\nr3.z=dot(r9,cb3[3]);\nr10.w=r3.y;\nr0.y=dot(r8,cb3[0]);\nr10.x=r0.y;\nr2.y=dot(r8,cb3[1]);\nr10.y=r2.y;\nr4.y=dot(r8,cb3[2]);\nr10.z=r4.y;\ntexcoord4.w=dot(r10,cb1[11]);\nr11.w=r3.z;\nr0.z=dot(r9,cb3[0]);\nr11.x=r0.z;\nr2.z=dot(r9,cb3[1]);\nr11.y=r2.z;\nr4.z=dot(r9,cb3[2]);\nr11.z=r4.z;\ntexcoord5.w=dot(r11,cb1[11]);\nr5.yzw=r3.zwy*r4.yzx;\nr5.yzw=r4.zxy*r3.yzw+(-r5.yzw);\nr12.w=dot(r5.yzw,r2.xyz);\nr5.yzw=r3.zxy*r4.wyz;\nr5.yzw=r4.zwy*r3.xyz+(-r5.yzw);\nr12.x=dot(r5.yzw,r2.yzw);\nr5.yzw=r3.xwz*r4.zwx;\nr5.yzw=r4.wxz*r3.zxw+(-r5.yzw);\nr12.y=dot(r5.yzw,r2.xzw);\nr5.yzw=r3.yxw*r4.wxy;\nr5.yzw=r4.ywx*r3.xwy+(-r5.yzw);\nr12.z=dot(r5.yzw,r2.xyw);\nr5.y=dot(r12,r0);\nr5.x=c1.w>=r5.x?1.0:0.0;;\nr8=r8*v0.yyyy;\nr6=v0.xxxx*r6+r8;\nr6=v0.zzzz*r9+r6;\nr6=r6+v4;\nr8.w=dot(r6,cb3[3]);\nr8.x=dot(r6,cb3[0]);\nr8.y=dot(r6,cb3[1]);\nr8.z=dot(r6,cb3[2]);\nr6.w=dot(r8,cb1[11]);\nr6.x=dot(r8,cb1[8]);\nr6.y=dot(r8,cb1[9]);\nr6.z=dot(r8,cb1[10]);\nr8.w=dot(r6,cb1[15]);\nr8.x=dot(r6,cb1[12]);\nr8.y=dot(r6,cb1[13]);\nr8.z=dot(r6,cb1[14]);\nif(((-abs(r5.y))>=abs(r5.y))){\nr6=r0;\nr9=r2;\nr12=r4;\n}else{\nr5.y=1.0/r5.y;\nr5.zw=r2.ww*r4.zy;\nr5.zw=r2.zy*r4.ww+(-r5.zw);\nr13.xy=r0.ww*r4.zy;\nr13.xy=r0.zy*r4.ww+(-r13.xy);\nr14.xyz=r2.yxx*r13.xxy;\nr14.xyz=r0.yxx*r5.zzw+(-r14.xyz);\nr13.zw=r0.ww*r2.zy;\nr13.zw=r0.zy*r2.ww+(-r13.zw);\nr14.xyz=r4.yxx*r13.zzw+r14.xyz;\nr12.w=r5.y*(-r14.z);\nr6.w=r5.y*(-r14.x);\nr9.w=r5.y*r14.y;\nr14.xy=r2.ww*r3.zy;\nr2.zw=r2.zy*r3.xx+(-r14.xy);\nr14.xy=r0.ww*r3.zy;\nr0.zw=r0.zy*r3.xx+(-r14.xy);\nr14.xyz=r0.zzw*r2.yxx;\nr14.xyz=r0.yxx*r2.zzw+(-r14.xyz);\nr14.xyz=r3.yww*r13.zzw+r14.xyz;\nr6.z=r5.y*r14.x;\nr9.z=(-r5.y)*r14.y;\nr12.z=r5.y*r14.z;\nr13.zw=r3.zy*r4.ww;\nr3.xz=r4.zy*r3.xx+(-r13.zw);\nr14.xyz=r0.zzw*r4.yxx;\nr0.xyz=r0.yxx*r3.xxz+(-r14.xyz);\nr0.xyz=r3.yww*r13.xxy+r0.xyz;\nr6.y=(-r0.x)*r5.y;\nr9.y=r0.y*r5.y;\nr12.y=(-r0.z)*r5.y;\nr0.xyz=r2.zzw*r4.yxx;\nr0.xyz=r2.yxx*r3.xxz+(-r0.xyz);\nr0.xyz=r3.yww*r5.zzw+r0.xyz;\nr6.x=r0.x*r5.y;\nr9.x=r0.y*(-r5.y);\nr12.x=r0.z*r5.y;\n}\nr0.yz=c1.yz;\nr0=cb1[3].xyzx*r0.yyyz+r0.zzzy;\ntexcoord2.z=dot(r0,r12);\ngl_Position=r5.xxxx*(-r8)+r8;\ntexcoord2.x=dot(r0,r6);\ntexcoord2.y=dot(r0,r9);\ntexcoord3.x=dot(r7,cb1[8]);\ntexcoord3.y=dot(r7,cb1[9]);\ntexcoord3.z=dot(r7,cb1[10]);\ntexcoord4.x=dot(r10,cb1[8]);\ntexcoord4.y=dot(r10,cb1[9]);\ntexcoord4.z=dot(r10,cb1[10]);\ntexcoord5.x=dot(r11,cb1[8]);\ntexcoord5.y=dot(r11,cb1[9]);\ntexcoord5.z=dot(r11,cb1[10]);\ntexcoord6.x=dot(r1,cb1[8]);\ntexcoord6.y=dot(r1,cb1[9]);\ntexcoord6.z=dot(r1,cb1[10]);\ntexcoord.x=v5.x;\ntexcoord1.xyz=v0.xyz;\ntexcoord7.xy=v6.xy;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
-	var ps$6 = "\n#if defined(GL_EXT_shader_texture_lod)\n#extension GL_EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(EXT_shader_texture_lod)\n#extension EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(GL_ARB_shader_texture_lod)\n#extension GL_ARB_shader_texture_lod: enable\n#define texture2DGrad texture2DGradARB\n#endif\n#ifdef GL_OES_texture_3D\n#extension GL_OES_texture_3D: enable\n#endif\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\n#if defined(GL_ES)&&!defined(GL_EXT_shader_texture_lod)&&!defined(EXT_shader_texture_lod)\n#define texture2DLod(s,u,l) texture2D(s,u)\n#define textureCubeLod(s,u,l) textureCube(s,u)\n#define texture2DGrad(s,u,x,y) texture2D(s,u)\n#define textureCubeGrad(s,u,x,y) textureCube(s,u)\n#endif\n#if !defined(GL_ES)||defined(GL_OES_texture_3D)\n#define tex3D(s,uvw,sl,su,sw,lw,l) texture3D(s,uvw,l)\n#ifdef GL_EXT_shader_texture_lod\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3DLod(s,uvw,l)\n#else\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3D(s,uvw)\n#endif\n#else\n#define sampler3D sampler2D\nvec4 tex3D(sampler2D s,vec3 uvw,float sl,bool su,bool sw,bool lw,float l)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2D(s,vec2(uvw.x,y+s0));\nvec4 c1=texture2D(s,vec2(uvw.x,y+s1));\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#ifndef tex3DLod\nvec4 tex3DLod(sampler2D s,vec3 uvw,float l,float sl,bool su,bool sw,bool lw)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2DLod(s,vec2(uvw.x,y+s0),l);\nvec4 c1=texture2DLod(s,vec2(uvw.x,y+s1),l);\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nuniform sampler2D s0;\nuniform sampler2D s1;\nuniform sampler3D s2;\n#ifndef GL_OES_texture_3D\nuniform float s2sl;\n#else\n#define s2sl 0.0\n#endif\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb2[22];\nuniform vec4 cb4[1];\nuniform vec4 cb7[12];\nuniform ivec4 i0;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c12=vec4(1,-1,0,-9.99999975e-006);\nvec4 c13=vec4(0.5,0.375,0.0625,0.5625);\nvec4 c14=vec4(0,0.100000001,0.0909090936,0.055555556);\nvec4 c15=vec4(-0.00313080009,12.9200001,0.416666657,0);\nvec4 c16=vec4(1.05499995,-0.0549999997,0,0);\nivec4 i0=ivec4(12,0,0,0);\nv0=texcoord;\nv1=texcoord1;\nv2=texcoord2;\nv3=texcoord3;\nv4=texcoord4;\nv5=texcoord5;\nv6=texcoord6;\nv7=texcoord7;\nr0.xyz=v1.xyz;\nr1.xyz=r0.xyz+(-v2.xyz);\nr0.w=1.0/r1.x;\nr2=c12.xyxy+(-v2.xxyy);\nr2.xy=r0.ww*r2.xy;\nr0.w=r1.x>=0.0?r2.x:r2.y;\nr1.x=1.0/r1.y;\nr1.xw=r1.xx*r2.zw;\nr1.x=r1.y>=0.0?r1.x:r1.w;\nr2.x=min(r0.w,r1.x);\nr0.w=1.0/r1.z;\nr1.x=c12.y+(-v2.z);\nr1.x=r0.w*r1.x;\nr0.w=r0.w*(-v2.z);\nr0.w=r1.z>=0.0?r0.w:r1.x;\nr1.x=min(r2.x,r0.w);\nr2.xyz=mix(v2.xyz,r0.xyz,r1.xxx);\nr0.xy=c12.xy;\nr0.x=r0.x+cb2[20].y;\nr0.x=1.0/r0.x;\nr1.y=r0.x*cb2[20].x;\nr1.x=c12.x;\nr3.w=dot(v6.zw,r1.xy)+c12.z;\nr3.x=dot(v3.zw,r1.xy)+c12.z;\nr3.y=dot(v4.zw,r1.xy)+c12.z;\nr3.z=dot(v5.zw,r1.xy)+c12.z;\nr2.w=c12.x;\nr0.x=dot(r2,r3);\nr0.z=1.0/r3.z;\nr1.z=r0.z*(-r3.w);\nr4=v1.xyzx*c12.xxxz+c12.zzzx;\nr0.z=dot(r4,r3);\nr4.xyz=(-r2.xyz)+v1.xyz;\nr0.w=dot(r3.xyz,r4.xyz);\nr0.w=1.0/r0.w;\nr1.xy=c12.zz;\nr4.xyz=(-r2.xyz)+r1.yyz;\nr1.w=dot(r3.xyz,r4.xyz);\nr0.w=r0.w*r1.w;\nr4.xyz=mix(r2.xyz,v1.xyz,r0.www);\n{bvec3 tmp=greaterThanEqual((-r0.zzz),vec3(0.0));r4.xyz=vec3(tmp.x?v1.x:r4.x,tmp.y?v1.y:r4.y,tmp.z?v1.z:r4.z);};\nr1.xyz=r1.xyz+(-r4.xyz);\nr0.z=dot(r3.xyz,r1.xyz);\nr1.xyz=r2.xyz+(-r4.xyz);\nr0.w=dot(r3.xyz,r1.xyz);\nr0.w=1.0/r0.w;\nr0.z=r0.w*r0.z;\nr1.xyz=mix(r4.xyz,r2.xyz,r0.zzz);\n{bvec3 tmp=greaterThanEqual((-r0.xxx),vec3(0.0));r0.xzw=vec3(tmp.x?r2.x:r1.x,tmp.y?r2.y:r1.y,tmp.z?r2.z:r1.z);};\nr1.xyz=(-r0.xzw)+r4.xyz;\nr1.x=dot(r1.xyz,r1.xyz);\nr1.x=r1.x+c12.w;\n{bvec4 tmp=greaterThanEqual(r1.xxxx,vec4(0.0));r1=vec4(tmp.x?(-c12.z):(-c12.x),tmp.y?(-c12.z):(-c12.x),tmp.z?(-c12.z):(-c12.x),tmp.w?(-c12.z):(-c12.x));};\nif(any(lessThan(r1,vec4(0.0))))discard;\nr1.x=1.0/cb7[0].x;\nr1.y=r1.x*c13.x;\nr1.z=1.0/cb7[0].y;\nr2.w=v7.x*r1.z+r1.y;\nr0.xzw=(-r4.xyz)+r0.xzw;\nr3.x=cb7[4].x;\nr1.y=(-r3.x)+cb7[9].x;\nr1.y=cb4[0].z*r1.y+r3.x;\nr1.y=r1.y*cb2[21].x+v0.x;\nr3.xz=cb4[0].xz;\nr1.w=saturate(r3.x*c13.x);\nr3.xy=r1.ww*c13.yy+c13.zw;\nr5.y=(-cb4[0].z)>=0.0?r3.x:r3.y;\nr0.y=cb7[0].x*r1.z+r0.y;\nr2.y=r1.x*r0.y;\nr6.z=c12.z;\nr7.xyz=cb7[1].xyz;\nr1.xzw=(-r7.xyz)+cb7[6].xyz;\nr1.xzw=r3.zzz*r1.xzw+cb7[1].xyz;\nr7.xyz=cb7[2].xyz;\nr3.xyw=(-r7.xyz)+cb7[7].xyz;\nr3.xyw=r3.zzz*r3.xyw+cb7[2].xyz;\nr7.xyz=cb7[3].xyz;\nr7.xyz=(-r7.xyz)+cb7[8].xyz;\nr7.xyz=r3.zzz*r7.xyz+cb7[3].xyz;\nr8=cb7[5];\nr8=(-r8)+cb7[10];\nr8=r3.zzzz*r8+cb7[5];\nr5.zw=c12.zz;\nr2.xz=c12.xz;\nr9=c12.zzzz;\nr10.xyz=r4.xyz;\nfor(int i=0;i<12;++i){ // dynamic bound: ESSL1 forbids a non-constant loop comparison\nr11.xyz=mix(r1.xzw,r3.xyw,(-r10.zzz));\nr12.xyz=r10.xyz*cb7[11].xyz;\nr12.xyz=r7.xyz*r12.xyz;\nr0.y=r10.z*r10.z;\nr13.z=r12.z*r0.y+r1.y;\nr13.xyw=r12.xyx*c12.xxz;\nr12=tex3DLod(s2,r13.xyz,r13.w,s2sl,true,true,true);\nr12.xyz=r12.xyz+(-c13.xxx);\nr11.xyz=r12.xyz*r11.xyz+r10.xyz;\nr5.x=(-r11.z);\nr12=texture2DLod(s1,r5.xy,r5.w);\n{bvec3 tmp=greaterThanEqual((-r12.xyz),vec3(0.0));r13.xyz=vec3(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x,tmp.z?c12.z:c12.x);};\nr0.y=dot(r13.xyz,r13.xyz);\nr0.y=(-r0.y)>=0.0?c12.z:c12.x;\nr0.y=(-r12.w)>=0.0?c12.z:r0.y;\nif((r0.y!=(-r0.y))){\nr0.y=1.0/r12.w;\nr11.xy=r0.yy*r11.xy;\nr11.xy=r11.xy*c13.xx+c13.xx;\nr11.zw=(-r11.xy)+c12.xx;\n{bvec2 tmp=greaterThanEqual(r11.zw,vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\n{bvec2 tmp=greaterThanEqual(r11.xy,vec2(0.0));r13.xy=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr11.zw=r11.zw+r13.xy;\n{bvec2 tmp=greaterThanEqual((-r11.zw),vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr3.z=dot(r11.zw,r11.zw)+c12.z;\nif(((-r3.z)<c12.z)){\nr13=c12.zzzz;\n}else{\nr6.xy=r11.xy*r2.xy+r2.zw;\nr0.y=r0.y*r0.y;\nr6.w=r0.y*c14.y;\nr13=texture2DLod(s0,r6.xy,r6.w);\n}\nr11=r12*r13;\nr9=r11*r8+r9;\n}\nr10.xyz=r0.xzw*c14.zzz+r10.xyz;\n}\nr0.xyz=r0.xzw*cb7[11].xyz;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c14.w;\nr0=r0.xxxx*r9;\nr1.xyz=max(r0.xyz,c12.zzz);\nr0.x=r1.x>0.0?log2(r1.x):-3.402823466e+38;\nr0.y=r1.y>0.0?log2(r1.y):-3.402823466e+38;\nr0.z=r1.z>0.0?log2(r1.z):-3.402823466e+38;\nr0.xyz=r0.xyz*c15.zzz;\nr2.x=exp2(r0.x);\nr2.y=exp2(r0.y);\nr2.z=exp2(r0.z);\nr0.xyz=r2.xyz*c16.xxx+c16.yyy;\nr2.xyz=r1.xyz+c15.xxx;\nr1.xyz=r1.xyz*c15.yyy;\n{bvec3 tmp=greaterThanEqual(r2.xyz,vec3(0.0));gl_FragData[0].xyz=vec3(tmp.x?r0.x:r1.x,tmp.y?r0.y:r1.y,tmp.z?r0.z:r1.z);};\ngl_FragData[0].w=r0.w;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
+	var vs$9 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb0[1];\nuniform vec4 cb1[16];\nuniform vec4 cb3[5];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r14;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c1=vec4(0.5,1,0,9.99999975e-005);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nr0.w=dot(v4,cb3[0]);\nr1.x=r0.w;\nr2.w=dot(v4,cb3[1]);\nr1.y=r2.w;\nr3.x=dot(v4,cb3[3]);\nr1.w=r3.x;\nr4.w=dot(v4,cb3[2]);\nr1.z=r4.w;\ntexcoord6.w=dot(r1,cb1[11]);\nr5.x=saturate(cb3[4].x);\nr5.y=r5.x*c1.x+c1.x;\nr6=cb0[0].xxxx*v1;\nr3.w=dot(r6,cb3[3]);\nr7.w=r3.w;\nr0.x=dot(r6,cb3[0]);\nr7.x=r0.x;\nr2.x=dot(r6,cb3[1]);\nr7.y=r2.x;\nr4.x=dot(r6,cb3[2]);\nr7.z=r4.x;\ntexcoord3.w=dot(r7,cb1[11]);\nr8=cb0[0].yyyy*v2;\nr3.y=dot(r8,cb3[3]);\nr9=cb0[0].zzzz*v3;\nr9=r5.yyyy*r9;\nr3.z=dot(r9,cb3[3]);\nr10.w=r3.y;\nr0.y=dot(r8,cb3[0]);\nr10.x=r0.y;\nr2.y=dot(r8,cb3[1]);\nr10.y=r2.y;\nr4.y=dot(r8,cb3[2]);\nr10.z=r4.y;\ntexcoord4.w=dot(r10,cb1[11]);\nr11.w=r3.z;\nr0.z=dot(r9,cb3[0]);\nr11.x=r0.z;\nr2.z=dot(r9,cb3[1]);\nr11.y=r2.z;\nr4.z=dot(r9,cb3[2]);\nr11.z=r4.z;\ntexcoord5.w=dot(r11,cb1[11]);\nr5.yzw=r3.zwy*r4.yzx;\nr5.yzw=r4.zxy*r3.yzw+(-r5.yzw);\nr12.w=dot(r5.yzw,r2.xyz);\nr5.yzw=r3.zxy*r4.wyz;\nr5.yzw=r4.zwy*r3.xyz+(-r5.yzw);\nr12.x=dot(r5.yzw,r2.yzw);\nr5.yzw=r3.xwz*r4.zwx;\nr5.yzw=r4.wxz*r3.zxw+(-r5.yzw);\nr12.y=dot(r5.yzw,r2.xzw);\nr5.yzw=r3.yxw*r4.wxy;\nr5.yzw=r4.ywx*r3.xwy+(-r5.yzw);\nr12.z=dot(r5.yzw,r2.xyw);\nr5.y=dot(r12,r0);\nr5.x=c1.w>=r5.x?1.0:0.0;;\nr8=r8*v0.yyyy;\nr6=v0.xxxx*r6+r8;\nr6=v0.zzzz*r9+r6;\nr6=r6+v4;\nr8.w=dot(r6,cb3[3]);\nr8.x=dot(r6,cb3[0]);\nr8.y=dot(r6,cb3[1]);\nr8.z=dot(r6,cb3[2]);\nr6.w=dot(r8,cb1[11]);\nr6.x=dot(r8,cb1[8]);\nr6.y=dot(r8,cb1[9]);\nr6.z=dot(r8,cb1[10]);\nr8.w=dot(r6,cb1[15]);\nr8.x=dot(r6,cb1[12]);\nr8.y=dot(r6,cb1[13]);\nr8.z=dot(r6,cb1[14]);\nif(((-abs(r5.y))>=abs(r5.y))){\nr6=r0;\nr9=r2;\nr12=r4;\n}else{\nr5.y=1.0/r5.y;\nr5.zw=r2.ww*r4.zy;\nr5.zw=r2.zy*r4.ww+(-r5.zw);\nr13.xy=r0.ww*r4.zy;\nr13.xy=r0.zy*r4.ww+(-r13.xy);\nr14.xyz=r2.yxx*r13.xxy;\nr14.xyz=r0.yxx*r5.zzw+(-r14.xyz);\nr13.zw=r0.ww*r2.zy;\nr13.zw=r0.zy*r2.ww+(-r13.zw);\nr14.xyz=r4.yxx*r13.zzw+r14.xyz;\nr12.w=r5.y*(-r14.z);\nr6.w=r5.y*(-r14.x);\nr9.w=r5.y*r14.y;\nr14.xy=r2.ww*r3.zy;\nr2.zw=r2.zy*r3.xx+(-r14.xy);\nr14.xy=r0.ww*r3.zy;\nr0.zw=r0.zy*r3.xx+(-r14.xy);\nr14.xyz=r0.zzw*r2.yxx;\nr14.xyz=r0.yxx*r2.zzw+(-r14.xyz);\nr14.xyz=r3.yww*r13.zzw+r14.xyz;\nr6.z=r5.y*r14.x;\nr9.z=(-r5.y)*r14.y;\nr12.z=r5.y*r14.z;\nr13.zw=r3.zy*r4.ww;\nr3.xz=r4.zy*r3.xx+(-r13.zw);\nr14.xyz=r0.zzw*r4.yxx;\nr0.xyz=r0.yxx*r3.xxz+(-r14.xyz);\nr0.xyz=r3.yww*r13.xxy+r0.xyz;\nr6.y=(-r0.x)*r5.y;\nr9.y=r0.y*r5.y;\nr12.y=(-r0.z)*r5.y;\nr0.xyz=r2.zzw*r4.yxx;\nr0.xyz=r2.yxx*r3.xxz+(-r0.xyz);\nr0.xyz=r3.yww*r5.zzw+r0.xyz;\nr6.x=r0.x*r5.y;\nr9.x=r0.y*(-r5.y);\nr12.x=r0.z*r5.y;\n}\nr0.yz=c1.yz;\nr0=cb1[3].xyzx*r0.yyyz+r0.zzzy;\ntexcoord2.z=dot(r0,r12);\ngl_Position=r5.xxxx*(-r8)+r8;\ntexcoord2.x=dot(r0,r6);\ntexcoord2.y=dot(r0,r9);\ntexcoord3.x=dot(r7,cb1[8]);\ntexcoord3.y=dot(r7,cb1[9]);\ntexcoord3.z=dot(r7,cb1[10]);\ntexcoord4.x=dot(r10,cb1[8]);\ntexcoord4.y=dot(r10,cb1[9]);\ntexcoord4.z=dot(r10,cb1[10]);\ntexcoord5.x=dot(r11,cb1[8]);\ntexcoord5.y=dot(r11,cb1[9]);\ntexcoord5.z=dot(r11,cb1[10]);\ntexcoord6.x=dot(r1,cb1[8]);\ntexcoord6.y=dot(r1,cb1[9]);\ntexcoord6.z=dot(r1,cb1[10]);\ntexcoord.x=v5.x;\ntexcoord1.xyz=v0.xyz;\ntexcoord7.xy=v6.xy;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
+	var ps$7 = "\n#if defined(GL_EXT_shader_texture_lod)\n#extension GL_EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(EXT_shader_texture_lod)\n#extension EXT_shader_texture_lod: enable\n#define texture2DLod texture2DLodEXT\n#define texture2DProjLod texture2DProjLodEXT\n#define textureCubeLod textureCubeLodEXT\n#define texture2DGrad texture2DGradEXT\n#define texture2DProjGrad texture2DProjGradEXT\n#define textureCubeGrad textureCubeGradEXT\n#elif defined(GL_ARB_shader_texture_lod)\n#extension GL_ARB_shader_texture_lod: enable\n#define texture2DGrad texture2DGradARB\n#endif\n#ifdef GL_OES_texture_3D\n#extension GL_OES_texture_3D: enable\n#endif\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\n#if defined(GL_ES)&&!defined(GL_EXT_shader_texture_lod)&&!defined(EXT_shader_texture_lod)\n#define texture2DLod(s,u,l) texture2D(s,u)\n#define textureCubeLod(s,u,l) textureCube(s,u)\n#define texture2DGrad(s,u,x,y) texture2D(s,u)\n#define textureCubeGrad(s,u,x,y) textureCube(s,u)\n#endif\n#if !defined(GL_ES)||defined(GL_OES_texture_3D)\n#define tex3D(s,uvw,sl,su,sw,lw,l) texture3D(s,uvw,l)\n#ifdef GL_EXT_shader_texture_lod\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3DLod(s,uvw,l)\n#else\n#define tex3DLod(s,uvw,l,sl,su,sw,lw) texture3D(s,uvw)\n#endif\n#else\n#define sampler3D sampler2D\nvec4 tex3D(sampler2D s,vec3 uvw,float sl,bool su,bool sw,bool lw,float l)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2D(s,vec2(uvw.x,y+s0));\nvec4 c1=texture2D(s,vec2(uvw.x,y+s1));\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#ifndef tex3DLod\nvec4 tex3DLod(sampler2D s,vec3 uvw,float l,float sl,bool su,bool sw,bool lw)\n{\nfloat y;\nif(su) y=fract(uvw.y);\nelse y=clamp(uvw.y,0.0,1.0);\ny/=sl;\nfloat z,s0,s1;\nz=uvw.z*sl;\ns0=floor(z);\ns1=s0+1.0;\nif(!sw){\ns0=clamp(s0,0.0,sl-1.0);\ns1=clamp(s0,0.0,sl-1.0);\n}\ns0/=sl;\ns1/=sl;\nz=fract(z);\nvec4 c0=texture2DLod(s,vec2(uvw.x,y+s0),l);\nvec4 c1=texture2DLod(s,vec2(uvw.x,y+s1),l);\nif(lw) return mix(c0,c1,z);\nreturn z<0.5?c0:c1;\n}\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\nvarying vec4 texcoord2;\nvarying vec4 texcoord3;\nvarying vec4 texcoord4;\nvarying vec4 texcoord5;\nvarying vec4 texcoord6;\nvarying vec4 texcoord7;\nuniform sampler2D s0;\nuniform sampler2D s1;\nuniform sampler3D s2;\n#ifndef GL_OES_texture_3D\nuniform float s2sl;\n#else\n#define s2sl 0.0\n#endif\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb2[22];\nuniform vec4 cb4[1];\nuniform vec4 cb7[12];\nuniform ivec4 i0;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 r0;\nvec4 r1;\nvec4 r10;\nvec4 r11;\nvec4 r12;\nvec4 r13;\nvec4 r2;\nvec4 r3;\nvec4 r4;\nvec4 r5;\nvec4 r6;\nvec4 r7;\nvec4 r8;\nvec4 r9;\nvec4 c12=vec4(1,-1,0,-9.99999975e-006);\nvec4 c13=vec4(0.5,0.375,0.0625,0.5625);\nvec4 c14=vec4(0,0.100000001,0.0909090936,0.055555556);\nvec4 c15=vec4(-0.00313080009,12.9200001,0.416666657,0);\nvec4 c16=vec4(1.05499995,-0.0549999997,0,0);\nivec4 i0=ivec4(12,0,0,0);\nv0=texcoord;\nv1=texcoord1;\nv2=texcoord2;\nv3=texcoord3;\nv4=texcoord4;\nv5=texcoord5;\nv6=texcoord6;\nv7=texcoord7;\nr0.xyz=v1.xyz;\nr1.xyz=r0.xyz+(-v2.xyz);\nr0.w=1.0/r1.x;\nr2=c12.xyxy+(-v2.xxyy);\nr2.xy=r0.ww*r2.xy;\nr0.w=r1.x>=0.0?r2.x:r2.y;\nr1.x=1.0/r1.y;\nr1.xw=r1.xx*r2.zw;\nr1.x=r1.y>=0.0?r1.x:r1.w;\nr2.x=min(r0.w,r1.x);\nr0.w=1.0/r1.z;\nr1.x=c12.y+(-v2.z);\nr1.x=r0.w*r1.x;\nr0.w=r0.w*(-v2.z);\nr0.w=r1.z>=0.0?r0.w:r1.x;\nr1.x=min(r2.x,r0.w);\nr2.xyz=mix(v2.xyz,r0.xyz,r1.xxx);\nr0.xy=c12.xy;\nr0.x=r0.x+cb2[20].y;\nr0.x=1.0/r0.x;\nr1.y=r0.x*cb2[20].x;\nr1.x=c12.x;\nr3.w=dot(v6.zw,r1.xy)+c12.z;\nr3.x=dot(v3.zw,r1.xy)+c12.z;\nr3.y=dot(v4.zw,r1.xy)+c12.z;\nr3.z=dot(v5.zw,r1.xy)+c12.z;\nr2.w=c12.x;\nr0.x=dot(r2,r3);\nr0.z=1.0/r3.z;\nr1.z=r0.z*(-r3.w);\nr4=v1.xyzx*c12.xxxz+c12.zzzx;\nr0.z=dot(r4,r3);\nr4.xyz=(-r2.xyz)+v1.xyz;\nr0.w=dot(r3.xyz,r4.xyz);\nr0.w=1.0/r0.w;\nr1.xy=c12.zz;\nr4.xyz=(-r2.xyz)+r1.yyz;\nr1.w=dot(r3.xyz,r4.xyz);\nr0.w=r0.w*r1.w;\nr4.xyz=mix(r2.xyz,v1.xyz,r0.www);\n{bvec3 tmp=greaterThanEqual((-r0.zzz),vec3(0.0));r4.xyz=vec3(tmp.x?v1.x:r4.x,tmp.y?v1.y:r4.y,tmp.z?v1.z:r4.z);};\nr1.xyz=r1.xyz+(-r4.xyz);\nr0.z=dot(r3.xyz,r1.xyz);\nr1.xyz=r2.xyz+(-r4.xyz);\nr0.w=dot(r3.xyz,r1.xyz);\nr0.w=1.0/r0.w;\nr0.z=r0.w*r0.z;\nr1.xyz=mix(r4.xyz,r2.xyz,r0.zzz);\n{bvec3 tmp=greaterThanEqual((-r0.xxx),vec3(0.0));r0.xzw=vec3(tmp.x?r2.x:r1.x,tmp.y?r2.y:r1.y,tmp.z?r2.z:r1.z);};\nr1.xyz=(-r0.xzw)+r4.xyz;\nr1.x=dot(r1.xyz,r1.xyz);\nr1.x=r1.x+c12.w;\n{bvec4 tmp=greaterThanEqual(r1.xxxx,vec4(0.0));r1=vec4(tmp.x?(-c12.z):(-c12.x),tmp.y?(-c12.z):(-c12.x),tmp.z?(-c12.z):(-c12.x),tmp.w?(-c12.z):(-c12.x));};\nif(any(lessThan(r1,vec4(0.0))))discard;\nr1.x=1.0/cb7[0].x;\nr1.y=r1.x*c13.x;\nr1.z=1.0/cb7[0].y;\nr2.w=v7.x*r1.z+r1.y;\nr0.xzw=(-r4.xyz)+r0.xzw;\nr3.x=cb7[4].x;\nr1.y=(-r3.x)+cb7[9].x;\nr1.y=cb4[0].z*r1.y+r3.x;\nr1.y=r1.y*cb2[21].x+v0.x;\nr3.xz=cb4[0].xz;\nr1.w=saturate(r3.x*c13.x);\nr3.xy=r1.ww*c13.yy+c13.zw;\nr5.y=(-cb4[0].z)>=0.0?r3.x:r3.y;\nr0.y=cb7[0].x*r1.z+r0.y;\nr2.y=r1.x*r0.y;\nr6.z=c12.z;\nr7.xyz=cb7[1].xyz;\nr1.xzw=(-r7.xyz)+cb7[6].xyz;\nr1.xzw=r3.zzz*r1.xzw+cb7[1].xyz;\nr7.xyz=cb7[2].xyz;\nr3.xyw=(-r7.xyz)+cb7[7].xyz;\nr3.xyw=r3.zzz*r3.xyw+cb7[2].xyz;\nr7.xyz=cb7[3].xyz;\nr7.xyz=(-r7.xyz)+cb7[8].xyz;\nr7.xyz=r3.zzz*r7.xyz+cb7[3].xyz;\nr8=cb7[5];\nr8=(-r8)+cb7[10];\nr8=r3.zzzz*r8+cb7[5];\nr5.zw=c12.zz;\nr2.xz=c12.xz;\nr9=c12.zzzz;\nr10.xyz=r4.xyz;\nfor(int i=0;i<12;++i){ // dynamic bound: ESSL1 forbids a non-constant loop comparison\nr11.xyz=mix(r1.xzw,r3.xyw,(-r10.zzz));\nr12.xyz=r10.xyz*cb7[11].xyz;\nr12.xyz=r7.xyz*r12.xyz;\nr0.y=r10.z*r10.z;\nr13.z=r12.z*r0.y+r1.y;\nr13.xyw=r12.xyx*c12.xxz;\nr12=tex3DLod(s2,r13.xyz,r13.w,s2sl,true,true,true);\nr12.xyz=r12.xyz+(-c13.xxx);\nr11.xyz=r12.xyz*r11.xyz+r10.xyz;\nr5.x=(-r11.z);\nr12=texture2DLod(s1,r5.xy,r5.w);\n{bvec3 tmp=greaterThanEqual((-r12.xyz),vec3(0.0));r13.xyz=vec3(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x,tmp.z?c12.z:c12.x);};\nr0.y=dot(r13.xyz,r13.xyz);\nr0.y=(-r0.y)>=0.0?c12.z:c12.x;\nr0.y=(-r12.w)>=0.0?c12.z:r0.y;\nif((r0.y!=(-r0.y))){\nr0.y=1.0/r12.w;\nr11.xy=r0.yy*r11.xy;\nr11.xy=r11.xy*c13.xx+c13.xx;\nr11.zw=(-r11.xy)+c12.xx;\n{bvec2 tmp=greaterThanEqual(r11.zw,vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\n{bvec2 tmp=greaterThanEqual(r11.xy,vec2(0.0));r13.xy=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr11.zw=r11.zw+r13.xy;\n{bvec2 tmp=greaterThanEqual((-r11.zw),vec2(0.0));r11.zw=vec2(tmp.x?c12.z:c12.x,tmp.y?c12.z:c12.x);};\nr3.z=dot(r11.zw,r11.zw)+c12.z;\nif(((-r3.z)<c12.z)){\nr13=c12.zzzz;\n}else{\nr6.xy=r11.xy*r2.xy+r2.zw;\nr0.y=r0.y*r0.y;\nr6.w=r0.y*c14.y;\nr13=texture2DLod(s0,r6.xy,r6.w);\n}\nr11=r12*r13;\nr9=r11*r8+r9;\n}\nr10.xyz=r0.xzw*c14.zzz+r10.xyz;\n}\nr0.xyz=r0.xzw*cb7[11].xyz;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c14.w;\nr0=r0.xxxx*r9;\nr1.xyz=max(r0.xyz,c12.zzz);\nr0.x=r1.x>0.0?log2(r1.x):-3.402823466e+38;\nr0.y=r1.y>0.0?log2(r1.y):-3.402823466e+38;\nr0.z=r1.z>0.0?log2(r1.z):-3.402823466e+38;\nr0.xyz=r0.xyz*c15.zzz;\nr2.x=exp2(r0.x);\nr2.y=exp2(r0.y);\nr2.z=exp2(r0.z);\nr0.xyz=r2.xyz*c16.xxx+c16.yyy;\nr2.xyz=r1.xyz+c15.xxx;\nr1.xyz=r1.xyz*c15.yyy;\n{bvec3 tmp=greaterThanEqual(r2.xyz,vec3(0.0));gl_FragData[0].xyz=vec3(tmp.x?r0.x:r1.x,tmp.y?r0.y:r1.y,tmp.z?r0.z:r1.z);};\ngl_FragData[0].w=r0.w;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
 	var BoosterScale = {
 	  name: "BoosterScale",
 	  value: [1, 1, 1, 1],
@@ -332105,7 +333353,7 @@
 	          elements: 2
 	        }],
 	        constants: [BoosterScale],
-	        shader: vs$8
+	        shader: vs$9
 	      },
 	      ps: {
 	        // cb7 order, matching the container's byte offsets
@@ -332140,7 +333388,7 @@
 	            description: "Booster noise volume"
 	          }
 	        })],
-	        shader: ps$6
+	        shader: ps$7
 	      },
 	      // The container's own render states. Without them the box renders
 	      // unculled and its back faces show up as a second, inside-out flame
@@ -332278,8 +333526,8 @@
 	 * That one call becomes the equivalent `clamp`.
 	 */
 
-	var vs$7 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nattribute vec4 attr7;\nattribute vec4 attr8;\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb1[16];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 v8;\nvec4 r0;\nvec4 r1;\nvec4 r2;\nvec4 r3;\nivec4 a0;\nvec4 c[6];\nc[4]=vec4(0.333333343,-0.0187292993,0.0742610022,-0.212114394);\nc[5]=vec4(1.57072878,1.57079637,0.636619747,0);\nc[0]=vec4(-0.5,-0.5,0,0);\nc[1]=vec4(0.5,-0.5,1,0);\nc[2]=vec4(0.5,0.5,1,1);\nc[3]=vec4(-0.5,0.5,0,1);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nv7=attr7;\nv8=attr8;\nr0.x=v1.y;\nr0.y=v2.y;\nr0.z=v3.y;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c[4].x;\nr1.x=v1.x;\nr1.y=v2.x;\nr1.z=v3.x;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr1.x=v1.z;\nr1.y=v2.z;\nr1.z=v3.z;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr0.y=fract(v0.x);\nr0.y=(-r0.y)+v0.x;\na0.x=int(r0.y+0.5);\nr0.zw=c[1].zw;\nif(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else{r1.xyz=r0.zzw*c[3].xyx;}\nif(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else{texcoord.xyw=r0.zzw*c[3].zwz;}\nr2.x=dot(v4.xyz,r1.xyz);\nr2.y=dot(v5.xyz,r1.xyz);\nr2.z=dot(v6.xyz,r1.xyz);\nr1.xw=v4.ww*c[1].zw+c[1].wz;\nr1.y=v5.w;\nr1.z=v6.w;\nr3.x=dot(v1,r1);\nr3.y=dot(v2,r1);\nr3.z=dot(v3,r1);\nr3.w=c[1].z;\nr1.x=dot(r3,cb1[8]);\nr1.y=dot(r3,cb1[9]);\nr1.z=dot(r3,cb1[10]);\nr3.w=dot(r3,cb1[11]);\nr3.xyz=r2.xyz*r0.xxx+r1.xyz;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\nr0.y=r0.y*r1.z;\nr0.y=saturate((-r0.y));\ngl_Position.x=dot(r3,cb1[12]);\ngl_Position.y=dot(r3,cb1[13]);\ngl_Position.z=dot(r3,cb1[14]);\ngl_Position.w=dot(r3,cb1[15]);\nr1.x=v4.x;\nr1.y=v5.x;\nr1.z=v6.x;\nr0.z=dot(r1.xyz,r1.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.x=1.0/r0.z;\nr2.x=v4.y;\nr2.y=v5.y;\nr2.z=v6.y;\nr0.z=dot(r2.xyz,r2.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.y=1.0/r0.z;\nr0.xz=r0.xx*r1.xy;\ntexcoord.z=min(r0.z,r0.x);\nr0.x=r0.y*c[4].y+c[4].z;\nr0.x=r0.x*r0.y+c[4].w;\nr0.x=r0.x*r0.y+c[5].x;\nr0.y=(-r0.y)+c[1].z;\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.x*(-r0.y)+c[5].y;\nr0.x=r0.x*c[5].z;\nr0.x=r0.x*r0.x;\nr1=v7;\nr1=r1*v8.xxxx;\ntexcoord3=r0.xxxx*r1;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
-	var ps$5 = "\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 r0;\nvec4 c0=vec4(-0.5,0,0.00100000005,-0.999001026);\nvec4 c1=vec4(1.00100005,0,0,0);\nv0=texcoord;\nv1=texcoord3;\nr0.xy=c0.xx+v0.xy;\nr0.xy=r0.xy+r0.xy;\nr0.x=dot(r0.xy,r0.xy)+c0.y;\nr0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\nr0.x=r0.x+c0.z;\nr0.x=1.0/r0.x;\nr0.x=r0.x+c0.w;\nr0.x=r0.x*c1.x;\ngl_FragData[0]=r0.xxxx*v1;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
+	var vs$8 = "\nattribute vec4 attr0;\nattribute vec4 attr1;\nattribute vec4 attr2;\nattribute vec4 attr3;\nattribute vec4 attr4;\nattribute vec4 attr5;\nattribute vec4 attr6;\nattribute vec4 attr7;\nattribute vec4 attr8;\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\nfloat saturate(float x){return clamp(x,0.0,1.0);}\nvec2 saturate(vec2 x){return clamp(x,vec2(0.0),vec2(1.0));}\nvec3 saturate(vec3 x){return clamp(x,vec3(0.0),vec3(1.0));}\nvec4 saturate(vec4 x){return clamp(x,vec4(0.0),vec4(1.0));}\nuniform vec4 cb1[16];\nuniform vec3 ssyf;\n\n#ifdef PS\nuniform vec4 ssf[4];\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 v2;\nvec4 v3;\nvec4 v4;\nvec4 v5;\nvec4 v6;\nvec4 v7;\nvec4 v8;\nvec4 r0;\nvec4 r1;\nvec4 r2;\nvec4 r3;\nivec4 a0;\nvec4 c[6];\nc[4]=vec4(0.333333343,-0.0187292993,0.0742610022,-0.212114394);\nc[5]=vec4(1.57072878,1.57079637,0.636619747,0);\nc[0]=vec4(-0.5,-0.5,0,0);\nc[1]=vec4(0.5,-0.5,1,0);\nc[2]=vec4(0.5,0.5,1,1);\nc[3]=vec4(-0.5,0.5,0,1);\nv0=attr0;\nv1=attr1;\nv2=attr2;\nv3=attr3;\nv4=attr4;\nv5=attr5;\nv6=attr6;\nv7=attr7;\nv8=attr8;\nr0.x=v1.y;\nr0.y=v2.y;\nr0.z=v3.y;\nr0.x=dot(r0.xyz,r0.xyz);\nr0.x=sqrt(abs(r0.x));\nr0.x=r0.x*c[4].x;\nr1.x=v1.x;\nr1.y=v2.x;\nr1.z=v3.x;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr1.x=v1.z;\nr1.y=v2.z;\nr1.z=v3.z;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.y*c[4].x+r0.x;\nr0.y=fract(v0.x);\nr0.y=(-r0.y)+v0.x;\na0.x=int(r0.y+0.5);\nr0.zw=c[1].zw;\nif(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else{r1.xyz=r0.zzw*c[3].xyx;}\nif(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else{texcoord.xyw=r0.zzw*c[3].zwz;}\nr2.x=dot(v4.xyz,r1.xyz);\nr2.y=dot(v5.xyz,r1.xyz);\nr2.z=dot(v6.xyz,r1.xyz);\nr1.xw=v4.ww*c[1].zw+c[1].wz;\nr1.y=v5.w;\nr1.z=v6.w;\nr3.x=dot(v1,r1);\nr3.y=dot(v2,r1);\nr3.z=dot(v3,r1);\nr3.w=c[1].z;\nr1.x=dot(r3,cb1[8]);\nr1.y=dot(r3,cb1[9]);\nr1.z=dot(r3,cb1[10]);\nr3.w=dot(r3,cb1[11]);\nr3.xyz=r2.xyz*r0.xxx+r1.xyz;\nr0.y=dot(r1.xyz,r1.xyz);\nr0.y=r0.y==0.0?3.402823466e+38:inversesqrt(abs(r0.y));\nr0.y=r0.y*r1.z;\nr0.y=saturate((-r0.y));\ngl_Position.x=dot(r3,cb1[12]);\ngl_Position.y=dot(r3,cb1[13]);\ngl_Position.z=dot(r3,cb1[14]);\ngl_Position.w=dot(r3,cb1[15]);\nr1.x=v4.x;\nr1.y=v5.x;\nr1.z=v6.x;\nr0.z=dot(r1.xyz,r1.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.x=1.0/r0.z;\nr2.x=v4.y;\nr2.y=v5.y;\nr2.z=v6.y;\nr0.z=dot(r2.xyz,r2.xyz);\nr0.z=r0.z==0.0?3.402823466e+38:inversesqrt(abs(r0.z));\nr1.y=1.0/r0.z;\nr0.xz=r0.xx*r1.xy;\ntexcoord.z=min(r0.z,r0.x);\nr0.x=r0.y*c[4].y+c[4].z;\nr0.x=r0.x*r0.y+c[4].w;\nr0.x=r0.x*r0.y+c[5].x;\nr0.y=(-r0.y)+c[1].z;\nr0.y=sqrt(abs(r0.y));\nr0.x=r0.x*(-r0.y)+c[5].y;\nr0.x=r0.x*c[5].z;\nr0.x=r0.x*r0.x;\nr1=v7;\nr1=r1*v8.xxxx;\ntexcoord3=r0.xxxx*r1;\n\n#ifdef PS\nssv=dot(ssf[0],gl_Position);\n#endif\ngl_Position.xy += ssyf.xy*gl_Position.w;\ngl_Position.y*=ssyf.z;\ngl_Position.z=gl_Position.z*2.0-gl_Position.w;\n}\n";
+	var ps$6 = "\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#endif\nvarying vec4 texcoord;\nvarying vec4 texcoord3;\n\n#ifdef PS\nuniform vec4 ssi;\nvarying float ssv;\n#endif\nvoid main()\n{\nvec4 v0;\nvec4 v1;\nvec4 r0;\nvec4 c0=vec4(-0.5,0,0.00100000005,-0.999001026);\nvec4 c1=vec4(1.00100005,0,0,0);\nv0=texcoord;\nv1=texcoord3;\nr0.xy=c0.xx+v0.xy;\nr0.xy=r0.xy+r0.xy;\nr0.x=dot(r0.xy,r0.xy)+c0.y;\nr0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\nr0.x=r0.x+c0.z;\nr0.x=1.0/r0.x;\nr0.x=r0.x+c0.w;\nr0.x=r0.x*c1.x;\ngl_FragData[0]=r0.xxxx*v1;\n\n#ifdef PS\nfloat av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);\nif(ssi.z==0.0)\n{\nif(av*ssi.x+ssi.y<0.0)\ndiscard;\n}\nelse\n{\nif(ssi.x>0.0)\n{\nif(av==ssi.y)\ndiscard;\n}\nelse\n{\nif(av!=ssi.y)\ndiscard;\n}\n}\nif(ssv<0.0)discard;\n#endif\n}\n";
 	var flarequad = {
 	  name: "flarequad",
 	  replaces: "graphics/effect.gles2/managed/space/specialfx/flarequad",
@@ -332328,10 +333576,10 @@
 	          usageIndex: 1,
 	          elements: 2
 	        }],
-	        shader: vs$7
+	        shader: vs$8
 	      },
 	      ps: {
-	        shader: ps$5
+	        shader: ps$6
 	      },
 	      // The container declares none, so the pass inherited the device
 	      // default CULL_CW and its visibility depended on EveChildQuad's
@@ -332382,16 +333630,16 @@
 	 * pass must not disturb the buffers the flare and the scene are using.
 	 */
 
-	var vs$6 = "\nattribute vec4 attr0;\n\nvoid main()\n{\n    // Degenerate on purpose - see the file header.\n    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
-	var ps$4 = "\nprecision highp float;\n\nvoid main()\n{\n    discard;\n}\n";
+	var vs$7 = "\nattribute vec4 attr0;\n\nvoid main()\n{\n    // Degenerate on purpose - see the file header.\n    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
+	var ps$5 = "\nprecision highp float;\n\nvoid main()\n{\n    discard;\n}\n";
 	var technique = {
 	  Main: {
 	    vs: {
 	      inputDefinitions: Pos,
-	      shader: vs$6
+	      shader: vs$7
 	    },
 	    ps: {
-	      shader: ps$4
+	      shader: ps$5
 	    },
 	    states: {
 	      [RS_ZENABLE$1]: 0,
@@ -332526,18 +333774,148 @@
 	  }
 	};
 
+	/**
+	 * GLES motionvector, ported from the shipped DX11 container.
+	 *
+	 * This replaced an EMPTY stub - a vertex shader that put every particle at (2,2)
+	 * and a pixel shader that wrote vec4(0) - which existed because the shipped GLES
+	 * program has more loops than the profile allows. The DX11 program has NO loops at
+	 * all: two branches and straight-line arithmetic. So it ports directly, and the
+	 * register layouts agree where it matters - `cb3[0..3]` is the per-object world
+	 * matrix and `cb1[8..11]` / `cb1[12..15]` are ViewMat / ProjectionMat on both
+	 * profiles (`EveSpaceScene.js` per-frame VS layout).
+	 *
+	 * Source: the translated GLSL of
+	 * `res:/graphics/effect.dx11/managed/space/specialfx/particles/motionvector.sm_depth`,
+	 * captured from a live draw on hardware (2026-09-16).
+	 *
+	 * TWO DELIBERATE OMISSIONS, both scene-fed samplers the manual definition cannot
+	 * reach, and both multiply-only so their absence leaves geometry and colour intact:
+	 *
+	 *   - the soft-depth fade against the scene depth buffer (DX11 `s1`), which scales
+	 *     alpha where a particle approaches geometry. Particles read hard-edged against
+	 *     intersecting hull instead of fading out.
+	 *   - the height-fog lookup (DX11 `s0`, a 2D array), which scales the final colour.
+	 *     It measured 1.0 on the hull tested, so dropping it changes nothing there.
+	 *
+	 * The DX11 program also ends with a gamma multiply and a linear->sRGB encode. GLES
+	 * manual programs write linear and let the target encode, so that tail is dropped
+	 * too - `planeglow` and the rest of this folder do the same.
+	 *
+	 * Constant registers are OURS, not the DX11 container's: it packs `UseWorldScale`
+	 * and `Depth` into one register, while a manual definition gives every declared
+	 * constant its own. So `cb0[3].x` is UseWorldScale and `cb0[4].x` is Depth here.
+	 */
+
+	var SpriteFactors = {
+	  name: "SpriteFactors",
+	  value: [0, 0, 0, 0]
+	};
+	var VelocityStretch = {
+	  name: "VelocityStretch",
+	  value: [0, 0, 0, 0]
+	};
+	var SpriteFactors2 = {
+	  name: "SpriteFactors2",
+	  value: [1, 1, 1, 1]
+	};
+	var UseWorldScale = {
+	  name: "UseWorldScale",
+	  value: [0, 0, 0, 0]
+	};
+	var Depth = {
+	  name: "Depth",
+	  value: [0, 0, 0, 0]
+	};
+	var AtlasInfo = {
+	  name: "AtlasInfo",
+	  value: [1, 1, 1, 0]
+	};
+	var Colors = {
+	  name: "Colors",
+	  value: [0, 1, 1, 0]
+	};
+	var Colors2 = {
+	  name: "Colors2",
+	  value: [0, 0, 0, 1]
+	};
+	var textures$2 = [createTex("TextureMap", TEX_2D, {
+	  ui: {
+	    description: "Sprite atlas: red is the ramp lookup, alpha the coverage"
+	  }
+	}), createTex("ColorRampMap", TEX_2D, {
+	  ui: {
+	    description: "Colour ramp, U from the atlas red channel and V from particle age"
+	  }
+	}), createTex("GradientMap", TEX_2D, {
+	  ui: {
+	    description: "Flow map displacing the two atlas frames apart"
+	  }
+	})];
+
+	// The per-instance stream the particle system writes, in the order the DX11 input
+	// signature declares it: position, (age, rotation scale), velocity, (size start,
+	// size end), rotation base, rotation rate.
+	var inputDefinitions$2 = [{
+	  usage: "POSITION",
+	  usageIndex: 0,
+	  elements: 3
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 0,
+	  elements: 2
+	}, {
+	  usage: "POSITION",
+	  usageIndex: 8,
+	  elements: 3
+	}, {
+	  usage: "TANGENT",
+	  usageIndex: 8,
+	  elements: 2
+	}, {
+	  usage: "NORMAL",
+	  usageIndex: 8,
+	  elements: 3
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 8,
+	  elements: 2
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 9,
+	  elements: 1
+	}, {
+	  usage: "TEXCOORD",
+	  usageIndex: 10,
+	  elements: 1
+	}];
+	var vs$6 = "\n\nattribute vec4 attr0;   // POSITION0  quad corner, -0.5..0.5\nattribute vec4 attr1;   // TEXCOORD0  quad uv\nattribute vec4 attr2;   // POSITION8  particle position\nattribute vec4 attr3;   // TANGENT8   x: normalised age, y: rotation scale\nattribute vec4 attr4;   // NORMAL8    particle velocity\nattribute vec4 attr5;   // TEXCOORD8  x: size at birth, y: size at death\nattribute vec4 attr6;   // TEXCOORD9  rotation base\nattribute vec4 attr7;   // TEXCOORD10 rotation rate\n\nvarying vec4 texcoord;  // uv, age, view z\nvarying vec4 texcoord1; // clip z, clip w, depth scale\n\nuniform vec4 cb0[5];\nuniform vec4 cb1[16];\nuniform vec4 cb3[4];\nuniform vec3 ssyf;\n\nvoid main()\n{\n    // The object's uniform scale, taken the way the donor takes it: transform (1,1,1)\n    // by the world rotation and normalise by sqrt(3).\n    vec3 unit;\n    unit.x = dot(vec3(1.0, 1.0, 1.0), cb3[0].xyz);\n    unit.y = dot(vec3(1.0, 1.0, 1.0), cb3[1].xyz);\n    unit.z = dot(vec3(1.0, 1.0, 1.0), cb3[2].xyz);\n    float worldScale = sqrt(dot(unit, unit)) * 0.5773502588272095;\n\n    bool useWorldScale = cb0[3].x > 0.0;\n\n    vec4 velocity;\n    velocity.x = dot(attr4.xyz, cb3[0].xyz);\n    velocity.y = dot(attr4.xyz, cb3[1].xyz);\n    velocity.z = dot(attr4.xyz, cb3[2].xyz);\n    velocity.w = dot(attr4.xyz, cb3[3].xyz);\n    if (useWorldScale) velocity = velocity / worldScale;\n\n    vec4 velocityView;\n    velocityView.x = dot(velocity, cb1[8]);\n    velocityView.y = dot(velocity, cb1[9]);\n    velocityView.z = dot(velocity, cb1[10]);\n    velocityView.w = dot(velocity, cb1[11]);\n\n    vec4 local = vec4(attr2.xyz, 1.0);\n    vec4 world;\n    world.x = dot(local, cb3[0]);\n    world.y = dot(local, cb3[1]);\n    world.z = dot(local, cb3[2]);\n    world.w = dot(local, cb3[3]);\n\n    vec4 view;\n    view.x = dot(world, cb1[8]);\n    view.y = dot(world, cb1[9]);\n    view.z = dot(world, cb1[10]);\n    view.w = dot(world, cb1[11]);\n\n    // Where the particle would be one velocity ahead, projected, gives the direction\n    // it is travelling ON SCREEN - which is what the quad stretches along.\n    vec4 ahead = velocityView + view;\n    vec2 motion = vec2(dot(ahead, cb1[12]), dot(ahead, cb1[13]))\n        - vec2(dot(view, cb1[12]), dot(view, cb1[13]));\n    float motionLength = sqrt(dot(motion, motion));\n    vec2 motionDirection = motion / motionLength;\n    bool moving = motionLength > 0.0;\n\n    float size = attr3.x * (attr5.y - attr5.x) + attr5.x;\n    if (useWorldScale) size = size * worldScale;\n\n    vec2 corner = size * attr0.xy;\n\n    float angle = (attr3.x * attr7.x) * attr3.y + attr6.x + cb0[0].y;\n    float sinA = sin(angle);\n    float cosA = cos(angle);\n    vec2 rotated = vec2(dot(vec2(cosA, -sinA), corner), dot(vec2(sinA, cosA), corner));\n\n    vec4 corners = view + vec4(rotated, 0.0, 0.0);\n\n    if (moving)\n    {\n        // How far along the screen-space motion this corner sits decides how much of\n        // the velocity it is dragged by, so the quad shears into a streak.\n        float along = dot(rotated, motionDirection);\n        float stretch = clamp(attr3.x / cb0[2].x, 0.0, 1.0) * cb0[1].x;\n        corners.xyz = (velocityView.xyz * stretch) * along + corners.xyz;\n    }\n\n    gl_Position.x = dot(corners, cb1[12]);\n    gl_Position.y = dot(corners, cb1[13]);\n    gl_Position.z = dot(corners, cb1[14]);\n    gl_Position.w = dot(corners, cb1[15]);\n\n    texcoord = vec4(attr1.xy, attr3.x, corners.z);\n    texcoord1 = vec4(gl_Position.z, gl_Position.w, cb0[4].x, 0.0);\n\n    gl_Position.xy += ssyf.xy * gl_Position.w;\n    gl_Position.y *= ssyf.z;\n    gl_Position.z = gl_Position.z * 2.0 - gl_Position.w;\n}\n";
+	var ps$4 = "\n\n".concat(precision, "\n\nvarying vec4 texcoord;\nvarying vec4 texcoord1;\n\nuniform sampler2D s0;   // TextureMap\nuniform sampler2D s1;   // ColorRampMap\nuniform sampler2D s2;   // GradientMap\n\nuniform vec4 cb7[3];\n\n// One atlas cell, from a frame index: row then column, each clamped to the atlas so\n// a frame past the end repeats the last cell rather than wrapping into the first.\nvec2 atlasUV(float frame, vec2 uv)\n{\n    float columns = cb7[0].x;\n    float rows = cb7[0].y;\n    float row = min(rows - 1.0, floor(frame / columns));\n    float column = min(columns - 1.0, floor(frame - row * columns));\n    return (clamp(uv, 0.0, 1.0) + vec2(column, row)) / vec2(columns, rows);\n}\n\nvoid main()\n{\n    float frames = cb7[0].x * cb7[0].y;\n    bool loops = cb7[0].w > 0.0;\n\n    float position = frames * fract(texcoord.z);\n    float blend = fract(position);\n    float first = floor(position);\n    float last = frames - 1.0;\n\n    float next = first + 1.0;\n    next = loops ? (next >= frames ? 0.0 : next) : min(last, next);\n\n    // A finished, non-looping sprite holds on its final frame.\n    bool finished = !loops && texcoord.z >= 1.0;\n    if (finished) { first = last; next = last; }\n\n    // The flow map pushes the two frames apart along its gradient, so the crossfade\n    // between them slides instead of ghosting.\n    vec2 flowFirst = vec2(0.0, 0.0);\n    vec2 flowNext = vec2(0.0, 0.0);\n    if (cb7[1].w > 0.0)\n    {\n        vec2 a = texture2D(s2, atlasUV(first, texcoord.xy)).xy * 2.0 - 1.0;\n        vec2 b = texture2D(s2, atlasUV(next, texcoord.xy)).xy * 2.0 - 1.0;\n        flowFirst = a * blend * cb7[1].w;\n        flowNext = b * (1.0 - blend) * cb7[1].w;\n    }\n\n    vec2 sampleFirst = texture2D(s0, atlasUV(first, clamp(texcoord.xy - flowFirst, 0.0, 1.0))).xw;\n    vec2 sampleNext = texture2D(s0, atlasUV(next, clamp(texcoord.xy + flowNext, 0.0, 1.0))).xw;\n    vec2 blended = sampleFirst + blend * (sampleNext - sampleFirst);\n\n    if (blended.y <= 0.0) discard;\n\n    float rampU = clamp((blended.x - cb7[1].x) / (cb7[1].y - cb7[1].x), 0.0, 1.0);\n    vec4 ramp = texture2D(s1, vec2(rampU, texcoord.z));\n\n    gl_FragData[0] = vec4(ramp.xyz * cb7[1].zzz, blended.y * ramp.w * cb7[2].w);\n}\n");
 	var motionvector = {
 	  name: "motionvector",
 	  replaces: "graphics/effect.gles2/managed/space/specialfx/particles/motionvector",
-	  description: "Temporary transparent replacement for the broken server motionvector shader",
+	  description: "Motion vector particles, ported from the DX11 container",
 	  techniques: {
 	    Main: {
 	      vs: {
-	        inputDefinitions: [],
-	        shader: "\n\n                    uniform vec3 ssyf;\n\n                    void main()\n                    {\n                        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);\n                        gl_Position.xy += ssyf.xy * gl_Position.w;\n                        gl_Position.y *= ssyf.z;\n                        gl_Position.z = gl_Position.z * 2.0 - gl_Position.w;\n                    }\n                "
+	        inputDefinitions: inputDefinitions$2,
+	        constants: [SpriteFactors, VelocityStretch, SpriteFactors2, UseWorldScale, Depth],
+	        shader: vs$6
 	      },
 	      ps: {
-	        shader: "\n\n                    ".concat(precision, "\n\n                    void main()\n                    {\n                        gl_FragData[0] = vec4(0.0);\n                    }\n                ")
+	        constants: [AtlasInfo, Colors, Colors2],
+	        textures: textures$2,
+	        shader: ps$4
+	      },
+	      // Soft particles: depth tested but not depth writing, alpha blended, and
+	      // two sided because a stretched quad can be dragged past edge-on.
+	      states: {
+	        [RS_ZENABLE$1]: 1,
+	        [RS_ZWRITEENABLE$1]: 0,
+	        [RS_CULLMODE$1]: CULL_NONE,
+	        [RS_ALPHABLENDENABLE$1]: 1,
+	        [RS_SRCBLEND$1]: BLEND_SRCALPHA,
+	        [RS_DESTBLEND$1]: BLEND_INVSRCALPHA
 	      }
 	    }
 	  }
