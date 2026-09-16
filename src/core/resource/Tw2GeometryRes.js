@@ -58,6 +58,8 @@ export class Tw2GeometryRes extends Tw2Resource
     _requestResponseType = null;
     _extension = null;
     _boundsDirty = true;
+    _gr2DecodeOptions = null;
+    _gr2DecodeWarned = false;
 
     /**
      * Sets system mirror
@@ -335,6 +337,48 @@ export class Tw2GeometryRes extends Tw2Resource
         resMan.CancelProcessing(this);
     }
 
+    /**
+     * The decode options a gr2 load runs with: the reader's class defaults
+     * under whatever the caller passed.
+     * @param {Object} [options]
+     * @returns {{ firstMeshOnly: Boolean, unpackTangents: Boolean }}
+     */
+    static GetGr2DecodeOptions(options)
+    {
+        const merged = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
+        return {
+            firstMeshOnly: merged.firstMeshOnly !== false,
+            unpackTangents: !!merged.unpackTangents
+        };
+    }
+
+    /**
+     * A prepared gr2 is cached by path and never decoded again, so it keeps
+     * the mesh set of whatever options were current on its FIRST load. A later
+     * request under different reader defaults silently gets that first result.
+     * There is no per-path cache key for options yet; this warns once so the
+     * mismatch is at least visible.
+     * @param {Function} [onResolved]
+     * @param {Function} [onRejected]
+     */
+    RegisterCallbacks(onResolved, onRejected)
+    {
+        if (this._gr2DecodeOptions && !this._gr2DecodeWarned && this.HasCompleted())
+        {
+            const wanted = Tw2GeometryRes.GetGr2DecodeOptions();
+            const used = this._gr2DecodeOptions;
+            if (wanted.firstMeshOnly !== used.firstMeshOnly || wanted.unpackTangents !== used.unpackTangents)
+            {
+                this._gr2DecodeWarned = true;
+                console.warn(
+                    `Tw2GeometryRes: "${this.path}" was cached with gr2 options ${JSON.stringify(used)} `
+                    + `and is being reused under ${JSON.stringify(wanted)}; the cached mesh set is served as-is`
+                );
+            }
+        }
+        return super.RegisterCallbacks(onResolved, onRejected);
+    }
+
     *Process(data, options)
     {
         if (this._extension !== "gr2")
@@ -344,10 +388,11 @@ export class Tw2GeometryRes extends Tw2Resource
         }
 
         this.Clear(false);
-        const decodeOptions = {
-            firstMeshOnly: options?.firstMeshOnly !== false,
-            unpackTangents: !!options?.unpackTangents
-        };
+        // The reader's class defaults apply here as they do on its own entry
+        // points: a caller that opts out of firstMeshOnly once, for every
+        // load, must not be overruled by a fetch that passes no options.
+        const decodeOptions = Tw2GeometryRes.GetGr2DecodeOptions(options);
+        this._gr2DecodeOptions = decodeOptions;
         const decoded = resMan.useGeometryWorkers
             ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl)
             : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
