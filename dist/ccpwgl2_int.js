@@ -273634,6 +273634,7 @@
 	    this._carbonShadowRenderer = null;
 	    this._carbonShadowError = null;
 	    this._distortionAccumulator = null;
+	    this._distortionFrameBuffer = null;
 	    this._distortionContext = null;
 	    this._distortionContextReport = null;
 	    this._distortionPostProcess = null;
@@ -275259,6 +275260,70 @@
 	    tw2.ClearBufferBits(true, false, true);
 	    gl.clearColor(previous[0], previous[1], previous[2], previous[3]);
 	  }
+
+	  /**
+	   * Renders the distortion batches into the distortion map, against the depth the
+	   * MAIN PASS already wrote.
+	   *
+	   * Carbon never re-renders depth for this: `RenderDistortionBatches`
+	   * (`EveSpaceScene.cpp:1234-1249`) pushes the distortion map as the render target
+	   * and binds the same depth buffer it handed to `RenderMainPass`, so distortion
+	   * behind hull is occluded by hull.
+	   *
+	   * ccpwgl instead called `RenderDepth(dt, true)` into the shared internal target and
+	   * tested against that. Measured on dx11 (`_dev/cppc/probe-depth-pass.local.mjs`):
+	   * that pass collects ZERO batches and issues ZERO draws, so the depth attachment
+	   * held nothing but its clear value - and with the reversed buffer's GEQUAL test,
+	   * every distortion fragment passed. That is the "distortion ignores depth" report.
+	   *
+	   * So borrow the scene target's depth renderbuffer for one FBO whose colour is the
+	   * distortion map. It is the same size and, on a reversed session, the same
+	   * DEPTH_COMPONENT32F the main pass just filled. Depth is never cleared here and
+	   * never written to (the batches run with depth writes off), so the borrowed buffer
+	   * is only read.
+	   *
+	   * Falls back to the old path when there is no scene target - a gles2 session with
+	   * neither HDR nor the clip flip draws the scene straight onto the canvas, and the
+	   * canvas depth buffer cannot be attached to an FBO. gles2 therefore keeps exactly
+	   * the behaviour it has today.
+	   *
+	   * @param {Function} render - draws the distortion batches
+	   * @returns {Boolean} true if the batches were rendered
+	   */
+	  RenderDistortionBatches(render) {
+	    var gl = tw2.device.gl,
+	      target = this._internalRenderTarget,
+	      sceneDepth = this._sceneTarget && this._sceneTarget.hasDepth ? this._sceneTarget._renderBuffer : null,
+	      colorTexture = target && target._colorTexture ? target._colorTexture.texture : null;
+	    if (!sceneDepth || !colorTexture) {
+	      return target.SetCallUnset(() => {
+	        this.ClearDistortionMap();
+	        render();
+	      });
+	    }
+	    if (!this._distortionFrameBuffer) this._distortionFrameBuffer = gl.createFramebuffer();
+	    var previousFrameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING),
+	      previousViewport = gl.getParameter(gl.VIEWPORT);
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._distortionFrameBuffer);
+	    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorTexture, 0);
+	    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, sceneDepth);
+
+	    // A mismatched attachment pair leaves nothing drawable, and silently: fall back
+	    // rather than render the frame into an incomplete buffer.
+	    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+	      gl.bindFramebuffer(gl.FRAMEBUFFER, previousFrameBuffer);
+	      return target.SetCallUnset(() => {
+	        this.ClearDistortionMap();
+	        render();
+	      });
+	    }
+	    gl.viewport(0, 0, target.width, target.height);
+	    this.ClearDistortionMap();
+	    render();
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, previousFrameBuffer);
+	    gl.viewport(previousViewport[0], previousViewport[1], previousViewport[2], previousViewport[3]);
+	    return true;
+	  }
 	  RenderDistortion(dt) {
 	    if (tw2.settings.GetValue("enableExperimentalBatchContext")) {
 	      return this.RenderDistortionWithBatchContext(dt);
@@ -275329,8 +275394,7 @@
 	    if (!this._depthRendered) {
 	      this.RenderDepth(dt, true);
 	    }
-	    this._internalRenderTarget.SetCallUnset(() => {
-	      this.ClearDistortionMap();
+	    this.RenderDistortionBatches(() => {
 	      if (useBatchContext) {
 	        distortionContext.Render();
 	      } else {
@@ -275408,10 +275472,7 @@
 	      }, distortionContext.GetReport());
 	      return false;
 	    }
-	    var rendered = this._internalRenderTarget.SetCallUnset(() => {
-	      this.ClearDistortionMap();
-	      distortionContext.Render();
-	    });
+	    var rendered = this.RenderDistortionBatches(() => distortionContext.Render());
 	    this._distortionContextReport = _objectSpread2({
 	      path: "experimental",
 	      ok: rendered,
