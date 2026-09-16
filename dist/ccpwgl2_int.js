@@ -294452,12 +294452,19 @@
 	        boosterAlpha: 0.5,
 	        // A distortion shader DIVIDES by this, so a smaller value writes LARGER
 	        // offsets: `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` against an
-	        // authored default of 128. Past +-0.064 the written offset saturates the
-	        // 8-bit distortion map and decodes as a maximum shift with hard edges,
-	        // which is what the red seams along distorting geometry were.
-	        // Calibrated by eye, like the rest of this block - Carbon carries no
-	        // equivalent multiplier, so there is no donor value to cite.
-	        maxDistortionOffset: 1 / 100
+	        // authored default of 128.
+	        //
+	        // Calibrated by eye against `soef1_t1`, like the rest of this block -
+	        // Carbon carries no equivalent multiplier, so there is no donor value to
+	        // cite. 1/100 was tried on 2026-09-17 and is much too strong there.
+	        //
+	        // It reaches FEWER materials than it looks: only those that actually carry
+	        // a MAX_DISTORTION_OFFSET parameter. Measured 2026-09-17 - `soef1_t1`'s
+	        // `skinned_fxdistortionv5` has one (128 authored), while `angbc1_t1`'s
+	        // `ubershaderdistortion` has none at all and takes its strength from
+	        // `DistortionFactors` instead. So this knob cannot be used to tune a hull
+	        // whose distortion is over-strong through that other path.
+	        maxDistortionOffset: 1 / 1000
 	      },
 	      effect: {
 	        sprite: null,
