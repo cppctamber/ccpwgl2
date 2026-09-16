@@ -167,22 +167,7 @@ export class EveSOFData extends meta.Model
             boosterSymHalo: 0.125,
             boosterBrightness: 1,
             boosterScale: [ 0.9, 0.9, 0.9 ],
-            boosterAlpha: 0.5,
-            // A distortion shader DIVIDES by this, so a smaller value writes LARGER
-            // offsets: `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` against an
-            // authored default of 128.
-            //
-            // Calibrated by eye against `soef1_t1`, like the rest of this block -
-            // Carbon carries no equivalent multiplier, so there is no donor value to
-            // cite. 1/100 was tried on 2026-09-17 and is much too strong there.
-            //
-            // It reaches FEWER materials than it looks: only those that actually carry
-            // a MAX_DISTORTION_OFFSET parameter. Measured 2026-09-17 - `soef1_t1`'s
-            // `skinned_fxdistortionv5` has one (128 authored), while `angbc1_t1`'s
-            // `ubershaderdistortion` has none at all and takes its strength from
-            // `DistortionFactors` instead. So this knob cannot be used to tune a hull
-            // whose distortion is over-strong through that other path.
-            maxDistortionOffset: 1 / 1000
+            boosterAlpha: 0.5
         },
 
         effect: {
@@ -2861,13 +2846,21 @@ export class EveSOFData extends meta.Model
                         area.effect.name = area.name + "_effect";
                     }
 
-                    // Handle distortion
-                    // Todo: Update shaders so this isn't required
+                    // A distortion area that authored no MAX_DISTORTION_OFFSET still needs
+                    // one, because its shader DIVIDES by the value when writing the map:
+                    // `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET`. 128 is the authored
+                    // default these materials are written against.
+                    //
+                    // ccpwgl used to scale this by 1/1000 as well, which left `soef1_t1`'s
+                    // effective value at 0.128 - about 1000x off what the material authors,
+                    // and 500x out of line with hulls the scaling never reached, such as
+                    // `angbc1_t1` (whose materials keep their authored 64). Operator
+                    // 2026-09-17: the EVE client is not over-distorted on those hulls, and
+                    // the client runs the authored values, so the scaling went.
                     if (eff.parameters.MAX_DISTORTION_OFFSET || areasName === "distortionAreas")
                     {
-                        const value = eff.parameters.MAX_DISTORTION_OFFSET || [ 128, 0, 0, 0 ];
-                        value[0] *= options.multiplier.maxDistortionOffset;
-                        eff.parameters.MAX_DISTORTION_OFFSET = value;
+                        eff.parameters.MAX_DISTORTION_OFFSET =
+                            eff.parameters.MAX_DISTORTION_OFFSET || [ 128, 0, 0, 0 ];
                     }
 
                     // Update effect
