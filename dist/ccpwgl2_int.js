@@ -30922,7 +30922,13 @@
 	 * @returns {boolean} - true if empty
 	 */
 	box3$2.isEmpty = function (a) {
-	  if (a[0] + a[1] + a[2] + a[3] + a[4] + a[5] === 0) return true;
+	  // An UNSET box - what `box3.create` hands back - is empty. Test its components
+	  // rather than their sum: any box symmetric about the origin sums to zero too, so
+	  // the sum called a perfectly good box empty. `res:/graphics/generic/unit_plane.gr2`
+	  // is exactly that, min (-0.5,-0.5,0) max (0.5,0.5,0), which is why every banner
+	  // reported zero world bounds, failed its visibility test and never drew - on both
+	  // profiles (measured 2026-09-17).
+	  if (a[0] === 0 && a[1] === 0 && a[2] === 0 && a[3] === 0 && a[4] === 0 && a[5] === 0) return true;
 	  return a[3] < a[0] || a[4] < a[1] || a[5] < a[2];
 	};
 
@@ -60784,6 +60790,8 @@
 	    this._requestResponseType = null;
 	    this._extension = null;
 	    this._boundsDirty = true;
+	    this._gr2DecodeOptions = null;
+	    this._gr2DecodeWarned = false;
 	  }
 	  /**
 	   * Sets system mirror
@@ -61020,16 +61028,52 @@
 	  CancelPreparation() {
 	    resMan.CancelProcessing(this);
 	  }
+
+	  /**
+	   * The decode options a gr2 load runs with: the reader's class defaults
+	   * under whatever the caller passed.
+	   * @param {Object} [options]
+	   * @returns {{ firstMeshOnly: Boolean, unpackTangents: Boolean }}
+	   */
+	  static GetGr2DecodeOptions(options) {
+	    var merged = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
+	    return {
+	      firstMeshOnly: merged.firstMeshOnly !== false,
+	      unpackTangents: !!merged.unpackTangents
+	    };
+	  }
+
+	  /**
+	   * A prepared gr2 is cached by path and never decoded again, so it keeps
+	   * the mesh set of whatever options were current on its FIRST load. A later
+	   * request under different reader defaults silently gets that first result.
+	   * There is no per-path cache key for options yet; this warns once so the
+	   * mismatch is at least visible.
+	   * @param {Function} [onResolved]
+	   * @param {Function} [onRejected]
+	   */
+	  RegisterCallbacks(onResolved, onRejected) {
+	    if (this._gr2DecodeOptions && !this._gr2DecodeWarned && this.HasCompleted()) {
+	      var wanted = Tw2GeometryRes.GetGr2DecodeOptions();
+	      var used = this._gr2DecodeOptions;
+	      if (wanted.firstMeshOnly !== used.firstMeshOnly || wanted.unpackTangents !== used.unpackTangents) {
+	        this._gr2DecodeWarned = true;
+	        console.warn("Tw2GeometryRes: \"".concat(this.path, "\" was cached with gr2 options ").concat(JSON.stringify(used), " ") + "and is being reused under ".concat(JSON.stringify(wanted), "; the cached mesh set is served as-is"));
+	      }
+	    }
+	    return super.RegisterCallbacks(onResolved, onRejected);
+	  }
 	  *Process(data, options) {
 	    if (this._extension !== "gr2") {
 	      this.Prepare(data, options, true);
 	      return;
 	    }
 	    this.Clear(false);
-	    var decodeOptions = {
-	      firstMeshOnly: (options === null || options === void 0 ? void 0 : options.firstMeshOnly) !== false,
-	      unpackTangents: !!(options !== null && options !== void 0 && options.unpackTangents)
-	    };
+	    // The reader's class defaults apply here as they do on its own entry
+	    // points: a caller that opts out of firstMeshOnly once, for every
+	    // load, must not be overruled by a fetch that passes no options.
+	    var decodeOptions = Tw2GeometryRes.GetGr2DecodeOptions(options);
+	    this._gr2DecodeOptions = decodeOptions;
 	    var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
 	    // Cancellation of the yielded promise is owned by the scheduler.
 	    data = null;
