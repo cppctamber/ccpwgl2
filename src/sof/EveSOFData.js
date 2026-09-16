@@ -168,7 +168,14 @@ export class EveSOFData extends meta.Model
             boosterBrightness: 1,
             boosterScale: [ 0.9, 0.9, 0.9 ],
             boosterAlpha: 0.5,
-            maxDistortionOffset: 1 / 1000
+            // A distortion shader DIVIDES by this, so a smaller value writes LARGER
+            // offsets: `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` against an
+            // authored default of 128. Past +-0.064 the written offset saturates the
+            // 8-bit distortion map and decodes as a maximum shift with hard edges,
+            // which is what the red seams along distorting geometry were.
+            // Calibrated by eye, like the rest of this block - Carbon carries no
+            // equivalent multiplier, so there is no donor value to cite.
+            maxDistortionOffset: 1 / 100
         },
 
         effect: {

@@ -294450,7 +294450,14 @@
 	        boosterBrightness: 1,
 	        boosterScale: [0.9, 0.9, 0.9],
 	        boosterAlpha: 0.5,
-	        maxDistortionOffset: 1 / 1000
+	        // A distortion shader DIVIDES by this, so a smaller value writes LARGER
+	        // offsets: `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` against an
+	        // authored default of 128. Past +-0.064 the written offset saturates the
+	        // 8-bit distortion map and decodes as a maximum shift with hard edges,
+	        // which is what the red seams along distorting geometry were.
+	        // Calibrated by eye, like the rest of this block - Carbon carries no
+	        // equivalent multiplier, so there is no donor value to cite.
+	        maxDistortionOffset: 1 / 100
 	      },
 	      effect: {
 	        sprite: null,
@@ -296813,7 +296820,7 @@
 	                  ImageMap
 	              }
 	          };
-	       bannerShader.Assign(effectSettings);
+	        bannerShader.Assign(effectSettings);
 	      set.effect.SetValues(effectSettings);
 	       */
 
@@ -298200,12 +298207,12 @@
 
 	      /*
 	      const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
-	       function onChildLoaded(child)
+	        function onChildLoaded(child)
 	      {
 	          return function(loaded)
 	          {
 	              loaded.name = child.name;
-	               if (loaded.isEffectChild)
+	                if (loaded.isEffectChild)
 	              {
 	                  obj.effectChildren.push(loaded);
 	              }
@@ -298213,17 +298220,17 @@
 	              {
 	                  obj.children.push(loaded);
 	              }
-	               vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
+	                vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
 	              quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
 	              vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
-	               const id = get(child, "id", -1);
+	                const id = get(child, "id", -1);
 	              if (id !== -1 && curves[id])
 	              {
 	                  EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
 	              }
 	          };
 	      }
-	       const { children = [] } = sof.hull;
+	        const { children = [] } = sof.hull;
 	      for (let i = 0; i < children.length; ++i)
 	      {
 	          const { redFilePath } = children[i];
