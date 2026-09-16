@@ -275233,6 +275233,32 @@
 	   * @param {Number} dt
 	   * @returns {boolean} true if completed
 	   */
+	  /**
+	   * Clears the distortion map to the value its shaders are written against.
+	   *
+	   * Carbon clears it to `0x007f7f00` (`EveSpaceScene.cpp:1243`,
+	   * `RenderDistortionBatches`) - red and green at 0x7f, blue and alpha at zero -
+	   * because a distortion shader writes a SIGNED screen offset with no bias of its
+	   * own and blends it additively, so the destination has to start at the midpoint.
+	   * `1layerdyndistortionv2`'s pixel shader is the proof: it writes
+	   * `SV_Target0.xy = offset / MAX_DISTORTION_OFFSET` and nothing more, while the
+	   * apply pass decodes `rg - 0.5`.
+	   *
+	   * Clearing to black instead - which is what the shared `ClearBufferBits` did,
+	   * since it uses whatever `clearColor` the last pass left behind - clamped every
+	   * negative offset to zero and left the apply pass reading a half-unit negative
+	   * bias on every written pixel.
+	   *
+	   * Blue stays at zero deliberately: it is the "distortion was written here" flag,
+	   * and the apply pass gates on `>= 1/256`, so an untouched pixel must read zero.
+	   */
+	  ClearDistortionMap() {
+	    var gl = tw2.device.gl;
+	    var previous = gl.getParameter(gl.COLOR_CLEAR_VALUE);
+	    gl.clearColor(0.498039215686, 0.498039215686, 0, 0);
+	    tw2.ClearBufferBits(true, false, true);
+	    gl.clearColor(previous[0], previous[1], previous[2], previous[3]);
+	  }
 	  RenderDistortion(dt) {
 	    if (tw2.settings.GetValue("enableExperimentalBatchContext")) {
 	      return this.RenderDistortionWithBatchContext(dt);
@@ -275304,7 +275330,7 @@
 	      this.RenderDepth(dt, true);
 	    }
 	    this._internalRenderTarget.SetCallUnset(() => {
-	      tw2.ClearBufferBits(true, false, true);
+	      this.ClearDistortionMap();
 	      if (useBatchContext) {
 	        distortionContext.Render();
 	      } else {
@@ -275383,7 +275409,7 @@
 	      return false;
 	    }
 	    var rendered = this._internalRenderTarget.SetCallUnset(() => {
-	      tw2.ClearBufferBits(true, false, true);
+	      this.ClearDistortionMap();
 	      distortionContext.Render();
 	    });
 	    this._distortionContextReport = _objectSpread2({
