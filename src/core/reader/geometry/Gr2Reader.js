@@ -53,10 +53,17 @@ export class ErrGr2GeometryExpected extends Tw2Error
 const VertexTypes = {
     POSITION: { elements: 3, usage: Tw2VertexElement.Type.POSITION, usageIndex: 0 },
     COLOR: { elements: 4, usage: Tw2VertexElement.Type.COLOR, usageIndex: 0 },
+    // CMF spells the same channel with its usage index, as it does for
+    // texcoord, and it is the only colour channel the format declares.
+    COLOR0: { elements: 4, usage: Tw2VertexElement.Type.COLOR, usageIndex: 0 },
     NORMAL: { elements: 3, usage: Tw2VertexElement.Type.NORMAL, usageIndex: 0 },
     TANGENT: { elements: 4, usage: Tw2VertexElement.Type.TANGENT, usageIndex: 0 },
     BITANGENT: { elements: 4, usage: Tw2VertexElement.Type.BITANGENT, usageIndex: 0 },
     BINORMAL: { elements: 4, usage: Tw2VertexElement.Type.BINORMAL, usageIndex: 0 },
+    // The BASE of the indexed spellings below it, for a channel that carries an
+    // index this table does not list one by one - `texcoord2` and up. See
+    // `VertexTypeFor`.
+    TEXCOORD: { elements: 2, usage: Tw2VertexElement.Type.TEXCOORD, usageIndex: 0 },
     TEXCOORD0: { elements: 2, usage: Tw2VertexElement.Type.TEXCOORD, usageIndex: 0 },
     TEXCOORD1: { elements: 2, usage: Tw2VertexElement.Type.TEXCOORD, usageIndex: 1 },
     // BLEND INDICES & BLEND WEIGHT FLIPPED FOR SOME REASON
@@ -66,6 +73,34 @@ const VertexTypes = {
     // Temporary
     AMBIENT_OCCLUSION: { elements: 1, usage: Tw2VertexElement.Type.TEXCOORD, usageIndex: 20 }
 };
+
+/**
+ * The declaration for one channel, whose name may carry its usage index.
+ *
+ * GR2 names a channel per usage - `texcoord0`, `texcoord1` - and the table
+ * above lists those spellings one by one. CMF names every channel that way,
+ * including ones EVE geometry never carries a second of: a mesh with two
+ * tangent frames declares `tangent1`, and a colour channel is `color0` where
+ * GR2 says `color`. Listing each is how `color0` and `packedTangent1` each
+ * stopped a Frontier hull dead, one rebuild apart.
+ *
+ * So a name that is not in the table is tried again without its trailing
+ * digits, and those digits are the usage index. It cannot invent a usage - the
+ * base still has to be declared above - and it does not touch a name that has
+ * none.
+ */
+function VertexTypeFor(key)
+{
+    const name = key.toUpperCase();
+    const declared = VertexTypes[name];
+
+    if (declared) return declared;
+
+    const match = name.match(/^([A-Z_]+?)(\d+)$/u);
+    const base = match && VertexTypes[match[1]];
+
+    return base ? { ...base, usageIndex: Number(match[2]) } : null;
+}
 
 
 /**
@@ -188,7 +223,7 @@ export class Gr2Reader
                 vertexSize = srcM._prepared.vertexSize - 1;
                 vertexElements = srcM._prepared.channels.map(channel =>
                 {
-                    const type = VertexTypes[channel.key.toUpperCase()];
+                    const type = VertexTypeFor(channel.key);
                     if (!type) throw new Error(`Unsupported vertex type: ${channel.key}`);
                     let usage = type.usage;
                     if (options.swapBlendWeightsAndIndices)
@@ -216,7 +251,7 @@ export class Gr2Reader
                 {
                     if (srcM.vertex.hasOwnProperty(key) && srcM.vertex[key] && srcM.vertex[key].length)
                     {
-                        const type = VertexTypes[key.toUpperCase()];
+                        const type = VertexTypeFor(key);
                         if (!type) throw new Error(`Unsupported vertex type: ${key}`);
 
                         let usage = type.usage;

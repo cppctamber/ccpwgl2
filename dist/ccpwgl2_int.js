@@ -56020,6 +56020,13 @@
 	    usage: Tw2VertexElement.Type.COLOR,
 	    usageIndex: 0
 	  },
+	  // CMF spells the same channel with its usage index, as it does for
+	  // texcoord, and it is the only colour channel the format declares.
+	  COLOR0: {
+	    elements: 4,
+	    usage: Tw2VertexElement.Type.COLOR,
+	    usageIndex: 0
+	  },
 	  NORMAL: {
 	    elements: 3,
 	    usage: Tw2VertexElement.Type.NORMAL,
@@ -56038,6 +56045,14 @@
 	  BINORMAL: {
 	    elements: 4,
 	    usage: Tw2VertexElement.Type.BINORMAL,
+	    usageIndex: 0
+	  },
+	  // The BASE of the indexed spellings below it, for a channel that carries an
+	  // index this table does not list one by one - `texcoord2` and up. See
+	  // `VertexTypeFor`.
+	  TEXCOORD: {
+	    elements: 2,
+	    usage: Tw2VertexElement.Type.TEXCOORD,
 	    usageIndex: 0
 	  },
 	  TEXCOORD0: {
@@ -56068,6 +56083,32 @@
 	    usageIndex: 20
 	  }
 	};
+
+	/**
+	 * The declaration for one channel, whose name may carry its usage index.
+	 *
+	 * GR2 names a channel per usage - `texcoord0`, `texcoord1` - and the table
+	 * above lists those spellings one by one. CMF names every channel that way,
+	 * including ones EVE geometry never carries a second of: a mesh with two
+	 * tangent frames declares `tangent1`, and a colour channel is `color0` where
+	 * GR2 says `color`. Listing each is how `color0` and `packedTangent1` each
+	 * stopped a Frontier hull dead, one rebuild apart.
+	 *
+	 * So a name that is not in the table is tried again without its trailing
+	 * digits, and those digits are the usage index. It cannot invent a usage - the
+	 * base still has to be declared above - and it does not touch a name that has
+	 * none.
+	 */
+	function VertexTypeFor(key) {
+	  var name = key.toUpperCase();
+	  var declared = VertexTypes[name];
+	  if (declared) return declared;
+	  var match = name.match(/^([A-Z_]+?)([0-9]+)$/);
+	  var base = match && VertexTypes[match[1]];
+	  return base ? _objectSpread2(_objectSpread2({}, base), {}, {
+	    usageIndex: Number(match[2])
+	  }) : null;
+	}
 
 	/**
 	 * Reader for RAD Granny 3D `.gr2` files, and shared GR2-JSON-shaped
@@ -56147,7 +56188,7 @@
 	        vertexCount = srcM._prepared.vertexCount;
 	        vertexSize = srcM._prepared.vertexSize - 1;
 	        vertexElements = srcM._prepared.channels.map(channel => {
-	          var type = VertexTypes[channel.key.toUpperCase()];
+	          var type = VertexTypeFor(channel.key);
 	          if (!type) throw new Error("Unsupported vertex type: ".concat(channel.key));
 	          var usage = type.usage;
 	          if (options.swapBlendWeightsAndIndices) {
@@ -56174,7 +56215,7 @@
 	        }
 	        for (var key in srcM.vertex) {
 	          if (srcM.vertex.hasOwnProperty(key) && srcM.vertex[key] && srcM.vertex[key].length) {
-	            var type = VertexTypes[key.toUpperCase()];
+	            var type = VertexTypeFor(key);
 	            if (!type) throw new Error("Unsupported vertex type: ".concat(key));
 	            var usage = type.usage;
 	            if (options.swapBlendWeightsAndIndices) {
@@ -64400,9 +64441,16 @@
 	        var _json$meshes;
 	        var vertex = mesh.vertex;
 	        if (!vertex) continue;
-	        for (var key of CmfReader.PACKED_TANGENTS) {
-	          var _vertex$key, _vertex$tangent;
-	          if ((_vertex$key = vertex[key]) !== null && _vertex$key !== void 0 && _vertex$key.length && !((_vertex$tangent = vertex.tangent) !== null && _vertex$tangent !== void 0 && _vertex$tangent.length)) vertex.tangent = vertex[key];
+
+	        // BY USAGE INDEX, because there can be more than one: a mesh with a
+	        // second frame declares `packedTangent1`, and dropping it would bind
+	        // the shader's TANGENT1 against nothing.
+	        for (var key of Object.keys(vertex)) {
+	          var _vertex$key, _vertex$name;
+	          var match = key.match(CmfReader.PACKED_TANGENTS);
+	          if (!match) continue;
+	          var name = "tangent".concat(match[1]);
+	          if ((_vertex$key = vertex[key]) !== null && _vertex$key !== void 0 && _vertex$key.length && !((_vertex$name = vertex[name]) !== null && _vertex$name !== void 0 && _vertex$name.length)) vertex[name] = vertex[key];
 	          delete vertex[key];
 	        }
 	      }
@@ -64453,7 +64501,7 @@
 	 * Normal, Tangent and Binormal at the same index, so there is nothing to
 	 * collide with.
 	 */
-	CmfReader.PACKED_TANGENTS = ["packedTangent", "packedTangentLegacy"];
+	CmfReader.PACKED_TANGENTS = /^packedTangent(?:Legacy)?([0-9]*)$/;
 
 	var _dec$7U, _class$7U, _Tw2GeometryRes;
 

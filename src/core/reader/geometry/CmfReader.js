@@ -80,7 +80,7 @@ export class CmfReader
      * Normal, Tangent and Binormal at the same index, so there is nothing to
      * collide with.
      */
-    static PACKED_TANGENTS = [ "packedTangent", "packedTangentLegacy" ];
+    static PACKED_TANGENTS = /^packedTangent(?:Legacy)?(\d*)$/u;
 
     /**
      * Decodes CMF bytes into the prepared JSON the GR2 path consumes.
@@ -105,9 +105,18 @@ export class CmfReader
 
             if (!vertex) continue;
 
-            for (const key of CmfReader.PACKED_TANGENTS)
+            // BY USAGE INDEX, because there can be more than one: a mesh with a
+            // second frame declares `packedTangent1`, and dropping it would bind
+            // the shader's TANGENT1 against nothing.
+            for (const key of Object.keys(vertex))
             {
-                if (vertex[key]?.length && !vertex.tangent?.length) vertex.tangent = vertex[key];
+                const match = key.match(CmfReader.PACKED_TANGENTS);
+
+                if (!match) continue;
+
+                const name = `tangent${match[1]}`;
+
+                if (vertex[key]?.length && !vertex[name]?.length) vertex[name] = vertex[key];
                 delete vertex[key];
             }
         }
