@@ -35763,7 +35763,7 @@
 	      [PT_BYTE]: byte$1,
 	      [PT_INT64]: int64$2,
 	      [PT_INT32]: int32$2,
-	      [PT_UINT]: uint$1,
+	      [PT_UINT]: uint$2,
 	      [PT_USHORT]: ushort$1,
 	      [PT_FLOAT]: float$1,
 	      [PT_VECTOR2]: vector2$1,
@@ -35774,8 +35774,8 @@
 	      [PT_COLOR]: color$3,
 	      [PT_STRUCT]: object,
 	      [PT_STRUCT_RAW]: rawObject$1,
-	      [PT_STRUCT_LIST]: array$1,
-	      [PT_ARRAY]: array$1,
+	      [PT_STRUCT_LIST]: array$2,
+	      [PT_ARRAY]: array$2,
 	      [PT_PLAIN]: rawObject$1,
 	      [PT_ENUM]: enums$1,
 	      [PT_FLOAT64_ARRAY]: indexBuffer,
@@ -35935,7 +35935,7 @@
 	 * @param {Tw2BlackBinaryReader} reader
 	 * @returns {Array} out
 	 */
-	function array$1(reader) {
+	function array$2(reader) {
 	  var result = [],
 	    count = reader.ReadU32();
 	  for (var i = 0; i < count; i++) {
@@ -36087,7 +36087,7 @@
 	 * @param {Tw2BlackBinaryReader} reader
 	 * @returns {Number}
 	 */
-	function uint$1(reader) {
+	function uint$2(reader) {
 	  return reader.ReadU32();
 	}
 
@@ -36209,7 +36209,7 @@
 	    if (!isPlain$1(target)) {
 	      throw new Error("Target is not a plain object");
 	    }
-	    var result = struct ? structList(struct)(reader) : array$1(reader);
+	    var result = struct ? structList(struct)(reader) : array$2(reader);
 	    for (var i = 0; i < result.length; i++) {
 	      var item = result[i],
 	        prop = result[i][key];
@@ -36382,14 +36382,14 @@
 	var float = create$d(PT_FLOAT);
 	var int64$1 = create$d(PT_INT64);
 	var int32$1 = create$d(PT_INT32);
-	var uint = create$d(PT_UINT);
+	var uint$1 = create$d(PT_UINT);
 	var ushort = create$d(PT_USHORT);
 	var byte = create$d(PT_BYTE);
 	var float32$1 = float;
-	var uint32$1 = uint;
+	var uint32$1 = uint$1;
 	var uint16$1 = ushort;
 	var uint8$1 = byte;
-	var array = create$d(PT_ARRAY);
+	var array$1 = create$d(PT_ARRAY);
 	var vector2 = create$d(PT_VECTOR2);
 	var vector3 = create$d(PT_VECTOR3);
 	var vector4 = create$d(PT_VECTOR4);
@@ -36821,7 +36821,7 @@
 		Tw2Schema: Tw2Schema,
 		abstract: abstract,
 		alias: alias,
-		array: array,
+		array: array$1,
 		boolean: boolean,
 		byte: byte,
 		color: color$2,
@@ -36877,7 +36877,7 @@
 		uiValueMin: uiValueMin,
 		uiValueStep: uiValueStep,
 		uiWidget: uiWidget,
-		uint: uint,
+		uint: uint$1,
 		uint16: uint16$1,
 		uint16Array: uint16Array,
 		uint32: uint32$1,
@@ -37191,7 +37191,7 @@
 	// these run per record, and allocating a 4-byte ArrayBuffer each time is
 	// pure garbage for a value that is read immediately and never retained.
 	var scratch$8 = new DataView(new ArrayBuffer(4));
-	function asUint8Array(value) {
+	function asUint8Array$1(value) {
 	  var label = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "value";
 	  if (value instanceof Uint8Array) {
 	    return value;
@@ -37208,20 +37208,20 @@
 	/** Returns an owned copy of supported byte input. */
 	function copyBytes(value) {
 	  var label = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "value";
-	  return asUint8Array(value, label).slice();
+	  return asUint8Array$1(value, label).slice();
 	}
 
 	/** Copies exactly the visible byte range into a standalone ArrayBuffer. */
 	function toArrayBuffer(value) {
 	  var label = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "value";
-	  var bytes = asUint8Array(value, label);
+	  var bytes = asUint8Array$1(value, label);
 	  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 	}
 
 	/** Tests whether byte input starts with the complete supplied prefix. */
 	function hasBytePrefix(value, prefix) {
-	  var bytes = asUint8Array(value, "value");
-	  var expected = asUint8Array(prefix, "prefix");
+	  var bytes = asUint8Array$1(value, "value");
+	  var expected = asUint8Array$1(prefix, "prefix");
 	  if (bytes.byteLength < expected.byteLength) {
 	    return false;
 	  }
@@ -38342,7 +38342,7 @@
 	  constructor(bytes) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    super(options);
-	    this.bytes = asUint8Array(bytes);
+	    this.bytes = asUint8Array$1(bytes);
 	    this.bitPosition = (Number(options.offset) || 0) * 8;
 	    this.endBit = Number.isInteger(options.endBit) ? options.endBit : Number.isInteger(options.end) ? options.end * 8 : this.bytes.length * 8;
 	    this.source = options.source || "memory";
@@ -38952,8 +38952,8 @@
 	      endpoints[_endpoint3][3] = expandEndpoint(_value, alphaPrecision);
 	    }
 	  }
-	  var primary = readIndices$1(reader, info.indexBits, info.subsets, partition);
-	  var secondary = info.secondaryIndexBits ? readIndices$1(reader, info.secondaryIndexBits, info.subsets, partition) : primary;
+	  var primary = readIndices$2(reader, info.indexBits, info.subsets, partition);
+	  var secondary = info.secondaryIndexBits ? readIndices$2(reader, info.secondaryIndexBits, info.subsets, partition) : primary;
 	  var colorUsesSecondary = info.selectionBits && selection === 1;
 	  var alphaUsesSecondary = info.secondaryIndexBits && (!info.selectionBits || selection === 0);
 	  var colorIndices = colorUsesSecondary ? secondary : primary;
@@ -38979,7 +38979,7 @@
 	  }
 	  return pixels;
 	}
-	function readIndices$1(reader, bitCount, subsets, partition) {
+	function readIndices$2(reader, bitCount, subsets, partition) {
 	  var indices = new Uint8Array(16);
 	  for (var pixel = 0; pixel < 16; pixel++) {
 	    var subset = getSubset(subsets, partition, pixel);
@@ -39051,7 +39051,7 @@
 	var OUTPUT_RGBA = "rgba";
 	var OUTPUT_RAW$7 = "raw";
 	var OUTPUT_JSON$c = "json";
-	var DEFAULT_VALUES$9 = Object.freeze({
+	var DEFAULT_VALUES$a = Object.freeze({
 	  emit: OUTPUT_RAW$7,
 	  inputType: "",
 	  source: ""
@@ -39120,13 +39120,13 @@
 	 * Normalizes reader options against their supported defaults for the DDS format
 	 * reader.
 	 */
-	function normalizeValues$9() {
-	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$9;
+	function normalizeValues$a() {
+	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$a;
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsImageFormat";
-	  var values = _objectSpread2(_objectSpread2(_objectSpread2({}, DEFAULT_VALUES$9), base || {}), options || {});
+	  var values = _objectSpread2(_objectSpread2(_objectSpread2({}, DEFAULT_VALUES$a), base || {}), options || {});
 	  values.inputType = normalizeInputType(values.inputType);
-	  values.emit = normalizeEmit$5(values.emit, values.inputType, readerName);
+	  values.emit = normalizeEmit$6(values.emit, values.inputType, readerName);
 	  return values;
 	}
 
@@ -39138,7 +39138,7 @@
 	}
 
 	/** Normalizes the requested output representation for the DDS format reader. */
-	function normalizeEmit$5(emit, inputType, readerName) {
+	function normalizeEmit$6(emit, inputType, readerName) {
 	  if (emit === undefined || emit === null) return OUTPUT_RAW$7;
 	  if (emit === OUTPUT_JSON$c && inputType) return DEBUG_OUTPUTS[inputType] || OUTPUT_JSON$c;
 	  if ([OUTPUT_IMAGE, OUTPUT_TEXTURE, OUTPUT_RGBA, OUTPUT_RAW$7, OUTPUT_JSON$c].includes(emit)) return emit;
@@ -39149,9 +39149,9 @@
 	/** Returns a byte view over the supplied binary input for the DDS format reader. */
 	/** Inspects input using normalized format options for the DDS format reader. */
 	function inspectWithValues$7(input) {
-	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$9;
+	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$a;
 	  var expectedType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-	  var bytes = asUint8Array(input, "Image input");
+	  var bytes = asUint8Array$1(input, "Image input");
 	  var detected = inspectBytes$1(bytes);
 	  var sourceFormat = expectedType || values.inputType || detected.sourceFormat;
 	  if (expectedType && detected.sourceFormat && detected.sourceFormat !== expectedType) {
@@ -39170,7 +39170,7 @@
 	 * format reader.
 	 */
 	function probeSupportWithValues$2(input) {
-	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$9;
+	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$a;
 	  var expectedType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 	  try {
 	    var metadata = inspectWithValues$7(input, values, expectedType);
@@ -39237,10 +39237,10 @@
 	}
 
 	/** Reads input using normalized format options for the DDS format reader. */
-	function readWithValues$8(input) {
-	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$9;
+	function readWithValues$9(input) {
+	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$a;
 	  var expectedType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-	  var bytes = asUint8Array(input, "Image input");
+	  var bytes = asUint8Array$1(input, "Image input");
 	  var metadata = inspectWithValues$7(bytes, values, expectedType);
 	  if (values.emit === OUTPUT_RAW$7) {
 	    return {
@@ -40098,7 +40098,7 @@
 	    super();
 	    Object.defineProperty(this, _values$3, {
 	      writable: true,
-	      value: DEFAULT_VALUES$9
+	      value: DEFAULT_VALUES$a
 	    });
 	    this.SetValues(options);
 	  }
@@ -40111,7 +40111,7 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    _classPrivateFieldLooseBase(this, _values$3)[_values$3] = normalizeValues$9(_classPrivateFieldLooseBase(this, _values$3)[_values$3], _objectSpread2({
+	    _classPrivateFieldLooseBase(this, _values$3)[_values$3] = normalizeValues$a(_classPrivateFieldLooseBase(this, _values$3)[_values$3], _objectSpread2({
 	      inputType: "dds"
 	    }, options), FORMAT_NAME$8);
 	    return this;
@@ -40125,7 +40125,7 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$9(_classPrivateFieldLooseBase(this, _values$3)[_values$3], _objectSpread2({
+	    return normalizeValues$a(_classPrivateFieldLooseBase(this, _values$3)[_values$3], _objectSpread2({
 	      inputType: "dds"
 	    }, options), FORMAT_NAME$8);
 	  }
@@ -40139,7 +40139,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$8(input, this.GetValues(options), "dds");
+	    return readWithValues$9(input, this.GetValues(options), "dds");
 	  }
 
 	  /**
@@ -40189,7 +40189,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$8(input, normalizeValues$9(DEFAULT_VALUES$9, _objectSpread2({
+	    return readWithValues$9(input, normalizeValues$a(DEFAULT_VALUES$a, _objectSpread2({
 	      inputType: "dds"
 	    }, options), FORMAT_NAME$8), "dds");
 	  }
@@ -40218,7 +40218,7 @@
 	   */
 	  static inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$7(input, normalizeValues$9(DEFAULT_VALUES$9, _objectSpread2({
+	    return inspectWithValues$7(input, normalizeValues$a(DEFAULT_VALUES$a, _objectSpread2({
 	      inputType: "dds"
 	    }, options), FORMAT_NAME$8), "dds");
 	  }
@@ -40232,7 +40232,7 @@
 	   */
 	  static probeSupport(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return probeSupportWithValues$2(input, normalizeValues$9(DEFAULT_VALUES$9, _objectSpread2({
+	    return probeSupportWithValues$2(input, normalizeValues$a(DEFAULT_VALUES$a, _objectSpread2({
 	      inputType: "dds"
 	    }, options), FORMAT_NAME$8), "dds");
 	  }
@@ -40255,7 +40255,7 @@
 	   */
 	  static isDDS(input) {
 	    try {
-	      return isDDS(asUint8Array(input, "Image input"));
+	      return isDDS(asUint8Array$1(input, "Image input"));
 	    } catch (_unused) {
 	      return false;
 	    }
@@ -49003,7 +49003,7 @@
 	}
 
 	/** Decode one CMF element component from a DataView. */
-	function readElementComponent(view, offset, type) {
+	function readElementComponent$1(view, offset, type) {
 	  switch (type) {
 	    case "Float32":
 	      return view.getFloat32(offset, true);
@@ -49039,7 +49039,7 @@
 	  }
 	  var view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 	  var values = new Array(bytes.byteLength / size);
-	  for (var i = 0; i < values.length; i++) values[i] = readElementComponent(view, i * size, type);
+	  for (var i = 0; i < values.length; i++) values[i] = readElementComponent$1(view, i * size, type);
 	  return values;
 	}
 
@@ -49072,8 +49072,8 @@
 	 */
 	function buildSharedFromCmf(raw, classes) {
 	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	  var hydrationClasses = createHydrationClasses(classes, hydrationOptions);
-	  return hydrate("Root", {
+	  var hydrationClasses = createHydrationClasses$1(classes, hydrationOptions);
+	  return hydrate$1("Root", {
 	    cmfVersion: raw.version,
 	    metadata: raw.metadata ? hydrateMetadata$1(raw.metadata, hydrationClasses) : null,
 	    meshes: raw.meshes.map(mesh => hydrateSharedMesh(mesh, hydrationClasses)),
@@ -49632,24 +49632,24 @@
 	}
 	function hydrateSharedMesh(mesh, classes) {
 	  var _mesh$vertex0, _mesh$indices2;
-	  return hydrate("Mesh", {
+	  return hydrate$1("Mesh", {
 	    name: mesh.name,
 	    morphTargets: mesh.morphTargets.targets.map((target, index) => {
 	      var _mesh$lods$0$morphTar, _mesh$lods$;
-	      return hydrate("MorphTarget", _objectSpread2(_objectSpread2({}, target), {}, {
+	      return hydrate$1("MorphTarget", _objectSpread2(_objectSpread2({}, target), {}, {
 	        dataIsDeltas: false,
 	        vertex: (_mesh$lods$0$morphTar = (_mesh$lods$ = mesh.lods[0]) === null || _mesh$lods$ === void 0 || (_mesh$lods$ = _mesh$lods$.morphTargets[index]) === null || _mesh$lods$ === void 0 ? void 0 : _mesh$lods$.vertex) != null ? _mesh$lods$0$morphTar : null
 	      }), classes);
 	    }),
 	    minBounds: mesh.bounds.min,
 	    maxBounds: mesh.bounds.max,
-	    boneBindings: mesh.boneBindings.map(binding => hydrate("BoneBinding", {
+	    boneBindings: mesh.boneBindings.map(binding => hydrate$1("BoneBinding", {
 	      name: binding.name,
 	      minBounds: binding.bounds.min,
 	      maxBounds: binding.bounds.max
 	    }, classes)),
 	    vertex: (_mesh$vertex0 = mesh.vertex) != null ? _mesh$vertex0 : emptyVertex(),
-	    indices: ((_mesh$indices2 = mesh.indices) != null ? _mesh$indices2 : []).map(group => hydrate("IndexGroup", {
+	    indices: ((_mesh$indices2 = mesh.indices) != null ? _mesh$indices2 : []).map(group => hydrate$1("IndexGroup", {
 	      name: group.name,
 	      bytesPerIndex: group.bytesPerIndex,
 	      firstElement: group.firstElement,
@@ -49663,15 +49663,15 @@
 	  }, classes);
 	}
 	function hydrateMetadata$1(metadata, classes) {
-	  return hydrate("Metadata", {
-	    entries: metadata.entries.map(entry => hydrate("MetadataEntry", entry, classes))
+	  return hydrate$1("Metadata", {
+	    entries: metadata.entries.map(entry => hydrate$1("MetadataEntry", entry, classes))
 	  }, classes);
 	}
 	function hydrateSkeleton$1(skeleton, classes) {
-	  return hydrate("Skeleton", skeleton, classes);
+	  return hydrate$1("Skeleton", skeleton, classes);
 	}
 	function hydrateAnimation$1(animation, classes) {
-	  return hydrate("Animation", animation, classes);
+	  return hydrate$1("Animation", animation, classes);
 	}
 	function emptyVertex() {
 	  return {
@@ -49688,13 +49688,13 @@
 	    packedTangentLegacy: []
 	  };
 	}
-	function hydrate(type, fields, classes) {
+	function hydrate$1(type, fields, classes) {
 	  var hydrationOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 	  var Class = classes === null || classes === void 0 ? void 0 : classes[type];
 	  var options = Object.keys(hydrationOptions).length > 0 ? hydrationOptions : (classes === null || classes === void 0 ? void 0 : classes.__hydrationOptions) || {};
-	  return Class ? populate$3(new Class(), fields, options) : fields;
+	  return Class ? populate$4(new Class(), fields, options) : fields;
 	}
-	function populate$3(instance, fields) {
+	function populate$4(instance, fields) {
 	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	  if (!instance || typeof instance.SetValues !== "function") {
 	    throw new TypeError("CjsCmfFormat shared class population requires classes to implement SetValues(values)");
@@ -49705,7 +49705,7 @@
 	  }));
 	  return instance;
 	}
-	function createHydrationClasses(classes, hydrationOptions) {
+	function createHydrationClasses$1(classes, hydrationOptions) {
 	  var map = Object.create(classes || null);
 	  Object.defineProperty(map, "__hydrationOptions", {
 	    value: hydrationOptions,
@@ -49913,8 +49913,8 @@
 
 	var DEFAULT_LINEAR_TOLERANCE = 0.1;
 	var DEFAULT_ORIENTATION_TOLERANCE = Math.PI / 1800;
-	var UINT16_MAX = 0xffff;
-	var UINT8_MAX$1 = 0xff;
+	var UINT16_MAX$1 = 0xffff;
+	var UINT8_MAX$2 = 0xff;
 	var CONTROL15_MAX = 0x7fff;
 	var CONTROL7_MAX = 0x7f;
 	var FLOAT_BITS = new DataView(new ArrayBuffer(4));
@@ -50354,9 +50354,9 @@
 	      var entry = selectors[component];
 	      return Math.max(0, Math.min(controlMaximum, Math.round((controls[controlOffset + component] - entry.offset) / entry.scale)));
 	    };
-	    var signBit = maximum === UINT8_MAX$1 ? 0x80 : 0x8000;
-	    var selectorShift = maximum === UINT8_MAX$1 ? 6 : 14;
-	    var lowSelectorShift = maximum === UINT8_MAX$1 ? 7 : 15;
+	    var signBit = maximum === UINT8_MAX$2 ? 0x80 : 0x8000;
+	    var selectorShift = maximum === UINT8_MAX$2 ? 6 : 14;
+	    var lowSelectorShift = maximum === UINT8_MAX$2 ? 7 : 15;
 	    packedControls[packedOffset] = quantize(swizzle2) | (controls[controlOffset + swizzle1] < 0 ? signBit : 0);
 	    packedControls[packedOffset + 1] = quantize(swizzle3) | (swizzle1 & 2) << selectorShift;
 	    packedControls[packedOffset + 2] = quantize(swizzle4) | (swizzle1 & 1) << lowSelectorShift;
@@ -50411,22 +50411,22 @@
 	  if (asQuaternion) {
 	    var _options$orientationT;
 	    var _tolerance = (_options$orientationT = options.orientationTolerance) != null ? _options$orientationT : DEFAULT_ORIENTATION_TOLERANCE;
-	    return selectSmallestCandidate(source, [encodeD4n(source, _tolerance, UINT8_MAX$1, CONTROL7_MAX, D4N_SCALE_TABLE_MULTIPLIER_8$1, FORMAT_D4N_K8U_C7U), encodeD4n(source, _tolerance, UINT16_MAX, CONTROL15_MAX, D4N_SCALE_TABLE_MULTIPLIER_16$1, FORMAT_D4N_K16U_C15U)], dimension, _tolerance, options.duration, true);
+	    return selectSmallestCandidate(source, [encodeD4n(source, _tolerance, UINT8_MAX$2, CONTROL7_MAX, D4N_SCALE_TABLE_MULTIPLIER_8$1, FORMAT_D4N_K8U_C7U), encodeD4n(source, _tolerance, UINT16_MAX$1, CONTROL15_MAX, D4N_SCALE_TABLE_MULTIPLIER_16$1, FORMAT_D4N_K16U_C15U)], dimension, _tolerance, options.duration, true);
 	  }
 	  if (dimension === 3) {
 	    var _options$positionTole;
 	    var _tolerance2 = (_options$positionTole = options.positionTolerance) != null ? _options$positionTole : DEFAULT_LINEAR_TOLERANCE;
 	    var shape = d3I1Shape(source.controls);
-	    return selectSmallestCandidate(source, [shape && encodeD3I1(source, shape, UINT8_MAX$1, FORMAT_D3I1_K8U_C8U), shape && encodeD3I1(source, shape, UINT16_MAX, FORMAT_D3I1_K16U_C16U), encodeD3K(source, UINT8_MAX$1, FORMAT_D3_K8U_C8U), encodeD3K(source, UINT16_MAX, FORMAT_D3_K16U_C16U), shape && encodeD3I1Float(source, shape)], dimension, _tolerance2, options.duration);
+	    return selectSmallestCandidate(source, [shape && encodeD3I1(source, shape, UINT8_MAX$2, FORMAT_D3I1_K8U_C8U), shape && encodeD3I1(source, shape, UINT16_MAX$1, FORMAT_D3I1_K16U_C16U), encodeD3K(source, UINT8_MAX$2, FORMAT_D3_K8U_C8U), encodeD3K(source, UINT16_MAX$1, FORMAT_D3_K16U_C16U), shape && encodeD3I1Float(source, shape)], dimension, _tolerance2, options.duration);
 	  }
 	  if (dimension === 9) {
 	    var _options$scaleShearTo;
 	    var _shape = scaleCurveShape(source.controls);
 	    var _tolerance3 = (_options$scaleShearTo = options.scaleShearTolerance) != null ? _options$scaleShearTo : DEFAULT_LINEAR_TOLERANCE;
-	    return selectSmallestCandidate(source, [_shape && encodeD9I(source, _shape, UINT8_MAX$1, FORMAT_D9I1_K8U_C8U, FORMAT_D9I3_K8U_C8U), _shape && encodeD9I(source, _shape, UINT16_MAX, FORMAT_D9I1_K16U_C16U, FORMAT_D9I3_K16U_C16U), encodeDaK(source, dimension, UINT8_MAX$1, FORMAT_DA_K8U_C8U), encodeDaK(source, dimension, UINT16_MAX, FORMAT_DA_K16U_C16U)], dimension, _tolerance3, options.duration);
+	    return selectSmallestCandidate(source, [_shape && encodeD9I(source, _shape, UINT8_MAX$2, FORMAT_D9I1_K8U_C8U, FORMAT_D9I3_K8U_C8U), _shape && encodeD9I(source, _shape, UINT16_MAX$1, FORMAT_D9I1_K16U_C16U, FORMAT_D9I3_K16U_C16U), encodeDaK(source, dimension, UINT8_MAX$2, FORMAT_DA_K8U_C8U), encodeDaK(source, dimension, UINT16_MAX$1, FORMAT_DA_K16U_C16U)], dimension, _tolerance3, options.duration);
 	  }
 	  var tolerance = (_options$tolerance = options.tolerance) != null ? _options$tolerance : DEFAULT_LINEAR_TOLERANCE;
-	  return selectSmallestCandidate(source, [encodeDaK(source, dimension, UINT8_MAX$1, FORMAT_DA_K8U_C8U), encodeDaK(source, dimension, UINT16_MAX, FORMAT_DA_K16U_C16U)], dimension, tolerance, options.duration);
+	  return selectSmallestCandidate(source, [encodeDaK(source, dimension, UINT8_MAX$2, FORMAT_DA_K8U_C8U), encodeDaK(source, dimension, UINT16_MAX$1, FORMAT_DA_K16U_C16U)], dimension, tolerance, options.duration);
 	}
 
 	// The two integrity checksums this runtime computes, in one module named for
@@ -50481,7 +50481,7 @@
 	 * @param {number} [end] Last byte offset, exclusive.
 	 * @returns {number} Unsigned 32-bit checksum.
 	 */
-	function crc32(bytes) {
+	function crc32$1(bytes) {
 	  var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	  var end = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : bytes.length;
 	  var crc = 0xffffffff;
@@ -50511,7 +50511,7 @@
 	  return (b << 16 >>> 0 | a) >>> 0;
 	}
 
-	var textEncoder$3 = new TextEncoder();
+	var textEncoder$4 = new TextEncoder();
 
 	/**
 	 * Growable little-endian append cursor with reserve-and-patch support.
@@ -50526,10 +50526,10 @@
 	 * Every append returns the offset it wrote at, so the reserve-and-patch case is
 	 * just "keep the offset an append returned".
 	 */
-	var _bytes$1 = /*#__PURE__*/_classPrivateFieldLooseKey("bytes");
-	var _view$4 = /*#__PURE__*/_classPrivateFieldLooseKey("view");
+	var _bytes$2 = /*#__PURE__*/_classPrivateFieldLooseKey("bytes");
+	var _view$5 = /*#__PURE__*/_classPrivateFieldLooseKey("view");
 	var _length = /*#__PURE__*/_classPrivateFieldLooseKey("length");
-	var _ensure = /*#__PURE__*/_classPrivateFieldLooseKey("ensure");
+	var _ensure$1 = /*#__PURE__*/_classPrivateFieldLooseKey("ensure");
 	var _advance = /*#__PURE__*/_classPrivateFieldLooseKey("advance");
 	var _requireWritten = /*#__PURE__*/_classPrivateFieldLooseKey("requireWritten");
 	class CjsByteWriter {
@@ -50563,14 +50563,14 @@
 	     *
 	     * @param {number} capacity Required total capacity.
 	     */
-	    Object.defineProperty(this, _ensure, {
-	      value: _ensure2
+	    Object.defineProperty(this, _ensure$1, {
+	      value: _ensure2$1
 	    });
-	    Object.defineProperty(this, _bytes$1, {
+	    Object.defineProperty(this, _bytes$2, {
 	      writable: true,
 	      value: void 0
 	    });
-	    Object.defineProperty(this, _view$4, {
+	    Object.defineProperty(this, _view$5, {
 	      writable: true,
 	      value: void 0
 	    });
@@ -50579,8 +50579,8 @@
 	      value: 0
 	    });
 	    var _capacity = Number.isInteger(initialCapacity) && initialCapacity > 0 ? initialCapacity : 1024;
-	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1] = new Uint8Array(_capacity);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4] = new DataView(_classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].buffer);
+	    _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2] = new Uint8Array(_capacity);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5] = new DataView(_classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].buffer);
 	  }
 
 	  /**
@@ -50600,7 +50600,7 @@
 	   */
 	  u8(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](1);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint8(offset, value & 0xff);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setUint8(offset, value & 0xff);
 	    return offset;
 	  }
 
@@ -50612,7 +50612,7 @@
 	   */
 	  u16(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](2);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint16(offset, value & 0xffff, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setUint16(offset, value & 0xffff, true);
 	    return offset;
 	  }
 
@@ -50624,7 +50624,7 @@
 	   */
 	  i16(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](2);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setInt16(offset, value | 0, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setInt16(offset, value | 0, true);
 	    return offset;
 	  }
 
@@ -50636,7 +50636,7 @@
 	   */
 	  u32(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](4);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint32(offset, value >>> 0, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setUint32(offset, value >>> 0, true);
 	    return offset;
 	  }
 
@@ -50648,7 +50648,7 @@
 	   */
 	  i32(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](4);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setInt32(offset, value | 0, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setInt32(offset, value | 0, true);
 	    return offset;
 	  }
 
@@ -50660,7 +50660,7 @@
 	   */
 	  i64(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](8);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setBigInt64(offset, BigInt(value), true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setBigInt64(offset, BigInt(value), true);
 	    return offset;
 	  }
 
@@ -50672,7 +50672,7 @@
 	   */
 	  f32(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](4);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setFloat32(offset, Number(value) || 0, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setFloat32(offset, Number(value) || 0, true);
 	    return offset;
 	  }
 
@@ -50684,7 +50684,7 @@
 	   */
 	  f64(value) {
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](8);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setFloat64(offset, Number(value) || 0, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setFloat64(offset, Number(value) || 0, true);
 	    return offset;
 	  }
 
@@ -50707,7 +50707,7 @@
 	  bytes(value) {
 	    var source = value instanceof Uint8Array ? value : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](source.byteLength);
-	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].set(source, offset);
+	    _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].set(source, offset);
 	    return offset;
 	  }
 
@@ -50718,7 +50718,7 @@
 	   * @returns {number} Offset the text was written at.
 	   */
 	  utf8(value) {
-	    return this.bytes(textEncoder$3.encode(String(value)));
+	    return this.bytes(textEncoder$4.encode(String(value)));
 	  }
 
 	  /**
@@ -50734,7 +50734,7 @@
 	      });
 	    }
 	    var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](count);
-	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].fill(0, offset, offset + count);
+	    _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].fill(0, offset, offset + count);
 	    return offset;
 	  }
 
@@ -50746,7 +50746,7 @@
 	   */
 	  patchU8(offset, value) {
 	    _classPrivateFieldLooseBase(this, _requireWritten)[_requireWritten](offset, 1);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint8(offset, value & 0xff);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setUint8(offset, value & 0xff);
 	  }
 
 	  /**
@@ -50757,7 +50757,7 @@
 	   */
 	  patchU32(offset, value) {
 	    _classPrivateFieldLooseBase(this, _requireWritten)[_requireWritten](offset, 4);
-	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint32(offset, value >>> 0, true);
+	    _classPrivateFieldLooseBase(this, _view$5)[_view$5].setUint32(offset, value >>> 0, true);
 	  }
 
 	  /**
@@ -50769,7 +50769,7 @@
 	  patchBytes(offset, value) {
 	    var source = value instanceof Uint8Array ? value : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
 	    _classPrivateFieldLooseBase(this, _requireWritten)[_requireWritten](offset, source.byteLength);
-	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].set(source, offset);
+	    _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].set(source, offset);
 	  }
 
 	  /**
@@ -50778,21 +50778,21 @@
 	   * @returns {Uint8Array} Written payload.
 	   */
 	  toBytes() {
-	    return _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].slice(0, _classPrivateFieldLooseBase(this, _length)[_length]);
+	    return _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].slice(0, _classPrivateFieldLooseBase(this, _length)[_length]);
 	  }
 	}
-	function _ensure2(capacity) {
-	  if (capacity <= _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].length) return;
-	  var next = _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].length * 2;
+	function _ensure2$1(capacity) {
+	  if (capacity <= _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].length) return;
+	  var next = _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].length * 2;
 	  while (next < capacity) next *= 2;
 	  var grown = new Uint8Array(next);
-	  grown.set(_classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].subarray(0, _classPrivateFieldLooseBase(this, _length)[_length]));
-	  _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1] = grown;
-	  _classPrivateFieldLooseBase(this, _view$4)[_view$4] = new DataView(grown.buffer);
+	  grown.set(_classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2].subarray(0, _classPrivateFieldLooseBase(this, _length)[_length]));
+	  _classPrivateFieldLooseBase(this, _bytes$2)[_bytes$2] = grown;
+	  _classPrivateFieldLooseBase(this, _view$5)[_view$5] = new DataView(grown.buffer);
 	}
 	function _advance2(size) {
 	  var offset = _classPrivateFieldLooseBase(this, _length)[_length];
-	  _classPrivateFieldLooseBase(this, _ensure)[_ensure](offset + size);
+	  _classPrivateFieldLooseBase(this, _ensure$1)[_ensure$1](offset + size);
 	  _classPrivateFieldLooseBase(this, _length)[_length] = offset + size;
 	  return offset;
 	}
@@ -51287,7 +51287,7 @@
 	  writer.patchU32(SECTION_DIRECTORY_OFFSET + 36, section.mixedFixups.length ? mixedFixupOffset : 0);
 	  writer.patchU32(SECTION_DIRECTORY_OFFSET + 40, section.mixedFixups.length);
 	  var bytes = writer.toBytes();
-	  new DataView(bytes.buffer).setUint32(FILE_HEADER_OFFSET + 8, crc32(bytes, SECTION_DIRECTORY_OFFSET), true);
+	  new DataView(bytes.buffer).setUint32(FILE_HEADER_OFFSET + 8, crc32$1(bytes, SECTION_DIRECTORY_OFFSET), true);
 	  return bytes;
 	}
 
@@ -52060,9 +52060,9 @@
 	function build$3(classes, key, props) {
 	  var hydrationOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 	  var Ctor = classes[key];
-	  return Ctor ? populate$2(new Ctor(), props, hydrationOptions) : props;
+	  return Ctor ? populate$3(new Ctor(), props, hydrationOptions) : props;
 	}
-	function populate$2(instance, props) {
+	function populate$3(instance, props) {
 	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	  if (!instance || typeof instance.SetValues !== "function") {
 	    throw new TypeError("CjsGr2Format class population requires classes to implement SetValues(values)");
@@ -52967,7 +52967,7 @@
 	var OUTPUT_GR2_JSON = "gr2Json";
 	var OUTPUT_CMF$2 = "cmf";
 	var OUTPUT_RAW$5 = "raw";
-	var DEFAULT_VALUES$8 = Object.freeze({
+	var DEFAULT_VALUES$9 = Object.freeze({
 	  emit: OUTPUT_JSON$a,
 	  decompressCurves: false,
 	  unpackTangents: false,
@@ -52978,7 +52978,7 @@
 	  classes: Object.freeze({})
 	});
 	var OPTION_KEYS$4 = new Set(["emit", "decompressCurves", "unpackTangents", "rebuildMissingNormals", "rebuildMissingTangents", "rebuildMissingBiNormals", "rebuildMissingBounds", "classes"]);
-	function normalizeEmit$4(emit) {
+	function normalizeEmit$5(emit) {
 	  if (emit === undefined || emit === OUTPUT_JSON$a) return OUTPUT_JSON$a;
 	  if (emit === OUTPUT_GR2_JSON) return OUTPUT_GR2_JSON;
 	  if (emit === OUTPUT_GR2$2) return OUTPUT_GR2$2;
@@ -53020,15 +53020,15 @@
 	}
 
 	/** Validates a requested runtime class key for the GR2 format reader. */
-	function validateClassKey$3(key) {
+	function validateClassKey$4(key) {
 	  if (!CLASS_KEYS$4.includes(key)) {
 	    throw new Error("CjsGr2Format unknown class type \"".concat(key, "\""));
 	  }
 	}
 
 	/** Validates a resolved runtime class constructor for the GR2 format reader. */
-	function validateClass$3(type, Class) {
-	  validateClassKey$3(type);
+	function validateClass$4(type, Class) {
+	  validateClassKey$4(type);
 	  if (typeof Class !== "function") {
 	    throw new TypeError("CjsGr2Format class \"".concat(type, "\" must be a constructor"));
 	  }
@@ -53042,7 +53042,7 @@
 	    var _ref2 = _slicedToArray(_ref3, 2);
 	    var type = _ref2[0];
 	    var Class = _ref2[1];
-	    validateClass$3(type, Class);
+	    validateClass$4(type, Class);
 	    next[type] = Class;
 	  }
 	  values.classes = next;
@@ -53058,15 +53058,15 @@
 	 * Normalizes reader options against their supported defaults for the GR2 format
 	 * reader.
 	 */
-	function normalizeValues$8() {
-	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$8;
+	function normalizeValues$9() {
+	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_VALUES$9;
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  if (!options || typeof options !== "object") {
 	    throw new TypeError("CjsGr2Format options must be an object");
 	  }
 	  assertKnownOptions(options);
 	  var values = cloneValues(base);
-	  if (Object.hasOwn(options, "emit")) values.emit = normalizeEmit$4(options.emit);
+	  if (Object.hasOwn(options, "emit")) values.emit = normalizeEmit$5(options.emit);
 	  if (Object.hasOwn(options, "decompressCurves")) {
 	    values.decompressCurves = validateBoolean("decompressCurves", options.decompressCurves);
 	  }
@@ -53096,12 +53096,12 @@
 	  if (Object.hasOwn(options, "classes")) {
 	    mergeClasses$3(values, options.classes);
 	  }
-	  if ((values.emit === OUTPUT_GR2$2 || values.emit === OUTPUT_CMF$2) && !hasClasses$2(values.classes)) {
+	  if ((values.emit === OUTPUT_GR2$2 || values.emit === OUTPUT_CMF$2) && !hasClasses$3(values.classes)) {
 	    throw new TypeError("CjsGr2Format emit \"".concat(values.emit, "\" requires explicit classes"));
 	  }
 	  return values;
 	}
-	function hasClasses$2(classes) {
+	function hasClasses$3(classes) {
 	  return !!classes && Object.values(classes).some(Class => typeof Class === "function");
 	}
 	function isRawGr2Result(value) {
@@ -53126,7 +53126,7 @@
 	}
 
 	/** Reads and validates raw input bytes for the GR2 format reader. */
-	function readRawInput(input) {
+	function readRawInput$1(input) {
 	  return isRawGr2Result(input) ? input : readGr2Raw(toBytes(input));
 	}
 	function meshName$2(mesh, meshIndex) {
@@ -53265,7 +53265,7 @@
 	}
 	function buildJson(reader, raw, values) {
 	  return finishProjection(reader, emitJson(raw.fileInfo, raw.version, {
-	    classes: values.emit === OUTPUT_GR2$2 || (values.emit === OUTPUT_JSON$a || values.emit === OUTPUT_GR2_JSON) && hasClasses$2(values.classes) ? values.classes : {},
+	    classes: values.emit === OUTPUT_GR2$2 || (values.emit === OUTPUT_JSON$a || values.emit === OUTPUT_GR2_JSON) && hasClasses$3(values.classes) ? values.classes : {},
 	    rebuildMissingBounds: values.rebuildMissingBounds
 	  }), raw, values);
 	}
@@ -53279,8 +53279,8 @@
 	}
 
 	/** Reads input using normalized format options for the GR2 format reader. */
-	function readWithValues$7(reader, input, values) {
-	  var parsed = readRawInput(input);
+	function readWithValues$8(reader, input, values) {
+	  var parsed = readRawInput$1(input);
 	  if (values.emit === OUTPUT_RAW$5) return parsed;
 	  if (values.emit === OUTPUT_CMF$2) return buildCmf(reader, parsed, values);
 	  return buildJson(reader, parsed, values);
@@ -53293,7 +53293,7 @@
 	 * @param {*} value Any decoded value.
 	 * @returns {*} A JSON-safe value.
 	 */
-	function toJsonValue(value) {
+	function toJsonValue$1(value) {
 	  return toJsonAcyclic(value, "CjsGr2Format");
 	}
 
@@ -53330,13 +53330,13 @@
 	 * writes pure-JavaScript GR2 geometry from CMF without pretending those
 	 * classes are the engine runtime itself.
 	 */
-	var _emit$5 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
+	var _emit$6 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
 	var _decompressCurves = /*#__PURE__*/_classPrivateFieldLooseKey("decompressCurves");
 	var _unpackTangents = /*#__PURE__*/_classPrivateFieldLooseKey("unpackTangents");
 	var _rebuildMissingNormals$2 = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingNormals");
 	var _rebuildMissingTangents$2 = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingTangents");
 	var _rebuildMissingBiNormals$2 = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingBiNormals");
-	var _classes$3 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
+	var _classes$4 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
 	class CjsGr2Format extends CjsFormat {
 	  /**
 	   * Create a reusable format profile.
@@ -53346,31 +53346,31 @@
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
-	    Object.defineProperty(this, _emit$5, {
+	    Object.defineProperty(this, _emit$6, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8.emit
+	      value: DEFAULT_VALUES$9.emit
 	    });
 	    Object.defineProperty(this, _decompressCurves, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8.decompressCurves
+	      value: DEFAULT_VALUES$9.decompressCurves
 	    });
 	    Object.defineProperty(this, _unpackTangents, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8.unpackTangents
+	      value: DEFAULT_VALUES$9.unpackTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingNormals$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8.rebuildMissingNormals
+	      value: DEFAULT_VALUES$9.rebuildMissingNormals
 	    });
 	    Object.defineProperty(this, _rebuildMissingTangents$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8.rebuildMissingTangents
+	      value: DEFAULT_VALUES$9.rebuildMissingTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingBiNormals$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$8.rebuildMissingBiNormals
+	      value: DEFAULT_VALUES$9.rebuildMissingBiNormals
 	    });
-	    Object.defineProperty(this, _classes$3, {
+	    Object.defineProperty(this, _classes$4, {
 	      writable: true,
 	      value: {}
 	    });
@@ -53385,14 +53385,14 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var values = normalizeValues$8(this.GetValues(), options);
-	    _classPrivateFieldLooseBase(this, _emit$5)[_emit$5] = values.emit;
+	    var values = normalizeValues$9(this.GetValues(), options);
+	    _classPrivateFieldLooseBase(this, _emit$6)[_emit$6] = values.emit;
 	    _classPrivateFieldLooseBase(this, _decompressCurves)[_decompressCurves] = values.decompressCurves;
 	    _classPrivateFieldLooseBase(this, _unpackTangents)[_unpackTangents] = values.unpackTangents;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingNormals$2)[_rebuildMissingNormals$2] = values.rebuildMissingNormals;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingTangents$2)[_rebuildMissingTangents$2] = values.rebuildMissingTangents;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals$2)[_rebuildMissingBiNormals$2] = values.rebuildMissingBiNormals;
-	    _classPrivateFieldLooseBase(this, _classes$3)[_classes$3] = values.classes;
+	    _classPrivateFieldLooseBase(this, _classes$4)[_classes$4] = values.classes;
 	    return this;
 	  }
 
@@ -53404,14 +53404,14 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$8({
-	      emit: _classPrivateFieldLooseBase(this, _emit$5)[_emit$5],
+	    return normalizeValues$9({
+	      emit: _classPrivateFieldLooseBase(this, _emit$6)[_emit$6],
 	      decompressCurves: _classPrivateFieldLooseBase(this, _decompressCurves)[_decompressCurves],
 	      unpackTangents: _classPrivateFieldLooseBase(this, _unpackTangents)[_unpackTangents],
 	      rebuildMissingNormals: _classPrivateFieldLooseBase(this, _rebuildMissingNormals$2)[_rebuildMissingNormals$2],
 	      rebuildMissingTangents: _classPrivateFieldLooseBase(this, _rebuildMissingTangents$2)[_rebuildMissingTangents$2],
 	      rebuildMissingBiNormals: _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals$2)[_rebuildMissingBiNormals$2],
-	      classes: _classPrivateFieldLooseBase(this, _classes$3)[_classes$3]
+	      classes: _classPrivateFieldLooseBase(this, _classes$4)[_classes$4]
 	    }, options);
 	  }
 
@@ -53436,13 +53436,13 @@
 	   * @returns {CjsGr2Format} This format profile.
 	   */
 	  SetClass(type, Class) {
-	    validateClassKey$3(type);
+	    validateClassKey$4(type);
 	    if (Class === null || Class === undefined) {
-	      delete _classPrivateFieldLooseBase(this, _classes$3)[_classes$3][type];
+	      delete _classPrivateFieldLooseBase(this, _classes$4)[_classes$4][type];
 	      return this;
 	    }
-	    validateClass$3(type, Class);
-	    _classPrivateFieldLooseBase(this, _classes$3)[_classes$3] = _objectSpread2(_objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$3)[_classes$3]), {}, {
+	    validateClass$4(type, Class);
+	    _classPrivateFieldLooseBase(this, _classes$4)[_classes$4] = _objectSpread2(_objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$4)[_classes$4]), {}, {
 	      [type]: Class
 	    });
 	    return this;
@@ -53455,8 +53455,8 @@
 	   * @returns {Function|undefined}
 	   */
 	  GetClass(type) {
-	    validateClassKey$3(type);
-	    return _classPrivateFieldLooseBase(this, _classes$3)[_classes$3][type];
+	    validateClassKey$4(type);
+	    return _classPrivateFieldLooseBase(this, _classes$4)[_classes$4][type];
 	  }
 
 	  /**
@@ -53479,7 +53479,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$7(this, input, this.GetValues(options));
+	    return readWithValues$8(this, input, this.GetValues(options));
 	  }
 
 	  /**
@@ -53513,7 +53513,7 @@
 	   * @returns {object}
 	   */
 	  ReadRaw(input) {
-	    return readRawInput(input);
+	    return readRawInput$1(input);
 	  }
 
 	  /**
@@ -53550,7 +53550,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  ToJSON(value) {
-	    return toJsonValue(value);
+	    return toJsonValue$1(value);
 	  }
 
 	  /**
@@ -53562,7 +53562,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$7(CjsGr2Format, input, normalizeValues$8(DEFAULT_VALUES$8, options));
+	    return readWithValues$8(CjsGr2Format, input, normalizeValues$9(DEFAULT_VALUES$9, options));
 	  }
 
 	  /**
@@ -53596,7 +53596,7 @@
 	   * @returns {object}
 	   */
 	  static readRaw(input) {
-	    return readRawInput(input);
+	    return readRawInput$1(input);
 	  }
 
 	  /**
@@ -53606,13 +53606,13 @@
 	   * @returns {object}
 	   */
 	  static inspect(input) {
-	    return inspectRawGr2Result(readRawInput(input));
+	    return inspectRawGr2Result(readRawInput$1(input));
 	  }
 
 	  /** Whether input is a Granny State document carried by the GR2 container. */
 	  static isGsf(input) {
 	    try {
-	      return isGsfRaw(readRawInput(input));
+	      return isGsfRaw(readRawInput$1(input));
 	    } catch (_unused) {
 	      return false;
 	    }
@@ -53621,7 +53621,7 @@
 	  /** Read the GState semantic projection, or raw reflected data with `emit: "raw"`. */
 	  static readGsf(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    var raw = readRawInput(input);
+	    var raw = readRawInput$1(input);
 	    return options.emit === "raw" ? raw : projectGsf(raw);
 	  }
 
@@ -53633,7 +53633,7 @@
 
 	  /** Inspect a GSF document and its referenced GR2 animations. */
 	  static inspectGsf(input) {
-	    return inspectGsfRaw(readRawInput(input));
+	    return inspectGsfRaw(readRawInput$1(input));
 	  }
 
 	  /**
@@ -53643,7 +53643,7 @@
 	   * @returns {any} Plain JSON-compatible data.
 	   */
 	  static toJSON(value) {
-	    return toJsonValue(value);
+	    return toJsonValue$1(value);
 	  }
 	  /**
 	   * Cheap magic probe for GR2/GSF byte streams.
@@ -53998,7 +53998,7 @@
 	var gr2WorkerPool = new Gr2WorkerPool();
 
 	var _dec$85, _dec2$7n, _dec3$6U, _dec4$61, _dec5$5p, _dec6$4M, _dec7$44, _class$85, _class2$7i, _descriptor$7i, _descriptor2$6K, _descriptor3$5R, _descriptor4$56, _descriptor5$4q, _descriptor6$3I, _Tw2VertexElement;
-	var Tw2VertexElement = (_dec$85 = define("Tw2VertexElement"), _dec2$7n = uint, _dec3$6U = uint, _dec4$61 = uint, _dec5$5p = uint, _dec6$4M = int32$1, _dec7$44 = uint, _dec$85(_class$85 = (_class2$7i = (_Tw2VertexElement = class Tw2VertexElement {
+	var Tw2VertexElement = (_dec$85 = define("Tw2VertexElement"), _dec2$7n = uint$1, _dec3$6U = uint$1, _dec4$61 = uint$1, _dec5$5p = uint$1, _dec6$4M = int32$1, _dec7$44 = uint$1, _dec$85(_class$85 = (_class2$7i = (_Tw2VertexElement = class Tw2VertexElement {
 	  constructor() {
 	    this.customSetter = null;
 	    _initializerDefineProperty(this, "elements", _descriptor$7i, this);
@@ -54748,7 +54748,7 @@
 	}), _class2$7d)) || _class$80);
 
 	var _dec$7$, _dec2$7h, _dec3$6O, _dec4$5X, _dec5$5l, _dec6$4J, _dec7$42, _dec8$3v, _class$7$, _class2$7c, _descriptor$7c, _descriptor2$6E, _descriptor3$5M, _descriptor4$52, _descriptor5$4n, _descriptor6$3G, _descriptor7$35;
-	var Tw2GeometryMeshArea = (_dec$7$ = define("Tw2GeometryMeshArea"), _dec2$7h = string, _dec3$6O = uint, _dec4$5X = uint, _dec5$5l = vector3, _dec6$4J = vector3, _dec7$42 = vector3, _dec8$3v = float, _dec$7$(_class$7$ = (_class2$7c = class Tw2GeometryMeshArea {
+	var Tw2GeometryMeshArea = (_dec$7$ = define("Tw2GeometryMeshArea"), _dec2$7h = string, _dec3$6O = uint$1, _dec4$5X = uint$1, _dec5$5l = vector3, _dec6$4J = vector3, _dec7$42 = vector3, _dec8$3v = float, _dec$7$(_class$7$ = (_class2$7c = class Tw2GeometryMeshArea {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7c, this);
 	    _initializerDefineProperty(this, "start", _descriptor2$6E, this);
@@ -54827,7 +54827,7 @@
 	}), _class2$7c)) || _class$7$);
 
 	var _dec$7_, _dec2$7g, _dec3$6N, _dec4$5W, _dec5$5k, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$L, _dec20$I, _dec21$D, _dec22$A, _dec23$w, _dec24$v, _class$7_, _class2$7b, _descriptor$7b, _descriptor2$6D, _descriptor3$5L, _descriptor4$51, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
-	var Tw2GeometryMesh = (_dec$7_ = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$L = vector3, _dec20$I = float, _dec21$D = list("String"), _dec22$A = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7_(_class$7_ = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
+	var Tw2GeometryMesh = (_dec$7_ = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint$1, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint$1, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$L = vector3, _dec20$I = float, _dec21$D = list("String"), _dec22$A = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7_(_class$7_ = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7b, this);
 	    _initializerDefineProperty(this, "declaration", _descriptor2$6D, this);
@@ -56604,9 +56604,9 @@
 	function build$2(classes, key, props) {
 	  var hydrationOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 	  var Ctor = classes[key];
-	  return Ctor ? populate$1(new Ctor(), props, hydrationOptions) : props;
+	  return Ctor ? populate$2(new Ctor(), props, hydrationOptions) : props;
 	}
-	function populate$1(instance, props) {
+	function populate$2(instance, props) {
 	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	  if (!instance || typeof instance.SetValues !== "function") {
 	    throw new TypeError("CjsObjFormat class population requires classes to implement SetValues(values)");
@@ -56852,7 +56852,7 @@
 	 *
 	 * @returns {object} Vertex channel container.
 	 */
-	function createVertexChannels$1() {
+	function createVertexChannels$2() {
 	  var channels = {};
 	  for (var key of Object.keys(CHANNEL_TEMPLATE$1)) {
 	    channels[key] = [];
@@ -56930,7 +56930,7 @@
 	    objectName: "",
 	    groupName: "",
 	    materialName: "",
-	    vertex: createVertexChannels$1(),
+	    vertex: createVertexChannels$2(),
 	    vertexMap: new Map(),
 	    vertexCount: 0,
 	    hasAllTexcoords: true,
@@ -56984,7 +56984,7 @@
 	var OUTPUT_SHARED$1 = "shared";
 	var OUTPUT_GR2$1 = "gr2";
 	var OUTPUT_CMF$1 = "cmf";
-	var DEFAULT_VALUES$7 = Object.freeze({
+	var DEFAULT_VALUES$8 = Object.freeze({
 	  emit: OUTPUT_OBJ_JSON,
 	  source: "memory",
 	  packTangents: false,
@@ -57002,7 +57002,7 @@
 	 * @param {string} key Candidate node key.
 	 * @param {string} [readerName] Format name used in thrown errors.
 	 */
-	function validateClassKey$2(key) {
+	function validateClassKey$3(key) {
 	  var readerName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "CjsObjFormat";
 	  if (!CLASS_KEYS$3.includes(key)) {
 	    throw new Error("".concat(readerName, ": unknown class key ").concat(JSON.stringify(key), "; expected one of ").concat(CLASS_KEYS$3.join(", ")));
@@ -57016,9 +57016,9 @@
 	 * @param {Function} Class Candidate constructor.
 	 * @param {string} [readerName] Format name used in thrown errors.
 	 */
-	function validateClass$2(key, Class) {
+	function validateClass$3(key, Class) {
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsObjFormat";
-	  validateClassKey$2(key, readerName);
+	  validateClassKey$3(key, readerName);
 	  if (typeof Class !== "function") {
 	    throw new TypeError("".concat(readerName, ": class ").concat(JSON.stringify(key), " must be a constructor"));
 	  }
@@ -57045,7 +57045,7 @@
 	      delete next[key];
 	      continue;
 	    }
-	    validateClass$2(key, Class, readerName);
+	    validateClass$3(key, Class, readerName);
 	    next[key] = Class;
 	  }
 	  return next;
@@ -57072,7 +57072,7 @@
 	 * @returns {"right"|"left"} Normalized handedness.
 	 */
 	function normalizeUvHandedness$1(value, readerName) {
-	  if (value === undefined || value === null) return DEFAULT_VALUES$7.uvHandedness;
+	  if (value === undefined || value === null) return DEFAULT_VALUES$8.uvHandedness;
 	  if (value === "right" || value === 1 || value === "positive") return "right";
 	  if (value === "left" || value === -1 || value === "negative") return "left";
 	  throw new TypeError("".concat(readerName, ": uvHandedness must be \"right\" or \"left\""));
@@ -57086,7 +57086,7 @@
 	 * @param {string} [readerName] Format name used in error messages.
 	 * @returns {object} A validated copy of the merged values.
 	 */
-	function normalizeValues$7(base) {
+	function normalizeValues$8(base) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsObjFormat";
 	  if (!options || typeof options !== "object") {
@@ -57098,13 +57098,13 @@
 	    }
 	  }
 	  var values = _objectSpread2(_objectSpread2({}, base), options);
-	  var emit = normalizeEmit$3(values.emit, readerName);
+	  var emit = normalizeEmit$4(values.emit, readerName);
 	  var classes = Object.prototype.hasOwnProperty.call(options, "classes") ? mergeClasses$2(base.classes || {}, options.classes, readerName) : _objectSpread2({}, base.classes || {});
-	  if ((emit === OUTPUT_GR2$1 || emit === OUTPUT_CMF$1) && !hasClasses$1(classes)) {
+	  if ((emit === OUTPUT_GR2$1 || emit === OUTPUT_CMF$1) && !hasClasses$2(classes)) {
 	    throw new TypeError("".concat(readerName, ": emit \"").concat(emit, "\" requires explicit classes"));
 	  }
 	  if (typeof values.source !== "string" || !values.source) {
-	    values.source = DEFAULT_VALUES$7.source;
+	    values.source = DEFAULT_VALUES$8.source;
 	  }
 	  return {
 	    emit,
@@ -57117,14 +57117,14 @@
 	    classes
 	  };
 	}
-	function normalizeEmit$3(emit, readerName) {
+	function normalizeEmit$4(emit, readerName) {
 	  if (emit === undefined || emit === null || emit === OUTPUT_JSON$9 || emit === OUTPUT_OBJ_JSON || emit === OUTPUT_SHARED$1) {
 	    return OUTPUT_OBJ_JSON;
 	  }
 	  if (emit === OUTPUT_GR2$1 || emit === OUTPUT_CMF$1) return emit;
 	  throw new TypeError("".concat(readerName, ": emit must be \"").concat(OUTPUT_SHARED$1, "\", \"").concat(OUTPUT_OBJ_JSON, "\", \"").concat(OUTPUT_GR2$1, "\", or \"").concat(OUTPUT_CMF$1, "\", got ").concat(JSON.stringify(emit)));
 	}
-	function hasClasses$1(classes) {
+	function hasClasses$2(classes) {
 	  return !!classes && Object.values(classes).some(Class => typeof Class === "function");
 	}
 
@@ -57287,7 +57287,7 @@
 	 * @param {string} readerName Format name.
 	 * @returns {object} Shared JSON graph.
 	 */
-	function readWithValues$6(format, input, values) {
+	function readWithValues$7(format, input, values) {
 	  var readerName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "CjsObjFormat";
 	  var text = toText(input);
 	  var json = parseObjText(text, {
@@ -57453,14 +57453,14 @@
 	 * OBJ is the current import source; the public read contract is the shared
 	 * CarbonEngineJS JSON mesh schema.
 	 */
-	var _emit$4 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
+	var _emit$5 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
 	var _source$7 = /*#__PURE__*/_classPrivateFieldLooseKey("source");
 	var _packTangents$1 = /*#__PURE__*/_classPrivateFieldLooseKey("packTangents");
 	var _uvHandedness$1 = /*#__PURE__*/_classPrivateFieldLooseKey("uvHandedness");
 	var _rebuildMissingNormals$1 = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingNormals");
 	var _rebuildMissingTangents$1 = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingTangents");
 	var _rebuildMissingBiNormals$1 = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingBiNormals");
-	var _classes$2 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
+	var _classes$3 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
 	class CjsObjFormat extends CjsFormat {
 	  /**
 	   * Create a reusable format profile.
@@ -57470,37 +57470,37 @@
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
-	    Object.defineProperty(this, _emit$4, {
+	    Object.defineProperty(this, _emit$5, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.emit
+	      value: DEFAULT_VALUES$8.emit
 	    });
 	    Object.defineProperty(this, _source$7, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.source
+	      value: DEFAULT_VALUES$8.source
 	    });
 	    Object.defineProperty(this, _packTangents$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.packTangents
+	      value: DEFAULT_VALUES$8.packTangents
 	    });
 	    Object.defineProperty(this, _uvHandedness$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.uvHandedness
+	      value: DEFAULT_VALUES$8.uvHandedness
 	    });
 	    Object.defineProperty(this, _rebuildMissingNormals$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.rebuildMissingNormals
+	      value: DEFAULT_VALUES$8.rebuildMissingNormals
 	    });
 	    Object.defineProperty(this, _rebuildMissingTangents$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.rebuildMissingTangents
+	      value: DEFAULT_VALUES$8.rebuildMissingTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingBiNormals$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.rebuildMissingBiNormals
+	      value: DEFAULT_VALUES$8.rebuildMissingBiNormals
 	    });
-	    Object.defineProperty(this, _classes$2, {
+	    Object.defineProperty(this, _classes$3, {
 	      writable: true,
-	      value: DEFAULT_VALUES$7.classes
+	      value: DEFAULT_VALUES$8.classes
 	    });
 	    this.SetValues(options);
 	  }
@@ -57513,15 +57513,15 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var values = normalizeValues$7(this.GetValues(), options, FORMAT_NAME$7);
-	    _classPrivateFieldLooseBase(this, _emit$4)[_emit$4] = values.emit;
+	    var values = normalizeValues$8(this.GetValues(), options, FORMAT_NAME$7);
+	    _classPrivateFieldLooseBase(this, _emit$5)[_emit$5] = values.emit;
 	    _classPrivateFieldLooseBase(this, _source$7)[_source$7] = values.source;
 	    _classPrivateFieldLooseBase(this, _packTangents$1)[_packTangents$1] = values.packTangents;
 	    _classPrivateFieldLooseBase(this, _uvHandedness$1)[_uvHandedness$1] = values.uvHandedness;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingNormals$1)[_rebuildMissingNormals$1] = values.rebuildMissingNormals;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingTangents$1)[_rebuildMissingTangents$1] = values.rebuildMissingTangents;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals$1)[_rebuildMissingBiNormals$1] = values.rebuildMissingBiNormals;
-	    _classPrivateFieldLooseBase(this, _classes$2)[_classes$2] = values.classes;
+	    _classPrivateFieldLooseBase(this, _classes$3)[_classes$3] = values.classes;
 	    return this;
 	  }
 
@@ -57533,15 +57533,15 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$7({
-	      emit: _classPrivateFieldLooseBase(this, _emit$4)[_emit$4],
+	    return normalizeValues$8({
+	      emit: _classPrivateFieldLooseBase(this, _emit$5)[_emit$5],
 	      source: _classPrivateFieldLooseBase(this, _source$7)[_source$7],
 	      packTangents: _classPrivateFieldLooseBase(this, _packTangents$1)[_packTangents$1],
 	      uvHandedness: _classPrivateFieldLooseBase(this, _uvHandedness$1)[_uvHandedness$1],
 	      rebuildMissingNormals: _classPrivateFieldLooseBase(this, _rebuildMissingNormals$1)[_rebuildMissingNormals$1],
 	      rebuildMissingTangents: _classPrivateFieldLooseBase(this, _rebuildMissingTangents$1)[_rebuildMissingTangents$1],
 	      rebuildMissingBiNormals: _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals$1)[_rebuildMissingBiNormals$1],
-	      classes: _classPrivateFieldLooseBase(this, _classes$2)[_classes$2]
+	      classes: _classPrivateFieldLooseBase(this, _classes$3)[_classes$3]
 	    }, options, FORMAT_NAME$7);
 	  }
 
@@ -57567,13 +57567,13 @@
 	   */
 	  SetClass(type, Class) {
 	    if (Class === null || Class === undefined) {
-	      validateClassKey$2(type, FORMAT_NAME$7);
-	      var classes = _objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$2)[_classes$2]);
+	      validateClassKey$3(type, FORMAT_NAME$7);
+	      var classes = _objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$3)[_classes$3]);
 	      delete classes[type];
-	      _classPrivateFieldLooseBase(this, _classes$2)[_classes$2] = classes;
+	      _classPrivateFieldLooseBase(this, _classes$3)[_classes$3] = classes;
 	      return this;
 	    }
-	    validateClass$2(type, Class, FORMAT_NAME$7);
+	    validateClass$3(type, Class, FORMAT_NAME$7);
 	    return this.SetValues({
 	      classes: {
 	        [type]: Class
@@ -57588,8 +57588,8 @@
 	   * @returns {Function|undefined} The registered constructor, if any.
 	   */
 	  GetClass(type) {
-	    validateClassKey$2(type, FORMAT_NAME$7);
-	    return _classPrivateFieldLooseBase(this, _classes$2)[_classes$2][type];
+	    validateClassKey$3(type, FORMAT_NAME$7);
+	    return _classPrivateFieldLooseBase(this, _classes$3)[_classes$3][type];
 	  }
 
 	  /**
@@ -57611,7 +57611,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$6(this, input, this.GetValues(options), FORMAT_NAME$7);
+	    return readWithValues$7(this, input, this.GetValues(options), FORMAT_NAME$7);
 	  }
 
 	  /**
@@ -57645,7 +57645,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$6(CjsObjFormat, input, normalizeValues$7(DEFAULT_VALUES$7, options, FORMAT_NAME$7), FORMAT_NAME$7);
+	    return readWithValues$7(CjsObjFormat, input, normalizeValues$8(DEFAULT_VALUES$8, options, FORMAT_NAME$7), FORMAT_NAME$7);
 	  }
 
 	  /**
@@ -57657,7 +57657,7 @@
 	   */
 	  static inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$6(input, normalizeValues$7(DEFAULT_VALUES$7, options, FORMAT_NAME$7));
+	    return inspectWithValues$6(input, normalizeValues$8(DEFAULT_VALUES$8, options, FORMAT_NAME$7));
 	  }
 
 	  /**
@@ -57764,9 +57764,9 @@
 	function build$1(classes, key, props) {
 	  var hydrationOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 	  var Ctor = classes[key];
-	  return Ctor ? populate(new Ctor(), props, hydrationOptions) : props;
+	  return Ctor ? populate$1(new Ctor(), props, hydrationOptions) : props;
 	}
-	function populate(instance, props) {
+	function populate$1(instance, props) {
 	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	  if (!instance || typeof instance.SetValues !== "function") {
 	    throw new TypeError("CjsGltfFormat class population requires classes to implement SetValues(values)");
@@ -58833,7 +58833,7 @@
 	function fr$1(value) {
 	  return Number.isFinite(value) ? Math.fround(value) : 0;
 	}
-	function createVertexChannels() {
+	function createVertexChannels$1() {
 	  var channels = {};
 	  for (var key of Object.keys(CHANNEL_TEMPLATE)) {
 	    channels[key] = [];
@@ -58852,7 +58852,7 @@
 	/** Reports whether the current glTF format reader satisfies glb. */
 	function isGlb(input) {
 	  try {
-	    return isGlbBytes(asUint8Array(input, "CjsGltfFormat input"));
+	    return isGlbBytes(asUint8Array$1(input, "CjsGltfFormat input"));
 	  } catch (_unused) {
 	    return false;
 	  }
@@ -58882,7 +58882,7 @@
 	      format: "gltf"
 	    };
 	  }
-	  var bytes = asUint8Array(input, "CjsGltfFormat input");
+	  var bytes = asUint8Array$1(input, "CjsGltfFormat input");
 	  if (isGlbBytes(bytes)) return parseGlb(bytes);
 	  return {
 	    gltf: parseJsonText(toUtf8(bytes)),
@@ -58938,7 +58938,7 @@
 	}
 	function normalizeBuffer(value) {
 	  if (value === undefined || value === null) return null;
-	  return asUint8Array(value, "CjsGltfFormat input");
+	  return asUint8Array$1(value, "CjsGltfFormat input");
 	}
 	function bufferFromOptions(options, index, uri) {
 	  var _buffers$get, _buffers$uri;
@@ -59056,7 +59056,7 @@
 	function readAccessor(gltf, buffers, accessorIndex, options) {
 	  return readAccessorRaw(gltf, buffers, accessorIndex, options).values;
 	}
-	function readIndices(gltf, buffers, accessorIndex, vertexCount, mode) {
+	function readIndices$1(gltf, buffers, accessorIndex, vertexCount, mode) {
 	  if (mode === 0) {
 	    if (accessorIndex !== undefined) {
 	      throw new Error("CjsGltfFormat: indexed POINTS require vertex unindexing before CMF conversion");
@@ -59247,7 +59247,7 @@
 	  var _skinContext$boneBind;
 	  var mesh = gltf.meshes[meshIndex],
 	    primitive = mesh.primitives[primitiveIndex],
-	    vertex = createVertexChannels();
+	    vertex = createVertexChannels$1();
 	  vertex.position = copyAttribute(gltf, buffers, primitive.attributes, "POSITION");
 	  vertex.normal = copyAttribute(gltf, buffers, primitive.attributes, "NORMAL");
 	  vertex.tangent = copyAttribute(gltf, buffers, primitive.attributes, "TANGENT");
@@ -59270,7 +59270,7 @@
 	  normalizeSkinning(vertex, primitive.attributes, skinContext);
 	  splitTangentFrames(vertex);
 	  var vertexCount = vertex.position.length / 3,
-	    faces = readIndices(gltf, buffers, primitive.indices, vertexCount, primitive.mode),
+	    faces = readIndices$1(gltf, buffers, primitive.indices, vertexCount, primitive.mode),
 	    bytesPerIndex = faces.some(index => index > 0xffff) ? 4 : 2,
 	    _computeBounds = computeBounds(vertex.position),
 	    minBounds = _computeBounds.minBounds,
@@ -60073,7 +60073,7 @@
 	var OUTPUT_SHARED = "shared";
 	var OUTPUT_GR2 = "gr2";
 	var OUTPUT_CMF = "cmf";
-	var DEFAULT_VALUES$6 = Object.freeze({
+	var DEFAULT_VALUES$7 = Object.freeze({
 	  emit: OUTPUT_SHARED,
 	  source: "memory",
 	  buffers: null,
@@ -60087,7 +60087,7 @@
 	var OPTION_KEYS$2 = new Set(["emit", "source", "buffers", "packTangents", "uvHandedness", "rebuildMissingNormals", "rebuildMissingTangents", "rebuildMissingBiNormals", "classes"]);
 
 	/** Validates a requested runtime class key for the glTF format reader. */
-	function validateClassKey$1(key) {
+	function validateClassKey$2(key) {
 	  var readerName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "CjsGltfFormat";
 	  if (!CLASS_KEYS$1.includes(key)) {
 	    throw new Error("".concat(readerName, ": unknown class key ").concat(JSON.stringify(key), "; expected one of ").concat(CLASS_KEYS$1.join(", ")));
@@ -60095,9 +60095,9 @@
 	}
 
 	/** Validates a resolved runtime class constructor for the glTF format reader. */
-	function validateClass$1(key, Class) {
+	function validateClass$2(key, Class) {
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsGltfFormat";
-	  validateClassKey$1(key, readerName);
+	  validateClassKey$2(key, readerName);
 	  if (typeof Class !== "function") {
 	    throw new TypeError("".concat(readerName, ": class ").concat(JSON.stringify(key), " must be a constructor"));
 	  }
@@ -60115,7 +60115,7 @@
 	      delete next[key];
 	      continue;
 	    }
-	    validateClass$1(key, Class, readerName);
+	    validateClass$2(key, Class, readerName);
 	    next[key] = Class;
 	  }
 	  return next;
@@ -60125,7 +60125,7 @@
 	  throw new TypeError("".concat(readerName, ": ").concat(name, " must be true, false, or a function"));
 	}
 	function normalizeUvHandedness(value, readerName) {
-	  if (value === undefined || value === null) return DEFAULT_VALUES$6.uvHandedness;
+	  if (value === undefined || value === null) return DEFAULT_VALUES$7.uvHandedness;
 	  if (value === "right" || value === 1 || value === "positive") return "right";
 	  if (value === "left" || value === -1 || value === "negative") return "left";
 	  throw new TypeError("".concat(readerName, ": uvHandedness must be \"right\" or \"left\""));
@@ -60135,7 +60135,7 @@
 	 * Normalizes reader options against their supported defaults for the glTF format
 	 * reader.
 	 */
-	function normalizeValues$6(base) {
+	function normalizeValues$7(base) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var readerName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "CjsGltfFormat";
 	  if (!options || typeof options !== "object") {
@@ -60147,13 +60147,13 @@
 	    }
 	  }
 	  var values = _objectSpread2(_objectSpread2({}, base), options);
-	  var emit = normalizeEmit$2(values.emit, readerName);
+	  var emit = normalizeEmit$3(values.emit, readerName);
 	  var classes = Object.prototype.hasOwnProperty.call(options, "classes") ? mergeClasses$1(base.classes || {}, options.classes, readerName) : _objectSpread2({}, base.classes || {});
-	  if ((emit === OUTPUT_GR2 || emit === OUTPUT_CMF) && !hasClasses(classes)) {
+	  if ((emit === OUTPUT_GR2 || emit === OUTPUT_CMF) && !hasClasses$1(classes)) {
 	    throw new TypeError("".concat(readerName, ": emit \"").concat(emit, "\" requires explicit classes"));
 	  }
 	  if (typeof values.source !== "string" || !values.source) {
-	    values.source = DEFAULT_VALUES$6.source;
+	    values.source = DEFAULT_VALUES$7.source;
 	  }
 	  return {
 	    emit,
@@ -60167,12 +60167,12 @@
 	    classes
 	  };
 	}
-	function normalizeEmit$2(emit, readerName) {
+	function normalizeEmit$3(emit, readerName) {
 	  if (emit === undefined || emit === null) return OUTPUT_SHARED;
 	  if (emit === OUTPUT_JSON$8 || emit === OUTPUT_GLTF_JSON || emit === OUTPUT_SHARED || emit === OUTPUT_GR2 || emit === OUTPUT_CMF) return emit;
 	  throw new TypeError("".concat(readerName, ": emit must be \"").concat(OUTPUT_SHARED, "\", \"").concat(OUTPUT_GLTF_JSON, "\", \"").concat(OUTPUT_GR2, "\", or \"").concat(OUTPUT_CMF, "\", got ").concat(JSON.stringify(emit)));
 	}
-	function hasClasses(classes) {
+	function hasClasses$1(classes) {
 	  return !!classes && Object.values(classes).some(Class => typeof Class === "function");
 	}
 	function hasVertexChannel(mesh, channel) {
@@ -60302,7 +60302,7 @@
 	}
 
 	/** Reads input using normalized format options for the glTF format reader. */
-	function readWithValues$5(format, input, values) {
+	function readWithValues$6(format, input, values) {
 	  var parsed = parseInput(input);
 	  var shared = parseGltfToShared(parsed.gltf, {
 	    binaryChunk: parsed.binaryChunk,
@@ -60345,7 +60345,7 @@
 	 * CarbonEngineJS mesh, skeleton, and animation graph. JSON is an explicit
 	 * debug/output projection rather than an intermediate format contract.
 	 */
-	var _emit$3 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
+	var _emit$4 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
 	var _source$6 = /*#__PURE__*/_classPrivateFieldLooseKey("source");
 	var _buffers$1 = /*#__PURE__*/_classPrivateFieldLooseKey("buffers");
 	var _packTangents = /*#__PURE__*/_classPrivateFieldLooseKey("packTangents");
@@ -60353,7 +60353,7 @@
 	var _rebuildMissingNormals = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingNormals");
 	var _rebuildMissingTangents = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingTangents");
 	var _rebuildMissingBiNormals = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingBiNormals");
-	var _classes$1 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
+	var _classes$2 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
 	class CjsGltfFormat extends CjsFormat {
 	  /**
 	   * Create a reusable format profile.
@@ -60363,41 +60363,41 @@
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
-	    Object.defineProperty(this, _emit$3, {
+	    Object.defineProperty(this, _emit$4, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.emit
+	      value: DEFAULT_VALUES$7.emit
 	    });
 	    Object.defineProperty(this, _source$6, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.source
+	      value: DEFAULT_VALUES$7.source
 	    });
 	    Object.defineProperty(this, _buffers$1, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.buffers
+	      value: DEFAULT_VALUES$7.buffers
 	    });
 	    Object.defineProperty(this, _packTangents, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.packTangents
+	      value: DEFAULT_VALUES$7.packTangents
 	    });
 	    Object.defineProperty(this, _uvHandedness, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.uvHandedness
+	      value: DEFAULT_VALUES$7.uvHandedness
 	    });
 	    Object.defineProperty(this, _rebuildMissingNormals, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.rebuildMissingNormals
+	      value: DEFAULT_VALUES$7.rebuildMissingNormals
 	    });
 	    Object.defineProperty(this, _rebuildMissingTangents, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.rebuildMissingTangents
+	      value: DEFAULT_VALUES$7.rebuildMissingTangents
 	    });
 	    Object.defineProperty(this, _rebuildMissingBiNormals, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.rebuildMissingBiNormals
+	      value: DEFAULT_VALUES$7.rebuildMissingBiNormals
 	    });
-	    Object.defineProperty(this, _classes$1, {
+	    Object.defineProperty(this, _classes$2, {
 	      writable: true,
-	      value: DEFAULT_VALUES$6.classes
+	      value: DEFAULT_VALUES$7.classes
 	    });
 	    this.SetValues(options);
 	  }
@@ -60410,8 +60410,8 @@
 	   */
 	  SetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var values = normalizeValues$6(this.GetValues(), options, FORMAT_NAME$6);
-	    _classPrivateFieldLooseBase(this, _emit$3)[_emit$3] = values.emit;
+	    var values = normalizeValues$7(this.GetValues(), options, FORMAT_NAME$6);
+	    _classPrivateFieldLooseBase(this, _emit$4)[_emit$4] = values.emit;
 	    _classPrivateFieldLooseBase(this, _source$6)[_source$6] = values.source;
 	    _classPrivateFieldLooseBase(this, _buffers$1)[_buffers$1] = values.buffers;
 	    _classPrivateFieldLooseBase(this, _packTangents)[_packTangents] = values.packTangents;
@@ -60419,7 +60419,7 @@
 	    _classPrivateFieldLooseBase(this, _rebuildMissingNormals)[_rebuildMissingNormals] = values.rebuildMissingNormals;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingTangents)[_rebuildMissingTangents] = values.rebuildMissingTangents;
 	    _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals)[_rebuildMissingBiNormals] = values.rebuildMissingBiNormals;
-	    _classPrivateFieldLooseBase(this, _classes$1)[_classes$1] = values.classes;
+	    _classPrivateFieldLooseBase(this, _classes$2)[_classes$2] = values.classes;
 	    return this;
 	  }
 
@@ -60431,8 +60431,8 @@
 	   */
 	  GetValues() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    return normalizeValues$6({
-	      emit: _classPrivateFieldLooseBase(this, _emit$3)[_emit$3],
+	    return normalizeValues$7({
+	      emit: _classPrivateFieldLooseBase(this, _emit$4)[_emit$4],
 	      source: _classPrivateFieldLooseBase(this, _source$6)[_source$6],
 	      buffers: _classPrivateFieldLooseBase(this, _buffers$1)[_buffers$1],
 	      packTangents: _classPrivateFieldLooseBase(this, _packTangents)[_packTangents],
@@ -60440,7 +60440,7 @@
 	      rebuildMissingNormals: _classPrivateFieldLooseBase(this, _rebuildMissingNormals)[_rebuildMissingNormals],
 	      rebuildMissingTangents: _classPrivateFieldLooseBase(this, _rebuildMissingTangents)[_rebuildMissingTangents],
 	      rebuildMissingBiNormals: _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals)[_rebuildMissingBiNormals],
-	      classes: _classPrivateFieldLooseBase(this, _classes$1)[_classes$1]
+	      classes: _classPrivateFieldLooseBase(this, _classes$2)[_classes$2]
 	    }, options, FORMAT_NAME$6);
 	  }
 
@@ -60466,13 +60466,13 @@
 	   */
 	  SetClass(type, Class) {
 	    if (Class === null || Class === undefined) {
-	      validateClassKey$1(type, FORMAT_NAME$6);
-	      var classes = _objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$1)[_classes$1]);
+	      validateClassKey$2(type, FORMAT_NAME$6);
+	      var classes = _objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$2)[_classes$2]);
 	      delete classes[type];
-	      _classPrivateFieldLooseBase(this, _classes$1)[_classes$1] = classes;
+	      _classPrivateFieldLooseBase(this, _classes$2)[_classes$2] = classes;
 	      return this;
 	    }
-	    validateClass$1(type, Class, FORMAT_NAME$6);
+	    validateClass$2(type, Class, FORMAT_NAME$6);
 	    return this.SetValues({
 	      classes: {
 	        [type]: Class
@@ -60487,8 +60487,8 @@
 	   * @returns {Function|undefined} The registered constructor, if any.
 	   */
 	  GetClass(type) {
-	    validateClassKey$1(type, FORMAT_NAME$6);
-	    return _classPrivateFieldLooseBase(this, _classes$1)[_classes$1][type];
+	    validateClassKey$2(type, FORMAT_NAME$6);
+	    return _classPrivateFieldLooseBase(this, _classes$2)[_classes$2][type];
 	  }
 
 	  /**
@@ -60510,7 +60510,7 @@
 	   */
 	  Read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$5(this, input, this.GetValues(options));
+	    return readWithValues$6(this, input, this.GetValues(options));
 	  }
 
 	  /**
@@ -60544,7 +60544,7 @@
 	   */
 	  static read(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return readWithValues$5(CjsGltfFormat, input, normalizeValues$6(DEFAULT_VALUES$6, options, FORMAT_NAME$6));
+	    return readWithValues$6(CjsGltfFormat, input, normalizeValues$7(DEFAULT_VALUES$7, options, FORMAT_NAME$6));
 	  }
 
 	  /**
@@ -60556,7 +60556,7 @@
 	   */
 	  static inspect(input) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return inspectWithValues$5(input, normalizeValues$6(DEFAULT_VALUES$6, options, FORMAT_NAME$6));
+	    return inspectWithValues$5(input, normalizeValues$7(DEFAULT_VALUES$7, options, FORMAT_NAME$6));
 	  }
 
 	  /**
@@ -60591,7 +60591,7 @@
 	      if (input && typeof input === "object" && !ArrayBuffer.isView(input) && !(input instanceof ArrayBuffer)) {
 	        return !!(input.asset && String(input.asset.version || "").startsWith("2"));
 	      }
-	      var text = typeof input === "string" ? input : new TextDecoder().decode(asUint8Array(input, "CjsGltfFormat input"));
+	      var text = typeof input === "string" ? input : new TextDecoder().decode(asUint8Array$1(input, "CjsGltfFormat input"));
 	      var json = JSON.parse(text);
 	      return !!(json.asset && String(json.asset.version || "").startsWith("2"));
 	    } catch (_unused) {
@@ -60751,6 +60751,3710 @@
 	 */
 	GsfReader.extension = "gsf";
 
+	/**
+	 * GPU-buffer packing for CMF writing.
+	 *
+	 * `buildCmfFromShared` (and hand-built graphs) carry deinterleaved vertex
+	 * channels and index groups but no GPU bytes. This packer interleaves each
+	 * LOD's channels per the mesh declaration, packs index groups, assigns
+	 * unique buffer indices across the whole graph, and returns a graph + buffer
+	 * list ready for `writeCmf`. Skeletons and animations must already be
+	 * CMF-native shaped; GR2-shaped skeletons are rejected with a clear error
+	 * (GR2 bone/track conversion is a separate adapter).
+	 */
+
+	var CHANNEL_NAMES$1 = Object.freeze({
+	  Position: "position",
+	  Normal: "normal",
+	  Tangent: "tangent",
+	  Binormal: "binormal",
+	  TexCoord: "texcoord",
+	  Color: "color",
+	  BoneIndices: "blendIndice",
+	  BoneWeights: "blendWeight",
+	  PackedTangent: "packedTangent",
+	  PackedTangentLegacy: "packedTangentLegacy"
+	});
+	function packError(message) {
+	  var error = new Error("CMF pack: ".concat(message));
+	  error.code = "CJS_FORMAT_WRITE_ERROR";
+	  return error;
+	}
+	function channelName$1(element) {
+	  var base = CHANNEL_NAMES$1[element.usage];
+	  if (!base) throw packError("unknown vertex usage ".concat(JSON.stringify(element.usage)));
+	  if (element.usage === "TexCoord" || element.usage === "Color") return "".concat(base).concat(element.usageIndex);
+	  if (element.usageIndex > 0) return "".concat(base).concat(element.usageIndex);
+	  return base;
+	}
+	function packedElementTypeSize(type) {
+	  try {
+	    return elementTypeSize$1(type);
+	  } catch (_unused) {
+	    throw packError("unsupported vertex element type ".concat(JSON.stringify(type)));
+	  }
+	}
+	function floatToHalf(value) {
+	  if (Number.isNaN(value)) return 0x7e00;
+	  if (value === Infinity) return 0x7c00;
+	  if (value === -Infinity) return 0xfc00;
+	  var sign = value < 0 || Object.is(value, -0) ? 0x8000 : 0;
+	  var v = Math.abs(value);
+	  if (v >= 65520) return sign | 0x7c00;
+	  if (v < Math.pow(2, -24)) return sign;
+	  if (v < Math.pow(2, -14)) {
+	    return sign | Math.round(v / Math.pow(2, -24));
+	  }
+	  var exponent = Math.floor(Math.log2(v));
+	  var mantissa = Math.round((v / Math.pow(2, exponent) - 1) * 1024);
+	  if (mantissa === 1024) return sign | exponent + 16 << 10;
+	  return sign | exponent + 15 << 10 | mantissa;
+	}
+	function writeComponent(view, offset, type, value) {
+	  switch (type) {
+	    case "Float32":
+	      view.setFloat32(offset, value || 0, true);
+	      break;
+	    case "Float16":
+	      view.setUint16(offset, floatToHalf(value || 0), true);
+	      break;
+	    case "UInt16Norm":
+	      view.setUint16(offset, clampRound(value * 65535, 0, 65535), true);
+	      break;
+	    case "UInt16":
+	      view.setUint16(offset, clampRound(value, 0, 65535), true);
+	      break;
+	    case "Int16Norm":
+	      view.setInt16(offset, clampRound(value * 32767, -32767, 32767), true);
+	      break;
+	    case "Int16":
+	      view.setInt16(offset, clampRound(value, -32768, 32767), true);
+	      break;
+	    case "UInt8Norm":
+	      view.setUint8(offset, clampRound(value * 255, 0, 255));
+	      break;
+	    case "UInt8":
+	      view.setUint8(offset, clampRound(value, 0, 255));
+	      break;
+	    case "Int8Norm":
+	      view.setInt8(offset, clampRound(value * 127, -127, 127));
+	      break;
+	    case "Int8":
+	      view.setInt8(offset, clampRound(value, -128, 127));
+	      break;
+	    default:
+	      throw packError("unsupported vertex element type ".concat(JSON.stringify(type)));
+	  }
+	}
+	function clampRound(value, min, max) {
+	  var rounded = Math.round(value || 0);
+	  return rounded < min ? min : rounded > max ? max : rounded;
+	}
+	function vertexCountFor(decl, vertex) {
+	  // One declaration describes one vertex row count. Taking the shortest
+	  // channel would silently discard valid vertices from every longer channel.
+	  var count = null;
+	  var countChannel = "";
+	  for (var element of decl) {
+	    var name = channelName$1(element);
+	    var channel = vertex[name];
+	    if (!Array.isArray(channel)) {
+	      throw packError("missing declared vertex channel ".concat(JSON.stringify(name)));
+	    }
+	    if (channel.length % element.elementCount) {
+	      throw packError("vertex channel ".concat(JSON.stringify(name), " length ").concat(channel.length, " is not divisible by ") + "".concat(element.elementCount, " components"));
+	    }
+	    var channelCount = channel.length / element.elementCount;
+	    if (count === null) {
+	      count = channelCount;
+	      countChannel = name;
+	    } else if (channelCount !== count) {
+	      throw packError("vertex channel ".concat(JSON.stringify(name), " has ").concat(channelCount, " vertices; expected ").concat(count, " ") + "from ".concat(JSON.stringify(countChannel)));
+	    }
+	  }
+	  return count != null ? count : 0;
+	}
+	function strideFor(decl) {
+	  try {
+	    return estimateStrideFromDecl(decl);
+	  } catch (error) {
+	    throw packError(error.message.replace(/^Unsupported CMF /, "unsupported "));
+	  }
+	}
+
+	/** Pack semantic CMF element values while preserving already-packed byte payloads. */
+	function packElementArray(values, type, elementCount) {
+	  var size = packedElementTypeSize(type);
+	  if (values instanceof Uint8Array) return values;
+	  if (values instanceof ArrayBuffer) return new Uint8Array(values);
+	  if (values instanceof DataView) return new Uint8Array(values.buffer, values.byteOffset, values.byteLength);
+	  var source = Array.isArray(values) || ArrayBuffer.isView(values) ? Array.from(values) : [];
+	  if (size > 1 && source.length === elementCount * size && source.every(value => Number.isInteger(value) && value >= 0 && value <= 255)) {
+	    return Uint8Array.from(source);
+	  }
+	  var bytes = new Uint8Array(source.length * size);
+	  var view = new DataView(bytes.buffer);
+	  for (var index = 0; index < source.length; index++) {
+	    writeComponent(view, index * size, type, source[index]);
+	  }
+	  return bytes;
+	}
+
+	/** Pack every native CMF animation curve's knot and value payloads. */
+	function packAnimationCurves(animations) {
+	  return (animations || []).map(animation => _objectSpread2(_objectSpread2({}, animation), {}, {
+	    curves: (animation.curves || []).map(curve => _objectSpread2(_objectSpread2({}, curve), {}, {
+	      knots: packElementArray(curve.knots, curve.knotType, curve.knotCount),
+	      values: packElementArray(curve.values, curve.valueType, curve.knotCount * curve.valueDimension)
+	    }))
+	  }));
+	}
+
+	/**
+	 * Interleave deinterleaved channels into vertex-buffer bytes per `decl`.
+	 *
+	 * @param {Array<object>} decl Vertex declaration.
+	 * @param {object} vertex Channel-name-keyed flat arrays.
+	 * @returns {object} `{ bytes, stride, count }`.
+	 * @throws {Error} When a declared channel is missing, partial, or has a
+	 * different vertex count from its peers.
+	 */
+	function packVertexBuffer(decl, vertex) {
+	  var stride = strideFor(decl);
+	  var count = vertexCountFor(decl, vertex || {});
+	  var bytes = new Uint8Array(count * stride);
+	  var view = new DataView(bytes.buffer);
+	  for (var element of decl) {
+	    var channel = (vertex || {})[channelName$1(element)];
+	    if (!Array.isArray(channel) || channel.length === 0) continue;
+	    var size = packedElementTypeSize(element.type);
+	    for (var i = 0; i < count; i++) {
+	      var base = i * stride + (element.offset || 0);
+	      for (var component = 0; component < element.elementCount; component++) {
+	        writeComponent(view, base + component * size, element.type, channel[i * element.elementCount + component]);
+	      }
+	    }
+	  }
+	  return {
+	    bytes,
+	    stride,
+	    count
+	  };
+	}
+
+	/**
+	 * Concatenate index groups into index-buffer bytes.
+	 *
+	 * @param {Array<object>} groups Index groups with `faces` arrays.
+	 * @returns {object} `{ bytes, stride, count }` (u16 unless any index needs u32).
+	 */
+	function packIndexBuffer(groups) {
+	  var faces = [];
+	  for (var group of groups || []) {
+	    for (var index of group.faces || []) faces.push(index);
+	  }
+	  var stride = bytesPerIndex(groups);
+	  var wide = stride === 4;
+	  var bytes = new Uint8Array(faces.length * stride);
+	  var view = new DataView(bytes.buffer);
+	  for (var i = 0; i < faces.length; i++) {
+	    if (wide) view.setUint32(i * stride, faces[i], true);else view.setUint16(i * stride, faces[i], true);
+	  }
+	  return {
+	    bytes,
+	    stride,
+	    count: faces.length
+	  };
+	}
+	function assertCmfNativeSkeleton(skeleton) {
+	  var bonesAreNames = Array.isArray(skeleton === null || skeleton === void 0 ? void 0 : skeleton.bones) && skeleton.bones.every(bone => typeof bone === "string");
+	  if (!bonesAreNames) {
+	    throw packError("skeletons must be CMF-native shaped (bones as name strings with parents/restTransforms); " + "GR2-shaped skeletons need conversion before writing");
+	  }
+	}
+
+	/**
+	 * Pack a channel-carrying CMF-native graph into a writable graph + buffers.
+	 *
+	 * Buffer indices are reassigned uniquely across all meshes/LODs/morph
+	 * targets; BufferViews are rebuilt from the packed bytes.
+	 *
+	 * @param {object} graph CMF-native graph carrying `vertex`/`indices` channel data.
+	 * @returns {object} `{ graph, buffers }` ready for `writeCmf`.
+	 */
+	function packGraphBuffers(graph) {
+	  var buffers = [null];
+	  var allocate = bytes => {
+	    var index = buffers.length;
+	    buffers.push({
+	      index,
+	      data: bytes
+	    });
+	    return index;
+	  };
+	  for (var skeleton of graph.skeletons || []) assertCmfNativeSkeleton(skeleton);
+	  var meshes = (graph.meshes || []).map(mesh => {
+	    var _mesh$morphTargets;
+	    var decl = mesh.decl || [];
+	    var morphDecl = ((_mesh$morphTargets = mesh.morphTargets) === null || _mesh$morphTargets === void 0 ? void 0 : _mesh$morphTargets.decl) || [];
+	    var lods = (mesh.lods || []).map(lod => {
+	      var _ref, _lod$vertex, _ref2, _lod$indices, _lod$threshold;
+	      var vertexSource = (_ref = (_lod$vertex = lod.vertex) != null ? _lod$vertex : mesh.vertex) != null ? _ref : {};
+	      var indexSource = (_ref2 = (_lod$indices = lod.indices) != null ? _lod$indices : mesh.indices) != null ? _ref2 : [];
+	      var packedVb = packVertexBuffer(decl, vertexSource);
+	      var packedIb = packIndexBuffer(indexSource);
+	      var vb = packedVb.count ? {
+	        index: allocate(packedVb.bytes),
+	        offset: 0,
+	        size: packedVb.bytes.byteLength,
+	        stride: packedVb.stride
+	      } : {
+	        index: 0,
+	        offset: 0,
+	        size: 0,
+	        stride: 0
+	      };
+	      var ib = packedIb.count ? {
+	        index: allocate(packedIb.bytes),
+	        offset: 0,
+	        size: packedIb.bytes.byteLength,
+	        stride: packedIb.stride
+	      } : {
+	        index: 0,
+	        offset: 0,
+	        size: 0,
+	        stride: 0
+	      };
+	      var morphTargets = (lod.morphTargets || []).map(target => {
+	        var packed = packVertexBuffer(morphDecl, target.vertex || {});
+	        return {
+	          vb: packed.count ? {
+	            index: allocate(packed.bytes),
+	            offset: 0,
+	            size: packed.bytes.byteLength,
+	            stride: packed.stride
+	          } : {
+	            index: 0,
+	            offset: 0,
+	            size: 0,
+	            stride: 0
+	          }
+	        };
+	      });
+	      return {
+	        vb,
+	        ib,
+	        areas: lod.areas || [],
+	        morphTargets,
+	        threshold: (_lod$threshold = lod.threshold) != null ? _lod$threshold : 0xffffffff
+	      };
+	    });
+	    return _objectSpread2(_objectSpread2({}, mesh), {}, {
+	      lods
+	    });
+	  });
+	  return {
+	    graph: _objectSpread2(_objectSpread2({}, graph), {}, {
+	      meshes,
+	      animations: packAnimationCurves(graph.animations)
+	    }),
+	    buffers
+	  };
+	}
+
+	// This file is part of meshoptimizer library and is distributed under the terms of MIT License.
+	// Copyright (C) 2016-2026, by Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+	var MeshoptEncoder = (function () {
+		// Built with clang version 22.1.0-wasi-sdk
+		// Built from meshoptimizer 1.2
+		var wasm =
+			'b9H79Tebbbe9ok9Geueu9Geub9Gbb9Gruuuuuuueu9Gvuuuuueu9Gduueu9Gluuuueu9Gvuuuuub9Gouuuuuub9Gluuuub9GiuuueuiE8AdilveoveovrrwrrrDDoDrbqqbelve9Weiiviebeoweuecj:Gdkr:PlCo9TW9T9VV95dbH9F9F939H79T9F9J9H229F9Jt9VV7bb8F9TW79O9V9Wt9FW9U9J9V9KW9wWVtW949c919M9MWV9mW4W2be8A9TW79O9V9Wt9FW9U9J9V9KW9wWVtW949c919M9MWVbd8F9TW79O9V9Wt9FW9U9J9V9KW9wWVtW949c919M9MWV9c9V919U9KbiE9TW79O9V9Wt9FW9U9J9V9KW9wWVtW949wWV79P9V9UblY9TW79O9V9Wt9FW9U9J9V9KW69U9KW949c919M9MWVbv8E9TW79O9V9Wt9FW9U9J9V9KW69U9KW949c919M9MWV9c9V919U9Kbo8A9TW79O9V9Wt9FW9U9J9V9KW69U9KW949wWV79P9V9UbrE9TW79O9V9Wt9FW9U9J9V9KW69U9KW949tWG91W9U9JWbwa9TW79O9V9Wt9FW9U9J9V9KW69U9KW949tWG91W9U9JW9c9V919U9KbDL9TW79O9V9Wt9FW9U9J9V9KWS9P2tWV9p9JtbqK9TW79O9V9Wt9FW9U9J9V9KWS9P2tWV9r919HtbkL9TW79O9V9Wt9FW9U9J9V9KWS9P2tWVT949WbxY9TW79O9V9Wt9FW9U9J9V9KWS9P2tWVJ9V29VVbmE9TW79O9V9Wt9F9V9Wt9P9T9P96W9wWVtW94J9H9J9OWbza9TW79O9V9Wt9F9V9Wt9P9T9P96W9wWVtW94J9H9J9OW9ttV9P9WbHa9TW79O9V9Wt9F9V9Wt9P9T9P96W9wWVtW94SWt9J9O9sW9T9H9WbOK9TW79O9V9Wt9F79W9Ht9P9H29t9VVt9sW9T9H9WbAl79IV9RbXDwebcekdKYq:zf8Adbk;wadhud9:8Jjjjjbc;qw9Rgr8KjjjjbcbhwdnaeTmbabcbyd;i:I:cjbaoaocb9iEgDc:GeV86bbarc;adfcbcjdz:xjjjb8AdnaiTmbarc;adfadalz:wjjjb8Akarc;abfalfcbcbcjdal9RalcFe0Ez:xjjjb8Aarc;abfarc;adfalz:wjjjb8Aar9cb83iUar9cb83i8War9cb83iyar9cb83iaar9cb83iKar9cb83izar9cb83iwar9cb83ibcj;abal9Uc;WFbGcjdalca0Ehqdnaicd6mbavcd9imbaDTmbadcefhkaqci2gxal2hmarc;alfclfhParc;qlfceVhsarc;qofclVhzcbhHincdhOcbhAdnavci6mbar9cb83i;Ooar9cb83i;Goar9cb83i;yoar9cb83i;qoadaHfgoybbhCcbhXincbhwcbhQdninaoalfhLaoybbgKaC7aQVhQawcP0meaLhoaKhCawcefgwaXfai6mbkkcbhCarc;qofhwincwhYcwh8AdnaQaC93gocFeGgEcs0mbclh8AaEci0mbcdcbaEEh8Akdnaocw4cFeGgEcs0mbclhYaEci0mbcdcbaEEhYkaYa8AfhEawydbh3cwhYcwh8Adnaocz4cFeGg5cs0mbclh8Aa5ci0mbcdcba5Eh8AkaEa3fhEdnaocFFFFb0mbclhYaocFFF8F0mbcbcdaocjjjw6EhYkawaEa8AfaYfBdbawclfhwaCcefgCcw9hmbkaLhoaKhCaXczfgXai6mbkcbhocehwazhQinawaoaQydbarc;qofaocdtfydb6EhoaQclfhQawcefgwcw9hmbkaoclthAcihOkcbhEarc;qlfcbcjdz:xjjjb8AarcbBd;ilar9cb83i;aladh8Eaqh8Fakh3inarc;qlfadaEaEcb9h9Ral2falz:wjjjb8Aaia8Faia8F6EhadnaqaiaE9RaEaqfai6EgKcsfc9WGgoaK9nmbarc;qofaKfcbaoaK9Rz:xjjjb8AkadaEal2fhhcbhginagaAVcl4hXarc;alfagcdtfh8JaHh8Kcbh8Lina8LaHfhwdndndndndndndnagPlbedibkaKTmvahawfhoarc;qlfawfRbbhQarc;qofhwaahCinawaoRbbgYaQ9RgQcetaQcKtc8F91786bbawcefhwaoalfhoaYhQaEaCcufgC9hmbxvkkaKTmla8Kc9:Ghoa8LcitcwGh8Aarc;qlfawceVfRbbcwtarc;qlfawc9:GfRbbVhQarc;qofhwaahCinawa3aofRbbcwta8EaofRbbVgYaQ9RgQcetaQcztc8F917cFFiGa8A486bbaoalfhoawcefhwaYhQaEaCcufgC9hmbxlkkasa8Kc98GgQfhoa3aQfhYarc;qlfawc98GgQfRbbhCcwhwinaoRbbawtaCVhCaocefhoawcwfgwca9hmbxdkkaKTmdxekaKTmea8Lcith5ahaQfh8AcbhLina8ARbbhQcwhoaYhwinawRbbaotaQVhQawcefhwaocwfgoca9hmbkarc;qofaLfaQaC7aX93a5486bbaYalfhYa8Aalfh8AaQhCaLcefgLaK9hmbkka8Jydbh8AcbhLarc;qofhoincdhQcbhwinaQaoawfRbbcb9hfhQawcefgwcz9hmbkclhCcbhwinaCaoawfRbbcd0fhCawcefgwcz9hmbkcwhYcbhwinaYaoawfRbbcP0fhYawcefgwcz9hmbkaQaCaQaC6EgwaYawaY6Egwczawcz6Ea8Afh8AaoczfhoaLczfgLaK6mbka8Ja8ABdbka8Kcefh8Ka8Lcefg8Lcl9hmbkagcefggaO9hmbka8Eamfh8Ea8Faxfh8Fa3amfh3aEaxfgEai6mbkcbhocehwaPhQinawaoaQydbarc;alfaocdtfydb6EhoaQclfhQaOawcefgw9hmbkaraHcd4faAcdVaoaocdSE86bbaHclfgHal6mbkkabaefhgabcefhoalcd4g8McbaDEhkadcefh8Narc;abfceVhecbhmdndninaiam9nmearc;qofcbcjdz:xjjjb8Aagao9Rak6mdadamal2gwfhxcbhHa8Nawfhzaocbakz:xjjjbg8Fakfh3aqaiam9Ramaqfai6Egscsfgocl4cifcd4hOaoc9WGg8JThPindndndndndndndndndndnaDTmbaraHcd4fRbbgQciGPlbedlbkasTmdaxaHfhoarc;abfaHfRbbhQarc;qofhwashCinawaoRbbgYaQ9RgQcetaQcKtc8F91786bbawcefhwaoalfhoaYhQaCcufgCmbxikkasTmiaHcitcwGh8Aarc;abfaHceVfRbbcwtarc;abfaHc9:GgofRbbVhQaxaofhoarc;qofhwashCinawao8VbbgYaQ9RgQcetaQcztc8F917cFFiGa8A486bbawcefhwaoalfhoaYhQaCcufgCmbxikkaeaHc98Gg8Afhoaza8AfhYarc;abfa8AfRbbhCcwhwinaoRbbawtaCVhCaocefhoawcwfgwca9hmbkasTmdaQcl4hKaHcitcKGhEaxa8Afh8AcbhLina8ARbbhQcwhoaYhwinawRbbaotaQVhQawcefhwaocwfgoca9hmbkarc;qofaLfaQaC7aK93aE486bbaYalfhYa8Aalfh8AaQhCaLcefgLas9hmbkkaDmbcbhoxlka8JTmbcbhodninarc;qofaofgwcwf8Pibaw8Pib:e9qTmeaoczfgoa8J9pmdxbkkdnavmbcehoxikcbh8AaOhLaOhKinarc;qofa8Afgocwf8Pibhyao8Pibh8PcdhQcbhwinaQaoawfRbbcb9hfhQawcefgwcz9hmbkclhCcbhwinaCaoawfRbbcd0fhCawcefgwcz9hmbkcwhYcbhwinaYaoawfRbbcP0fhYawcefgwcz9hmbkaQaCaQaC6EgoaYaoaY6Egoczaocz6EaKfhKaocucbaya8P:e9cb9sEgwaoaw6EaLfhLa8Aczfg8Aa8J9pmdxbkka8FaHcd4fgoaoRbbcdaHcetcoGtV86bbxikdnaLas6mbaKas6mba8FaHcd4fgoaoRbbciaHcetcoGtV86bbaga39Ras6mra3arc;qofasz:wjjjbasfh3xikaLaK9phoka8FaHcd4fgwawRbbaoaHcetcoGtV86bbkaga39RaO6mla3cbaOz:xjjjbgaaOfhKdndna8JmbaPhoxekdnagaK9RcK9pmbaPhoxekaocdtc:q:G:cjbfcj:G:cjbaDEg3ydxghcetc;:FFFeGhAcuhEcuahtcu7cFeGh8Ecbh8Karc;qofhQinarc;qofa8KfhXczh8AdndndnahPDbeeeeeeedekcucbaXcwf8PibaX8Pib:e9cb9sEh8AxekcbhoaAh8Aina8Aa8EaQaofRbb9nfh8Aaocefgocz9hmbkkcih5cbhYinczhwdndndna3aYcdtfydbgLPDbeeeeeeedekcucbaXcwf8PibaX8Pib:e9cb9sEhwxekaLcetc;:FFFeGhwcuaLtcu7cFeGhCcbhoinawaCaQaofRbb9nfhwaocefgocz9hmbkkdndnawa8A6mbaLaE9hmeawa8A9hmea3a5cdtfydbcwSmekaYh5awh8AkaYcefgYci9hmbkaaa8Kco4fgoaoRbba5a8Kci4coGtV86bbdndndna3a5cdtfydbgEPDdbbbbbbbebkdncwaE9Tg5TmbcuaEtcu7hwdndnaEceSmbcbh8LaQhXinaXhoa5hYcbhCinaoRbbg8AawcFeGgLa8AaL6EaCaEtVhCaocefhoaYcufgYmbkaKaC86bbaXa5fhXaKcefhKa8La5fg8Lcz6mbxdkkcbh8LaQhXinaXhoa5hYcbhCinaoRbbg8AawcFeGgLa8AaL6EaCcetVhCaocefhoaYcufgYmbkaKaC:T9cFe:d9c:c:qj:bw9:9c:q;c1:I1e:d9c:b:c:e1z9:9ca188bbaXa5fhXaKcefhKa8La5fg8Lcz6mbkkcbhoinaKaQaofRbbgC86bbaKaCawcFeG9pfhKaocefgocz9hmbxikkdnaEceSmbinaKcb86bbaKcefhKxbkkinaKcb86bbaKcefhKxbkkaKaX8Pbw83bwaKaX8Pbb83bbaKczfhKka8Kczfg8Ka8J9pgomeaQczfhQagaK9RcK9pmbkkaoTmlaKh3aKTmlkaHcefgHal9hmbkarc;abfaxascufal2falz:wjjjb8Aasamfhma3hoa3mbkcbhwxdkdnagao9RakalfgwcKcaaDEgQawaQ0EgC9pmbcbhwxdkdnawaQ9pmbaocbaCaw9Rgwz:xjjjbawfhokaoarc;adfalz:wjjjbalfhodnaDTmbaoara8Mz:wjjjba8Mfhokaoab9Rhwxekcbhwkarc;qwf8Kjjjjbawk5babaeadaialcdcbyd;i:I:cjbz:bjjjbk9reduaecd4gdaefgicaaica0Eabcj;abae9Uc;WFbGcjdaeca0Egifcufai9Uae2aiadfaicl4cifcd4f2fcefkmbcbabBd;i:I:cjbk;HPeLu8Jjjjjbc;ae9Rgl8Kjjjjbcbhvdnaeaici9UgocHf6mbabcbyd;m:I:cjbgrc;GeV86bbalc;abfcFecjez:xjjjb8Aal9cu83iUal9cu83i8Wal9cu83iyal9cu83iaal9cu83iKal9cu83izal9cu83iwal9cu83ibabaefc9WfhwabcefgDaofhednaiTmbcmcsarcb9kgqEhkcbhxcbhmcbhPcbhscbhzindnaeaw9nmbcbhvxikazcufhvadaPcdtfgHydbhOaHcwfydbhAaHclfydbhCcbhXdndndninalc;abfavcsGcitfgoydlhQdndndnaoydbgoaO9hmbaQaCSmekdnaoaC9hmbaQaA9hmbaXcefhXxekaoaA9hmeaQaO9hmeaXcdfhXkaXc870mdascufhvaHaXcdtgAcxGgoyd:4:G:cjbcdtfydbhQaHaoyd:0:G:cjbcdtfydbhCaHaoyd:W:G:cjbcdtfydbhOcbhodnindnalavcsGcdtfydbaQ9hmbaohXxdkcuhXavcufhvaocefgocz9hmbkkaxaQaxSgvaXce9iaXak9oVgoGfhxdndndncbcsavEaXaoEgvcs9hmbarce9imbaQaQamaQcefamSgvEgmcefSmecmcsavEhvkaDavaAc;WeGV86bbavcs9hmeaQam9Rgvcetavc8F917hvinaecbcjeavcje6EavcFbGV86bbaecefheavcr4gvmbkaQhmxvkcPhvaDaAcPV86bbaQhmkavTmiavak9omicdhocehXazhAxlkavcufhvaXclfgXc;ab9hmbkkdnaHcecdcbaAaxSEaCaxSEcdtgvyd:W:G:cjbcdtfydbgOTaHavyd:0:G:cjbcdtfydbgCceSGaHavyd:4:G:cjbcdtfydbgQcdSGaxcb9hGaqGgLce9hmbal9cu83iUal9cu83i8Wal9cu83iyal9cu83iaal9cu83iKal9cu83izal9cu83iwal9cu83ibcbhxkcbhXascufgvhodnindnalaocsGcdtfydbaC9hmbaXhAxdkcuhAaocufhoaXcefgXcz9hmbkkcbhodnindnalavcsGcdtfydbaQ9hmbaohXxdkcuhXavcufhvaocefgocz9hmbkkaxaOaxSgKfhHdndnaAcm0mbaAcefhAxekcbcsaCaHSgvEhAaHavfhHkdndnaXcm0mbaXcefhXxekcbcsaQaHSgvEhXaHavfhHkc9:cuaKEhYcbhvaXaAcltVg8AcFeGhodndndninavc;q:G:cjbfRbbaoSmeavcefgvcz9hmbxdkkaLaOax9havcm0VVmbaDavc;WeV86bbxekaDaY86bbaea8A86bbaecefhekdnaKmbaOam9Rgvcetavc8F917hvinaecbcjeavcje6EavcFbGV86bbaecefheavcr4gvmbkaOhmkdnaAcs9hmbaCam9Rgvcetavc8F917hvinaecbcjeavcje6EavcFbGV86bbaecefheavcr4gvmbkaChmkdnaXcs9hmbaQam9Rgvcetavc8F917hvinaecbcjeavcje6EavcFbGV86bbaecefheavcr4gvmbkaQhmkalascdtfaOBdbascefcsGhvdndnaAPzbeeeeeeeeeeeeeebekalavcdtfaCBdbascdfcsGhvkdndnaXPzbeeeeeeeeeeeeeebekalavcdtfaQBdbavcefcsGhvkcihoalc;abfazcitfgXaOBdlaXaCBdbazcefcsGhAcdhXavhsaHhxxekcdhoalascdtfaQBdbcehXascefcsGhsazhAkalc;abfaAcitfgvaCBdlavaQBdbalc;abfazaXfcsGcitfgvaQBdlavaOBdbaDcefhDazaofcsGhzaPcifgPai6mbkkdnaeaw9nmbcbhvxekcbhvinaeavfavc;q:G:cjbfRbb86bbavcefgvcz9hmbkaeab9Ravfhvkalc;aef8KjjjjbavkZeeucbhddninadcefgdc8F0meaeceadt0mbkkadcrfcFeGcr9Uci2cdfabci9U2cHfkmbcbabBd;m:I:cjbk:zderu8Jjjjjbcz9Rhlcbhvdnaeaicvf6mbabcbRb;m:I:cjbc;qeV86bbal9cb83iwabcefhvabaefc98fhodnaiTmbcbhecbhrcbhwindnavao6mbcbskadawcdtfydbgDalcwfaraDae9Rgeaec8F91ge7ae9Rc507grcdtfgqydb9Rgec8E91c9:Gaecdt7arVheinavcbcjeaecje6EaecFbGV86bbavcefhvaecr4gembkaqaDBdbaDheawcefgwai9hmbkkdnavao9nmbcbskavcbBbbavab9RclfhvkavkBeeucbhddninadcefgdc8F0meaeceadt0mbkkabadcwfcFeGcr9U2cvfk:dvli99dui99ludnaeTmbcuadcetcuftcu7:Zhvdndncuaicuftcu7:ZgoJbbbZMgr:lJbbb9p9DTmbar:Ohwxekcjjjj94hwkcbhicbhDinalclfIdbgrJbbbbJbbjZalIdbgq:lar:lMalcwfIdbgk:lMgr:varJbbbb9BEgrNhxaqarNhralcxfIdbhqdndnakJbbbb9GTmbaxhkxekJbbjZar:l:tgkak:maxJbbbb9GEhkJbbjZax:l:tgxax:marJbbbb9GEhrkdndnaqJbbj:;aqJbbj:;9GEgxJbbjZaxJbbjZ9FEavNJbbbZJbbb:;aqJbbbb9GEMgq:lJbbb9p9DTmbaq:Ohmxekcjjjj94hmkdndnakJbbj:;akJbbj:;9GEgqJbbjZaqJbbjZ9FEaoNJbbbZJbbb:;akJbbbb9GEMgq:lJbbb9p9DTmbaq:OhPxekcjjjj94hPkdndnarJbbj:;arJbbj:;9GEgqJbbjZaqJbbjZ9FEaoNJbbbZJbbb:;arJbbbb9GEMgr:lJbbb9p9DTmbar:Ohsxekcjjjj94hskdndnadcl9hmbabaDfgzas86bbazcifam86bbazcdfaw86bbazcefaP86bbxekabaifgzas87ebazcofam87ebazclfaw87ebazcdfaP87ebkaicwfhiaDclfhDalczfhlaecufgembkkk;hlld99eud99eudnaeTmbdndncuaicuftcu7:ZgvJbbbZMgo:lJbbb9p9DTmbao:Ohixekcjjjj94hikaic;8FiGhrinabcofcicdalclfIdb:lalIdb:l9EgialcwfIdb:lalaicdtfIdb:l9EEgialcxfIdb:lalaicdtfIdb:l9EEgiarV87ebdndnJbbj:;JbbjZalaicdtfIdbJbbbb9DEgoalaicd7cdtfIdbJ;Zl:1ZNNgwJbbj:;awJbbj:;9GEgDJbbjZaDJbbjZ9FEavNJbbbZJbbb:;awJbbbb9GEMgw:lJbbb9p9DTmbaw:Ohqxekcjjjj94hqkabcdfaq87ebdndnalaicefciGcdtfIdbJ;Zl:1ZNaoNgwJbbj:;awJbbj:;9GEgDJbbjZaDJbbjZ9FEavNJbbbZJbbb:;awJbbbb9GEMgw:lJbbb9p9DTmbaw:Ohqxekcjjjj94hqkabaq87ebdndnaoalaicufciGcdtfIdbJ;Zl:1ZNNgoJbbj:;aoJbbj:;9GEgwJbbjZawJbbjZ9FEavNJbbbZJbbb:;aoJbbbb9GEMgo:lJbbb9p9DTmbao:Ohixekcjjjj94hikabclfai87ebabcwfhbalczfhlaecufgembkkk;gvdDue998Jjjjjbcjd9Rgo8Kjjjjbdndndnadcd4grTmbc:CucbavEhwaohdarhDinadawBdbadclfhdaDcufgDmbkavcd9hmbaeTmbarcdthqcbhkalhxinaohdaxhDarhwinadadydbgmaDydbcL4cFeGc:cufgPamaP9kEBdbaDclfhDadclfhdawcufgwmbkaxaqfhxakcefgkae9hmbxdkkaeTmekarcdthxavce9hhqcbhkindndndnaqmbarTmdc:CuhDalhdarhwinaDadydbcL4cFeGc:cufgmaDam9kEhDadclfhdawcufgwmbxdkkdndndndnavPleddbdkarTmlaohdalhDarhwinadcbaDydbcL4cFeGgmc:cufgPaPam0EBdbadclfhdaDclfhDawcufgwmbxikkarTmicbhdarhDindnaladfIdbgsJbbbb9Bmbaoadfas:8cL4cFeGgwc8Aawc8A0Ec:cufBdbkadclfhdaDcufgDmbxdkkarTmdkc:CuhDkcbhdarhminaDhwdnavceSmbaoadfydbhwkdndnaladfIdbgscjjj;8iawai9RcefgwcLt9R::NJbbbZJbbb:;asJbbbb9GEMgs:lJbbb9p9DTmbas:OhPxekcjjjj94hPkabadfaPcFFFrGawcKtVBdbadclfhdamcufgmmbkkabaxfhbalaxfhlakcefgkae9hmbkkaocjdf8Kjjjjbk:Olveue99iue99iudnaeTmbceaicufthvcuaitcu7:Zhocbhradcl9hhwcbhDindndnalcwfIdbgqJbbbbaqJbbbb9GEgqJbbjZaqJbbjZ9FEaoNJbbbZMgq:lJbbb9p9DTmbaq:Ohixekcjjjj94hikdndnalIdbgqJbbbbaqJbbbb9GEgqJbbjZaqJbbjZ9FEaoNJbbbZMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkadai9Rcd9TgkaifhidndnalclfIdbgqJbbbbaqJbbbb9GEgqJbbjZaqJbbjZ9FEaoNJbbbZMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkadai9Rcd9ThddndnalcxfIdbgqJbbbbaqJbbbb9GEgqJbbjZaqJbbjZ9FEaoNJbbbZMgq:lJbbb9p9DTmbaq:Ohxxekcjjjj94hxkadaifhiaxce91avVhxdndnawmbabaDfgmai86bbamcifax86bbamcdfad86bbamcefak86bbxekabarfgmai87ebamcofax87ebamclfad87ebamcdfak87ebkarcwfhraDclfhDalczfhlaecufgembkkk;mqdQui998Jjjjjbc:qd9Rgv8Kjjjjbavc:Sefcbc;Kbz:xjjjb8AdnadTmbaiTmbdndnabaeSmbaehoxekavcuadcdtgradcFFFFi0Ecbyd;q:I:cjbHjjjjbbgoBd:SeavceBd:mdaoaearz:wjjjb8AkavcbBd:Oeav9cb83i:Geavc:Gefaoadaiavc:Sefz:pjjjbavyd:Gehwadci9UgDcbyd;q:I:cjbHjjjjbbheavc:Sefavyd:mdgqcdtfaeBdbavaqcefgrBd:mdaecbaDz:xjjjbhkavc:SefarcdtfcuaicdtaicFFFFi0Ecbyd;q:I:cjbHjjjjbbgxBdbavaqcdfgmBd:mdalc;ebfhPawheaxhrinaralIdbaPaeydbgscwascw6EcdtfIdbMUdbaeclfhearclfhraicufgimbkavc:SefamcdtfcuaDcdtadcFFFF970Ecbyd;q:I:cjbHjjjjbbgmBdbdnadci6mbaoheamhraDhiinaraxaeydbcdtfIdbaxaeclfydbcdtfIdbMaxaecwfydbcdtfIdbMUdbaecxfhearclfhraicufgimbkkaqcifhzalc;ebfhHavc;qbfhOavheavyd:KehAavyd:OehCcbhscbhrcbhXcehQinaehLaoarcx2fgKydbhPaKclfydbhdabaXcx2fgecwfaKcwfydbgYBdbaeclfadBdbaeaPBdbakarfce86bbaOaYBdwaOadBdlaOaPBdbamarcdtfcbBdbcih8AdnasTmbaLhiinaOa8AcdtfaiydbgeBdba8AaeaY9haeaP9haead9hGGfh8AaiclfhiascufgsmbkkaXcefhXcbhsinaCaAaKascdtfydbcdtgifydbcdtfgYheawaifgdydbgPhidnaPTmbdninaeydbarSmeaeclfheaicufgiTmdxbkkaeaYaPcdtfc98fydbBdbadadydbcufBdbkascefgsci9hmbkdndndna8ATmbcuhrJbbbbhEcbhdavyd:KehYavyd:OehKindnawaOadcdtfydbcdtgsfydbgeTmbaxasfgiIdbh3aialcuadadcs0EcdtfclfIdbaHaecwaecw6EcdtfIdbMg5Udba5a3:th5aecdthiaKaYasfydbcdtfheinamaeydbgscdtfgPa5aPIdbMg3Udba3aEaEa39DgPEhEasaraPEhraeclfheaic98fgimbkkadcefgda8A9hmbkarcu9hmekaQaD9pmeindnakaQfRbbmbaQhrxdkaDaQcefgQ9hmbxdkka8Acza8Acz6EhsaOheaLhOarcu9hmekkazTmbaqcdtavc:Seffcwfheinaeydbcbyd;u:I:cjbH:bjjjbbaec98fheazcufgzmbkkavc:qdf8Kjjjjbk:0leoucuaicdtgvaicFFFFi0Egocbyd;q:I:cjbHjjjjbbhralalyd9GgwcdtfarBdbalawcefBd9GabarBdbaocbyd;q:I:cjbHjjjjbbhralalyd9GgocdtfarBdbalaocefBd9GabarBdlcuadcdtadcFFFFi0Ecbyd;q:I:cjbHjjjjbbhralalyd9GgocdtfarBdbalaocefBd9GabarBdwabydbcbavz:xjjjb8AabydbhraehladhvinaralydbcdtfgoaoydbcefBdbalclfhlavcufgvmbkcbhvabydlglhoarhwaihDinaoavBdbaoclfhoawydbavfhvawclfhwaDcufgDmbkadci9Uhqdnadcd9nmbabydwhocbhvinaecwfydbhwaeclfydbhDalaeydbcdtfgbabydbgbcefBdbaoabcdtfavBdbalaDcdtfgDaDydbgDcefBdbaoaDcdtfavBdbalawcdtfgwawydbgwcefBdbaoawcdtfavBdbaecxfheaqavcefgv9hmbkkinalalydbarydb9RBdbarclfhralclfhlaicufgimbkkQbabaeadaic;G:G:cjbz:ojjjbkQbabaeadaic;i:H:cjbz:ojjjbk9DeeuabcFeaicdtz:xjjjbhlcbhbdnadTmbindnalaeydbcdtfgiydbcu9hmbaiabBdbabcefhbkaeclfheadcufgdmbkkabk:3vioud9:du8Jjjjjbc;Wa9Rgl8Kjjjjbcbhvalcxfcbc;Kbz:xjjjb8AalcuadcitgoadcFFFFe0Ecbyd;q:I:cjbHjjjjbbgrBdxalceBd2araeadaicezNjjjbalcuaoadcjjjjoGEcbyd;q:I:cjbHjjjjbbgwBdzadcdthednadTmbabhiinaiavBdbaiclfhiadavcefgv9hmbkkawaefhDalabBdwalawBdl9cbhqindnadTmbaq9cq9:hkarhvaDhiadheinaiav8Pibak1:NcFrG87ebavcwfhvaicdfhiaecufgembkkalclfaq:NceGcdtfydbhxalclfaq9ce98gq:NceGcdtfydbhmalc;Wbfcbcjaz:xjjjb8AaDhvadhidnadTmbinalc;Wbfav8VebcdtfgeaeydbcefBdbavcdfhvaicufgimbkkcbhvcbhiinalc;WbfavfgeydbhoaeaiBdbaoaifhiavclfgvcja9hmbkadhvdndnadTmbinalc;WbfaDamydbgicetf8VebcdtfgeaeydbgecefBdbaxaecdtfaiBdbamclfhmavcufgvmbkaq9cv9smdcbhvinabawydbcdtfavBdbawclfhwadavcefgv9hmbxdkkaq9cv9smekkcwhvcbhiinalcxfavfc98fydbcbyd;u:I:cjbH:bjjjbbaiceGheclhvcehiaeTmbkalc;Waf8Kjjjjbk:Awliuo99iud9:cbhv8Jjjjjbca9Rgocbyd:4:I:cjbBdKaocb8Pd:W:I:cjb83izaocbyd;e:I:cjbBdwaocb8Pd:8:I:cjb83ibaicd4hrdndnadmbJFFuFhwJFFuuhDJFFuuhqJFFuFhkJFFuuhxJFFuFhmxekarcdthPaehsincbhiinaoczfaifgzasaifIdbgwazIdbgDaDaw9EEUdbaoaifgzawazIdbgDaDaw9DEUdbaiclfgicx9hmbkasaPfhsavcefgvad9hmbkaoIdKhDaoIdwhwaoIdChqaoIdlhkaoIdzhxaoIdbhmkdnadTmbJbbbbJbFu9hJbbbbamax:tgmamJbbbb9DEgmakaq:tgkakam9DEgkawaD:tgwawak9DEgw:vawJbbbb9BEhwdnalmbarcdthoindndnaeclfIdbaq:tawNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikai:S9cC:ghHdndnaeIdbax:tawNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikaHai:S:ehHdndnaecwfIdbaD:tawNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikabaHai:T9cy:g:e83ibaeaofheabcwfhbadcufgdmbxdkkarcdthoindndnaeIdbax:tawNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikai:SgH9ca:gaH9cz:g9cjjj;4s:d:eaH9cFe:d:e9cF:bj;4:pj;ar:d9c:bd9:9c:p;G:d;4j:E;ar:d9cH9:9c;d;H:W:y:m:g;d;Hb:d9cv9:9c;j:KM;j:KM;j:Kd:dhOdndnaeclfIdbaq:tawNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikai:SgH9ca:gaH9cz:g9cjjj;4s:d:eaH9cFe:d:e9cF:bj;4:pj;ar:d9c:bd9:9c:p;G:d;4j:E;ar:d9cH9:9c;d;H:W:y:m:g;d;Hb:d9cq9:9cM;j:KM;j:KM;jl:daO:ehOdndnaecwfIdbaD:tawNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikabaOai:SgH9ca:gaH9cz:g9cjjj;4s:d:eaH9cFe:d:e9cF:bj;4:pj;ar:d9c:bd9:9c:p;G:d;4j:E;ar:d9cH9:9c;d;H:W:y:m:g;d;Hb:d9cC9:9c:KM;j:KM;j:KMD:d:e83ibaeaofheabcwfhbadcufgdmbkkk9teiucbcbyd;y:I:cjbgeabcifc98GfgbBd;y:I:cjbdndnabZbcztgd9nmbcuhiabad9RcFFifcz4nbcuSmekaehikaik;LeeeudndnaeabVciGTmbabhixekdndnadcz9pmbabhixekabhiinaiaeydbBdbaiclfaeclfydbBdbaicwfaecwfydbBdbaicxfaecxfydbBdbaeczfheaiczfhiadc9Wfgdcs0mbkkadcl6mbinaiaeydbBdbaeclfheaiclfhiadc98fgdci0mbkkdnadTmbinaiaeRbb86bbaicefhiaecefheadcufgdmbkkabk;aeedudndnabciGTmbabhixekaecFeGc:b:c:ew2hldndnadcz9pmbabhixekabhiinaialBdbaicxfalBdbaicwfalBdbaiclfalBdbaiczfhiadc9Wfgdcs0mbkkadcl6mbinaialBdbaiclfhiadc98fgdci0mbkkdnadTmbinaiae86bbaicefhiadcufgdmbkkabk9teiucbcbyd;y:I:cjbgeabcrfc94GfgbBd;y:I:cjbdndnabZbcztgd9nmbcuhiabad9RcFFifcz4nbcuSmekaehikaikTeeucbabcbyd;y:I:cjbge9Rcifc98GaefgbBd;y:I:cjbdnabZbcztge9nmbabae9RcFFifcz4nb8Akkk;Sddbcj:Gdk;idbbbbdbbblbbbwbbbbbbbebbbdbbblbbbwbbbbbbbbbbbbbbbbbbbebbbdbbbbbbbebbbbbbbbbbbbbbbb4:h9w9N94:P:gW:j9O:ye9Pbbbbbb:l29hZ;69:9kZ;N;76Z;rg97Z;z;o9xZ8J;B85Z;:;u9yZ;b;k9HZ:2;Z9DZ9e:l9mZ59A8KZ:r;T3Z:A:zYZ79OHZ;j4::8::Y:D9V8:bbbb9s:49:Z8R:hBZ9M9M;M8:L;z;o8:;8:PG89q;x:J878R:hQ8::M:B;e87bbbbbbjZbbjZbbjZ:E;V;N8::Y:DsZ9i;H;68:xd;R8:;h0838:;W:NoZbbbb:WV9O8:uf888:9i;H;68:9c9G;L89;n;m9m89;D8Ko8:bbbbf:8tZ9m836ZS:2AZL;zPZZ818EZ9e:lxZ;U98F8:819E;68:FFuuFFuuFFuuFFuFFFuFFFuFbc;i:IdkCebbbebbbebbbdbbb9G:rbb'; // embed! wasm
+
+		var wasmpack = new Uint8Array([
+			32, 0, 65, 2, 1, 106, 34, 33, 3, 128, 11, 4, 13, 64, 6, 253, 10, 7, 15, 116, 127, 5, 8, 12, 40, 16, 19, 54, 20, 9, 27, 255, 113, 17, 42, 67,
+			24, 23, 146, 148, 18, 14, 22, 45, 70, 69, 56, 114, 101, 21, 25, 63, 75, 136, 108, 28, 118, 29, 73, 115,
+		]);
+
+		if (typeof WebAssembly !== 'object') {
+			return {
+				supported: false,
+			};
+		}
+
+		var instance;
+
+		var ready = WebAssembly.instantiate(unpack(wasm), {}).then(function (result) {
+			instance = result.instance;
+			instance.exports.__wasm_call_ctors();
+			instance.exports.meshopt_encodeVertexVersion(1);
+			instance.exports.meshopt_encodeIndexVersion(1);
+		});
+
+		function unpack(data) {
+			var result = new Uint8Array(data.length);
+			for (var i = 0; i < data.length; ++i) {
+				var ch = data.charCodeAt(i);
+				result[i] = ch > 96 ? ch - 97 : ch > 64 ? ch - 39 : ch + 4;
+			}
+			var write = 0;
+			for (var i = 0; i < data.length; ++i) {
+				result[write++] = result[i] < 60 ? wasmpack[result[i]] : (result[i] - 60) * 64 + result[++i];
+			}
+			return result.buffer.slice(0, write);
+		}
+
+		function assert(cond) {
+			if (!cond) {
+				throw new Error('Assertion failed');
+			}
+		}
+
+		function bytes(view) {
+			return new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
+		}
+
+		function reorder(fun, indices, vertices, optf) {
+			var sbrk = instance.exports.sbrk;
+			var ip = sbrk(indices.length * 4);
+			var rp = sbrk(vertices * 4);
+			var heap = new Uint8Array(instance.exports.memory.buffer);
+			var indices8 = bytes(indices);
+			heap.set(indices8, ip);
+			if (optf) {
+				// mutates indices in place, requiring a copy later
+				optf(ip, ip, indices.length, vertices);
+			}
+			var unique = fun(rp, ip, indices.length, vertices);
+			// heap may have grown
+			heap = new Uint8Array(instance.exports.memory.buffer);
+			var remap = new Uint32Array(vertices);
+			new Uint8Array(remap.buffer).set(heap.subarray(rp, rp + vertices * 4));
+			indices8.set(heap.subarray(ip, ip + indices.length * 4));
+			sbrk(ip - sbrk(0));
+
+			for (var i = 0; i < indices.length; ++i) indices[i] = remap[indices[i]];
+
+			return [remap, unique];
+		}
+
+		function spatialsort(fun, positions, count, stride) {
+			var sbrk = instance.exports.sbrk;
+			var ip = sbrk(count * 4);
+			var sp = sbrk(count * stride);
+			var heap = new Uint8Array(instance.exports.memory.buffer);
+			heap.set(bytes(positions), sp);
+			fun(ip, sp, count, stride);
+			// heap may have grown
+			heap = new Uint8Array(instance.exports.memory.buffer);
+			var remap = new Uint32Array(count);
+			new Uint8Array(remap.buffer).set(heap.subarray(ip, ip + count * 4));
+			sbrk(ip - sbrk(0));
+			return remap;
+		}
+
+		function encode(fun, bound, source, count, size, level, version) {
+			var sbrk = instance.exports.sbrk;
+			var tp = sbrk(bound);
+			var sp = sbrk(count * size);
+			var heap = new Uint8Array(instance.exports.memory.buffer);
+			heap.set(bytes(source), sp);
+			var res = fun(tp, bound, sp, count, size, level, version);
+			var target = new Uint8Array(res);
+			target.set(heap.subarray(tp, tp + res));
+			sbrk(tp - sbrk(0));
+			return target;
+		}
+
+		function maxindex(source) {
+			var result = 0;
+			for (var i = 0; i < source.length; ++i) {
+				var index = source[i];
+				result = result < index ? index : result;
+			}
+			return result;
+		}
+
+		function index32(source, size) {
+			assert(size == 2 || size == 4);
+			if (size == 4) {
+				return new Uint32Array(source.buffer, source.byteOffset, source.byteLength / 4);
+			} else {
+				var view = new Uint16Array(source.buffer, source.byteOffset, source.byteLength / 2);
+				return new Uint32Array(view); // copies each element
+			}
+		}
+
+		function filter(fun, source, count, stride, bits, insize, mode) {
+			var sbrk = instance.exports.sbrk;
+			var tp = sbrk(count * stride);
+			var sp = sbrk(count * insize);
+			var heap = new Uint8Array(instance.exports.memory.buffer);
+			heap.set(bytes(source), sp);
+			fun(tp, count, stride, bits, sp, mode);
+			var target = new Uint8Array(count * stride);
+			target.set(heap.subarray(tp, tp + count * stride));
+			sbrk(tp - sbrk(0));
+			return target;
+		}
+
+		return {
+			ready: ready,
+			supported: true,
+			reorderMesh: function (indices, triangles, optsize) {
+				assert(indices instanceof Uint32Array || indices instanceof Int32Array);
+				assert(!triangles || indices.length % 3 == 0);
+				var optf = triangles
+					? optsize
+						? instance.exports.meshopt_optimizeVertexCacheStrip
+						: instance.exports.meshopt_optimizeVertexCache
+					: undefined;
+				return reorder(instance.exports.meshopt_optimizeVertexFetchRemap, indices, maxindex(indices) + 1, optf);
+			},
+			reorderPoints: function (positions, positions_stride) {
+				assert(positions instanceof Float32Array);
+				assert(positions.length % positions_stride == 0);
+				assert(positions_stride >= 3);
+				return spatialsort(instance.exports.meshopt_spatialSortRemap, positions, positions.length / positions_stride, positions_stride * 4);
+			},
+			encodeVertexBuffer: function (source, count, size) {
+				assert(size > 0 && size <= 256);
+				assert(size % 4 == 0);
+				var bound = instance.exports.meshopt_encodeVertexBufferBound(count, size);
+				return encode(instance.exports.meshopt_encodeVertexBuffer, bound, source, count, size);
+			},
+			encodeVertexBufferLevel: function (source, count, size, level, version) {
+				assert(size > 0 && size <= 256);
+				assert(size % 4 == 0);
+				assert(level >= 0 && level <= 3);
+				assert(version === undefined || version == 0 || version == 1);
+				var bound = instance.exports.meshopt_encodeVertexBufferBound(count, size);
+				return encode(instance.exports.meshopt_encodeVertexBufferLevel, bound, source, count, size, level, version === undefined ? -1 : version);
+			},
+			encodeIndexBuffer: function (source, count, size) {
+				assert(size == 2 || size == 4);
+				assert(count % 3 == 0);
+				var indices = index32(source, size);
+				var bound = instance.exports.meshopt_encodeIndexBufferBound(count, maxindex(indices) + 1);
+				return encode(instance.exports.meshopt_encodeIndexBuffer, bound, indices, count, 4);
+			},
+			encodeIndexSequence: function (source, count, size) {
+				assert(size == 2 || size == 4);
+				var indices = index32(source, size);
+				var bound = instance.exports.meshopt_encodeIndexSequenceBound(count, maxindex(indices) + 1);
+				return encode(instance.exports.meshopt_encodeIndexSequence, bound, indices, count, 4);
+			},
+			encodeGltfBuffer: function (source, count, size, mode, version) {
+				var table = {
+					ATTRIBUTES: this.encodeVertexBufferLevel,
+					TRIANGLES: this.encodeIndexBuffer,
+					INDICES: this.encodeIndexSequence,
+				};
+				assert(table[mode]);
+				return table[mode](source, count, size, /* level= */ 2, version === undefined ? 0 : version);
+			},
+			encodeFilterOct: function (source, count, stride, bits) {
+				assert(stride == 4 || stride == 8);
+				assert(bits >= 2 && bits <= 16);
+				return filter(instance.exports.meshopt_encodeFilterOct, source, count, stride, bits, 16);
+			},
+			encodeFilterQuat: function (source, count, stride, bits) {
+				assert(stride == 8);
+				assert(bits >= 4 && bits <= 16);
+				return filter(instance.exports.meshopt_encodeFilterQuat, source, count, stride, bits, 16);
+			},
+			encodeFilterExp: function (source, count, stride, bits, mode) {
+				assert(stride > 0 && stride % 4 == 0);
+				assert(bits >= 1 && bits <= 24);
+				var table = {
+					Separate: 0,
+					SharedVector: 1,
+					SharedComponent: 2,
+					Clamped: 3,
+				};
+				assert(!mode || mode in table);
+				return filter(instance.exports.meshopt_encodeFilterExp, source, count, stride, bits, stride, mode ? table[mode] : 1);
+			},
+			encodeFilterColor: function (source, count, stride, bits) {
+				assert(stride == 4 || stride == 8);
+				assert(bits >= 2 && bits <= 16);
+				return filter(instance.exports.meshopt_encodeFilterColor, source, count, stride, bits, 16);
+			},
+		};
+	})();
+
+	var textDecoder$2 = new TextDecoder();
+
+	/** Returns a byte view over the supplied binary input for the CMF binary reader. */
+	function asUint8Array(input) {
+	  if (input instanceof Uint8Array) {
+	    return input;
+	  }
+	  if (input instanceof ArrayBuffer) {
+	    return new Uint8Array(input);
+	  }
+	  if (ArrayBuffer.isView(input)) {
+	    return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+	  }
+	  throw new TypeError("CMF input must be a Uint8Array, Buffer, ArrayBuffer, or typed-array view");
+	}
+
+	/**
+	 * Bounds-checked little-endian offset reader over CMF file bytes, including
+	 * 64-bit integer reads guarded against unsafe values.
+	 */
+	class BinaryReader {
+	  /** Creates a BinaryReader over caller-provided CMF bytes and reader options. */
+	  constructor(bytes) {
+	    this.bytes = asUint8Array(bytes);
+	    this.view = new DataView(this.bytes.buffer, this.bytes.byteOffset, this.bytes.byteLength);
+	  }
+
+	  /**
+	   * Validates the supplied value against CMF binary reader constraints and
+	   * throws on failure.
+	   */
+	  require(offset, size) {
+	    var label = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "read";
+	    if (!Number.isSafeInteger(offset) || !Number.isSafeInteger(size) || offset < 0 || size < 0 || offset > this.bytes.byteLength - size) {
+	      throw new RangeError("CMF ".concat(label, " is outside file bounds"));
+	    }
+	  }
+
+	  /**
+	   * Reads an unsigned 8-bit integer at the requested offset for the CMF binary
+	   * reader.
+	   */
+	  u8(offset) {
+	    this.require(offset, 1);
+	    return this.view.getUint8(offset);
+	  }
+
+	  /**
+	   * Reads an unsigned 16-bit little-endian integer at the requested offset for
+	   * the CMF binary reader.
+	   */
+	  u16(offset) {
+	    this.require(offset, 2);
+	    return this.view.getUint16(offset, true);
+	  }
+
+	  /**
+	   * Reads an unsigned 32-bit little-endian integer at the requested offset for
+	   * the CMF binary reader.
+	   */
+	  u32(offset) {
+	    this.require(offset, 4);
+	    return this.view.getUint32(offset, true);
+	  }
+
+	  /**
+	   * Reads a signed 32-bit little-endian integer at the requested offset for
+	   * the CMF binary reader.
+	   */
+	  i32(offset) {
+	    this.require(offset, 4);
+	    return this.view.getInt32(offset, true);
+	  }
+
+	  /**
+	   * Reads a 32-bit little-endian float at the requested offset for the CMF
+	   * binary reader.
+	   */
+	  f32(offset) {
+	    this.require(offset, 4);
+	    return this.view.getFloat32(offset, true);
+	  }
+
+	  /**
+	   * Reads a safe unsigned 64-bit little-endian integer at the requested offset
+	   * for the CMF binary reader.
+	   */
+	  u64(offset) {
+	    this.require(offset, 8);
+	    var value = this.view.getBigUint64(offset, true);
+	    if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
+	      throw new RangeError("CMF integer is larger than Number.MAX_SAFE_INTEGER");
+	    }
+	    return Number(value);
+	  }
+
+	  /**
+	   * Reads a safe signed 64-bit little-endian integer at the requested offset
+	   * for the CMF binary reader.
+	   */
+	  i64(offset) {
+	    this.require(offset, 8);
+	    var value = this.view.getBigInt64(offset, true);
+	    if (value > BigInt(Number.MAX_SAFE_INTEGER) || value < BigInt(Number.MIN_SAFE_INTEGER)) {
+	      throw new RangeError("CMF integer is outside the safe JavaScript number range");
+	    }
+	    return Number(value);
+	  }
+
+	  /**
+	   * Returns a bounds-checked byte slice at the requested offset for the CMF
+	   * binary reader.
+	   */
+	  bytesAt(offset, size) {
+	    this.require(offset, size, "byte slice");
+	    return this.bytes.subarray(offset, offset + size);
+	  }
+
+	  /** Decodes a UTF-8 string at the requested offset for the CMF binary reader. */
+	  string(offset, byteSize) {
+	    if (byteSize === 0) {
+	      return "";
+	    }
+	    return textDecoder$2.decode(this.bytesAt(offset, byteSize));
+	  }
+	}
+
+	/**
+	 * Returns the symbolic enum name or an unknown-value label for the CMF binary
+	 * reader.
+	 */
+	function enumName(names, value) {
+	  var _names$value;
+	  return (_names$value = names[value]) != null ? _names$value : "Unknown(".concat(value, ")");
+	}
+
+	/** Reads a three-component vector from the CMF input for the CMF binary reader. */
+	function readVector3(reader, offset) {
+	  return [reader.f32(offset), reader.f32(offset + 4), reader.f32(offset + 8)];
+	}
+
+	/**
+	 * Reads a four-component quaternion from the CMF input for the CMF binary
+	 * reader.
+	 */
+	function readQuaternion(reader, offset) {
+	  return [reader.f32(offset), reader.f32(offset + 4), reader.f32(offset + 8), reader.f32(offset + 12)];
+	}
+
+	/** Reads a 4-by-4 matrix from the CMF input for the CMF binary reader. */
+	function readMatrix(reader, offset) {
+	  var values = [];
+	  for (var i = 0; i < 16; i++) {
+	    values.push(reader.f32(offset + i * 4));
+	  }
+	  return values;
+	}
+
+	/** Reads minimum and maximum bounds from the CMF input for the CMF binary reader. */
+	function readBounds(reader, offset) {
+	  return {
+	    min: readVector3(reader, offset),
+	    max: readVector3(reader, offset + 12)
+	  };
+	}
+
+	/**
+	 * Computes a CRC-32 checksum over the requested byte range for the CMF binary
+	 * reader.
+	 */
+	/**
+	 * CMF's container checksum.
+	 *
+	 * Re-exported under CMF's own name because the CMF byte layout is what makes it
+	 * meaningful here, and a test imports this spelling. The algorithm is the shared
+	 * standard CRC-32.
+	 *
+	 * @param {Uint8Array} bytes Source bytes.
+	 * @param {number} [start] First byte offset, inclusive.
+	 * @param {number} [end] Last byte offset, exclusive.
+	 * @returns {number} Unsigned 32-bit checksum.
+	 */
+	function crc32(bytes) {
+	  var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	  var end = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : bytes.byteLength;
+	  return crc32$1(bytes, start, end);
+	}
+
+	// This file is part of meshoptimizer library and is distributed under the terms of MIT License.
+	// Copyright (C) 2016-2026, by Arseny Kapoulkine (arseny.kapoulkine@gmail.com)
+	var MeshoptDecoder = (function () {
+		// Built with clang version 22.1.0-wasi-sdk
+		// Built from meshoptimizer 1.2
+		var wasm_base =
+			'b9H79Tebbbe8Fv9Gbb9Gvuuuuueu9Giuuub9Geueu9Giuuueuixkbeeeddddillviebeoweuecj:Gdkr;Neqo9TW9T9VV95dbH9F9F939H79T9F9J9H229F9Jt9VV7bb8A9TW79O9V9Wt9F9KW9J9V9KW9wWVtW949c919M9MWVbeY9TW79O9V9Wt9F9KW9J9V9KW69U9KW949c919M9MWVbdE9TW79O9V9Wt9F9KW9J9V9KW69U9KW949tWG91W9U9JWbiL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9p9JtblK9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9r919HtbvL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWVT949WboY9TW79O9V9Wt9F9KW9J9V9KWS9P2tWVJ9V29VVbrl79IV9Rbwq1Zkdbk:kYi5ud9:du8Jjjjjbcjq9Rgv8Kjjjjbc9:hodnalTmbcuhoaiRbbgrc;WeGc:Ge9hmbarcsGgwce0mbc9:hoalcufadcd4cbawEgDadfgrcKcaawEgqaraq0Egk6mbaicefhxcj;abad9Uc;WFbGcjdadca0EhmaialfgPar9Rgoadfhsavaoadz:jjjjbgzceVhHcbhOdndninaeaO9nmeaPax9RaD6mdamaeaO9RaOamfgoae6EgAcsfglc9WGhCaAcethXaxaDfhiaOaeaoaeao6E9RhQalcl4cifcd4hLazcjdfaAfhKcbhYabaOad2fg8AhEaHh3incbh5dnawTmbaxaYcd4fRbbh5kcbh8Eazcjdfhqinaih8Fdndndndna5a8Ecet4ciGgoc9:fPdebdkaPa8F9RaA6mrazcjdfa8EaA2fa8FaAz:jjjjb8Aa8FaAfhixdkazcjdfa8EaA2fcbaAz:kjjjb8Aa8FhixekaPa8F9RaL6mva8FaLfhidnaCTmbaPai9RcK6mbaocdtc:q:G:cjbfcj:G:cjbawEhaczhrcbhlinargoc9Wfghaqfhrdndndndndndnaaa8Fahco4fRbbalcoG4ciGcdtfydbPDbedvivvvlvkar9cb83bwar9cb83bbxlkarcbaiRbdai8Xbb9c:c:qj:bw9:9c:q;c1:I1e:d9c:b:c:e1z9:gg9cjjjjjz:dg8J9qE86bbaqaofgrcGfcbaicdfa8J9c8N1:NfghRbbag9cjjjjjw:dg8J9qE86bbarcVfcbaha8J9c8M1:NfghRbbag9cjjjjjl:dg8J9qE86bbarc7fcbaha8J9c8L1:NfghRbbag9cjjjjjd:dg8J9qE86bbarctfcbaha8J9c8K1:NfghRbbag9cjjjjje:dg8J9qE86bbarc91fcbaha8J9c8J1:NfghRbbag9cjjjj;ab:dg8J9qE86bbarc4fcbaha8J9cg1:NfghRbbag9cjjjja:dg8J9qE86bbarc93fcbaha8J9ch1:NfghRbbag9cjjjjz:dgg9qE86bbarc94fcbahag9ca1:NfghRbbai8Xbe9c:c:qj:bw9:9c:q;c1:I1e:d9c:b:c:e1z9:gg9cjjjjjz:dg8J9qE86bbarc95fcbaha8J9c8N1:NfgiRbbag9cjjjjjw:dg8J9qE86bbarc96fcbaia8J9c8M1:NfgiRbbag9cjjjjjl:dg8J9qE86bbarc97fcbaia8J9c8L1:NfgiRbbag9cjjjjjd:dg8J9qE86bbarc98fcbaia8J9c8K1:NfgiRbbag9cjjjjje:dg8J9qE86bbarc99fcbaia8J9c8J1:NfgiRbbag9cjjjj;ab:dg8J9qE86bbarc9:fcbaia8J9cg1:NfgiRbbag9cjjjja:dg8J9qE86bbarcufcbaia8J9ch1:NfgiRbbag9cjjjjz:dgg9qE86bbaiag9ca1:NfhixikaraiRblaiRbbghco4g8Ka8KciSg8KE86bbaqaofgrcGfaiclfa8Kfg8KRbbahcl4ciGg8La8LciSg8LE86bbarcVfa8Ka8Lfg8KRbbahcd4ciGg8La8LciSg8LE86bbarc7fa8Ka8Lfg8KRbbahciGghahciSghE86bbarctfa8Kahfg8KRbbaiRbeghco4g8La8LciSg8LE86bbarc91fa8Ka8Lfg8KRbbahcl4ciGg8La8LciSg8LE86bbarc4fa8Ka8Lfg8KRbbahcd4ciGg8La8LciSg8LE86bbarc93fa8Ka8Lfg8KRbbahciGghahciSghE86bbarc94fa8Kahfg8KRbbaiRbdghco4g8La8LciSg8LE86bbarc95fa8Ka8Lfg8KRbbahcl4ciGg8La8LciSg8LE86bbarc96fa8Ka8Lfg8KRbbahcd4ciGg8La8LciSg8LE86bbarc97fa8Ka8Lfg8KRbbahciGghahciSghE86bbarc98fa8KahfghRbbaiRbigico4g8Ka8KciSg8KE86bbarc99faha8KfghRbbaicl4ciGg8Ka8KciSg8KE86bbarc9:faha8KfghRbbaicd4ciGg8Ka8KciSg8KE86bbarcufaha8KfgrRbbaiciGgiaiciSgiE86bbaraifhixdkaraiRbwaiRbbghcl4g8Ka8KcsSg8KE86bbaqaofgrcGfaicwfa8Kfg8KRbbahcsGghahcsSghE86bbarcVfa8KahfghRbbaiRbeg8Kcl4g8La8LcsSg8LE86bbarc7faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarctfaha8KfghRbbaiRbdg8Kcl4g8La8LcsSg8LE86bbarc91faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc4faha8KfghRbbaiRbig8Kcl4g8La8LcsSg8LE86bbarc93faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc94faha8KfghRbbaiRblg8Kcl4g8La8LcsSg8LE86bbarc95faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc96faha8KfghRbbaiRbvg8Kcl4g8La8LcsSg8LE86bbarc97faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc98faha8KfghRbbaiRbog8Kcl4g8La8LcsSg8LE86bbarc99faha8LfghRbba8KcsGg8Ka8KcsSg8KE86bbarc9:faha8KfghRbbaiRbrgicl4g8Ka8KcsSg8KE86bbarcufaha8KfgrRbbaicsGgiaicsSgiE86bbaraifhixekarai8Pbw83bwarai8Pbb83bbaiczfhikdnaoaC9pmbalcdfhlaoczfhraPai9RcL0mekkaoaC6moaimexokaCmva8FTmvkaqaAfhqa8Ecefg8Ecl9hmbkdndndndnawTmbasaYcd4fRbbgociGPlbedrbkaATmdazaYfh8Fazcjdfhhcbh8EaEhaina8FRbbhraahocbhlinaoahalfRbbgqce4cbaqceG9R7arfgr86bbaoadfhoaAalcefgl9hmbkaacefhaa8Fcefh8FahaAfhha8Ecefg8Ecl9hmbxikkaATmeazaYfhaazcjdfhhcbhoceh8EaKh8FinaEaofhlaa8Vbbhrcbhoinala8FaofRbbcwtahaofRbbgqVc;:FiGce4cbaqceG9R7arfgr87bbaladfhlaQaocefgofmbka8FaXfh8FcdhoaacdfhaahaXfhha8EceGhlcbh8EalmbxdkkaATmbaocl4h8EazaYfRbbhqcwhoa3hlinalRbbaotaqVhqalcefhlaocwfgoca9hmbkcbhhaEh8FaKhainazcjdfahfRbbhrcwhoaahlinalRbbaotarVhralaAfhlaocwfgoca9hmbkara8E94aq7hqcbhoa8Fhlinalaqao486bbalcefhlaocwfgoca9hmbka8Fadfh8FaacefhaahcefghaA9hmbkkaEclfhEa3clfh3aYclfgYad6mbkaza8AaAcufad2fadz:jjjjb8AaAaOfhOaihxaimbkc9:hoxdkcbc99aPax9RakSEhoxekc9:hokavcjqf8Kjjjjbaok:ysezu8Jjjjjbc;ae9Rgv8Kjjjjbc9:hodnalaeci9UgrcHf6mbcuhoaiRbbgwc;WeGc;Ge9hmbawcsGgDce0mbavc;abfcFecjez:kjjjb8Aav9cu83iUav9cu83i8Wav9cu83iyav9cu83iaav9cu83iKav9cu83izav9cu83iwav9cu83ibaialfc9WfhqaicefgwarfhldnaeTmbcmcsaDceSEhkcbhxcbhmcbhrcbhicbhoindnalaq9nmbc9:hoxikdndnawRbbgDc;Ve0mbavc;abfaoaDcu7gPcl4fcsGcitfgsydlhzasydbhHdndnaDcsGgsak9pmbavaiaPfcsGcdtfydbaxasEhDaxasTgOfhxxekdndnascsSmbcehOasc987asamffcefhDxekalcefhDal8SbbgscFeGhPdndnascu9mmbaDhlxekalcvfhlaPcFbGhPcrhsdninaD8SbbgOcFbGastaPVhPaOcu9kmeaDcefhDascrfgsc8J9hmbxdkkaDcefhlkcehOaPce4cbaPceG9R7amfhDkaDhmkavc;abfaocitfgsaDBdbasazBdlavaicdtfaDBdbavc;abfaocefcsGcitfgsaHBdbasaDBdlaocdfhoaOaifhidnadcd9hmbabarcetfgsaH87ebasclfaD87ebascdfaz87ebxdkabarcdtfgsaHBdbascwfaDBdbasclfazBdbxekdnaDcpe0mbavaiaqaDcsGfRbbgscl4gP9RcsGcdtfydbaxcefgOaPEhDavaias9RcsGcdtfydbaOaPTgzfgOascsGgPEhsaPThPdndnadcd9hmbabarcetfgHax87ebaHclfas87ebaHcdfaD87ebxekabarcdtfgHaxBdbaHcwfasBdbaHclfaDBdbkavaicdtfaxBdbavc;abfaocitfgHaDBdbaHaxBdlavaicefgicsGcdtfaDBdbavc;abfaocefcsGcitfgHasBdbaHaDBdlavaiazfgicsGcdtfasBdbavc;abfaocdfcsGcitfgDaxBdbaDasBdlaocifhoaiaPfhiaOaPfhxxekaxcbalRbbgsEgHaDc;:eSgDfhOascsGhAdndnascl4gCmbaOcefhzxekaOhzavaiaC9RcsGcdtfydbhOkdndnaAmbazcefhxxekazhxavaias9RcsGcdtfydbhzkdndnaDTmbalcefhDxekalcdfhDal8SbegPcFeGhsdnaPcu9kmbalcofhHascFbGhscrhldninaD8SbbgPcFbGaltasVhsaPcu9kmeaDcefhDalcrfglc8J9hmbkaHhDxekaDcefhDkasce4cbasceG9R7amfgmhHkdndnaCcsSmbaDhsxekaDcefhsaD8SbbglcFeGhPdnalcu9kmbaDcvfhOaPcFbGhPcrhldninas8SbbgDcFbGaltaPVhPaDcu9kmeascefhsalcrfglc8J9hmbkaOhsxekascefhskaPce4cbaPceG9R7amfgmhOkdndnaAcsSmbashlxekascefhlas8SbbgDcFeGhPdnaDcu9kmbascvfhzaPcFbGhPcrhDdninal8SbbgscFbGaDtaPVhPascu9kmealcefhlaDcrfgDc8J9hmbkazhlxekalcefhlkaPce4cbaPceG9R7amfgmhzkdndnadcd9hmbabarcetfgDaH87ebaDclfaz87ebaDcdfaO87ebxekabarcdtfgDaHBdbaDcwfazBdbaDclfaOBdbkavc;abfaocitfgDaOBdbaDaHBdlavaicdtfaHBdbavc;abfaocefcsGcitfgDazBdbaDaOBdlavaicefgicsGcdtfaOBdbavc;abfaocdfcsGcitfgDaHBdbaDazBdlavaiaCTaCcsSVfgicsGcdtfazBdbaiaATaAcsSVfhiaocifhokawcefhwaocsGhoaicsGhiarcifgrae6mbkkcbc99alaqSEhokavc;aef8Kjjjjbaok:clevu8Jjjjjbcz9Rhvdnalaecvf9pmbc9:skdnaiRbbc;:eGc;qeSmbcuskav9cb83iwaicefhoaialfc98fhrdnaeTmbdnadcdSmbcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcdtfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgiBdbalaiBdbawcefgwae9hmbxdkkcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcetfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgi87ebalaiBdbawcefgwae9hmbkkcbc99aoarSEk:Lvoeue99dud99eud99dndnadcl9hmbaeTmeindndnabcdfgd8Sbb:Yab8Sbbgi:Ygl:l:tabcefgv8Sbbgo:Ygr:l:tgwJbb;:9cawawNJbbbbawawJbbbb9GgDEgq:mgkaqaicb9iEalMgwawNakaqaocb9iEarMgqaqNMM:r:vglNJbbbZJbbb:;aDEMgr:lJbbb9p9DTmbar:Ohixekcjjjj94hikadai86bbdndnaqalNJbbbZJbbb:;aqJbbbb9GEMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkavad86bbdndnawalNJbbbZJbbb:;awJbbbb9GEMgw:lJbbb9p9DTmbaw:Ohdxekcjjjj94hdkabad86bbabclfhbaecufgembxdkkaeTmbindndnabclfgd8Ueb:Yab8Uebgi:Ygl:l:tabcdfgv8Uebgo:Ygr:l:tgwJb;:FSawawNJbbbbawawJbbbb9GgDEgq:mgkaqaicb9iEalMgwawNakaqaocb9iEarMgqaqNMM:r:vglNJbbbZJbbb:;aDEMgr:lJbbb9p9DTmbar:Ohixekcjjjj94hikadai87ebdndnaqalNJbbbZJbbb:;aqJbbbb9GEMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkavad87ebdndnawalNJbbbZJbbb:;awJbbbb9GEMgw:lJbbb9p9DTmbaw:Ohdxekcjjjj94hdkabad87ebabcwfhbaecufgembkkk:4ioiue99dud99dud99dnaeTmbcbhiabhlindndnal8Uebgv:YgoJ:ji:1Salcof8UebgrciVgw:Y:vgDNJbbbZJbbb:;avcu9kEMgq:lJbbb9p9DTmbaq:Ohkxekcjjjj94hkkalclf8Uebhvalcdf8UebhxalarcefciGcetfak87ebdndnax:YgqaDNJbbbZJbbb:;axcu9kEMgm:lJbbb9p9DTmbam:Ohxxekcjjjj94hxkabaiarciGgkfcd7cetfax87ebdndnav:YgmaDNJbbbZJbbb:;avcu9kEMgP:lJbbb9p9DTmbaP:Ohvxekcjjjj94hvkalarcufciGcetfav87ebdndnawaw2:ZgPaPMaoaoN:taqaqN:tamamN:tgoJbbbbaoJbbbb9GE:raDNJbbbZMgD:lJbbb9p9DTmbaD:Ohrxekcjjjj94hrkalakcetfar87ebalcwfhlaiclfhiaecufgembkkk9mbdnadcd4ae2gdTmbinababydbgecwtcw91:Yaece91cjjj98Gcjjj;8if::NUdbabclfhbadcufgdmbkkk:Tvirud99eudndnadcl9hmbaeTmeindndnabRbbgiabcefgl8Sbbgvabcdfgo8Sbbgrf9R:YJbbuJabcifgwRbbgdce4adVgDcd4aDVgDcl4aDVgD:Z:vgqNJbbbZMgk:lJbbb9p9DTmbak:Ohxxekcjjjj94hxkaoax86bbdndnaraif:YaqNJbbbZMgk:lJbbb9p9DTmbak:Ohoxekcjjjj94hokalao86bbdndnavaifar9R:YaqNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikabai86bbdndnaDadcetGadceGV:ZaqNJbbbZMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkawad86bbabclfhbaecufgembxdkkaeTmbindndnab8Vebgiabcdfgl8Uebgvabclfgo8Uebgrf9R:YJbFu9habcofgw8Vebgdce4adVgDcd4aDVgDcl4aDVgDcw4aDVgD:Z:vgqNJbbbZMgk:lJbbb9p9DTmbak:Ohxxekcjjjj94hxkaoax87ebdndnaraif:YaqNJbbbZMgk:lJbbb9p9DTmbak:Ohoxekcjjjj94hokalao87ebdndnavaifar9R:YaqNJbbbZMgk:lJbbb9p9DTmbak:Ohixekcjjjj94hikabai87ebdndnaDadcetGadceGV:ZaqNJbbbZMgq:lJbbb9p9DTmbaq:Ohdxekcjjjj94hdkawad87ebabcwfhbaecufgembkkk9teiucbcbyd:K:G:cjbgeabcifc98GfgbBd:K:G:cjbdndnabZbcztgd9nmbcuhiabad9RcFFifcz4nbcuSmekaehikaik;LeeeudndnaeabVciGTmbabhixekdndnadcz9pmbabhixekabhiinaiaeydbBdbaiclfaeclfydbBdbaicwfaecwfydbBdbaicxfaecxfydbBdbaeczfheaiczfhiadc9Wfgdcs0mbkkadcl6mbinaiaeydbBdbaeclfheaiclfhiadc98fgdci0mbkkdnadTmbinaiaeRbb86bbaicefhiaecefheadcufgdmbkkabk;aeedudndnabciGTmbabhixekaecFeGc:b:c:ew2hldndnadcz9pmbabhixekabhiinaialBdbaicxfalBdbaicwfalBdbaiclfalBdbaiczfhiadc9Wfgdcs0mbkkadcl6mbinaialBdbaiclfhiadc98fgdci0mbkkdnadTmbinaiae86bbaicefhiadcufgdmbkkabkk83dbcj:Gdk8Kbbbbdbbblbbbwbbbbbbbebbbdbbblbbbwbbbbc:K:Gdkl8W:qbb'; // embed! base
+		var wasm_simd =
+			'b9H79TebbbeKl9Gbb9Gvuuuuueu9Giuuub9Geueuixkbbebeeddddilve9Weeeviebeoweuecj:Gdkr;Neqo9TW9T9VV95dbH9F9F939H79T9F9J9H229F9Jt9VV7bb8A9TW79O9V9Wt9F9KW9J9V9KW9wWVtW949c919M9MWVbdY9TW79O9V9Wt9F9KW9J9V9KW69U9KW949c919M9MWVblE9TW79O9V9Wt9F9KW9J9V9KW69U9KW949tWG91W9U9JWbvL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9p9JtboK9TW79O9V9Wt9F9KW9J9V9KWS9P2tWV9r919HtbrL9TW79O9V9Wt9F9KW9J9V9KWS9P2tWVT949WbwY9TW79O9V9Wt9F9KW9J9V9KWS9P2tWVJ9V29VVbDl79IV9Rbqq:59Dklbzik94evu8Jjjjjbcz9Rhbcbheincbhdcbhiinabcwfadfaicjuaead4ceGglE86bbaialfhiadcefgdcw9hmbkaeai86b:q:W:cjbaecitab8Piw83i:q:G:cjbaecefgecjd9hmbkk:SBlEud97dur978Jjjjjbcj;kb9Rgv8Kjjjjbc9:hodnalTmbcuhoaiRbbgrc;WeGc:Ge9hmbarcsGgwce0mbc9:hoalcufadcd4cbawEgDadfgrcKcaawEgqaraq0Egk6mbaialfgxar9RhodnadTgmmbavaoad;8qbbkaicefhPcj;abad9Uc;WFbGcjdadca0EhsdndndnadTmbaoadfhzcbhHinaeaH9nmdaxaP9RaD6miabaHad2fgOavcjdfasaeaH9RaHasfae6EgAaAcsfgoc9WGgCSEhXaPaDfhQaocl4cifcd4hLavcj;cbfaCcetfhKavcj;cbfaCci2fhYavcj;cbfaCfh8AcbhEaoc;ab6h3incbh5dnawTmbaPaEcd4fRbbh5kcbh8Eavcj;cbfh8Findndndndna5a8Ecet4ciGgoc9:fPdebdkaxaQ9RaC6mwdnaCTmbavcj;cbfa8EaC2faQaC;8qbbkaQaAfhQxdkaCTmeavcj;cbfa8EaC2fcbaC;8kbxekaxaQ9RaL6moaoclVcbawEhraQaLfhocbhidna3mbaxao9Rc;Gb6mbcbhlina8FalfhidndndndndndnaQalco4fRbbgqciGarfPDbedibledibkaipxbbbbbbbbbbbbbbbbpklbxlkaiaopbblaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLgacdp:meaapmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9oghpxiiiiiiiiiiiiiiiip8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbagaoclffa8JRb:q:W:cjbfhoxikaiaopbbwaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLpxssssssssssssssssp9oghpxssssssssssssssssp8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbagaocwffa8JRb:q:W:cjbfhoxdkaiaopbbbpklbaoczfhoxekaiaopbbdaoRbbggcitpbi:q:G:cjbagRb:q:W:cjbggpsaoRbeg8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPpklbagaocdffa8JRb:q:W:cjbfhokdndndndndndnaqcd4ciGarfPDbedibledibkaiczfpxbbbbbbbbbbbbbbbbpklbxlkaiczfaopbblaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLgacdp:meaapmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9oghpxiiiiiiiiiiiiiiiip8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbagaoclffa8JRb:q:W:cjbfhoxikaiczfaopbbwaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLpxssssssssssssssssp9oghpxssssssssssssssssp8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbagaocwffa8JRb:q:W:cjbfhoxdkaiczfaopbbbpklbaoczfhoxekaiczfaopbbdaoRbbggcitpbi:q:G:cjbagRb:q:W:cjbggpsaoRbeg8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPpklbagaocdffa8JRb:q:W:cjbfhokdndndndndndnaqcl4ciGarfPDbedibledibkaicafpxbbbbbbbbbbbbbbbbpklbxlkaicafaopbblaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLgacdp:meaapmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9oghpxiiiiiiiiiiiiiiiip8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbagaoclffa8JRb:q:W:cjbfhoxikaicafaopbbwaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLpxssssssssssssssssp9oghpxssssssssssssssssp8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbagaocwffa8JRb:q:W:cjbfhoxdkaicafaopbbbpklbaoczfhoxekaicafaopbbdaoRbbggcitpbi:q:G:cjbagRb:q:W:cjbggpsaoRbeg8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPpklbagaocdffa8JRb:q:W:cjbfhokdndndndndndnaqco4arfPDbedibledibkaic8Wfpxbbbbbbbbbbbbbbbbpklbxlkaic8Wfaopbblaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLgacdp:meaapmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9oghpxiiiiiiiiiiiiiiiip8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Ngicitpbi:q:G:cjbaiRb:q:W:cjbgipsaap5e9cjF;8;4;W;G;ab9:9cU1:Ngqcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbaiaoclffaqRb:q:W:cjbfhoxikaic8Wfaopbbwaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLpxssssssssssssssssp9oghpxssssssssssssssssp8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Ngicitpbi:q:G:cjbaiRb:q:W:cjbgipsaap5e9cjF;8;4;W;G;ab9:9cU1:Ngqcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spklbaiaocwffaqRb:q:W:cjbfhoxdkaic8Wfaopbbbpklbaoczfhoxekaic8WfaopbbdaoRbbgicitpbi:q:G:cjbaiRb:q:W:cjbgipsaoRbegqcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPpklbaiaocdffaqRb:q:W:cjbfhokalc;abfhialcjefaC0meaihlaxao9Rc;Fb0mbkkdnaiaC9pmbaici4hlinaxao9RcK6mwa8FaifhqdndndndndndnaQaico4fRbbalcoG4ciGarfPDbedibledibkaqpxbbbbbbbbbbbbbbbbpkbbxlkaqaopbblaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLgacdp:meaapmbzeHdOiAlCvXoQrLpxiiiiiiiiiiiiiiiip9oghpxiiiiiiiiiiiiiiiip8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spkbbagaoclffa8JRb:q:W:cjbfhoxikaqaopbbwaopbbbgaclp:meaapmbzeHdOiAlCvXoQrLpxssssssssssssssssp9oghpxssssssssssssssssp8Jgap5b9cjF;8;4;W;G;ab9:9cU1:Nggcitpbi:q:G:cjbagRb:q:W:cjbggpsaap5e9cjF;8;4;W;G;ab9:9cU1:Ng8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPahaap9spkbbagaocwffa8JRb:q:W:cjbfhoxdkaqaopbbbpkbbaoczfhoxekaqaopbbdaoRbbggcitpbi:q:G:cjbagRb:q:W:cjbggpsaoRbeg8Jcitpbi:q:G:cjbp9UpmbedilvorzHOACXQLpPpkbbagaocdffa8JRb:q:W:cjbfhokalcdfhlaiczfgiaC6mbkkaohQaoTmoka8FaCfh8Fa8Ecefg8Ecl9hmbkdndndndnawTmbazaEcd4fRbbglciGPlbedwbkaCTmdaXaEfhlavaEfpbdbh8Kcbhoinalavcj;cbfaofpblbg8La8Aaofpblbg8MpmbzeHdOiAlCvXoQrLg8NaKaofpblbgyaYaofpblbg8PpmbzeHdOiAlCvXoQrLgIpmbezHdiOAlvCXorQLgacep9Taapxeeeeeeeeeeeeeeeeghp9op9Hp9rgaa8Kp9Ug8Kp9Abbbaladfgla8Kaaaapmlvorlvorlvorlvorp9Ug8Kp9Abbbaladfgla8KaaaapmwDqkwDqkwDqkwDqkp9Ug8Kp9Abbbaladfgla8KaaaapmxmPsxmPsxmPsxmPsp9Ug8Kp9Abbbaladfgla8Ka8NaIpmwDKYqk8AExm35Ps8E8Fgacep9Taaahp9op9Hp9rgap9Ug8Kp9Abbbaladfgla8Kaaaapmlvorlvorlvorlvorp9Ug8Kp9Abbbaladfgla8KaaaapmwDqkwDqkwDqkwDqkp9Ug8Kp9Abbbaladfgla8KaaaapmxmPsxmPsxmPsxmPsp9Ug8Kp9Abbbaladfgla8Ka8La8MpmwKDYq8AkEx3m5P8Es8Fg8Laya8PpmwKDYq8AkEx3m5P8Es8Fg8MpmbezHdiOAlvCXorQLgacep9Taaahp9op9Hp9rgap9Ug8Kp9Abbbaladfgla8Kaaaapmlvorlvorlvorlvorp9Ug8Kp9Abbbaladfgla8KaaaapmwDqkwDqkwDqkwDqkp9Ug8Kp9Abbbaladfgla8KaaaapmxmPsxmPsxmPsxmPsp9Ug8Kp9Abbbaladfgla8Ka8La8MpmwDKYqk8AExm35Ps8E8Fgacep9Taaahp9op9Hp9rgap9Ughp9Abbbaladfglahaaaapmlvorlvorlvorlvorp9Ughp9AbbbaladfglahaaaapmwDqkwDqkwDqkwDqkp9Ughp9AbbbaladfglahaaaapmxmPsxmPsxmPsxmPsp9Ug8Kp9AbbbaladfhlaoczfgoaC6mbxikkaCTmeaXaEfhlavaEfpbdbh8Kcbhoinalavcj;cbfaofpblbg8La8Aaofpblbg8MpmbzeHdOiAlCvXoQrLg8NaKaofpblbgyaYaofpblbg8PpmbzeHdOiAlCvXoQrLgIpmbezHdiOAlvCXorQLgacep:neaapxebebebebebebebebghp9op:bep9rgaa8Kp:oeg8Kp9Abbbaladfgla8Kaaaapmlvorlvorlvorlvorp:oeg8Kp9Abbbaladfgla8KaaaapmwDqkwDqkwDqkwDqkp:oeg8Kp9Abbbaladfgla8KaaaapmxmPsxmPsxmPsxmPsp:oeg8Kp9Abbbaladfgla8Ka8NaIpmwDKYqk8AExm35Ps8E8Fgacep:neaaahp9op:bep9rgap:oeg8Kp9Abbbaladfgla8Kaaaapmlvorlvorlvorlvorp:oeg8Kp9Abbbaladfgla8KaaaapmwDqkwDqkwDqkwDqkp:oeg8Kp9Abbbaladfgla8KaaaapmxmPsxmPsxmPsxmPsp:oeg8Kp9Abbbaladfgla8Ka8La8MpmwKDYq8AkEx3m5P8Es8Fg8Laya8PpmwKDYq8AkEx3m5P8Es8Fg8MpmbezHdiOAlvCXorQLgacep:neaaahp9op:bep9rgap:oeg8Kp9Abbbaladfgla8Kaaaapmlvorlvorlvorlvorp:oeg8Kp9Abbbaladfgla8KaaaapmwDqkwDqkwDqkwDqkp:oeg8Kp9Abbbaladfgla8KaaaapmxmPsxmPsxmPsxmPsp:oeg8Kp9Abbbaladfgla8Ka8La8MpmwDKYqk8AExm35Ps8E8Fgacep:neaaahp9op:bep9rgap:oeghp9Abbbaladfglahaaaapmlvorlvorlvorlvorp:oeghp9AbbbaladfglahaaaapmwDqkwDqkwDqkwDqkp:oeghp9AbbbaladfglahaaaapmxmPsxmPsxmPsxmPsp:oeg8Kp9AbbbaladfhlaoczfgoaC6mbxdkkaCTmbaXaEfhrcbhocbalcl4gl9Rc8FGhiavaEfpbdbhhinaravcj;cbfaofpblbg8Ka8Aaofpblbg8LpmbzeHdOiAlCvXoQrLg8MaKaofpblbg8NaYaofpblbgypmbzeHdOiAlCvXoQrLg8PpmbezHdiOAlvCXorQLgaaip:Reaaalp:Tep9qgaahp9rghp9Abbbaradfgrahaaaapmlvorlvorlvorlvorp9rghp9AbbbaradfgrahaaaapmwDqkwDqkwDqkwDqkp9rghp9AbbbaradfgrahaaaapmxmPsxmPsxmPsxmPsp9rghp9Abbbaradfgraha8Ma8PpmwDKYqk8AExm35Ps8E8Fgaaip:Reaaalp:Tep9qgap9rghp9Abbbaradfgrahaaaapmlvorlvorlvorlvorp9rghp9AbbbaradfgrahaaaapmwDqkwDqkwDqkwDqkp9rghp9AbbbaradfgrahaaaapmxmPsxmPsxmPsxmPsp9rghp9Abbbaradfgraha8Ka8LpmwKDYq8AkEx3m5P8Es8Fg8Ka8NaypmwKDYq8AkEx3m5P8Es8Fg8LpmbezHdiOAlvCXorQLgaaip:Reaaalp:Tep9qgap9rghp9Abbbaradfgrahaaaapmlvorlvorlvorlvorp9rghp9AbbbaradfgrahaaaapmwDqkwDqkwDqkwDqkp9rghp9AbbbaradfgrahaaaapmxmPsxmPsxmPsxmPsp9rghp9Abbbaradfgraha8Ka8LpmwDKYqk8AExm35Ps8E8Fgaaip:Reaaalp:Tep9qgap9rghp9Abbbaradfgrahaaaapmlvorlvorlvorlvorp9rghp9AbbbaradfgrahaaaapmwDqkwDqkwDqkwDqkp9rghp9AbbbaradfgrahaaaapmxmPsxmPsxmPsxmPsp9rghp9AbbbaradfhraoczfgoaC6mbkkaEclfgEad6mbkdnaXavcjdf9hmbaAad2goTmbaOavcjdfao;8qbbkdnammbavaXaAcufad2fad;8qbbkaAaHfhHc9:hoaQhPaQmbxlkkaeTmbaDalfhrcbhocuhlinaralaD9RglfaD6mdasaeao9Raoasfae6Eaofgoae6mbkaial9RhPkcbc99axaP9RakSEhoxekc9:hokavcj;kbf8Kjjjjbaokwbz:bjjjbkNsezu8Jjjjjbc;ae9Rgv8Kjjjjbc9:hodnalaeci9UgrcHf6mbcuhoaiRbbgwc;WeGc;Ge9hmbawcsGgDce0mbavc;abfcFecje;8kbav9cu83iUav9cu83i8Wav9cu83iyav9cu83iaav9cu83iKav9cu83izav9cu83iwav9cu83ibaialfc9WfhqaicefgwarfhldnaeTmbcmcsaDceSEhkcbhxcbhmcbhrcbhicbhoindnalaq9nmbc9:hoxikdndnawRbbgDc;Ve0mbavc;abfaoaDcu7gPcl4fcsGcitfgsydlhzasydbhHdndnaDcsGgsak9pmbavaiaPfcsGcdtfydbaxasEhDaxasTgOfhxxekdndnascsSmbcehOasc987asamffcefhDxekalcefhDal8SbbgscFeGhPdndnascu9mmbaDhlxekalcvfhlaPcFbGhPcrhsdninaD8SbbgOcFbGastaPVhPaOcu9kmeaDcefhDascrfgsc8J9hmbxdkkaDcefhlkcehOaPce4cbaPceG9R7amfhDkaDhmkavc;abfaocitfgsaDBdbasazBdlavaicdtfaDBdbavc;abfaocefcsGcitfgsaHBdbasaDBdlaocdfhoaOaifhidnadcd9hmbabarcetfgsaH87ebasclfaD87ebascdfaz87ebxdkabarcdtfgsaHBdbascwfaDBdbasclfazBdbxekdnaDcpe0mbavaiaqaDcsGfRbbgscl4gP9RcsGcdtfydbaxcefgOaPEhDavaias9RcsGcdtfydbaOaPTgzfgOascsGgPEhsaPThPdndnadcd9hmbabarcetfgHax87ebaHclfas87ebaHcdfaD87ebxekabarcdtfgHaxBdbaHcwfasBdbaHclfaDBdbkavaicdtfaxBdbavc;abfaocitfgHaDBdbaHaxBdlavaicefgicsGcdtfaDBdbavc;abfaocefcsGcitfgHasBdbaHaDBdlavaiazfgicsGcdtfasBdbavc;abfaocdfcsGcitfgDaxBdbaDasBdlaocifhoaiaPfhiaOaPfhxxekaxcbalRbbgsEgHaDc;:eSgDfhOascsGhAdndnascl4gCmbaOcefhzxekaOhzavaiaC9RcsGcdtfydbhOkdndnaAmbazcefhxxekazhxavaias9RcsGcdtfydbhzkdndnaDTmbalcefhDxekalcdfhDal8SbegPcFeGhsdnaPcu9kmbalcofhHascFbGhscrhldninaD8SbbgPcFbGaltasVhsaPcu9kmeaDcefhDalcrfglc8J9hmbkaHhDxekaDcefhDkasce4cbasceG9R7amfgmhHkdndnaCcsSmbaDhsxekaDcefhsaD8SbbglcFeGhPdnalcu9kmbaDcvfhOaPcFbGhPcrhldninas8SbbgDcFbGaltaPVhPaDcu9kmeascefhsalcrfglc8J9hmbkaOhsxekascefhskaPce4cbaPceG9R7amfgmhOkdndnaAcsSmbashlxekascefhlas8SbbgDcFeGhPdnaDcu9kmbascvfhzaPcFbGhPcrhDdninal8SbbgscFbGaDtaPVhPascu9kmealcefhlaDcrfgDc8J9hmbkazhlxekalcefhlkaPce4cbaPceG9R7amfgmhzkdndnadcd9hmbabarcetfgDaH87ebaDclfaz87ebaDcdfaO87ebxekabarcdtfgDaHBdbaDcwfazBdbaDclfaOBdbkavc;abfaocitfgDaOBdbaDaHBdlavaicdtfaHBdbavc;abfaocefcsGcitfgDazBdbaDaOBdlavaicefgicsGcdtfaOBdbavc;abfaocdfcsGcitfgDaHBdbaDazBdlavaiaCTaCcsSVfgicsGcdtfazBdbaiaATaAcsSVfhiaocifhokawcefhwaocsGhoaicsGhiarcifgrae6mbkkcbc99alaqSEhokavc;aef8Kjjjjbaok:clevu8Jjjjjbcz9Rhvdnalaecvf9pmbc9:skdnaiRbbc;:eGc;qeSmbcuskav9cb83iwaicefhoaialfc98fhrdnaeTmbdnadcdSmbcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcdtfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgiBdbalaiBdbawcefgwae9hmbxdkkcbhwindnaoar6mbc9:skaocefhlao8SbbgicFeGhddndnaicu9mmbalhoxekaocvfhoadcFbGhdcrhidninal8SbbgDcFbGaitadVhdaDcu9kmealcefhlaicrfgic8J9hmbxdkkalcefhokabawcetfadc8Etc8F91adcd47avcwfadceGcdtVglydbfgi87ebalaiBdbawcefgwae9hmbkkcbc99aoarSEk;Toio97eue97aec98Ghedndnadcl9hmbaeTmecbhdinababpbbbgicKp:RecKp:Sep;6eglaicwp:RecKp:Sep;6ealp;Geaiczp:RecKp:Sep;6egvp;Gep;Kep;Legopxbbbbbbbbbbbbbbbbp:2egralpxbbbjbbbjbbbjbbbjgwp9op9rp;Keglpxbb;:9cbb;:9cbb;:9cbb;:9calalp;Meaoaop;Meavaravawp9op9rp;Keglalp;Mep;Kep;Kep;Jep;Negvp;Mepxbbn0bbn0bbn0bbn0grp;KepxFbbbFbbbFbbbFbbbp9oaipxbbbFbbbFbbbFbbbFp9op9qalavp;Mearp;Kecwp:RepxbFbbbFbbbFbbbFbbp9op9qaoavp;Mearp;Keczp:RepxbbFbbbFbbbFbbbFbp9op9qpkbbabczfhbadclfgdae6mbxdkkaeTmbcbhdinabczfgDaDpbbbgipxbbbbbbFFbbbbbbFFgwp9oabpbbbgoaipmbediwDqkzHOAKY8AEgvczp:Reczp:Sep;6eglaoaipmlvorxmPsCXQL358E8FpxFubbFubbFubbFubbp9op;6eavczp:Sep;6egvp;Gealp;Gep;Kep;Legipxbbbbbbbbbbbbbbbbp:2egralpxbbbjbbbjbbbjbbbjgqp9op9rp;Keglpxb;:FSb;:FSb;:FSb;:FSalalp;Meaiaip;Meavaravaqp9op9rp;Keglalp;Mep;Kep;Kep;Jep;Negvp;Mepxbbn0bbn0bbn0bbn0grp;KepxFFbbFFbbFFbbFFbbp9oaiavp;Mearp;Keczp:Rep9qgialavp;Mearp;KepxFFbbFFbbFFbbFFbbp9oglpmwDKYqk8AExm35Ps8E8Fp9qpkbbabaoawp9oaialpmbezHdiOAlvCXorQLp9qpkbbabcafhbadclfgdae6mbkkk;2ileue97euo97dnaec98GgiTmbcbheinabcKfpx:ji:1S:ji:1S:ji:1S:ji:1SabpbbbglabczfgvpbbbgopmlvorxmPsCXQL358E8Fgrczp:Segwpxibbbibbbibbbibbbp9qp;6egDp;NegqaDaDp;MegDaDp;KealaopmbediwDqkzHOAKY8AEgDczp:Reczp:Sep;6eglalp;MeaDczp:Sep;6egoaop;Mearczp:Reczp:Sep;6egrarp;Mep;Kep;Kep;Lepxbbbbbbbbbbbbbbbbp:4ep;Jep;Mepxbbn0bbn0bbn0bbn0gDp;KepxFFbbFFbbFFbbFFbbgkp9oaqaop;MeaDp;Keczp:Rep9qgoaqalp;MeaDp;Keakp9oaqarp;MeaDp;Keczp:Rep9qgDpmwDKYqk8AExm35Ps8E8Fglp5eawclp:RegqpEi:T:j83ibavalp5baqpEd:T:j83ibabcwfaoaDpmbezHdiOAlvCXorQLgDp5eaqpEe:T:j83ibabaDp5baqpEb:T:j83ibabcafhbaeclfgeai6mbkkkuee97dnadcd4ae2c98GgeTmbcbhdinababpbbbgicwp:Recwp:Sep;6eaicep:SepxbbjFbbjFbbjFbbjFp9opxbbjZbbjZbbjZbbjZp:Uep;Mepkbbabczfhbadclfgdae6mbkkk:Sodw97euaec98Ghedndnadcl9hmbaeTmecbhdinabpxbbuJbbuJbbuJbbuJabpbbbgicKp:TeglaicYp:Tep9qgvcdp:Teavp9qgvclp:Teavp9qgop;6ep;Negvaicwp:RecKp:SegraipxFbbbFbbbFbbbFbbbgwp9ogDp:Uep;6ep;Mepxbbn0bbn0bbn0bbn0gqp;Kecwp:RepxbFbbbFbbbFbbbFbbp9oavaDarp:Xeaiczp:RecKp:Segip:Uep;6ep;Meaqp;Keawp9op9qavaDaraip:Uep:Xep;6ep;Meaqp;Keczp:RepxbbFbbbFbbbFbbbFbp9op9qavaoalcep:Rep9oalpxebbbebbbebbbebbbp9op9qp;6ep;Meaqp;KecKp:Rep9qpkbbabczfhbadclfgdae6mbxdkkaeTmbcbhdinabczfgkpxbFu9hbFu9hbFu9hbFu9habpbbbglakpbbbgrpmlvorxmPsCXQL358E8Fgvczp:TegqavcHp:Tep9qgicdp:Teaip9qgiclp:Teaip9qgicwp:Teaip9qgop;6ep;NegialarpmbediwDqkzHOAKY8AEgDpxFFbbFFbbFFbbFFbbglp9ograDczp:Segwp:Ueavczp:Reczp:SegDp:Xep;6ep;Mepxbbn0bbn0bbn0bbn0gvp;Kealp9oaiarawaDp:Uep:Xep;6ep;Meavp;Keczp:Rep9qgwaiaoaqcep:Rep9oaqpxebbbebbbebbbebbbp9op9qp;6ep;Meavp;Keczp:ReaiaDarp:Uep;6ep;Meavp;Kealp9op9qgipmwDKYqk8AExm35Ps8E8FpkbbabawaipmbezHdiOAlvCXorQLpkbbabcafhbadclfgdae6mbkkk9teiucbcbydj:G:cjbgeabcifc98GfgbBdj:G:cjbdndnabZbcztgd9nmbcuhiabad9RcFFifcz4nbcuSmekaehikaikkxebcj:Gdklz:zbb'; // embed! simd
+
+		var detector = new Uint8Array([
+			0, 97, 115, 109, 1, 0, 0, 0, 1, 4, 1, 96, 0, 0, 3, 3, 2, 0, 0, 5, 3, 1, 0, 1, 12, 1, 0, 10, 22, 2, 12, 0, 65, 0, 65, 0, 65, 0, 252, 10, 0, 0,
+			11, 7, 0, 65, 0, 253, 15, 26, 11,
+		]);
+		var wasmpack = new Uint8Array([
+			32, 0, 65, 2, 1, 106, 34, 33, 3, 128, 11, 4, 13, 64, 6, 253, 10, 7, 15, 116, 127, 5, 8, 12, 40, 16, 19, 54, 20, 9, 27, 255, 113, 17, 42, 67,
+			24, 23, 146, 148, 18, 14, 22, 45, 70, 69, 56, 114, 101, 21, 25, 63, 75, 136, 108, 28, 118, 29, 73, 115,
+		]);
+
+		if (typeof WebAssembly !== 'object') {
+			return {
+				supported: false,
+			};
+		}
+
+		var wasm = WebAssembly.validate(detector) ? unpack(wasm_simd) : unpack(wasm_base);
+
+		var instance;
+
+		var ready = WebAssembly.instantiate(wasm, {}).then(function (result) {
+			instance = result.instance;
+			instance.exports.__wasm_call_ctors();
+		});
+
+		function unpack(data) {
+			var result = new Uint8Array(data.length);
+			for (var i = 0; i < data.length; ++i) {
+				var ch = data.charCodeAt(i);
+				result[i] = ch > 96 ? ch - 97 : ch > 64 ? ch - 39 : ch + 4;
+			}
+			var write = 0;
+			for (var i = 0; i < data.length; ++i) {
+				result[write++] = result[i] < 60 ? wasmpack[result[i]] : (result[i] - 60) * 64 + result[++i];
+			}
+			return result.buffer.slice(0, write);
+		}
+
+		function decode(instance, fun, target, count, size, source, filter) {
+			var sbrk = instance.exports.sbrk;
+			var count4 = (count + 3) & ~3;
+			var tp = sbrk(count4 * size);
+			var sp = sbrk(source.length);
+			var heap = new Uint8Array(instance.exports.memory.buffer);
+			heap.set(source, sp);
+			var res = fun(tp, count, size, sp, source.length);
+			if (res == 0 && filter) {
+				filter(tp, count4, size);
+			}
+			target.set(heap.subarray(tp, tp + count * size));
+			sbrk(tp - sbrk(0));
+			if (res != 0) {
+				throw new Error('Malformed buffer data: ' + res);
+			}
+		}
+
+		var filters = {
+			NONE: '',
+			OCTAHEDRAL: 'meshopt_decodeFilterOct',
+			QUATERNION: 'meshopt_decodeFilterQuat',
+			EXPONENTIAL: 'meshopt_decodeFilterExp',
+			COLOR: 'meshopt_decodeFilterColor',
+		};
+
+		var decoders = {
+			ATTRIBUTES: 'meshopt_decodeVertexBuffer',
+			TRIANGLES: 'meshopt_decodeIndexBuffer',
+			INDICES: 'meshopt_decodeIndexSequence',
+		};
+
+		var workers = [];
+		var requestId = 0;
+
+		function createWorker(url) {
+			var worker = {
+				object: new Worker(url),
+				pending: 0,
+				requests: {},
+			};
+
+			worker.object.onmessage = function (event) {
+				var data = event.data;
+
+				worker.pending -= data.count;
+				worker.requests[data.id][data.action](data.value);
+				delete worker.requests[data.id];
+			};
+
+			return worker;
+		}
+
+		function initWorkers(count) {
+			var source =
+				'self.ready = WebAssembly.instantiate(new Uint8Array([' +
+				new Uint8Array(wasm) +
+				']), {})' +
+				'.then(function(result) { result.instance.exports.__wasm_call_ctors(); return result.instance; });' +
+				'self.onmessage = ' +
+				workerProcess.name +
+				';' +
+				decode.toString() +
+				workerProcess.toString();
+
+			var blob = new Blob([source], { type: 'text/javascript' });
+			var url = URL.createObjectURL(blob);
+
+			for (var i = workers.length; i < count; ++i) {
+				workers[i] = createWorker(url);
+			}
+
+			for (var i = count; i < workers.length; ++i) {
+				workers[i].object.postMessage({});
+			}
+
+			workers.length = count;
+
+			URL.revokeObjectURL(url);
+		}
+
+		function decodeWorker(count, size, source, mode, filter) {
+			var worker = workers[0];
+
+			for (var i = 1; i < workers.length; ++i) {
+				if (workers[i].pending < worker.pending) {
+					worker = workers[i];
+				}
+			}
+
+			return new Promise(function (resolve, reject) {
+				var data = new Uint8Array(source);
+				var id = ++requestId;
+
+				worker.pending += count;
+				worker.requests[id] = { resolve: resolve, reject: reject };
+				worker.object.postMessage({ id: id, count: count, size: size, source: data, mode: mode, filter: filter }, [data.buffer]);
+			});
+		}
+
+		function workerProcess(event) {
+			var data = event.data;
+			self.ready.then(function (instance) {
+				if (!data.id) {
+					return self.close();
+				}
+				try {
+					var target = new Uint8Array(data.count * data.size);
+					decode(instance, instance.exports[data.mode], target, data.count, data.size, data.source, instance.exports[data.filter]);
+					self.postMessage({ id: data.id, count: data.count, action: 'resolve', value: target }, [target.buffer]);
+				} catch (error) {
+					self.postMessage({ id: data.id, count: data.count, action: 'reject', value: error });
+				}
+			});
+		}
+
+		return {
+			ready: ready,
+			supported: true,
+			useWorkers: function (count) {
+				initWorkers(count);
+			},
+			decodeVertexBuffer: function (target, count, size, source, filter) {
+				decode(instance, instance.exports.meshopt_decodeVertexBuffer, target, count, size, source, instance.exports[filters[filter]]);
+			},
+			decodeIndexBuffer: function (target, count, size, source) {
+				decode(instance, instance.exports.meshopt_decodeIndexBuffer, target, count, size, source);
+			},
+			decodeIndexSequence: function (target, count, size, source) {
+				decode(instance, instance.exports.meshopt_decodeIndexSequence, target, count, size, source);
+			},
+			decodeGltfBuffer: function (target, count, size, source, mode, filter) {
+				decode(instance, instance.exports[decoders[mode]], target, count, size, source, instance.exports[filters[filter]]);
+			},
+			decodeGltfBufferAsync: function (count, size, source, mode, filter) {
+				if (workers.length > 0) {
+					return decodeWorker(count, size, source, decoders[mode], filters[filter]);
+				}
+
+				return ready.then(function () {
+					var target = new Uint8Array(count * size);
+					decode(instance, instance.exports[decoders[mode]], target, count, size, source, instance.exports[filters[filter]]);
+					return target;
+				});
+			},
+		};
+	})();
+
+	var CHANNEL_NAMES = Object.freeze({
+	  Position: "position",
+	  Normal: "normal",
+	  Tangent: "tangent",
+	  Binormal: "binormal",
+	  TexCoord: "texcoord",
+	  Color: "color",
+	  BoneIndices: "blendIndice",
+	  BoneWeights: "blendWeight",
+	  PackedTangent: "packedTangent",
+	  PackedTangentLegacy: "packedTangentLegacy"
+	});
+
+	/** Decodes geometry sync into a normalized CMF format reader result. */
+	function decodeGeometrySync(result, sourceBytes) {
+	  var sections = result.sections.map((section, index) => decodeSectionSync(section, index, sourceBytes));
+	  attachGeometry(result, sections);
+	  return result;
+	}
+
+	/** Decodes geometry async into a normalized CMF format reader result. */
+	function decodeGeometryAsync(_x, _x2) {
+	  return _decodeGeometryAsync.apply(this, arguments);
+	}
+	function _decodeGeometryAsync() {
+	  _decodeGeometryAsync = _asyncToGenerator(function* (result, sourceBytes) {
+	    yield MeshoptDecoder.ready;
+	    var sections = result.sections.map((section, index) => decodeSectionWithMeshopt(section, index, sourceBytes));
+	    attachGeometry(result, sections);
+	    return result;
+	  });
+	  return _decodeGeometryAsync.apply(this, arguments);
+	}
+	function decodeSectionSync(section, index, sourceBytes) {
+	  if (section.compression !== "None") {
+	    throw new Error("CMF compressed GPU buffers require ReadAsync/readAsync so meshoptimizer can initialize");
+	  }
+	  return sectionBytes(section, index, sourceBytes);
+	}
+	function decodeSectionWithMeshopt(section, index, sourceBytes) {
+	  var source = sectionBytes(section, index, sourceBytes);
+	  if (section.compression === "None") {
+	    return source;
+	  }
+	  var target = new Uint8Array(section.uncompressedSize);
+	  var count = section.gpuAlignment === 0 ? 0 : section.uncompressedSize / section.gpuAlignment;
+	  if (section.compression === "MeshOptimizerVertexBuffer") {
+	    MeshoptDecoder.decodeVertexBuffer(target, count, section.gpuAlignment, source);
+	    return target;
+	  }
+	  if (section.compression === "MeshOptimizerIndexBuffer") {
+	    MeshoptDecoder.decodeIndexBuffer(target, count, section.gpuAlignment, source);
+	    return target;
+	  }
+	  throw new Error("Unsupported CMF section compression \"".concat(section.compression, "\""));
+	}
+	function sectionBytes(section, index, sourceBytes) {
+	  if (index === 0 || section.type !== "GpuBuffer") {
+	    return null;
+	  }
+	  return sourceBytes.subarray(section.offset, section.offset + section.compressedSize);
+	}
+	function attachGeometry(result, sectionData) {
+	  result.buffers = result.sections.map((section, index) => {
+	    var _data$byteLength;
+	    var data = sectionData[index];
+	    return {
+	      index,
+	      type: section.type,
+	      compression: section.compression,
+	      byteLength: (_data$byteLength = data === null || data === void 0 ? void 0 : data.byteLength) != null ? _data$byteLength : 0,
+	      data
+	    };
+	  });
+	  for (var mesh of result.meshes) {
+	    for (var lod of mesh.lods) {
+	      lod.vertex = readVertexChannels(mesh.decl, lod.vb, sectionData);
+	      lod.indices = readIndexGroups(mesh, lod, sectionData);
+	      for (var i = 0; i < lod.morphTargets.length; i++) {
+	        var _ref, _mesh$morphTargets$ta, _mesh$morphTargets$ta2, _ref2, _mesh$morphTargets$ta3, _mesh$morphTargets$ta4;
+	        var target = lod.morphTargets[i];
+	        target.vertex = readVertexChannels(mesh.morphTargets.decl, target.vb, sectionData);
+	        target.name = (_ref = (_mesh$morphTargets$ta = (_mesh$morphTargets$ta2 = mesh.morphTargets.targets[i]) === null || _mesh$morphTargets$ta2 === void 0 ? void 0 : _mesh$morphTargets$ta2.name) != null ? _mesh$morphTargets$ta : target.name) != null ? _ref : "";
+	        target.maxDisplacement = (_ref2 = (_mesh$morphTargets$ta3 = (_mesh$morphTargets$ta4 = mesh.morphTargets.targets[i]) === null || _mesh$morphTargets$ta4 === void 0 ? void 0 : _mesh$morphTargets$ta4.maxDisplacement) != null ? _mesh$morphTargets$ta3 : target.maxDisplacement) != null ? _ref2 : 0;
+	      }
+	    }
+	    if (mesh.lods.length > 0) {
+	      mesh.vertex = mesh.lods[0].vertex;
+	      mesh.indices = mesh.lods[0].indices;
+	    } else {
+	      mesh.vertex = createVertexChannels();
+	      mesh.indices = [];
+	    }
+	  }
+	}
+	function readVertexChannels(decl, view, sectionData) {
+	  var channels = createVertexChannels();
+	  var bytes = viewData(view, sectionData);
+	  if (!bytes || view.stride === 0) {
+	    return channels;
+	  }
+	  var reader = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+	  var count = Math.floor(view.size / view.stride);
+	  for (var element of decl) {
+	    var channel = channelName(element);
+	    if (!channels[channel]) channels[channel] = [];
+	    for (var vertex = 0; vertex < count; vertex++) {
+	      var base = vertex * view.stride + element.offset;
+	      for (var component = 0; component < element.elementCount; component++) {
+	        channels[channel].push(readElementComponent(reader, base, element.type, component));
+	      }
+	    }
+	  }
+	  return channels;
+	}
+	function readIndexGroups(mesh, lod, sectionData) {
+	  if (mesh.topology === "PointList") {
+	    return lod.areas.map((area, areaIndex) => {
+	      var _mesh$areas$areaIndex, _mesh$areas$areaIndex2;
+	      return {
+	        name: (_mesh$areas$areaIndex = (_mesh$areas$areaIndex2 = mesh.areas[areaIndex]) === null || _mesh$areas$areaIndex2 === void 0 ? void 0 : _mesh$areas$areaIndex2.name) != null ? _mesh$areas$areaIndex : "",
+	        bytesPerIndex: 0,
+	        firstElement: area.firstElement,
+	        elementCount: area.elementCount,
+	        pointCount: area.elementCount,
+	        faces: []
+	      };
+	    });
+	  }
+	  var bytes = viewData(lod.ib, sectionData);
+	  if (!bytes || lod.ib.stride === 0) {
+	    return [];
+	  }
+	  var reader = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+	    allFaces = readIndices(reader, lod.ib.size, lod.ib.stride);
+	  if (lod.areas.length === 0) {
+	    return [{
+	      name: "",
+	      bytesPerIndex: lod.ib.stride,
+	      faces: allFaces
+	    }];
+	  }
+	  return lod.areas.map((area, areaIndex) => {
+	    var _sourceArea$name;
+	    var sourceArea = mesh.areas[areaIndex];
+	    return {
+	      name: (_sourceArea$name = sourceArea === null || sourceArea === void 0 ? void 0 : sourceArea.name) != null ? _sourceArea$name : "",
+	      bytesPerIndex: lod.ib.stride,
+	      firstElement: area.firstElement,
+	      elementCount: area.elementCount,
+	      faces: allFaces.slice(area.firstElement * 3, (area.firstElement + area.elementCount) * 3)
+	    };
+	  });
+	}
+	function readIndices(reader, byteSize, stride) {
+	  var result = [];
+	  for (var offset = 0; offset < byteSize; offset += stride) {
+	    if (stride === 2) result.push(reader.getUint16(offset, true));else if (stride === 4) result.push(reader.getUint32(offset, true));else result.push(reader.getUint8(offset));
+	  }
+	  return result;
+	}
+	function viewData(view, sectionData) {
+	  var section = sectionData[view.index];
+	  if (!section || view.size === 0) {
+	    return null;
+	  }
+	  return section.subarray(view.offset, view.offset + view.size);
+	}
+	function channelName(element) {
+	  var _CHANNEL_NAMES$elemen;
+	  var base = (_CHANNEL_NAMES$elemen = CHANNEL_NAMES[element.usage]) != null ? _CHANNEL_NAMES$elemen : lowerFirst(element.usage);
+	  if (element.usage === "TexCoord" || element.usage === "Color") {
+	    return "".concat(base).concat(element.usageIndex);
+	  }
+	  if (element.usageIndex > 0) {
+	    return "".concat(base).concat(element.usageIndex);
+	  }
+	  return base;
+	}
+	function createVertexChannels() {
+	  return {
+	    position: [],
+	    normal: [],
+	    tangent: [],
+	    binormal: [],
+	    texcoord0: [],
+	    texcoord1: [],
+	    color0: [],
+	    blendIndice: [],
+	    blendWeight: [],
+	    packedTangent: [],
+	    packedTangentLegacy: []
+	  };
+	}
+	function readElementComponent(reader, base, type, component) {
+	  var offset = base + component * elementTypeSize$1(type);
+	  return readElementComponent$1(reader, offset, type);
+	}
+	function lowerFirst(value) {
+	  return value ? value[0].toLowerCase() + value.slice(1) : value;
+	}
+
+	var UINT8_MAX$1 = 0xff;
+	var UINT16_MAX = 0xffff;
+	var UINT32_MAX$1 = 0xffffffff;
+	var FLOAT32_MAX$2 = 3.4028234663852886e38;
+	function invalid(message, options) {
+	  var prefix = (options === null || options === void 0 ? void 0 : options.phase) === "write" ? "CMF write" : "Invalid CMF";
+	  var error = new Error("".concat(prefix, ": ").concat(message));
+	  error.code = (options === null || options === void 0 ? void 0 : options.phase) === "write" ? "CJS_FORMAT_WRITE_ERROR" : "CJS_FORMAT_INVALID_DATA";
+	  throw error;
+	}
+	function array(value, label, options) {
+	  var fallback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+	  if (value === undefined || value === null) return fallback;
+	  if (!Array.isArray(value)) invalid("".concat(label, " must be an array"), options);
+	  return value;
+	}
+	function uint(value, max, label, options) {
+	  if (!Number.isInteger(value) || value < 0 || value > max) {
+	    invalid("".concat(label, " must be an unsigned integer within 0..").concat(max), options);
+	  }
+	  return value;
+	}
+	function finiteFloat(value, label, options) {
+	  if (!Number.isFinite(value) || !Number.isFinite(Math.fround(value))) {
+	    invalid("".concat(label, " must be a finite Float32 value"), options);
+	  }
+	  return value;
+	}
+	function finiteArray(value, count, label, options) {
+	  if (!Array.isArray(value) || value.length !== count) {
+	    invalid("".concat(label, " must contain ").concat(count, " values"), options);
+	  }
+	  for (var index = 0; index < value.length; index++) {
+	    finiteFloat(value[index], "".concat(label, "[").concat(index, "]"), options);
+	  }
+	}
+	function numericArray(value, count, label, options) {
+	  if (!Array.isArray(value) || value.length !== count) {
+	    invalid("".concat(label, " must contain ").concat(count, " values"), options);
+	  }
+	  for (var index = 0; index < value.length; index++) {
+	    if (typeof value[index] !== "number") invalid("".concat(label, "[").concat(index, "] must be a number"), options);
+	  }
+	}
+	function name$2(value, label, options) {
+	  var allowEmpty = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+	  if (typeof value !== "string") invalid("".concat(label, " must be a string"), options);
+	  if (!allowEmpty && !value) invalid("".concat(label, " must not be empty"), options);
+	}
+	function uniqueNames(values, label, options) {
+	  var allowEmpty = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+	  var seen = new Set();
+	  for (var index = 0; index < values.length; index++) {
+	    var value = values[index];
+	    name$2(value, "".concat(label, " ").concat(index), options, allowEmpty);
+	    if (seen.has(value)) invalid("".concat(label, " contains duplicate name ").concat(JSON.stringify(value)), options);
+	    seen.add(value);
+	  }
+	}
+	function validateBounds(bounds, label, options) {
+	  if (bounds === undefined || bounds === null) return;
+	  if (typeof bounds !== "object" || Array.isArray(bounds)) invalid("".concat(label, " must be an object"), options);
+	  numericArray(bounds.min, 3, "".concat(label, ".min"), options);
+	  numericArray(bounds.max, 3, "".concat(label, ".max"), options);
+	  // Carbon uses this exact FLT_MAX/-FLT_MAX pair for an AABB that has not
+	  // been initialized yet, and deliberately exempts it from ordering checks.
+	  if (bounds.min.every(value => value === FLOAT32_MAX$2) && bounds.max.every(value => value === -FLOAT32_MAX$2)) {
+	    return;
+	  }
+	  for (var axis = 0; axis < 3; axis++) {
+	    if (bounds.max[axis] < bounds.min[axis]) invalid("".concat(label, " has max below min on axis ").concat(axis), options);
+	  }
+	}
+	function validateVertexDeclaration(value, label, options) {
+	  var decl = array(value, label, options);
+	  if (!decl.length) invalid("".concat(label, " is empty"), options);
+	  var keys = new Set();
+	  var hasPosition = false;
+	  for (var index = 0; index < decl.length; index++) {
+	    var _element$usageIndex, _element$offset;
+	    var element = decl[index];
+	    if (!element || typeof element !== "object") invalid("".concat(label, "[").concat(index, "] must be an object"), options);
+	    if (!Usage$1.includes(element.usage)) invalid("".concat(label, "[").concat(index, "] has invalid usage"), options);
+	    if (!ElementType.includes(element.type)) invalid("".concat(label, "[").concat(index, "] has invalid element type"), options);
+	    var usageIndex = uint((_element$usageIndex = element.usageIndex) != null ? _element$usageIndex : 0, UINT8_MAX$1, "".concat(label, "[").concat(index, "].usageIndex"), options);
+	    var elementCount = uint(element.elementCount, UINT8_MAX$1, "".concat(label, "[").concat(index, "].elementCount"), options);
+	    var offset = uint((_element$offset = element.offset) != null ? _element$offset : 0, UINT32_MAX$1, "".concat(label, "[").concat(index, "].offset"), options);
+	    if (elementCount < 1 || elementCount > 4) invalid("".concat(label, "[").concat(index, "] elementCount must be within 1..4"), options);
+	    var key = "".concat(element.usage, "\0").concat(usageIndex);
+	    if (keys.has(key)) invalid("".concat(label, " contains duplicate ").concat(element.usage, "[").concat(usageIndex, "]"), options);
+	    keys.add(key);
+	    if (element.usage === "Position" && usageIndex === 0) hasPosition = true;
+	    var componentSize = elementTypeSize$1(element.type);
+	    if (offset % componentSize) invalid("".concat(label, "[").concat(index, "] offset is not aligned to its element type"), options);
+	    if (element.usage === "BoneIndices" && (usageIndex !== 0 || !["UInt8", "UInt16"].includes(element.type))) {
+	      invalid("".concat(label, "[").concat(index, "] BoneIndices must be usage 0 with UInt8 or UInt16 storage"), options);
+	    }
+	    if (element.usage === "PackedTangent" && (element.type !== "Int16Norm" || elementCount !== 4)) {
+	      invalid("".concat(label, "[").concat(index, "] PackedTangent must be Int16Norm4"), options);
+	    }
+	    if (element.usage === "PackedTangentLegacy" && (!["UInt16Norm", "UInt8Norm"].includes(element.type) || elementCount !== 4)) {
+	      invalid("".concat(label, "[").concat(index, "] PackedTangentLegacy must be UInt16Norm4 or UInt8Norm4"), options);
+	    }
+	  }
+	  if (!hasPosition) invalid("".concat(label, " has no Position[0] element"), options);
+	  for (var leftIndex = 0; leftIndex < decl.length; leftIndex++) {
+	    var left = decl[leftIndex];
+	    var leftEnd = left.offset + left.elementCount * elementTypeSize$1(left.type);
+	    for (var rightIndex = leftIndex + 1; rightIndex < decl.length; rightIndex++) {
+	      var right = decl[rightIndex];
+	      var rightEnd = right.offset + right.elementCount * elementTypeSize$1(right.type);
+	      if (left.offset < rightEnd && right.offset < leftEnd) {
+	        invalid("".concat(label, " elements ").concat(leftIndex, " and ").concat(rightIndex, " overlap"), options);
+	      }
+	    }
+	  }
+	  var _loop = function (packed) {
+	    if (decl.some(element => element.usageIndex === packed.usageIndex && ["Normal", "Tangent", "Binormal"].includes(element.usage))) {
+	      invalid("".concat(label, " mixes ").concat(packed.usage, " with an unpacked tangent frame at usage ").concat(packed.usageIndex), options);
+	    }
+	  };
+	  for (var packed of decl.filter(element => element.usage === "PackedTangent" || element.usage === "PackedTangentLegacy")) {
+	    _loop(packed);
+	  }
+	  return decl;
+	}
+	function bufferEntry(graph, index) {
+	  var _graph$buffers, _buffers$find, _buffers$find2, _entry$data;
+	  var buffers = (_graph$buffers = graph.buffers) != null ? _graph$buffers : [];
+	  var entry = (_buffers$find = (_buffers$find2 = buffers.find) === null || _buffers$find2 === void 0 ? void 0 : _buffers$find2.call(buffers, item => item && item.index === index)) != null ? _buffers$find : buffers[index];
+	  var data = (_entry$data = entry === null || entry === void 0 ? void 0 : entry.data) != null ? _entry$data : entry instanceof Uint8Array ? entry : null;
+	  if (!data) return null;
+	  return data instanceof Uint8Array ? data : ArrayBuffer.isView(data) ? new Uint8Array(data.buffer, data.byteOffset, data.byteLength) : data instanceof ArrayBuffer ? new Uint8Array(data) : null;
+	}
+	function validateBufferView(view, label, graph, options) {
+	  var _view$index, _view$offset, _view$size, _view$stride;
+	  if (!view || typeof view !== "object") invalid("".concat(label, " must be an object"), options);
+	  var index = uint((_view$index = view.index) != null ? _view$index : 0, UINT32_MAX$1, "".concat(label, ".index"), options);
+	  var offset = uint((_view$offset = view.offset) != null ? _view$offset : 0, UINT32_MAX$1, "".concat(label, ".offset"), options);
+	  var size = uint((_view$size = view.size) != null ? _view$size : 0, UINT32_MAX$1, "".concat(label, ".size"), options);
+	  var stride = uint((_view$stride = view.stride) != null ? _view$stride : 0, UINT32_MAX$1, "".concat(label, ".stride"), options);
+	  if (!size) return;
+	  if (index === 0) invalid("".concat(label, " uses reserved Data section index 0"), options);
+	  if (stride && (size % stride || offset % stride)) {
+	    invalid("".concat(label, " size and offset must be multiples of stride"), options);
+	  }
+	  var sections = graph.sections;
+	  if (Array.isArray(sections)) {
+	    if (index >= sections.length) invalid("".concat(label, " references section ").concat(index, " outside the header"), options);
+	    var section = sections[index];
+	    if (section.type === "Metadata") invalid("".concat(label, " references the Metadata section"), options);
+	    if (offset + size > section.uncompressedSize) invalid("".concat(label, " exceeds section ").concat(index), options);
+	    if (section.gpuAlignment && stride !== section.gpuAlignment) {
+	      invalid("".concat(label, " stride does not match section ").concat(index, " GPU alignment"), options);
+	    }
+	  }
+	  var bytes = bufferEntry(graph, index);
+	  if (bytes && offset + size > bytes.byteLength) invalid("".concat(label, " exceeds supplied buffer ").concat(index), options);
+	  if (!bytes && (options === null || options === void 0 ? void 0 : options.phase) === "write") invalid("".concat(label, " has no supplied buffer ").concat(index), options);
+	}
+	function validateFiniteVertexBuffer(decl, view, graph, label, options) {
+	  var bytes = bufferEntry(graph, view.index);
+	  if (!bytes || !view.size || !view.stride) return;
+	  var data = new DataView(bytes.buffer, bytes.byteOffset + view.offset, view.size);
+	  var vertexCount = view.size / view.stride;
+	  for (var element of decl) {
+	    if (element.type !== "Float32" && element.type !== "Float16") continue;
+	    for (var vertex = 0; vertex < vertexCount; vertex++) {
+	      for (var component = 0; component < element.elementCount; component++) {
+	        var offset = vertex * view.stride + element.offset + component * elementTypeSize$1(element.type);
+	        if (!Number.isFinite(readElementComponent$1(data, offset, element.type))) {
+	          invalid("".concat(label, " contains a non-finite ").concat(element.usage, "[").concat(element.usageIndex, "] value"), options);
+	        }
+	      }
+	    }
+	  }
+	}
+	function validateMeshLod(mesh, lod, lodIndex, graph, options) {
+	  if (!lod || typeof lod !== "object") invalid("mesh ".concat(JSON.stringify(mesh.name), " LOD ").concat(lodIndex, " must be an object"), options);
+	  var label = "mesh ".concat(JSON.stringify(mesh.name), " LOD ").concat(lodIndex);
+	  validateBufferView(lod.vb, "".concat(label, " vertex buffer"), graph, options);
+	  validateBufferView(lod.ib, "".concat(label, " index buffer"), graph, options);
+	  if (!lod.vb.size) invalid("".concat(label, " has no vertex buffer"), options);
+	  if (!lod.vb.stride) invalid("".concat(label, " has vertex stride 0"), options);
+	  if (mesh.topology === "PointList") {
+	    if (lod.ib.size) invalid("".concat(label, " PointList has an index buffer"), options);
+	  } else {
+	    if (!lod.ib.size) invalid("".concat(label, " has no index buffer"), options);
+	    if (lod.ib.stride !== 2 && lod.ib.stride !== 4) invalid("".concat(label, " index stride must be 2 or 4"), options);
+	    if (lod.ib.size / lod.ib.stride % 3) invalid("".concat(label, " index buffer does not contain complete triangles"), options);
+	  }
+	  var lodAreas = array(lod.areas, "".concat(label, " areas"), options);
+	  if (lodAreas.length !== mesh.areas.length) invalid("".concat(label, " area count does not match the mesh"), options);
+	  var elementWidth = mesh.topology === "PointList" ? 1 : 3;
+	  var elementLimit = mesh.topology === "PointList" ? lod.vb.size / lod.vb.stride : lod.ib.size / lod.ib.stride;
+	  for (var areaIndex = 0; areaIndex < lodAreas.length; areaIndex++) {
+	    var _area$firstElement, _area$elementCount;
+	    var area = lodAreas[areaIndex];
+	    if (!area || typeof area !== "object") invalid("".concat(label, " area ").concat(areaIndex, " must be an object"), options);
+	    var first = uint((_area$firstElement = area.firstElement) != null ? _area$firstElement : 0, UINT32_MAX$1, "".concat(label, " area ").concat(areaIndex, ".firstElement"), options);
+	    var count = uint((_area$elementCount = area.elementCount) != null ? _area$elementCount : 0, UINT32_MAX$1, "".concat(label, " area ").concat(areaIndex, ".elementCount"), options);
+	    if (first * elementWidth + count * elementWidth > elementLimit) {
+	      invalid("".concat(label, " area ").concat(areaIndex, " exceeds the vertex/index range"), options);
+	    }
+	  }
+	  var morphs = array(lod.morphTargets, "".concat(label, " morph targets"), options);
+	  if (morphs.length !== mesh.morphTargets.targets.length) {
+	    invalid("".concat(label, " morph target count does not match the mesh"), options);
+	  }
+	  var morphStride = null;
+	  for (var morphIndex = 0; morphIndex < morphs.length; morphIndex++) {
+	    var _morphs$morphIndex;
+	    var view = (_morphs$morphIndex = morphs[morphIndex]) === null || _morphs$morphIndex === void 0 ? void 0 : _morphs$morphIndex.vb;
+	    validateBufferView(view, "".concat(label, " morph target ").concat(morphIndex), graph, options);
+	    if (!view.size) continue;
+	    if (!view.stride) invalid("".concat(label, " morph target ").concat(morphIndex, " has stride 0"), options);
+	    if (view.size / view.stride !== lod.vb.size / lod.vb.stride) {
+	      invalid("".concat(label, " morph target ").concat(morphIndex, " vertex count differs from the LOD"), options);
+	    }
+	    if (morphStride === null) morphStride = view.stride;else if (morphStride !== view.stride) invalid("".concat(label, " morph target strides differ"), options);
+	    for (var element of mesh.morphTargets.decl) {
+	      if (element.offset + element.elementCount * elementTypeSize$1(element.type) > view.stride) {
+	        invalid("".concat(label, " morph vertex element extends past the stride"), options);
+	      }
+	    }
+	    validateFiniteVertexBuffer(mesh.morphTargets.decl, view, graph, "".concat(label, " morph target ").concat(morphIndex), options);
+	  }
+	  for (var _element of mesh.decl) {
+	    if (_element.offset + _element.elementCount * elementTypeSize$1(_element.type) > lod.vb.stride) {
+	      invalid("".concat(label, " vertex element extends past the stride"), options);
+	    }
+	  }
+	  validateFiniteVertexBuffer(mesh.decl, lod.vb, graph, "".concat(label, " vertex buffer"), options);
+	}
+	function validateAudioOcclusionMesh(value, meshLabel, options) {
+	  var mesh = value != null ? value : {};
+	  var vertices = array(mesh.vertices, "".concat(meshLabel, " audio vertices"), options);
+	  var indices = array(mesh.indices, "".concat(meshLabel, " audio indices"), options);
+	  if (vertices.length && !indices.length) invalid("".concat(meshLabel, " audio mesh has vertices without indices"), options);
+	  if (indices.length && !vertices.length) invalid("".concat(meshLabel, " audio mesh has indices without vertices"), options);
+	  if (indices.length % 3) invalid("".concat(meshLabel, " audio mesh does not contain complete triangles"), options);
+	  vertices.forEach((vertex, index) => numericArray(vertex, 3, "".concat(meshLabel, " audio vertex ").concat(index), options));
+	  indices.forEach((index, position) => {
+	    uint(index, UINT16_MAX, "".concat(meshLabel, " audio index ").concat(position), options);
+	    if (index >= vertices.length) invalid("".concat(meshLabel, " audio index ").concat(position, " is out of range"), options);
+	  });
+	  validateBounds(mesh.bounds, "".concat(meshLabel, " audio bounds"), options);
+	}
+	function validateMesh(mesh, meshIndex, graph, options) {
+	  var _mesh$name, _mesh$name2, _mesh$topology, _mesh$morphTargets, _mesh$name3;
+	  if (!mesh || typeof mesh !== "object") invalid("mesh ".concat(meshIndex, " must be an object"), options);
+	  name$2((_mesh$name = mesh.name) != null ? _mesh$name : "", "mesh ".concat(meshIndex, " name"), options);
+	  var label = "mesh ".concat(JSON.stringify((_mesh$name2 = mesh.name) != null ? _mesh$name2 : ""));
+	  var decl = validateVertexDeclaration(mesh.decl, "".concat(label, " declaration"), options);
+	  var topology = (_mesh$topology = mesh.topology) != null ? _mesh$topology : "TriangleList";
+	  if (!MeshTopology.includes(topology)) invalid("".concat(label, " has invalid topology"), options);
+	  var areas = array(mesh.areas, "".concat(label, " areas"), options);
+	  var boneBindings = array(mesh.boneBindings, "".concat(label, " bone bindings"), options);
+	  var lods = array(mesh.lods, "".concat(label, " LODs"), options);
+	  if (!lods.length) invalid("".concat(label, " has no LODs"), options);
+	  var thresholds = lods.map((lod, index) => {
+	    var _lod$threshold;
+	    return uint((_lod$threshold = lod === null || lod === void 0 ? void 0 : lod.threshold) != null ? _lod$threshold : index === 0 ? UINT32_MAX$1 : undefined, UINT32_MAX$1, "".concat(label, " LOD ").concat(index, " threshold"), options);
+	  });
+	  if (thresholds[0] !== UINT32_MAX$1) invalid("".concat(label, " first LOD threshold is not 0xffffffff"), options);
+	  for (var index = 1; index < thresholds.length; index++) {
+	    if (thresholds[index] >= thresholds[index - 1]) {
+	      invalid("".concat(label, " LOD thresholds are not strictly descending at ").concat(index), options);
+	    }
+	  }
+	  var morphTargets = (_mesh$morphTargets = mesh.morphTargets) != null ? _mesh$morphTargets : {
+	    decl: [],
+	    targets: []
+	  };
+	  if (!morphTargets || typeof morphTargets !== "object") invalid("".concat(label, " morphTargets must be an object"), options);
+	  var targets = array(morphTargets.targets, "".concat(label, " morph target metadata"), options);
+	  var morphDecl = array(morphTargets.decl, "".concat(label, " morph declaration"), options);
+	  if (targets.length) {
+	    morphDecl = validateVertexDeclaration(morphDecl, "".concat(label, " morph declaration"), options);
+	    var _loop2 = function (element) {
+	      if (!decl.some(base => base.usage === element.usage && base.usageIndex === element.usageIndex)) {
+	        invalid("".concat(label, " morph declaration is not a subset of the base declaration"), options);
+	      }
+	    };
+	    for (var element of morphDecl) {
+	      _loop2(element);
+	    }
+	  }
+	  var validatedMesh = _objectSpread2(_objectSpread2({}, mesh), {}, {
+	    name: (_mesh$name3 = mesh.name) != null ? _mesh$name3 : "",
+	    topology,
+	    decl,
+	    areas,
+	    morphTargets: _objectSpread2(_objectSpread2({}, morphTargets), {}, {
+	      decl: morphDecl,
+	      targets
+	    })
+	  });
+	  for (var _index = 0; _index < lods.length; _index++) validateMeshLod(validatedMesh, lods[_index], _index, graph, options);
+	  if (lods.some(lod => lod.vb.stride !== lods[0].vb.stride)) invalid("".concat(label, " LOD vertex strides differ"), options);
+	  for (var areaIndex = 0; areaIndex < areas.length; areaIndex++) {
+	    var _area$name;
+	    var area = areas[areaIndex];
+	    if (!area || typeof area !== "object") invalid("".concat(label, " area ").concat(areaIndex, " must be an object"), options);
+	    name$2((_area$name = area.name) != null ? _area$name : "", "".concat(label, " area ").concat(areaIndex, " name"), options);
+	    validateBounds(area.bounds, "".concat(label, " area ").concat(areaIndex, " bounds"), options);
+	    for (var _ref3 of array(area.bones, "".concat(label, " area ").concat(areaIndex, " bones"), options).entries()) {
+	      var _ref2 = _slicedToArray(_ref3, 2);
+	      var boneIndex = _ref2[0];
+	      var bone = _ref2[1];
+	      uint(bone, UINT16_MAX, "".concat(label, " area ").concat(areaIndex, " bone ").concat(boneIndex), options);
+	      if (bone >= boneBindings.length) invalid("".concat(label, " area ").concat(areaIndex, " has an out-of-range bone"), options);
+	    }
+	  }
+	  var boneIndices = decl.find(element => element.usage === "BoneIndices" && element.usageIndex === 0);
+	  if (!!boneIndices !== !!boneBindings.length) {
+	    invalid("".concat(label, " BoneIndices and bone bindings must either both be present or both be absent"), options);
+	  }
+	  if ((boneIndices === null || boneIndices === void 0 ? void 0 : boneIndices.type) === "UInt8" && boneBindings.length > UINT8_MAX$1) {
+	    invalid("".concat(label, " has more than 255 bindings for UInt8 BoneIndices"), options);
+	  }
+	  if (boneBindings.length > UINT16_MAX) invalid("".concat(label, " has more than 65535 bone bindings"), options);
+	  uniqueNames(boneBindings.map(binding => binding === null || binding === void 0 ? void 0 : binding.name), "".concat(label, " bone bindings"), options, false);
+	  var uvDensities = array(mesh.uvDensities, "".concat(label, " uvDensities"), options);
+	  var uvCount = decl.reduce((count, element) => element.usage === "TexCoord" ? Math.max(count, element.usageIndex + 1) : count, 0);
+	  if (uvDensities.length !== uvCount) invalid("".concat(label, " uvDensities count does not match UV channel count"), options);
+	  uvDensities.forEach((density, index) => {
+	    if (typeof density !== "number") invalid("".concat(label, " uvDensities[").concat(index, "] must be a number"), options);
+	  });
+	  var skeleton = mesh.skeleton;
+	  if (skeleton !== null && skeleton !== undefined) {
+	    uint(skeleton, UINT8_MAX$1 - 1, "".concat(label, " skeleton"), options);
+	    if (skeleton >= graph.skeletons.length) invalid("".concat(label, " references an out-of-range skeleton"), options);
+	    var skeletonBones = graph.skeletons[skeleton].bones;
+	    if (boneBindings.length > skeletonBones.length) invalid("".concat(label, " binds more bones than its skeleton"), options);
+	    for (var binding of boneBindings) {
+	      if (!skeletonBones.includes(binding.name)) invalid("".concat(label, " binding ").concat(JSON.stringify(binding.name), " is absent from its skeleton"), options);
+	    }
+	  }
+	  validateAudioOcclusionMesh(mesh.audioOcclusionMesh, label, options);
+	  validateBounds(mesh.bounds, "".concat(label, " bounds"), options);
+	  uniqueNames(targets.map(target => target === null || target === void 0 ? void 0 : target.name), "".concat(label, " morph targets"), options, false);
+	  targets.forEach((target, index) => {
+	    var _target$maxDisplaceme;
+	    var maxDisplacement = (_target$maxDisplaceme = target.maxDisplacement) != null ? _target$maxDisplaceme : 0;
+	    if (typeof maxDisplacement !== "number") invalid("".concat(label, " morph target ").concat(index, " maxDisplacement must be a number"), options);
+	    if (maxDisplacement < 0) invalid("".concat(label, " morph target ").concat(index, " has negative maxDisplacement"), options);
+	  });
+	}
+	function validateSkeleton(skeleton, skeletonIndex, options) {
+	  var _skeleton$name, _skeleton$name2;
+	  if (!skeleton || typeof skeleton !== "object") invalid("skeleton ".concat(skeletonIndex, " must be an object"), options);
+	  name$2((_skeleton$name = skeleton.name) != null ? _skeleton$name : "", "skeleton ".concat(skeletonIndex, " name"), options);
+	  var label = "skeleton ".concat(JSON.stringify((_skeleton$name2 = skeleton.name) != null ? _skeleton$name2 : ""));
+	  var bones = array(skeleton.bones, "".concat(label, " bones"), options);
+	  var parents = array(skeleton.parents, "".concat(label, " parents"), options);
+	  var rests = array(skeleton.restTransforms, "".concat(label, " rest transforms"), options);
+	  var inverseBinds = array(skeleton.invBindTransforms, "".concat(label, " inverse binds"), options);
+	  if (!bones.length) invalid("".concat(label, " has no bones"), options);
+	  if (parents.length !== bones.length || rests.length !== bones.length || inverseBinds.length !== bones.length) {
+	    invalid("".concat(label, " arrays have mismatched lengths"), options);
+	  }
+	  uniqueNames(bones, "".concat(label, " bones"), options, false);
+	  parents.forEach((parent, index) => {
+	    uint(parent, UINT32_MAX$1, "".concat(label, " parent ").concat(index), options);
+	    if (parent !== UINT32_MAX$1 && (parent >= bones.length || parent >= index)) {
+	      invalid("".concat(label, " bone ").concat(index, " has an out-of-range or forward parent"), options);
+	    }
+	  });
+	  rests.forEach((rest, index) => {
+	    var _rest$position, _rest$rotation, _rest$scale;
+	    if (!rest || typeof rest !== "object" || Array.isArray(rest)) {
+	      invalid("".concat(label, " rest ").concat(index, " must be an object"), options);
+	    }
+	    finiteArray((_rest$position = rest === null || rest === void 0 ? void 0 : rest.position) != null ? _rest$position : [0, 0, 0], 3, "".concat(label, " rest ").concat(index, " position"), options);
+	    finiteArray((_rest$rotation = rest === null || rest === void 0 ? void 0 : rest.rotation) != null ? _rest$rotation : [0, 0, 0, 1], 4, "".concat(label, " rest ").concat(index, " rotation"), options);
+	    finiteArray((_rest$scale = rest === null || rest === void 0 ? void 0 : rest.scale) != null ? _rest$scale : [1, 1, 1], 3, "".concat(label, " rest ").concat(index, " scale"), options);
+	  });
+	  inverseBinds.forEach((matrix, index) => finiteArray(matrix, 16, "".concat(label, " inverse bind ").concat(index), options));
+	  var masks = array(skeleton.boneMasks, "".concat(label, " bone masks"), options);
+	  uniqueNames(masks.map(mask => mask === null || mask === void 0 ? void 0 : mask.name), "".concat(label, " bone masks"), options, false);
+	  for (var maskIndex = 0; maskIndex < masks.length; maskIndex++) {
+	    var _masks$maskIndex;
+	    var weights = array((_masks$maskIndex = masks[maskIndex]) === null || _masks$maskIndex === void 0 ? void 0 : _masks$maskIndex.weights, "".concat(label, " bone mask ").concat(maskIndex, " weights"), options);
+	    for (var weightIndex = 0; weightIndex < weights.length; weightIndex++) {
+	      var _weight$index, _weight$weight;
+	      var weight = weights[weightIndex];
+	      if (!weight || typeof weight !== "object" || Array.isArray(weight)) {
+	        invalid("".concat(label, " bone mask ").concat(maskIndex, " weight ").concat(weightIndex, " must be an object"), options);
+	      }
+	      var boneIndex = uint((_weight$index = weight === null || weight === void 0 ? void 0 : weight.index) != null ? _weight$index : 0, UINT32_MAX$1, "".concat(label, " bone mask ").concat(maskIndex, " weight ").concat(weightIndex, " index"), options);
+	      if (boneIndex >= bones.length) invalid("".concat(label, " bone mask ").concat(maskIndex, " has an out-of-range index"), options);
+	      var value = (_weight$weight = weight.weight) != null ? _weight$weight : 1;
+	      finiteFloat(value, "".concat(label, " bone mask ").concat(maskIndex, " weight ").concat(weightIndex), options);
+	      if (value < 0 || value > 1) invalid("".concat(label, " bone mask ").concat(maskIndex, " weight is outside 0..1"), options);
+	    }
+	  }
+	}
+	function byteArray(value, label, options) {
+	  var bytes = Array.isArray(value) ? value : ArrayBuffer.isView(value) ? Array.from(new Uint8Array(value.buffer, value.byteOffset, value.byteLength)) : value instanceof ArrayBuffer ? Array.from(new Uint8Array(value)) : null;
+	  if (!bytes) invalid("".concat(label, " must be a byte array"), options);
+	  for (var index = 0; index < bytes.length; index++) uint(bytes[index], UINT8_MAX$1, "".concat(label, "[").concat(index, "]"), options);
+	  return bytes;
+	}
+	function decodedScalars(bytes, type) {
+	  var data = Uint8Array.from(bytes);
+	  var view = new DataView(data.buffer);
+	  var size = elementTypeSize$1(type);
+	  var output = new Array(data.byteLength / size);
+	  for (var index = 0; index < output.length; index++) output[index] = readElementComponent$1(view, index * size, type);
+	  return output;
+	}
+	function validateCurve(curve, animationLabel, curveIndex, options) {
+	  var label = "".concat(animationLabel, " curve ").concat(curveIndex);
+	  if (!curve || typeof curve !== "object") invalid("".concat(label, " must be an object"), options);
+	  var knotCount = uint(curve.knotCount, UINT32_MAX$1, "".concat(label, " knotCount"), options);
+	  if (!knotCount) invalid("".concat(label, " has no keyframes"), options);
+	  if (!ElementType.includes(curve.knotType)) invalid("".concat(label, " has invalid knotType"), options);
+	  if (!ElementType.includes(curve.valueType)) invalid("".concat(label, " has invalid valueType"), options);
+	  if (!Interpolation$9.includes(curve.interpolation)) invalid("".concat(label, " has invalid interpolation"), options);
+	  var valueDimension = uint(curve.valueDimension, UINT8_MAX$1, "".concat(label, " valueDimension"), options);
+	  if (!valueDimension) invalid("".concat(label, " has zero valueDimension"), options);
+	  var knots = byteArray(curve.knots, "".concat(label, " knots"), options);
+	  var values = byteArray(curve.values, "".concat(label, " values"), options);
+	  if (knots.length !== knotCount * elementTypeSize$1(curve.knotType)) invalid("".concat(label, " knot buffer size is inconsistent"), options);
+	  if (values.length !== knotCount * valueDimension * elementTypeSize$1(curve.valueType)) {
+	    invalid("".concat(label, " value buffer size is inconsistent"), options);
+	  }
+	  var decodedKnots = decodedScalars(knots, curve.knotType);
+	  var decodedValues = decodedScalars(values, curve.valueType);
+	  if (decodedKnots.some(value => !Number.isFinite(value))) invalid("".concat(label, " has non-finite knots"), options);
+	  if (decodedValues.some(value => !Number.isFinite(value))) invalid("".concat(label, " has non-finite values"), options);
+	  for (var index = 1; index < decodedKnots.length; index++) {
+	    if (decodedKnots[index] < decodedKnots[index - 1]) invalid("".concat(label, " knots are not ascending"), options);
+	  }
+	}
+	function validateAnimation(animation, animationIndex, options) {
+	  var _animation$name, _animation$name2;
+	  if (!animation || typeof animation !== "object") invalid("animation ".concat(animationIndex, " must be an object"), options);
+	  name$2((_animation$name = animation.name) != null ? _animation$name : "", "animation ".concat(animationIndex, " name"), options);
+	  var label = "animation ".concat(JSON.stringify((_animation$name2 = animation.name) != null ? _animation$name2 : ""));
+	  if (typeof animation.duration !== "number") invalid("".concat(label, " duration must be a number"), options);
+	  if (animation.duration <= 0) invalid("".concat(label, " has non-positive duration"), options);
+	  var channels = array(animation.channels, "".concat(label, " channels"), options);
+	  var curves = array(animation.curves, "".concat(label, " curves"), options);
+	  if (!channels.length) invalid("".concat(label, " has no channels"), options);
+	  curves.forEach((curve, index) => validateCurve(curve, label, index, options));
+	  for (var index = 0; index < channels.length; index++) {
+	    var channel = channels[index];
+	    if (!channel || typeof channel !== "object") invalid("".concat(label, " channel ").concat(index, " must be an object"), options);
+	    name$2(channel.target, "".concat(label, " channel ").concat(index, " target"), options, false);
+	    if (!AnimationChannelTargetType.includes(channel.targetType)) invalid("".concat(label, " channel ").concat(index, " has invalid targetType"), options);
+	    var curveIndex = uint(channel.curveIndex, UINT32_MAX$1, "".concat(label, " channel ").concat(index, " curveIndex"), options);
+	    if (curveIndex >= curves.length) invalid("".concat(label, " channel ").concat(index, " references an out-of-range curve"), options);
+	    var dimension = curves[curveIndex].valueDimension;
+	    if (["BonePosition", "BoneScale"].includes(channel.targetType) && dimension !== 3 || channel.targetType === "BoneRotation" && dimension !== 4 || channel.targetType === "MorphTarget" && dimension !== 1) {
+	      invalid("".concat(label, " channel ").concat(index, " has an incompatible curve dimension"), options);
+	    }
+	  }
+	}
+	function validateMetadata(metadata, options) {
+	  if (metadata === undefined || metadata === null) return;
+	  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) invalid("metadata must be an object", options);
+	  var entries = array(metadata.entries, "metadata entries", options);
+	  uniqueNames(entries.map(entry => entry === null || entry === void 0 ? void 0 : entry.key), "metadata keys", options, false);
+	  entries.forEach((entry, index) => {
+	    var _entry$value;
+	    return name$2((_entry$value = entry === null || entry === void 0 ? void 0 : entry.value) != null ? _entry$value : "", "metadata value ".concat(index), options);
+	  });
+	}
+
+	/**
+	 * Validate a decoded/native CMF v1 graph with Carbon's graph and buffer rules.
+	 *
+	 * Source: mesh/src/cmf/utils.cpp (IsMeshValid, IsSkeletonValid,
+	 * IsAnimationValid, AreBufferViewsValid, AreBuffersValid).
+	 *
+	 * @param {object} graph CMF graph, optionally carrying parsed sections and decoded/supplied buffers.
+	 * @param {{ phase?: "read"|"write" }} [options] Validation context.
+	 * @returns {object} The validated graph.
+	 */
+	function validateCmfGraph(graph) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  if (!graph || typeof graph !== "object" || Array.isArray(graph)) invalid("root must be an object", options);
+	  var meshes = array(graph.meshes, "meshes", options);
+	  var skeletons = array(graph.skeletons, "skeletons", options);
+	  var animations = array(graph.animations, "animations", options);
+	  var validatedGraph = _objectSpread2(_objectSpread2({}, graph), {}, {
+	    skeletons
+	  });
+	  skeletons.forEach((skeleton, index) => validateSkeleton(skeleton, index, options));
+	  meshes.forEach((mesh, index) => validateMesh(mesh, index, validatedGraph, options));
+	  animations.forEach((animation, index) => validateAnimation(animation, index, options));
+	  validateMetadata(graph.metadata, options);
+	  return graph;
+	}
+
+	/** Validate parsed CMF header sections against Carbon's file rules. */
+	function validateCmfSections(header, fileSize) {
+	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	  if (header.headerSize < 32 || header.headerSize > fileSize) invalid("headerSize is outside the file", options);
+	  var sections = array(header.sections, "header sections", options);
+	  if (!sections.length) invalid("header contains no sections", options);
+	  var lastEnd = header.headerSize;
+	  for (var index = 0; index < sections.length; index++) {
+	    var section = sections[index];
+	    if (!SectionType.includes(section.type)) invalid("section ".concat(index, " has invalid type"), options);
+	    if (!SectionCompression.includes(section.compression)) invalid("section ".concat(index, " has invalid compression"), options);
+	    uint(section.offset, UINT32_MAX$1, "section ".concat(index, ".offset"), options);
+	    uint(section.compressedSize, UINT32_MAX$1, "section ".concat(index, ".compressedSize"), options);
+	    uint(section.uncompressedSize, UINT32_MAX$1, "section ".concat(index, ".uncompressedSize"), options);
+	    uint(section.gpuAlignment, UINT16_MAX, "section ".concat(index, ".gpuAlignment"), options);
+	    if (section.offset + section.compressedSize > fileSize) invalid("section ".concat(index, " exceeds file bounds"), options);
+	    if (section.offset < lastEnd) invalid("section ".concat(index, " overlaps a previous section"), options);
+	    if (section.compression === "None" && section.compressedSize !== section.uncompressedSize) {
+	      invalid("section ".concat(index, " has mismatched compressed and uncompressed sizes"), options);
+	    }
+	    if (section.gpuAlignment && section.uncompressedSize % section.gpuAlignment) {
+	      invalid("section ".concat(index, " size is not a multiple of GPU alignment"), options);
+	    }
+	    if (section.compression !== "None" && !section.gpuAlignment) {
+	      invalid("compressed section ".concat(index, " has zero GPU alignment"), options);
+	    }
+	    if (index === 0 && section.type !== "Data") invalid("first section is not Data", options);
+	    if (index > 0 && section.type === "Data") invalid("file contains multiple Data sections", options);
+	    if (section.type === "Data" && section.compression !== "None") invalid("Data section is compressed", options);
+	    if (section.type === "Metadata" && index !== sections.length - 1) invalid("Metadata section is not last", options);
+	    if (section.type === "Metadata" && section.compression !== "None") invalid("Metadata section is compressed", options);
+	    lastEnd = section.offset + section.compressedSize;
+	  }
+	  if (sections[0].offset % 8) invalid("Data section is not 8-byte aligned", options);
+	  var metadata = sections.at(-1);
+	  if (metadata.type === "Metadata" && metadata.offset % 8) invalid("Metadata section is not 8-byte aligned", options);
+	}
+
+	/** Reads and validates a CMF document synchronously for the CMF format reader. */
+	function readCmf(input) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var reader = new BinaryReader(input);
+	  reader.require(0, STRUCT_SIZE.Header, "header");
+	  var header = readHeader(reader);
+	  validateHeader(reader, header, options);
+	  var dataSection = header.sections[0];
+	  requireSectionRoot(reader, dataSection, STRUCT_SIZE.Data, "Data");
+	  var root = withSpanRange(reader, dataSection.offset, dataSection.uncompressedSize, "Data", () => readData(reader, dataSection.offset));
+	  var metadataSection = header.sections.find(section => section.type === "Metadata");
+	  if (metadataSection) requireSectionRoot(reader, metadataSection, STRUCT_SIZE.Metadata, "Metadata");
+	  var metadata = metadataSection ? withSpanRange(reader, metadataSection.offset, metadataSection.uncompressedSize, "Metadata", () => readMetadata(reader, metadataSection.offset)) : null;
+	  var result = {
+	    signature: header.signature,
+	    version: header.version,
+	    headerSize: header.headerSize,
+	    crc32: header.crc32,
+	    sections: header.sections,
+	    metadata,
+	    meshes: root.meshes,
+	    skeletons: root.skeletons,
+	    animations: root.animations
+	  };
+	  validateCmfGraph(result, {
+	    phase: "read"
+	  });
+	  if (options.decodeBuffers) {
+	    decodeGeometrySync(result, reader.bytes);
+	    validateCmfGraph(result, {
+	      phase: "read"
+	    });
+	  }
+	  return result;
+	}
+
+	/** Reads and validates a CMF document asynchronously for the CMF format reader. */
+	function readCmfAsync(_x) {
+	  return _readCmfAsync.apply(this, arguments);
+	}
+	function _readCmfAsync() {
+	  _readCmfAsync = _asyncToGenerator(function* (input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var reader = new BinaryReader(input);
+	    reader.require(0, STRUCT_SIZE.Header, "header");
+	    var header = readHeader(reader);
+	    validateHeader(reader, header, options);
+	    var dataSection = header.sections[0];
+	    requireSectionRoot(reader, dataSection, STRUCT_SIZE.Data, "Data");
+	    var root = withSpanRange(reader, dataSection.offset, dataSection.uncompressedSize, "Data", () => readData(reader, dataSection.offset));
+	    var metadataSection = header.sections.find(section => section.type === "Metadata");
+	    if (metadataSection) requireSectionRoot(reader, metadataSection, STRUCT_SIZE.Metadata, "Metadata");
+	    var metadata = metadataSection ? withSpanRange(reader, metadataSection.offset, metadataSection.uncompressedSize, "Metadata", () => readMetadata(reader, metadataSection.offset)) : null;
+	    var result = {
+	      signature: header.signature,
+	      version: header.version,
+	      headerSize: header.headerSize,
+	      crc32: header.crc32,
+	      sections: header.sections,
+	      metadata,
+	      meshes: root.meshes,
+	      skeletons: root.skeletons,
+	      animations: root.animations
+	    };
+	    validateCmfGraph(result, {
+	      phase: "read"
+	    });
+	    if (options.decodeBuffers) {
+	      yield decodeGeometryAsync(result, reader.bytes);
+	      validateCmfGraph(result, {
+	        phase: "read"
+	      });
+	    }
+	    return result;
+	  });
+	  return _readCmfAsync.apply(this, arguments);
+	}
+	function requireSectionRoot(reader, section, size, label) {
+	  if (section.uncompressedSize < size) {
+	    throw new Error("Invalid CMF: ".concat(label, " section is smaller than its root structure"));
+	  }
+	  reader.require(section.offset, size, "".concat(label, " root"));
+	}
+
+	/** Reads header from the current CMF format reader. */
+	function readHeader(reader) {
+	  var signature = reader.u32(0);
+	  var version = reader.u32(4);
+	  var headerSize = reader.u32(8);
+	  var fileCrc32 = reader.u32(12);
+	  if (headerSize < STRUCT_SIZE.Header || headerSize > reader.bytes.byteLength) {
+	    throw new Error("Invalid CMF: headerSize is outside the file");
+	  }
+	  var sections = withSpanRange(reader, 0, headerSize, "Header", () => {
+	    var sectionsSpan = readSpan(reader, 16, STRUCT_SIZE.Section, 4);
+	    return readArray(reader, sectionsSpan, readSection);
+	  });
+	  return {
+	    signature,
+	    signatureText: "cmff",
+	    version,
+	    headerSize,
+	    crc32: fileCrc32,
+	    sections
+	  };
+	}
+
+	/**
+	 * Returns CMF header and section metadata without decoding geometry for the CMF
+	 * format reader.
+	 */
+	function inspectCmf(result) {
+	  var _result$metadata$entr, _result$metadata;
+	  return {
+	    signature: result.signature,
+	    version: result.version,
+	    headerSize: result.headerSize,
+	    crc32: result.crc32,
+	    sections: result.sections.map((section, index) => ({
+	      index,
+	      type: section.type,
+	      compression: section.compression,
+	      compressedSize: section.compressedSize,
+	      uncompressedSize: section.uncompressedSize,
+	      gpuAlignment: section.gpuAlignment
+	    })),
+	    metadataEntries: (_result$metadata$entr = (_result$metadata = result.metadata) === null || _result$metadata === void 0 ? void 0 : _result$metadata.entries.length) != null ? _result$metadata$entr : 0,
+	    meshes: result.meshes.map(mesh => ({
+	      name: mesh.name,
+	      topology: mesh.topology,
+	      lods: mesh.lods.length,
+	      areas: mesh.areas.length,
+	      vertexElements: mesh.decl.length,
+	      morphTargets: mesh.morphTargets.targets.length,
+	      skeleton: mesh.skeleton
+	    })),
+	    skeletons: result.skeletons.map(skeleton => ({
+	      name: skeleton.name,
+	      bones: skeleton.bones.length,
+	      boneMasks: skeleton.boneMasks.length
+	    })),
+	    animations: result.animations.map(animation => ({
+	      name: animation.name,
+	      duration: animation.duration,
+	      channels: animation.channels.length,
+	      curves: animation.curves.length
+	    }))
+	  };
+	}
+	function validateHeader(reader, header, options) {
+	  if (header.signature !== FILE_SIGNATURE) {
+	    throw new Error("Invalid CMF signature 0x".concat(header.signature.toString(16)));
+	  }
+	  if (header.version !== FILE_VERSION) {
+	    throw new Error("Unsupported CMF version ".concat(header.version));
+	  }
+	  validateCmfSections(header, reader.bytes.byteLength, {
+	    phase: "read"
+	  });
+	  if (options.validateCrc !== false) {
+	    var actual = crc32(reader.bytes, 16, reader.bytes.byteLength);
+	    if (actual !== header.crc32) {
+	      throw new Error("CMF CRC mismatch: expected 0x".concat(header.crc32.toString(16), ", got 0x").concat(actual.toString(16)));
+	    }
+	  }
+	}
+	function readSection(reader, offset) {
+	  return {
+	    offset: reader.u32(offset),
+	    compressedSize: reader.u32(offset + 4),
+	    uncompressedSize: reader.u32(offset + 8),
+	    gpuAlignment: reader.u16(offset + 12),
+	    type: enumName(SectionType, reader.u8(offset + 14)),
+	    compression: enumName(SectionCompression, reader.u8(offset + 15))
+	  };
+	}
+	function readData(reader, offset) {
+	  return {
+	    meshes: readArray(reader, readSpan(reader, offset, STRUCT_SIZE.Mesh, 8), readMesh),
+	    skeletons: readArray(reader, readSpan(reader, offset + 16, STRUCT_SIZE.Skeleton, 8), readSkeleton),
+	    animations: readArray(reader, readSpan(reader, offset + 32, STRUCT_SIZE.Animation, 8), readAnimation)
+	  };
+	}
+	function readMetadata(reader, offset) {
+	  return {
+	    entries: readArray(reader, readSpan(reader, offset, STRUCT_SIZE.MetadataEntry, 8), readMetadataEntry)
+	  };
+	}
+	function readMetadataEntry(reader, offset) {
+	  return {
+	    key: readString(reader, offset),
+	    value: readString(reader, offset + 16)
+	  };
+	}
+	function readMesh(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    decl: readArray(reader, readSpan(reader, offset + 16, STRUCT_SIZE.VertexElement, 4), readVertexElement),
+	    lods: readArray(reader, readSpan(reader, offset + 32, STRUCT_SIZE.MeshLod, 8), readMeshLod),
+	    areas: readArray(reader, readSpan(reader, offset + 48, STRUCT_SIZE.MeshArea, 8), readMeshArea),
+	    boneBindings: readArray(reader, readSpan(reader, offset + 64, STRUCT_SIZE.BoneBinding, 8), readBoneBinding),
+	    morphTargets: readMorphTargets(reader, offset + 80),
+	    uvDensities: readFloatArray(reader, readSpan(reader, offset + 112, 4, 4)),
+	    bounds: readBounds(reader, offset + 128),
+	    audioOcclusionMesh: readAudioOcclusionMesh(reader, offset + 152),
+	    topology: enumName(MeshTopology, reader.u8(offset + 208)),
+	    skeleton: readSkeletonIndex(reader.u8(offset + 209))
+	  };
+	}
+	function readVertexElement(reader, offset) {
+	  return {
+	    usage: enumName(Usage$1, reader.u8(offset)),
+	    usageIndex: reader.u8(offset + 1),
+	    type: enumName(ElementType, reader.u8(offset + 2)),
+	    elementCount: reader.u8(offset + 3),
+	    offset: reader.u32(offset + 4)
+	  };
+	}
+	function readMeshArea(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    bounds: readBounds(reader, offset + 16),
+	    bones: readUint16Array(reader, readSpan(reader, offset + 40, 2, 2)),
+	    affectedByBones: !!reader.u8(offset + 56),
+	    affectedByMorphTargets: !!reader.u8(offset + 57)
+	  };
+	}
+	function readLodMeshArea(reader, offset) {
+	  return {
+	    firstElement: reader.u32(offset),
+	    elementCount: reader.u32(offset + 4)
+	  };
+	}
+	function readBoneBinding(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    bounds: readBounds(reader, offset + 16)
+	  };
+	}
+	function readMorphTargets(reader, offset) {
+	  return {
+	    decl: readArray(reader, readSpan(reader, offset, STRUCT_SIZE.VertexElement, 4), readVertexElement),
+	    targets: readArray(reader, readSpan(reader, offset + 16, STRUCT_SIZE.MorphTarget, 8), readMorphTarget)
+	  };
+	}
+	function readMorphTarget(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    maxDisplacement: reader.f32(offset + 16)
+	  };
+	}
+	function readMeshLod(reader, offset) {
+	  return {
+	    vb: readBufferView(reader, offset),
+	    ib: readBufferView(reader, offset + 16),
+	    areas: readArray(reader, readSpan(reader, offset + 32, STRUCT_SIZE.LodMeshArea, 4), readLodMeshArea),
+	    morphTargets: readArray(reader, readSpan(reader, offset + 48, STRUCT_SIZE.LodMorphTarget, 4), readLodMorphTarget),
+	    threshold: reader.u32(offset + 64)
+	  };
+	}
+	function readLodMorphTarget(reader, offset) {
+	  return {
+	    vb: readBufferView(reader, offset)
+	  };
+	}
+	function readAudioOcclusionMesh(reader, offset) {
+	  var verticesSpan = readSpan(reader, offset, 12, 4);
+	  return {
+	    vertices: readArray(reader, verticesSpan, readVector3),
+	    indices: readUint16Array(reader, readSpan(reader, offset + 16, 2, 2)),
+	    bounds: readBounds(reader, offset + 32)
+	  };
+	}
+	function readSkeleton(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    bones: readArray(reader, readSpan(reader, offset + 16, 16, 8), readString),
+	    parents: readUint32Array(reader, readSpan(reader, offset + 32, 4, 4)),
+	    restTransforms: readArray(reader, readSpan(reader, offset + 48, STRUCT_SIZE.Transform, 4), readTransform),
+	    invBindTransforms: readArray(reader, readSpan(reader, offset + 64, 64, 4), readMatrix),
+	    boneMasks: readArray(reader, readSpan(reader, offset + 80, STRUCT_SIZE.BoneMask, 8), readBoneMask)
+	  };
+	}
+	function readTransform(reader, offset) {
+	  return {
+	    position: readVector3(reader, offset),
+	    rotation: readQuaternion(reader, offset + 12),
+	    scale: readVector3(reader, offset + 28)
+	  };
+	}
+	function readBoneMask(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    weights: readArray(reader, readSpan(reader, offset + 16, STRUCT_SIZE.BoneWeight, 4), readBoneWeight)
+	  };
+	}
+	function readBoneWeight(reader, offset) {
+	  return {
+	    index: reader.u32(offset),
+	    weight: reader.f32(offset + 4)
+	  };
+	}
+	function readAnimation(reader, offset) {
+	  return {
+	    name: readString(reader, offset),
+	    channels: readArray(reader, readSpan(reader, offset + 16, STRUCT_SIZE.AnimationChannel, 8), readAnimationChannel),
+	    curves: readArray(reader, readSpan(reader, offset + 32, STRUCT_SIZE.AnimationCurve, 8), readAnimationCurve),
+	    duration: reader.f32(offset + 48)
+	  };
+	}
+	function readAnimationChannel(reader, offset) {
+	  return {
+	    target: readString(reader, offset),
+	    targetType: enumName(AnimationChannelTargetType, reader.u8(offset + 16)),
+	    curveIndex: reader.u32(offset + 20)
+	  };
+	}
+	function readAnimationCurve(reader, offset) {
+	  return {
+	    valueDimension: reader.u8(offset),
+	    interpolation: enumName(Interpolation$9, reader.u8(offset + 1)),
+	    knotType: enumName(ElementType, reader.u8(offset + 2)),
+	    valueType: enumName(ElementType, reader.u8(offset + 3)),
+	    knotCount: reader.u32(offset + 4),
+	    knots: readByteArray(reader, readSpan(reader, offset + 8, 1, 1)),
+	    values: readByteArray(reader, readSpan(reader, offset + 24, 1, 1))
+	  };
+	}
+	function readBufferView(reader, offset) {
+	  return {
+	    index: reader.u32(offset),
+	    offset: reader.u32(offset + 4),
+	    size: reader.u32(offset + 8),
+	    stride: reader.u32(offset + 12)
+	  };
+	}
+	function readSpan(reader, offset, elementSize) {
+	  var alignment = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : Math.min(elementSize, 8);
+	  var byteSize = reader.u64(offset + 8);
+	  if (byteSize === 0) {
+	    return {
+	      offset: null,
+	      byteSize: 0,
+	      count: 0,
+	      elementSize,
+	      addressMode: "empty"
+	    };
+	  }
+	  var rawOffset = reader.i64(offset);
+	  var isOffset = rawOffset % 2 !== 0;
+	  if (!isOffset) {
+	    throw new Error("Invalid CMF: nonempty span at ".concat(offset, " contains a process pointer"));
+	  }
+	  var dataOffset = offset + rawOffset - 1;
+	  if (byteSize % elementSize !== 0) {
+	    throw new Error("CMF span byteSize ".concat(byteSize, " is not a multiple of element size ").concat(elementSize));
+	  }
+	  reader.require(dataOffset, byteSize, "span");
+	  if (dataOffset % alignment) {
+	    throw new Error("Invalid CMF: span at ".concat(offset, " is not aligned to ").concat(alignment));
+	  }
+	  var range = reader.spanRange;
+	  if (range && (dataOffset < range.start || dataOffset + byteSize > range.end)) {
+	    throw new Error("Invalid CMF: span at ".concat(offset, " leaves its ").concat(range.label, " section"));
+	  }
+	  return {
+	    offset: dataOffset,
+	    byteSize,
+	    count: byteSize / elementSize,
+	    elementSize,
+	    addressMode: isOffset ? "offset" : "pointer"
+	  };
+	}
+	function withSpanRange(reader, start, size, label, callback) {
+	  var previous = reader.spanRange;
+	  reader.spanRange = {
+	    start,
+	    end: start + size,
+	    label
+	  };
+	  try {
+	    return callback();
+	  } finally {
+	    reader.spanRange = previous;
+	  }
+	}
+	function readArray(reader, span, readElement) {
+	  var values = [];
+	  if (span.count === 0) {
+	    return values;
+	  }
+	  for (var i = 0; i < span.count; i++) {
+	    values.push(readElement(reader, span.offset + i * span.elementSize));
+	  }
+	  return values;
+	}
+	function readString(reader, offset) {
+	  var span = readSpan(reader, offset, 1);
+	  return span.offset === null ? "" : reader.string(span.offset, span.byteSize);
+	}
+	function readByteArray(reader, span) {
+	  return span.offset === null ? [] : Array.from(reader.bytesAt(span.offset, span.byteSize));
+	}
+	function readUint16Array(reader, span) {
+	  var values = [];
+	  for (var i = 0; i < span.count; i++) {
+	    values.push(reader.u16(span.offset + i * 2));
+	  }
+	  return values;
+	}
+	function readUint32Array(reader, span) {
+	  var values = [];
+	  for (var i = 0; i < span.count; i++) {
+	    values.push(reader.u32(span.offset + i * 4));
+	  }
+	  return values;
+	}
+	function readFloatArray(reader, span) {
+	  var values = [];
+	  for (var i = 0; i < span.count; i++) {
+	    values.push(reader.f32(span.offset + i * 4));
+	  }
+	  return values;
+	}
+	function readSkeletonIndex(value) {
+	  return value === 0xff ? null : value;
+	}
+
+	var schema$1 = {
+		__proto__: null,
+		inspectCmf: inspectCmf,
+		readCmf: readCmf,
+		readCmfAsync: readCmfAsync,
+		readHeader: readHeader
+	};
+
+	/**
+	 * Binary CMF v1 writer.
+	 *
+	 * Mirrors CarbonEngine's `cmf::BuildFile`: the object graph is flattened into
+	 * the Data section as structs with self-relative tagged span offsets
+	 * (depth-first in member order, 8-byte chunk alignment, identical leaf chunks
+	 * deduplicated), GPU buffers referenced by BufferViews become one section
+	 * each (remapped to section indices in first-encounter order, meshoptimizer
+	 * compressed by default), optional metadata flattens into a trailing section,
+	 * and the header CRC covers everything after the crc32 field.
+	 */
+
+	var textEncoder$3 = new TextEncoder();
+	var FLOAT32_MAX$1 = 3.4028234663852886e38;
+	var encoderReady = false;
+	MeshoptEncoder.ready.then(() => {
+	  encoderReady = true;
+	});
+	function writeError$1(message) {
+	  var error = new Error("CMF write: ".concat(message));
+	  error.code = "CJS_FORMAT_WRITE_ERROR";
+	  return error;
+	}
+	function enumValue(names, value, label) {
+	  if (typeof value === "number") return value;
+	  var index = names.indexOf(value);
+	  if (index >= 0) return index;
+	  var unknown = /^Unknown\(([0-9]+)\)$/.exec(String(value != null ? value : ""));
+	  if (unknown) return Number(unknown[1]);
+	  throw writeError$1("unknown ".concat(label, " value ").concat(JSON.stringify(value)));
+	}
+
+	/**
+	 * Growable little-endian struct buffer with tagged span support.
+	 */
+	var _bytes$1 = /*#__PURE__*/_classPrivateFieldLooseKey("bytes");
+	var _view$4 = /*#__PURE__*/_classPrivateFieldLooseKey("view");
+	var _chunkCache = /*#__PURE__*/_classPrivateFieldLooseKey("chunkCache");
+	var _ensure = /*#__PURE__*/_classPrivateFieldLooseKey("ensure");
+	class Flattener {
+	  constructor() {
+	    /**
+	     * Grows the output buffer when the requested write would exceed capacity for
+	     * the CMF binary writer.
+	     */
+	    Object.defineProperty(this, _ensure, {
+	      value: _ensure2
+	    });
+	    Object.defineProperty(this, _bytes$1, {
+	      writable: true,
+	      value: new Uint8Array(1024)
+	    });
+	    Object.defineProperty(this, _view$4, {
+	      writable: true,
+	      value: new DataView(_classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].buffer)
+	    });
+	    Object.defineProperty(this, _chunkCache, {
+	      writable: true,
+	      value: new Map()
+	    });
+	    this.size = 0;
+	  }
+	  /** Reserves output storage in the current CMF binary writer. */
+	  reserve(byteLength) {
+	    var offset = this.size;
+	    _classPrivateFieldLooseBase(this, _ensure)[_ensure](offset + byteLength);
+	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].fill(0, offset, offset + byteLength);
+	    this.size = offset + byteLength;
+	    return offset;
+	  }
+
+	  /** Reserves aligned in the current CMF binary writer. */
+	  reserveAligned(byteLength) {
+	    var alignment = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
+	    var padded = Math.ceil(this.size / alignment) * alignment;
+	    _classPrivateFieldLooseBase(this, _ensure)[_ensure](padded);
+	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].fill(0, this.size, padded);
+	    this.size = padded;
+	    return this.reserve(byteLength);
+	  }
+
+	  /**
+	   * Writes an unsigned 8-bit integer into the output buffer for the CMF binary
+	   * writer.
+	   */
+	  u8(offset, value) {
+	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint8(offset, value);
+	  }
+
+	  /**
+	   * Writes an unsigned 16-bit little-endian integer into the output buffer for
+	   * the CMF binary writer.
+	   */
+	  u16(offset, value) {
+	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint16(offset, value, true);
+	  }
+
+	  /**
+	   * Writes an unsigned 32-bit little-endian integer into the output buffer for
+	   * the CMF binary writer.
+	   */
+	  u32(offset, value) {
+	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setUint32(offset, value, true);
+	  }
+
+	  /**
+	   * Writes a 32-bit little-endian float into the output buffer for the CMF
+	   * binary writer.
+	   */
+	  f32(offset, value) {
+	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setFloat32(offset, value != null ? value : 0, true);
+	  }
+
+	  /**
+	   * Writes a signed 64-bit little-endian integer into the output buffer for
+	   * the CMF binary writer.
+	   */
+	  i64(offset, value) {
+	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setBigInt64(offset, BigInt(value), true);
+	  }
+
+	  /**
+	   * Writes an unsigned 64-bit little-endian integer into the output buffer for
+	   * the CMF binary writer.
+	   */
+	  u64(offset, value) {
+	    _classPrivateFieldLooseBase(this, _view$4)[_view$4].setBigUint64(offset, BigInt(value), true);
+	  }
+
+	  /**
+	   * Copies bytes into a previously reserved output range for the CMF binary
+	   * writer.
+	   */
+	  setBytes(offset, bytes) {
+	    _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].set(bytes, offset);
+	  }
+
+	  /**
+	   * Write a span field and append its element chunk.
+	   *
+	   * `writeElement(flattener, offset, element)` may itself append nested
+	   * chunks; leaf chunks (`dedup: true`) are shared when byte-identical,
+	   * matching the reference writer.
+	   */
+	  span(fieldOffset, elements, elementSize, writeElement) {
+	    var _ref = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {},
+	      _ref$dedup = _ref.dedup,
+	      dedup = _ref$dedup === void 0 ? false : _ref$dedup;
+	    var count = elements ? elements.length : 0;
+	    var byteSize = count * elementSize;
+	    if (byteSize === 0) {
+	      // tagged self-relative offset of 0 keeps span pointers valid
+	      this.i64(fieldOffset, 1);
+	      this.u64(fieldOffset + 8, 0);
+	      return;
+	    }
+	    if (dedup) {
+	      var scratch = new Flattener();
+	      var scratchOffset = scratch.reserve(byteSize);
+	      for (var i = 0; i < count; i++) writeElement(scratch, scratchOffset + i * elementSize, elements[i]);
+	      var chunk = scratch.bytes();
+	      var key = chunkKey(chunk);
+	      var cached = _classPrivateFieldLooseBase(this, _chunkCache)[_chunkCache].get(key);
+	      if (cached !== undefined && bytesEqual$2(_classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1], cached, chunk)) {
+	        this.i64(fieldOffset, cached - fieldOffset + 1);
+	        this.u64(fieldOffset + 8, byteSize);
+	        return;
+	      }
+	      var _chunkOffset = this.reserveAligned(byteSize);
+	      this.setBytes(_chunkOffset, chunk);
+	      _classPrivateFieldLooseBase(this, _chunkCache)[_chunkCache].set(key, _chunkOffset);
+	      this.i64(fieldOffset, _chunkOffset - fieldOffset + 1);
+	      this.u64(fieldOffset + 8, byteSize);
+	      return;
+	    }
+	    var chunkOffset = this.reserveAligned(byteSize);
+	    this.i64(fieldOffset, chunkOffset - fieldOffset + 1);
+	    this.u64(fieldOffset + 8, byteSize);
+	    for (var _i = 0; _i < count; _i++) writeElement(this, chunkOffset + _i * elementSize, elements[_i]);
+	  }
+
+	  /**
+	   * Writes a length-prefixed UTF-8 string into the output buffer for the CMF
+	   * binary writer.
+	   */
+	  string(fieldOffset, value) {
+	    var encoded = textEncoder$3.encode(value || "");
+	    this.span(fieldOffset, encoded, 1, (buffer, offset, byte) => buffer.u8(offset, byte), {
+	      dedup: true
+	    });
+	  }
+
+	  /**
+	   * Writes a length-prefixed byte block into the output buffer for the CMF
+	   * binary writer.
+	   */
+	  bytes() {
+	    return _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].slice(0, this.size);
+	  }
+	}
+	function _ensure2(capacity) {
+	  if (capacity <= _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].length) return;
+	  var next = _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].length * 2;
+	  while (next < capacity) next *= 2;
+	  var grown = new Uint8Array(next);
+	  grown.set(_classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1].subarray(0, this.size));
+	  _classPrivateFieldLooseBase(this, _bytes$1)[_bytes$1] = grown;
+	  _classPrivateFieldLooseBase(this, _view$4)[_view$4] = new DataView(grown.buffer);
+	}
+	function chunkKey(bytes) {
+	  var hash = 2166136261 >>> 0;
+	  for (var i = 0; i < bytes.length; i++) {
+	    hash = Math.imul(hash, 16777619) >>> 0;
+	    hash = (hash ^ bytes[i]) >>> 0;
+	  }
+	  return "".concat(bytes.length, ":").concat(hash);
+	}
+	function bytesEqual$2(target, offset, chunk) {
+	  for (var i = 0; i < chunk.length; i++) {
+	    if (target[offset + i] !== chunk[i]) return false;
+	  }
+	  return true;
+	}
+	function writeBounds(buffer, offset, bounds) {
+	  var _bounds$min, _bounds$max;
+	  var min = (_bounds$min = bounds === null || bounds === void 0 ? void 0 : bounds.min) != null ? _bounds$min : [FLOAT32_MAX$1, FLOAT32_MAX$1, FLOAT32_MAX$1];
+	  var max = (_bounds$max = bounds === null || bounds === void 0 ? void 0 : bounds.max) != null ? _bounds$max : [-FLOAT32_MAX$1, -FLOAT32_MAX$1, -FLOAT32_MAX$1];
+	  for (var i = 0; i < 3; i++) buffer.f32(offset + i * 4, min[i]);
+	  for (var _i2 = 0; _i2 < 3; _i2++) buffer.f32(offset + 12 + _i2 * 4, max[_i2]);
+	}
+	function writeBufferView(buffer, offset, view, remap) {
+	  var _remap$get;
+	  var size = (view === null || view === void 0 ? void 0 : view.size) || 0;
+	  var index = (view === null || view === void 0 ? void 0 : view.index) || 0;
+	  buffer.u32(offset, size === 0 ? index : (_remap$get = remap.get(index)) != null ? _remap$get : index);
+	  buffer.u32(offset + 4, (view === null || view === void 0 ? void 0 : view.offset) || 0);
+	  buffer.u32(offset + 8, size);
+	  buffer.u32(offset + 12, (view === null || view === void 0 ? void 0 : view.stride) || 0);
+	}
+	function writeVertexElement(buffer, offset, element) {
+	  buffer.u8(offset, enumValue(Usage$1, element.usage, "vertex usage"));
+	  buffer.u8(offset + 1, element.usageIndex || 0);
+	  buffer.u8(offset + 2, enumValue(ElementType, element.type, "element type"));
+	  buffer.u8(offset + 3, element.elementCount || 0);
+	  buffer.u32(offset + 4, element.offset || 0);
+	}
+	function writeData(buffer, offset, graph, remap) {
+	  var writeMesh = (target, meshOffset, mesh) => {
+	    var _mesh$morphTargets, _mesh$morphTargets2, _mesh$topology;
+	    target.string(meshOffset, mesh.name);
+	    target.span(meshOffset + 16, mesh.decl || [], STRUCT_SIZE.VertexElement, writeVertexElement, {
+	      dedup: true
+	    });
+	    target.span(meshOffset + 32, mesh.lods || [], STRUCT_SIZE.MeshLod, (lodTarget, lodOffset, lod) => {
+	      var _lod$threshold;
+	      writeBufferView(lodTarget, lodOffset, lod.vb, remap);
+	      writeBufferView(lodTarget, lodOffset + 16, lod.ib, remap);
+	      lodTarget.span(lodOffset + 32, lod.areas || [], STRUCT_SIZE.LodMeshArea, (areaTarget, areaOffset, area) => {
+	        areaTarget.u32(areaOffset, area.firstElement || 0);
+	        areaTarget.u32(areaOffset + 4, area.elementCount || 0);
+	      }, {
+	        dedup: true
+	      });
+	      lodTarget.span(lodOffset + 48, lod.morphTargets || [], STRUCT_SIZE.LodMorphTarget, (morphTarget, morphOffset, morph) => {
+	        writeBufferView(morphTarget, morphOffset, morph.vb, remap);
+	      });
+	      lodTarget.u32(lodOffset + 64, (_lod$threshold = lod.threshold) != null ? _lod$threshold : 0xffffffff);
+	    });
+	    target.span(meshOffset + 48, mesh.areas || [], STRUCT_SIZE.MeshArea, (areaTarget, areaOffset, area) => {
+	      areaTarget.string(areaOffset, area.name);
+	      writeBounds(areaTarget, areaOffset + 16, area.bounds);
+	      areaTarget.span(areaOffset + 40, area.bones || [], 2, (boneTarget, boneOffset, bone) => boneTarget.u16(boneOffset, bone), {
+	        dedup: true
+	      });
+	      areaTarget.u8(areaOffset + 56, area.affectedByBones ? 1 : 0);
+	      areaTarget.u8(areaOffset + 57, area.affectedByMorphTargets ? 1 : 0);
+	    });
+	    target.span(meshOffset + 64, mesh.boneBindings || [], STRUCT_SIZE.BoneBinding, (bindingTarget, bindingOffset, binding) => {
+	      bindingTarget.string(bindingOffset, binding.name);
+	      writeBounds(bindingTarget, bindingOffset + 16, binding.bounds);
+	    });
+	    target.span(meshOffset + 80, ((_mesh$morphTargets = mesh.morphTargets) === null || _mesh$morphTargets === void 0 ? void 0 : _mesh$morphTargets.decl) || [], STRUCT_SIZE.VertexElement, writeVertexElement, {
+	      dedup: true
+	    });
+	    target.span(meshOffset + 96, ((_mesh$morphTargets2 = mesh.morphTargets) === null || _mesh$morphTargets2 === void 0 ? void 0 : _mesh$morphTargets2.targets) || [], STRUCT_SIZE.MorphTarget, (morphTarget, morphOffset, morph) => {
+	      var _morph$maxDisplacemen;
+	      morphTarget.string(morphOffset, morph.name);
+	      morphTarget.f32(morphOffset + 16, (_morph$maxDisplacemen = morph.maxDisplacement) != null ? _morph$maxDisplacemen : 0);
+	    });
+	    target.span(meshOffset + 112, mesh.uvDensities || [], 4, (densityTarget, densityOffset, value) => densityTarget.f32(densityOffset, value), {
+	      dedup: true
+	    });
+	    writeBounds(target, meshOffset + 128, mesh.bounds);
+	    var occlusion = mesh.audioOcclusionMesh || {};
+	    target.span(meshOffset + 152, occlusion.vertices || [], 12, (vertexTarget, vertexOffset, vertex) => {
+	      for (var i = 0; i < 3; i++) vertexTarget.f32(vertexOffset + i * 4, vertex[i]);
+	    }, {
+	      dedup: true
+	    });
+	    target.span(meshOffset + 168, occlusion.indices || [], 2, (indexTarget, indexOffset, index) => indexTarget.u16(indexOffset, index), {
+	      dedup: true
+	    });
+	    writeBounds(target, meshOffset + 184, occlusion.bounds);
+	    target.u8(meshOffset + 208, enumValue(MeshTopology, (_mesh$topology = mesh.topology) != null ? _mesh$topology : "TriangleList", "topology"));
+	    target.u8(meshOffset + 209, mesh.skeleton === null || mesh.skeleton === undefined ? 0xff : mesh.skeleton);
+	  };
+	  var writeSkeleton = (target, skeletonOffset, skeleton) => {
+	    if ((skeleton.bones || []).some(bone => typeof bone !== "string")) {
+	      throw writeError$1("skeleton bones must be name strings; GR2-shaped skeletons need conversion (use writeShared) before writing");
+	    }
+	    target.string(skeletonOffset, skeleton.name);
+	    target.span(skeletonOffset + 16, skeleton.bones || [], 16, (boneTarget, boneOffset, bone) => boneTarget.string(boneOffset, bone));
+	    target.span(skeletonOffset + 32, skeleton.parents || [], 4, (parentTarget, parentOffset, parent) => parentTarget.u32(parentOffset, parent), {
+	      dedup: true
+	    });
+	    target.span(skeletonOffset + 48, skeleton.restTransforms || [], STRUCT_SIZE.Transform, (transformTarget, transformOffset, transform) => {
+	      var position = transform.position || [0, 0, 0];
+	      var rotation = transform.rotation || [0, 0, 0, 1];
+	      var scale = transform.scale || [1, 1, 1];
+	      for (var i = 0; i < 3; i++) transformTarget.f32(transformOffset + i * 4, position[i]);
+	      for (var _i3 = 0; _i3 < 4; _i3++) transformTarget.f32(transformOffset + 12 + _i3 * 4, rotation[_i3]);
+	      for (var _i4 = 0; _i4 < 3; _i4++) transformTarget.f32(transformOffset + 28 + _i4 * 4, scale[_i4]);
+	    }, {
+	      dedup: true
+	    });
+	    target.span(skeletonOffset + 64, skeleton.invBindTransforms || [], 64, (matrixTarget, matrixOffset, matrix) => {
+	      for (var i = 0; i < 16; i++) matrixTarget.f32(matrixOffset + i * 4, matrix[i]);
+	    }, {
+	      dedup: true
+	    });
+	    target.span(skeletonOffset + 80, skeleton.boneMasks || [], STRUCT_SIZE.BoneMask, (maskTarget, maskOffset, mask) => {
+	      maskTarget.string(maskOffset, mask.name);
+	      maskTarget.span(maskOffset + 16, mask.weights || [], STRUCT_SIZE.BoneWeight, (weightTarget, weightOffset, weight) => {
+	        var _weight$weight;
+	        weightTarget.u32(weightOffset, weight.index || 0);
+	        weightTarget.f32(weightOffset + 4, (_weight$weight = weight.weight) != null ? _weight$weight : 1);
+	      }, {
+	        dedup: true
+	      });
+	    });
+	  };
+	  var writeAnimation = (target, animationOffset, animation) => {
+	    var _animation$duration;
+	    target.string(animationOffset, animation.name);
+	    target.span(animationOffset + 16, animation.channels || [], STRUCT_SIZE.AnimationChannel, (channelTarget, channelOffset, channel) => {
+	      channelTarget.string(channelOffset, channel.target);
+	      channelTarget.u8(channelOffset + 16, enumValue(AnimationChannelTargetType, channel.targetType, "channel target type"));
+	      channelTarget.u32(channelOffset + 20, channel.curveIndex || 0);
+	    });
+	    target.span(animationOffset + 32, animation.curves || [], STRUCT_SIZE.AnimationCurve, (curveTarget, curveOffset, curve) => {
+	      curveTarget.u8(curveOffset, curve.valueDimension || 0);
+	      curveTarget.u8(curveOffset + 1, enumValue(Interpolation$9, curve.interpolation, "interpolation"));
+	      curveTarget.u8(curveOffset + 2, enumValue(ElementType, curve.knotType, "knot type"));
+	      curveTarget.u8(curveOffset + 3, enumValue(ElementType, curve.valueType, "value type"));
+	      curveTarget.u32(curveOffset + 4, curve.knotCount || 0);
+	      curveTarget.span(curveOffset + 8, curve.knots || [], 1, (knotTarget, knotOffset, knot) => knotTarget.u8(knotOffset, knot), {
+	        dedup: true
+	      });
+	      curveTarget.span(curveOffset + 24, curve.values || [], 1, (valueTarget, valueOffset, value) => valueTarget.u8(valueOffset, value), {
+	        dedup: true
+	      });
+	    });
+	    target.f32(animationOffset + 48, (_animation$duration = animation.duration) != null ? _animation$duration : 0);
+	  };
+	  buffer.span(offset, graph.meshes || [], STRUCT_SIZE.Mesh, writeMesh);
+	  buffer.span(offset + 16, graph.skeletons || [], STRUCT_SIZE.Skeleton, writeSkeleton);
+	  buffer.span(offset + 32, graph.animations || [], STRUCT_SIZE.Animation, writeAnimation);
+	}
+
+	/**
+	 * Collect BufferView usage in reference-writer order and decide per-buffer
+	 * compression (conflicting stride/kind across views falls back to None).
+	 */
+	function collectBufferRecords(graph, compress) {
+	  var records = [];
+	  var recordsByIndex = new Map();
+	  var visit = (view, compression) => {
+	    if (!view || !view.size) return;
+	    var existing = recordsByIndex.get(view.index);
+	    if (!existing) {
+	      var record = {
+	        index: view.index,
+	        stride: view.stride || 0,
+	        compression: compress ? compression : "None"
+	      };
+	      records.push(record);
+	      recordsByIndex.set(view.index, record);
+	    } else if (existing.stride !== (view.stride || 0) || (compress ? compression : "None") !== existing.compression) {
+	      existing.stride = 0;
+	      existing.compression = "None";
+	    }
+	  };
+	  for (var mesh of graph.meshes || []) {
+	    for (var lod of mesh.lods || []) {
+	      visit(lod.vb, "MeshOptimizerVertexBuffer");
+	      visit(lod.ib, "MeshOptimizerIndexBuffer");
+	      for (var morph of lod.morphTargets || []) {
+	        visit(morph.vb, "MeshOptimizerVertexBuffer");
+	      }
+	    }
+	  }
+	  return records;
+	}
+	function resolveBufferBytes(graph, record) {
+	  var _buffers$find, _buffers$find2, _entry$data;
+	  var buffers = graph.buffers || [];
+	  var entry = (_buffers$find = (_buffers$find2 = buffers.find) === null || _buffers$find2 === void 0 ? void 0 : _buffers$find2.call(buffers, buffer => buffer && buffer.index === record.index)) != null ? _buffers$find : buffers[record.index];
+	  var data = (_entry$data = entry === null || entry === void 0 ? void 0 : entry.data) != null ? _entry$data : entry instanceof Uint8Array ? entry : null;
+	  if (!data) {
+	    throw writeError$1("no buffer data supplied for BufferView index ".concat(record.index));
+	  }
+	  return data instanceof Uint8Array ? data : new Uint8Array(data);
+	}
+	function compressBuffer(bytes, record) {
+	  if (record.compression === "None" || bytes.byteLength === 0) {
+	    return {
+	      data: bytes,
+	      compression: "None",
+	      gpuAlignment: record.stride
+	    };
+	  }
+	  if (!encoderReady) {
+	    throw writeError$1("compressed output requires writeAsync/WriteAsync so meshoptimizer can initialize (or pass compress: false)");
+	  }
+	  if (record.compression === "MeshOptimizerVertexBuffer") {
+	    if (record.stride === 0 || bytes.byteLength % record.stride !== 0) {
+	      return {
+	        data: bytes,
+	        compression: "None",
+	        gpuAlignment: record.stride
+	      };
+	    }
+	    var _count = bytes.byteLength / record.stride;
+	    var _data = MeshoptEncoder.encodeVertexBuffer(bytes, _count, record.stride);
+	    return {
+	      data: _data,
+	      compression: "MeshOptimizerVertexBuffer",
+	      gpuAlignment: record.stride
+	    };
+	  }
+
+	  // index buffers: meshopt encodes triangle lists of u32; u16 sources widen
+	  var stride = record.stride;
+	  if (stride !== 2 && stride !== 4 || bytes.byteLength % stride !== 0) {
+	    return {
+	      data: bytes,
+	      compression: "None",
+	      gpuAlignment: stride
+	    };
+	  }
+	  var count = bytes.byteLength / stride;
+	  if (count % 3 !== 0) {
+	    return {
+	      data: bytes,
+	      compression: "None",
+	      gpuAlignment: stride
+	    };
+	  }
+	  var source = bytes;
+	  if (stride === 2) {
+	    var wide = new Uint32Array(count);
+	    var view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+	    for (var i = 0; i < count; i++) wide[i] = view.getUint16(i * 2, true);
+	    source = new Uint8Array(wide.buffer);
+	  }
+	  var data = MeshoptEncoder.encodeIndexBuffer(source, count, 4);
+	  return {
+	    data,
+	    compression: "MeshOptimizerIndexBuffer",
+	    gpuAlignment: stride
+	  };
+	}
+
+	/**
+	 * Serialize a CMF-native graph into .cmf bytes.
+	 *
+	 * @param {object} graph Native graph: `{ meshes, skeletons, animations, metadata?, buffers? }`
+	 *   where `buffers` supplies uncompressed GPU bytes for each BufferView
+	 *   `index` (as `{ index, data }` entries or an index-keyed array).
+	 * @param {object} [options] `compress` (default false for the sync writer)
+	 *   enables meshoptimizer vertex/index compression.
+	 * @returns {Uint8Array} Complete .cmf file bytes.
+	 */
+	function writeCmf(graph) {
+	  var _graph$skeletons;
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  if (!graph || typeof graph !== "object") {
+	    throw writeError$1("input graph must be an object");
+	  }
+	  if (((_graph$skeletons = graph.skeletons) != null ? _graph$skeletons : []).some(skeleton => {
+	    var _skeleton$bones;
+	    return ((_skeleton$bones = skeleton === null || skeleton === void 0 ? void 0 : skeleton.bones) != null ? _skeleton$bones : []).some(bone => typeof bone !== "string");
+	  })) {
+	    throw writeError$1("skeleton bones must be name strings; GR2-shaped skeletons need conversion (use writeShared) before writing");
+	  }
+	  validateCmfGraph(graph, {
+	    phase: "write"
+	  });
+	  var compress = options.compress === true;
+	  var records = collectBufferRecords(graph, compress);
+	  var compressed = records.map(record => {
+	    var bytes = resolveBufferBytes(graph, record);
+	    return _objectSpread2(_objectSpread2({
+	      record
+	    }, compressBuffer(bytes, record)), {}, {
+	      uncompressedSize: bytes.byteLength
+	    });
+	  });
+	  var remap = new Map(records.map((record, position) => [record.index, position + 1]));
+	  var data = new Flattener();
+	  data.reserve(STRUCT_SIZE.Data);
+	  writeData(data, 0, graph, remap);
+	  var dataBytes = data.bytes();
+	  var metadataBytes = null;
+	  if (graph.metadata && (graph.metadata.entries || []).length) {
+	    var metadata = new Flattener();
+	    metadata.reserve(STRUCT_SIZE.Metadata);
+	    metadata.span(0, graph.metadata.entries, STRUCT_SIZE.MetadataEntry, (target, offset, entry) => {
+	      target.string(offset, entry.key);
+	      target.string(offset + 16, entry.value);
+	    });
+	    metadataBytes = metadata.bytes();
+	  }
+	  var sections = [{
+	    type: "Data",
+	    compression: "None",
+	    gpuAlignment: 0,
+	    compressedSize: dataBytes.byteLength,
+	    uncompressedSize: dataBytes.byteLength,
+	    data: dataBytes
+	  }];
+	  for (var entry of compressed) {
+	    sections.push({
+	      type: "GpuBuffer",
+	      compression: entry.compression,
+	      gpuAlignment: entry.gpuAlignment,
+	      compressedSize: entry.data.byteLength,
+	      uncompressedSize: entry.uncompressedSize,
+	      data: entry.data
+	    });
+	  }
+	  if (metadataBytes) {
+	    sections.push({
+	      type: "Metadata",
+	      compression: "None",
+	      gpuAlignment: 0,
+	      compressedSize: metadataBytes.byteLength,
+	      uncompressedSize: metadataBytes.byteLength,
+	      data: metadataBytes
+	    });
+	  }
+	  var header = new Flattener();
+	  header.reserve(STRUCT_SIZE.Header);
+	  header.u32(0, FILE_SIGNATURE);
+	  header.u32(4, FILE_VERSION);
+	  header.span(16, sections, STRUCT_SIZE.Section, () => {});
+	  var headerSize = header.size;
+	  header.u32(8, headerSize);
+	  var offset = headerSize;
+	  var sectionOffsets = sections.map(section => {
+	    offset = Math.ceil(offset / 8) * 8;
+	    var sectionOffset = offset;
+	    offset += section.compressedSize;
+	    return sectionOffset;
+	  });
+	  var sectionsChunk = headerSize - sections.length * STRUCT_SIZE.Section;
+	  sections.forEach((section, index) => {
+	    var base = sectionsChunk + index * STRUCT_SIZE.Section;
+	    header.u32(base, sectionOffsets[index]);
+	    header.u32(base + 4, section.compressedSize);
+	    header.u32(base + 8, section.uncompressedSize);
+	    header.u16(base + 12, section.gpuAlignment || 0);
+	    header.u8(base + 14, enumValue(SectionType, section.type, "section type"));
+	    header.u8(base + 15, enumValue(SectionCompression, section.compression, "section compression"));
+	  });
+	  var total = offset;
+	  var file = new Uint8Array(total);
+	  file.set(header.bytes(), 0);
+	  sections.forEach((section, index) => {
+	    file.set(section.data, sectionOffsets[index]);
+	  });
+	  var checksum = crc32(file, 16, file.byteLength);
+	  new DataView(file.buffer).setUint32(12, checksum, true);
+	  // Carbon validates every produced file at its save boundary. Re-read the
+	  // structural result here as the writer's equivalent postcondition; source
+	  // buffer finiteness was already checked by validateCmfGraph above.
+	  readCmf(file, {
+	    decodeBuffers: false,
+	    validateCrc: true
+	  });
+	  return file;
+	}
+
+	/**
+	 * Serialize a CMF-native graph asynchronously with compression enabled by
+	 * default (awaits meshoptimizer encoder initialization).
+	 *
+	 * @param {object} graph Native graph (see `writeCmf`).
+	 * @param {object} [options] `compress` defaults to true.
+	 * @returns {Promise<Uint8Array>} Complete .cmf file bytes.
+	 */
+	function writeCmfAsync(_x) {
+	  return _writeCmfAsync.apply(this, arguments);
+	}
+	function _writeCmfAsync() {
+	  _writeCmfAsync = _asyncToGenerator(function* (graph) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    yield MeshoptEncoder.ready;
+	    encoderReady = true;
+	    return writeCmf(graph, _objectSpread2(_objectSpread2({}, options), {}, {
+	      compress: options.compress !== false
+	    }));
+	  });
+	  return _writeCmfAsync.apply(this, arguments);
+	}
+
+	var DEFAULT_VALUES$6 = Object.freeze({
+	  emit: OUTPUT_NATIVE,
+	  validateCrc: true,
+	  decodeBuffers: true,
+	  classes: {}
+	});
+
+	/**
+	 * Normalizes reader options against their supported defaults for the CMF format
+	 * reader.
+	 */
+	function normalizeValues$6() {
+	  var _base$classes, _options$classes;
+	  var base = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  var values = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, DEFAULT_VALUES$6), base), options), {}, {
+	    classes: _objectSpread2(_objectSpread2({}, (_base$classes = base.classes) != null ? _base$classes : {}), (_options$classes = options.classes) != null ? _options$classes : {})
+	  });
+	  values.emit = normalizeEmit$2(values.emit);
+	  if (values.emit === OUTPUT_GR2$3 && !hasClasses(values.classes)) {
+	    throw new TypeError("CMF emit \"gr2\" requires explicit classes");
+	  }
+	  validateClasses(values.classes);
+	  values.decodeBuffers = !!values.decodeBuffers;
+	  return values;
+	}
+	function normalizeEmit$2(emit) {
+	  if (emit === undefined || emit === OUTPUT_NATIVE || emit === OUTPUT_CMF$3 || emit === OUTPUT_CMF_JSON || emit === OUTPUT_JSON$b) {
+	    return OUTPUT_CMF$3;
+	  }
+	  if (emit === OUTPUT_GR2$3 || emit === OUTPUT_RAW$6 || emit === OUTPUT_SHARED$2) return emit;
+	  throw new TypeError("CMF emit must be \"".concat(OUTPUT_CMF$3, "\", \"").concat(OUTPUT_CMF_JSON, "\", \"").concat(OUTPUT_GR2$3, "\", \"").concat(OUTPUT_SHARED$2, "\", or \"").concat(OUTPUT_RAW$6, "\""));
+	}
+	function hasClasses(classes) {
+	  return !!classes && Object.values(classes).some(Class => typeof Class === "function");
+	}
+
+	/** Reads and validates raw input bytes for the CMF format reader. */
+	function readRawInput(input) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  if (input && typeof input === "object" && Array.isArray(input.sections) && Array.isArray(input.meshes)) {
+	    return validateCmfGraph(input, {
+	      phase: "read"
+	    });
+	  }
+	  return readCmf(input, options);
+	}
+
+	/** Reads and validates raw input bytes asynchronously for the CMF format reader. */
+	function readRawInputAsync(_x) {
+	  return _readRawInputAsync.apply(this, arguments);
+	}
+	/** Reads input using normalized format options for the CMF format reader. */
+	function _readRawInputAsync() {
+	  _readRawInputAsync = _asyncToGenerator(function* (input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    if (input && typeof input === "object" && Array.isArray(input.sections) && Array.isArray(input.meshes)) {
+	      return validateCmfGraph(input, {
+	        phase: "read"
+	      });
+	    }
+	    var _yield$import = yield Promise.resolve().then(function () { return schema$1; }),
+	      readCmfAsync = _yield$import.readCmfAsync;
+	    return readCmfAsync(input, options);
+	  });
+	  return _readRawInputAsync.apply(this, arguments);
+	}
+	function readWithValues$5(owner, input, values) {
+	  var raw = readRawInput(input, values);
+	  if (values.emit === OUTPUT_RAW$6) {
+	    return raw;
+	  }
+	  return values.emit === OUTPUT_SHARED$2 ? buildSharedFromCmf(raw, values.classes, {
+	    source: values.source
+	  }) : values.emit === OUTPUT_GR2$3 ? buildGr2FromCmf(raw, values.classes, {
+	    source: values.source
+	  }) : hydrateNativeRoot(raw, values.classes, {
+	    source: values.source
+	  });
+	}
+
+	/**
+	 * Reads input asynchronously using normalized format options for the CMF format
+	 * reader.
+	 */
+	function readWithValuesAsync(_x2, _x3, _x4) {
+	  return _readWithValuesAsync.apply(this, arguments);
+	}
+	/** Loads shared with values through the current CMF format reader. */
+	function _readWithValuesAsync() {
+	  _readWithValuesAsync = _asyncToGenerator(function* (owner, input, values) {
+	    var raw = yield readRawInputAsync(input, values);
+	    if (values.emit === OUTPUT_RAW$6) {
+	      return raw;
+	    }
+	    return values.emit === OUTPUT_SHARED$2 ? buildSharedFromCmf(raw, values.classes, {
+	      source: values.source
+	    }) : values.emit === OUTPUT_GR2$3 ? buildGr2FromCmf(raw, values.classes, {
+	      source: values.source
+	    }) : hydrateNativeRoot(raw, values.classes, {
+	      source: values.source
+	    });
+	  });
+	  return _readWithValuesAsync.apply(this, arguments);
+	}
+	function loadSharedWithValues(input, values) {
+	  var native = buildCmfFromShared$1(input);
+	  return values.emit === OUTPUT_SHARED$2 ? buildSharedFromCmf(native, values.classes, {
+	    source: values.source
+	  }) : values.emit === OUTPUT_GR2$3 ? buildGr2FromCmf(native, values.classes, {
+	    source: values.source
+	  }) : hydrateNativeRoot(native, values.classes, {
+	    source: values.source
+	  });
+	}
+
+	/** Loads native with values through the current CMF format reader. */
+	function loadNativeWithValues(input, values) {
+	  if (values.emit === OUTPUT_RAW$6) {
+	    return input;
+	  }
+	  return values.emit === OUTPUT_SHARED$2 ? buildSharedFromCmf(input, values.classes, {
+	    source: values.source
+	  }) : values.emit === OUTPUT_GR2$3 ? buildGr2FromCmf(input, values.classes, {
+	    source: values.source
+	  }) : hydrateNativeRoot(input, values.classes, {
+	    source: values.source
+	  });
+	}
+
+	/**
+	 * Inspects raw CMF result without materializing the full CMF format reader
+	 * payload.
+	 */
+	function inspectRawCmfResult(input) {
+	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	  return inspectCmf(readRawInput(input, _objectSpread2(_objectSpread2({}, options), {}, {
+	    decodeBuffers: false
+	  })));
+	}
+	function buildGr2FromCmf(raw, classes) {
+	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	  var hydrationClasses = createHydrationClasses(classes, hydrationOptions);
+	  return hydrate("Root", {
+	    grannyFileFormatRevision: raw.version,
+	    grannyFileSource: "cmf",
+	    meshes: raw.meshes.map(mesh => hydrateGr2Mesh(mesh, hydrationClasses)),
+	    models: buildGr2Models(raw).map(model => hydrateGr2Model(model, hydrationClasses)),
+	    animations: buildGr2Animations(raw).map(animation => hydrateGr2Animation(animation, hydrationClasses))
+	  }, hydrationClasses, hydrationOptions);
+	}
+	function hydrateGr2Mesh(mesh, classes) {
+	  var _mesh$morphTargets$ta, _mesh$morphTargets, _mesh$bounds$min, _mesh$bounds, _mesh$bounds$max, _mesh$bounds2, _mesh$boneBindings, _mesh$vertex, _mesh$indices;
+	  return hydrate("Mesh", {
+	    name: mesh.name,
+	    morphTargets: ((_mesh$morphTargets$ta = (_mesh$morphTargets = mesh.morphTargets) === null || _mesh$morphTargets === void 0 ? void 0 : _mesh$morphTargets.targets) != null ? _mesh$morphTargets$ta : []).map((target, index) => {
+	      var _ref, _mesh$lods$0$morphTar, _mesh$lods;
+	      return hydrate("MorphTarget", _objectSpread2(_objectSpread2({}, target), {}, {
+	        dataIsDeltas: true,
+	        vertex: (_ref = (_mesh$lods$0$morphTar = (_mesh$lods = mesh.lods) === null || _mesh$lods === void 0 || (_mesh$lods = _mesh$lods[0]) === null || _mesh$lods === void 0 || (_mesh$lods = _mesh$lods.morphTargets) === null || _mesh$lods === void 0 || (_mesh$lods = _mesh$lods[index]) === null || _mesh$lods === void 0 ? void 0 : _mesh$lods.vertex) != null ? _mesh$lods$0$morphTar : target.vertex) != null ? _ref : null
+	      }), classes);
+	    }),
+	    minBounds: (_mesh$bounds$min = (_mesh$bounds = mesh.bounds) === null || _mesh$bounds === void 0 ? void 0 : _mesh$bounds.min) != null ? _mesh$bounds$min : [0, 0, 0],
+	    maxBounds: (_mesh$bounds$max = (_mesh$bounds2 = mesh.bounds) === null || _mesh$bounds2 === void 0 ? void 0 : _mesh$bounds2.max) != null ? _mesh$bounds$max : [0, 0, 0],
+	    boneBindings: ((_mesh$boneBindings = mesh.boneBindings) != null ? _mesh$boneBindings : []).map(binding => {
+	      var _binding$bounds$min, _binding$bounds, _binding$bounds$max, _binding$bounds2;
+	      return hydrate("BoneBinding", {
+	        name: binding.name,
+	        minBounds: (_binding$bounds$min = (_binding$bounds = binding.bounds) === null || _binding$bounds === void 0 ? void 0 : _binding$bounds.min) != null ? _binding$bounds$min : [0, 0, 0],
+	        maxBounds: (_binding$bounds$max = (_binding$bounds2 = binding.bounds) === null || _binding$bounds2 === void 0 ? void 0 : _binding$bounds2.max) != null ? _binding$bounds$max : [0, 0, 0]
+	      }, classes);
+	    }),
+	    vertex: (_mesh$vertex = mesh.vertex) != null ? _mesh$vertex : emptyGr2Vertex(),
+	    indices: ((_mesh$indices = mesh.indices) != null ? _mesh$indices : []).map(group => {
+	      var _group$name, _group$bytesPerIndex, _group$faces;
+	      return hydrate("IndexGroup", {
+	        name: (_group$name = group.name) != null ? _group$name : "",
+	        bytesPerIndex: (_group$bytesPerIndex = group.bytesPerIndex) != null ? _group$bytesPerIndex : 2,
+	        faces: (_group$faces = group.faces) != null ? _group$faces : []
+	      }, classes);
+	    })
+	  }, classes);
+	}
+	function hydrateGr2Model(model, classes) {
+	  return hydrate("Model", _objectSpread2(_objectSpread2({}, model), {}, {
+	    skeleton: hydrate("Skeleton", _objectSpread2(_objectSpread2({}, model.skeleton), {}, {
+	      bones: model.skeleton.bones.map(bone => hydrate("Bone", bone, classes))
+	    }), classes)
+	  }), classes);
+	}
+	function hydrateGr2Animation(animation, classes) {
+	  return hydrate("Animation", _objectSpread2(_objectSpread2({}, animation), {}, {
+	    trackGroups: animation.trackGroups.map(group => hydrate("TrackGroup", _objectSpread2(_objectSpread2({}, group), {}, {
+	      transformTracks: group.transformTracks.map(track => hydrate("TransformTrack", _objectSpread2(_objectSpread2({}, track), {}, {
+	        orientation: hydrate("Curve", track.orientation, classes),
+	        position: hydrate("Curve", track.position, classes),
+	        scaleShear: hydrate("Curve", track.scaleShear, classes)
+	      }), classes)),
+	      vectorTracks: group.vectorTracks.map(track => hydrate("VectorTrack", _objectSpread2(_objectSpread2({}, track), {}, {
+	        valueCurve: hydrate("Curve", track.valueCurve, classes)
+	      }), classes))
+	    }), classes))
+	  }), classes);
+	}
+	function emptyGr2Vertex() {
+	  return {
+	    position: [],
+	    normal: [],
+	    tangent: [],
+	    binormal: [],
+	    texcoord0: [],
+	    texcoord1: [],
+	    blendIndice: [],
+	    blendWeight: []
+	  };
+	}
+
+	/** Converts a parsed payload into a JSON-safe value for the CMF format reader. */
+	function toJsonValue(value) {
+	  if (value === null || value === undefined) {
+	    return value;
+	  }
+	  if (Array.isArray(value)) {
+	    return value.map(item => toJsonValue(item));
+	  }
+	  if (ArrayBuffer.isView(value)) {
+	    return Array.from(value);
+	  }
+	  if (typeof value.toJSON === "function") {
+	    return toJsonValue(value.toJSON());
+	  }
+	  if (typeof value === "object") {
+	    var result = {};
+	    for (var _ref4 of Object.entries(value)) {
+	      var _ref3 = _slicedToArray(_ref4, 2);
+	      var key = _ref3[0];
+	      var child = _ref3[1];
+	      result[key] = toJsonValue(child);
+	    }
+	    return result;
+	  }
+	  return value;
+	}
+
+	/** Validates a requested runtime class key for the CMF format reader. */
+	function validateClassKey$1(type) {
+	  if (!CLASS_KEYS$6.includes(type)) {
+	    throw new TypeError("Unknown CMF class key \"".concat(type, "\""));
+	  }
+	}
+
+	/** Validates a resolved runtime class constructor for the CMF format reader. */
+	function validateClass$1(type, Class) {
+	  validateClassKey$1(type);
+	  if (typeof Class !== "function") {
+	    throw new TypeError("CMF class \"".concat(type, "\" must be a constructor"));
+	  }
+	}
+	function validateClasses(classes) {
+	  for (var _ref7 of Object.entries(classes != null ? classes : {})) {
+	    var _ref6 = _slicedToArray(_ref7, 2);
+	    var type = _ref6[0];
+	    var Class = _ref6[1];
+	    validateClass$1(type, Class);
+	  }
+	}
+	function hydrateNativeRoot(raw, classes) {
+	  var _raw$sections, _raw$metadata, _raw$meshes, _raw$skeletons, _raw$animations;
+	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	  return hydrateCmf({
+	    signature: raw.signature,
+	    version: raw.version,
+	    headerSize: raw.headerSize,
+	    crc32: raw.crc32,
+	    sections: (_raw$sections = raw.sections) != null ? _raw$sections : [],
+	    metadata: (_raw$metadata = raw.metadata) != null ? _raw$metadata : null,
+	    meshes: (_raw$meshes = raw.meshes) != null ? _raw$meshes : [],
+	    skeletons: (_raw$skeletons = raw.skeletons) != null ? _raw$skeletons : [],
+	    animations: (_raw$animations = raw.animations) != null ? _raw$animations : []
+	  }, classes, hydrationOptions);
+	}
+	function hydrate(type, fields, classes) {
+	  var hydrationOptions = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+	  var Class = classes === null || classes === void 0 ? void 0 : classes[type];
+	  if (!Class) {
+	    return fields;
+	  }
+	  var options = Object.keys(hydrationOptions).length > 0 ? hydrationOptions : (classes === null || classes === void 0 ? void 0 : classes.__hydrationOptions) || {};
+	  return populate(new Class(), fields, options);
+	}
+	function populate(instance, fields) {
+	  var hydrationOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	  if (!instance || typeof instance.SetValues !== "function") {
+	    throw new TypeError("CjsCmfFormat class population requires classes to implement SetValues(values)");
+	  }
+	  instance.SetValues(fields, _objectSpread2(_objectSpread2({}, hydrationOptions), {}, {
+	    skipUpdate: true,
+	    skipEvents: true
+	  }));
+	  return instance;
+	}
+	function createHydrationClasses(classes, hydrationOptions) {
+	  var map = Object.create(classes || null);
+	  Object.defineProperty(map, "__hydrationOptions", {
+	    value: hydrationOptions,
+	    enumerable: false
+	  });
+	  return map;
+	}
+
+	/**
+	 * CarbonEngineJS-facing CMF reader.
+	 *
+	 * The Cjs prefix marks this as a JavaScript format/construction boundary. It
+	 * can load CMF files, load CMF-native JSON, construct CMF-native data from
+	 * shared geometry, emit shared geometry when requested, or hydrate
+	 * caller-supplied CarbonEngineJS-style classes.
+	 */
+	var _emit$3 = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
+	var _validateCrc = /*#__PURE__*/_classPrivateFieldLooseKey("validateCrc");
+	var _decodeBuffers = /*#__PURE__*/_classPrivateFieldLooseKey("decodeBuffers");
+	var _classes$1 = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
+	class CjsCmfFormat extends CjsFormat {
+	  /**
+	   * Create a reusable format profile.
+	   *
+	   * @param {object} [options] Default format/build values.
+	   */
+	  constructor() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    super();
+	    Object.defineProperty(this, _emit$3, {
+	      writable: true,
+	      value: DEFAULT_VALUES$6.emit
+	    });
+	    Object.defineProperty(this, _validateCrc, {
+	      writable: true,
+	      value: DEFAULT_VALUES$6.validateCrc
+	    });
+	    Object.defineProperty(this, _decodeBuffers, {
+	      writable: true,
+	      value: DEFAULT_VALUES$6.decodeBuffers
+	    });
+	    Object.defineProperty(this, _classes$1, {
+	      writable: true,
+	      value: {}
+	    });
+	    this.SetValues(options);
+	  }
+
+	  /**
+	   * Set format values for this reusable profile.
+	   *
+	   * @param {object} [options] Values to merge into the profile.
+	   * @returns {CjsCmfFormat} This format profile.
+	   */
+	  SetValues() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var values = normalizeValues$6(this.GetValues(), options);
+	    _classPrivateFieldLooseBase(this, _emit$3)[_emit$3] = values.emit;
+	    _classPrivateFieldLooseBase(this, _validateCrc)[_validateCrc] = values.validateCrc;
+	    _classPrivateFieldLooseBase(this, _decodeBuffers)[_decodeBuffers] = values.decodeBuffers;
+	    _classPrivateFieldLooseBase(this, _classes$1)[_classes$1] = values.classes;
+	    return this;
+	  }
+
+	  /**
+	   * Get this profile's current values, optionally with per-call overrides.
+	   *
+	   * @param {object} [options] Optional values to merge into a copy.
+	   * @returns {object} A copy of the effective values.
+	   */
+	  GetValues() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    return normalizeValues$6({
+	      emit: _classPrivateFieldLooseBase(this, _emit$3)[_emit$3],
+	      validateCrc: _classPrivateFieldLooseBase(this, _validateCrc)[_validateCrc],
+	      decodeBuffers: _classPrivateFieldLooseBase(this, _decodeBuffers)[_decodeBuffers],
+	      classes: _classPrivateFieldLooseBase(this, _classes$1)[_classes$1]
+	    }, options);
+	  }
+
+	  /**
+	   * Set multiple CMF JSON node constructors for this profile.
+	   *
+	   * @param {object} [classes] Map of node class keys to constructors.
+	   * @returns {CjsCmfFormat} This format profile.
+	   */
+	  SetClasses() {
+	    var classes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    return this.SetValues({
+	      classes
+	    });
+	  }
+
+	  /**
+	   * Set a CMF JSON node constructor for this profile.
+	   *
+	   * @param {string} type Node class key.
+	   * @param {Function|null|undefined} Class Constructor to use, or nullish to delete.
+	   * @returns {CjsCmfFormat} This format profile.
+	   */
+	  SetClass(type, Class) {
+	    validateClassKey$1(type);
+	    if (Class === null || Class === undefined) {
+	      delete _classPrivateFieldLooseBase(this, _classes$1)[_classes$1][type];
+	      return this;
+	    }
+	    validateClass$1(type, Class);
+	    _classPrivateFieldLooseBase(this, _classes$1)[_classes$1] = _objectSpread2(_objectSpread2({}, _classPrivateFieldLooseBase(this, _classes$1)[_classes$1]), {}, {
+	      [type]: Class
+	    });
+	    return this;
+	  }
+
+	  /**
+	   * Get a configured CMF JSON node constructor.
+	   *
+	   * @param {string} type Node class key.
+	   * @returns {Function|undefined}
+	   */
+	  GetClass(type) {
+	    validateClassKey$1(type);
+	    return _classPrivateFieldLooseBase(this, _classes$1)[_classes$1][type];
+	  }
+
+	  /**
+	   * Whether this reader has a constructor for a CMF JSON node key.
+	   *
+	   * @param {string} type Node class key.
+	   * @returns {boolean}
+	   */
+	  HasClass(type) {
+	    return !!this.GetClass(type);
+	  }
+
+	  /**
+	   * Parse a .cmf buffer and return CMF-native JSON by default, shared
+	   * geometry when `emit` is "shared", or raw parsed data when `emit` is
+	   * "raw".
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object}
+	   */
+	  Read(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return readWithValues$5(this, input, this.GetValues(options));
+	  }
+
+	  /**
+	   * Load CMF-native JSON. Shared geometry uses LoadShared.
+	   *
+	   * @param {object} input CMF-native JSON root.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object}
+	   */
+	  Load(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return loadNativeWithValues(input, this.GetValues(options));
+	  }
+
+	  /**
+	   * Build CMF-native JSON from shared CarbonEngineJS geometry.
+	   *
+	   * @param {object} input Shared geometry root or mesh.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object}
+	   */
+	  LoadShared(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return loadSharedWithValues(input, this.GetValues(options));
+	  }
+
+	  /**
+	   * Parse a .cmf buffer and emit the shared deinterleaved mesh graph.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object}
+	   */
+	  ReadShared(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return this.Read(input, _objectSpread2(_objectSpread2({}, options), {}, {
+	      emit: OUTPUT_SHARED$2
+	    }));
+	  }
+
+	  /**
+	   * Parse a .cmf buffer with async meshoptimizer initialization support.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {Promise<object>}
+	   */
+	  ReadAsync(input) {
+	    var _arguments = arguments,
+	      _this = this;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : {};
+	      return readWithValuesAsync(_this, input, _this.GetValues(options));
+	    })();
+	  }
+
+	  /**
+	   * Parse a .cmf buffer asynchronously and emit the shared deinterleaved mesh graph.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {Promise<object>}
+	   */
+	  ReadSharedAsync(input) {
+	    var _arguments2 = arguments,
+	      _this2 = this;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments2.length > 1 && _arguments2[1] !== undefined ? _arguments2[1] : {};
+	      return _this2.ReadAsync(input, _objectSpread2(_objectSpread2({}, options), {}, {
+	        emit: OUTPUT_SHARED$2
+	      }));
+	    })();
+	  }
+
+	  /**
+	   * Parse a .cmf buffer into the raw parsed CMF graph.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object}
+	   */
+	  ReadRaw(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return readRawInput(input, this.GetValues(options));
+	  }
+
+	  /**
+	   * Parse a .cmf buffer into the raw parsed CMF graph with async
+	   * meshoptimizer initialization support.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {Promise<object>}
+	   */
+	  ReadRawAsync(input) {
+	    var _arguments3 = arguments,
+	      _this3 = this;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments3.length > 1 && _arguments3[1] !== undefined ? _arguments3[1] : {};
+	      return readRawInputAsync(input, _this3.GetValues(options));
+	    })();
+	  }
+
+	  /**
+	   * Return a stable, lightweight summary for a CMF buffer or raw result.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Per-call values.
+	   * @returns {object}
+	   */
+	  Inspect(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return inspectRawCmfResult(input, this.GetValues(options));
+	  }
+
+	  /**
+	   * Convert format output to plain JSON-compatible data.
+	   *
+	   * @param {object} value Format output to convert.
+	   * @returns {any} Plain JSON-compatible data.
+	   */
+	  ToJSON(value) {
+	    return toJsonValue(value);
+	  }
+
+	  /**
+	   * Serialize a CMF-native graph to binary .cmf bytes without compression.
+	   *
+	   * Use WriteAsync for meshoptimizer-compressed GPU sections. The graph
+	   * shape matches Read output: meshes/skeletons/animations plus optional
+	   * metadata and a `buffers` list supplying uncompressed bytes per
+	   * BufferView index.
+	   *
+	   * @param {object} graph CMF-native graph.
+	   * @param {object} [options] Writer options (`compress`).
+	   * @returns {Uint8Array} Complete .cmf file bytes.
+	   */
+	  Write(graph) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return writeCmf(graph, options);
+	  }
+
+	  /**
+	   * Serialize a CMF-native graph to binary .cmf bytes with meshoptimizer
+	   * compression enabled by default.
+	   *
+	   * @param {object} graph CMF-native graph.
+	   * @param {object} [options] Writer options (`compress`, default true).
+	   * @returns {Promise<Uint8Array>} Complete .cmf file bytes.
+	   */
+	  WriteAsync(graph) {
+	    var _arguments4 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments4.length > 1 && _arguments4[1] !== undefined ? _arguments4[1] : {};
+	      return writeCmfAsync(graph, options);
+	    })();
+	  }
+
+	  /**
+	   * Serialize shared CarbonEngineJS geometry (e.g. from the GR2/OBJ/glTF
+	   * readers) straight to binary .cmf bytes without compression.
+	   *
+	   * Channels are interleaved into GPU buffers per the generated
+	   * declaration. Skeletons/animations must already be CMF-native shaped.
+	   *
+	   * @param {object} input Shared geometry root or mesh.
+	   * @param {object} [options] Writer options (`compress`).
+	   * @returns {Uint8Array} Complete .cmf file bytes.
+	   */
+	  WriteShared(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return CjsCmfFormat.writeShared(input, options);
+	  }
+
+	  /**
+	   * Serialize shared CarbonEngineJS geometry to compressed .cmf bytes.
+	   *
+	   * @param {object} input Shared geometry root or mesh.
+	   * @param {object} [options] Writer options (`compress`, default true).
+	   * @returns {Promise<Uint8Array>} Complete .cmf file bytes.
+	   */
+	  WriteSharedAsync(input) {
+	    var _arguments5 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments5.length > 1 && _arguments5[1] !== undefined ? _arguments5[1] : {};
+	      return CjsCmfFormat.writeSharedAsync(input, options);
+	    })();
+	  }
+
+	  /**
+	   * Static one-shot read. Static methods use camelCase by convention.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {object}
+	   */
+	  static read(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return readWithValues$5(CjsCmfFormat, input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	  }
+
+	  /**
+	   * Static one-shot CMF-native JSON load.
+	   *
+	   * @param {object} input CMF-native JSON root.
+	   * @param {object} [options] Reader values.
+	   * @returns {object}
+	   */
+	  static load(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return loadNativeWithValues(input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	  }
+
+	  /**
+	   * Static one-shot shared geometry to CMF-native JSON construction.
+	   *
+	   * @param {object} input Shared geometry root or mesh.
+	   * @param {object} [options] Reader values.
+	   * @returns {object}
+	   */
+	  static loadShared(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return loadSharedWithValues(input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	  }
+
+	  /**
+	   * Static one-shot read to shared geometry.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {object}
+	   */
+	  static readShared(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return CjsCmfFormat.read(input, _objectSpread2(_objectSpread2({}, options), {}, {
+	      emit: OUTPUT_SHARED$2
+	    }));
+	  }
+
+	  /**
+	   * Static one-shot async read.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {Promise<object>}
+	   */
+	  static readAsync(input) {
+	    var _arguments6 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments6.length > 1 && _arguments6[1] !== undefined ? _arguments6[1] : {};
+	      return readWithValuesAsync(CjsCmfFormat, input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	    })();
+	  }
+
+	  /**
+	   * Static one-shot async read to shared geometry.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {Promise<object>}
+	   */
+	  static readSharedAsync(input) {
+	    var _arguments7 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments7.length > 1 && _arguments7[1] !== undefined ? _arguments7[1] : {};
+	      return CjsCmfFormat.readAsync(input, _objectSpread2(_objectSpread2({}, options), {}, {
+	        emit: OUTPUT_SHARED$2
+	      }));
+	    })();
+	  }
+
+	  /**
+	   * Static one-shot raw read.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {object}
+	   */
+	  static readRaw(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return readRawInput(input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	  }
+
+	  /**
+	   * Static one-shot async raw read.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {Promise<object>}
+	   */
+	  static readRawAsync(input) {
+	    var _arguments8 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments8.length > 1 && _arguments8[1] !== undefined ? _arguments8[1] : {};
+	      return readRawInputAsync(input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	    })();
+	  }
+
+	  /**
+	   * Static one-shot inspection.
+	   *
+	   * @param {Uint8Array|Buffer|ArrayBuffer|object} input Raw .cmf bytes or an existing raw read result.
+	   * @param {object} [options] Reader values.
+	   * @returns {object}
+	   */
+	  static inspect(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return inspectRawCmfResult(input, normalizeValues$6(DEFAULT_VALUES$6, options));
+	  }
+
+	  /**
+	   * Static JSON-compatible conversion.
+	   *
+	   * @param {object} value Format output to convert.
+	   * @returns {any} Plain JSON-compatible data.
+	   */
+	  static toJSON(value) {
+	    return toJsonValue(value);
+	  }
+
+	  /**
+	   * Static one-shot binary write without compression.
+	   *
+	   * @param {object} graph CMF-native graph.
+	   * @param {object} [options] Writer options (`compress`).
+	   * @returns {Uint8Array} Complete .cmf file bytes.
+	   */
+	  static write(graph) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return writeCmf(graph, options);
+	  }
+
+	  /**
+	   * Static one-shot binary write with meshoptimizer compression enabled by
+	   * default.
+	   *
+	   * @param {object} graph CMF-native graph.
+	   * @param {object} [options] Writer options (`compress`, default true).
+	   * @returns {Promise<Uint8Array>} Complete .cmf file bytes.
+	   */
+	  static writeAsync(graph) {
+	    var _arguments9 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments9.length > 1 && _arguments9[1] !== undefined ? _arguments9[1] : {};
+	      return writeCmfAsync(graph, options);
+	    })();
+	  }
+
+	  /**
+	   * Static one-shot shared-geometry write without compression.
+	   *
+	   * Equivalent to `loadShared` + buffer packing + `write`; this is the
+	   * GR2/OBJ/glTF → CMF conversion entry point.
+	   *
+	   * @param {object} input Shared geometry root or mesh.
+	   * @param {object} [options] Writer options (`compress`).
+	   * @returns {Uint8Array} Complete .cmf file bytes.
+	   */
+	  static writeShared(input) {
+	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var packed = packGraphBuffers(buildCmfFromShared$1(input, options));
+	    return writeCmf(_objectSpread2(_objectSpread2({}, packed.graph), {}, {
+	      buffers: packed.buffers
+	    }), options);
+	  }
+
+	  /**
+	   * Static one-shot shared-geometry write with meshoptimizer compression
+	   * enabled by default.
+	   *
+	   * @param {object} input Shared geometry root or mesh.
+	   * @param {object} [options] Writer options (`compress`, default true).
+	   * @returns {Promise<Uint8Array>} Complete .cmf file bytes.
+	   */
+	  static writeSharedAsync(input) {
+	    var _arguments0 = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments0.length > 1 && _arguments0[1] !== undefined ? _arguments0[1] : {};
+	      var packed = packGraphBuffers(buildCmfFromShared$1(input, options));
+	      return writeCmfAsync(_objectSpread2(_objectSpread2({}, packed.graph), {}, {
+	        buffers: packed.buffers
+	      }), options);
+	    })();
+	  }
+
+	  /**
+	   * Emit targets for this format (canonical frozen enum).
+	   */
+	}
+	CjsCmfFormat.Output = Object.freeze({
+	  JSON: OUTPUT_JSON$b,
+	  CMF: OUTPUT_CMF$3,
+	  CMF_JSON: OUTPUT_CMF_JSON,
+	  GR2: OUTPUT_GR2$3,
+	  NATIVE: OUTPUT_NATIVE,
+	  RAW: OUTPUT_RAW$6,
+	  SHARED: OUTPUT_SHARED$2
+	});
+	CjsCmfFormat.CLASS_KEYS = CLASS_KEYS$6;
+	CjsCmfFormat.id = "cmf";
+	CjsCmfFormat.mediaTypes = Object.freeze(["geometry"]);
+	// The writer's own graph is the default: `write` takes a CMF-native graph,
+	// while `writeShared` converts a shared geometry root through it first.
+	// Both are lossless - CMF is the container this package writes for keeps.
+	CjsCmfFormat.inputs = CjsFormat.defineInputs({
+	  cmf: {
+	    default: true,
+	    payloadType: "geometry",
+	    options: ["compress"]
+	  },
+	  shared: {
+	    payloadType: "geometry",
+	    options: ["compress"]
+	  }
+	});
+	CjsCmfFormat.outputs = CjsFormat.defineOutputs({
+	  cmf: {
+	    default: true,
+	    decoded: true
+	  },
+	  gr2: {
+	    decoded: true
+	  },
+	  shared: {
+	    decoded: true
+	  },
+	  json: {
+	    role: "debug",
+	    payloadType: "cmf",
+	    decoded: true
+	  },
+	  cmfJson: {
+	    role: "debug",
+	    payloadType: "cmf",
+	    decoded: true
+	  },
+	  raw: {
+	    role: "debug",
+	    decoded: true
+	  }
+	});
+	CjsCmfFormat.extensions = Object.freeze([".cmf"]);
+
+	/**
+	 * Reader for Carbon Mesh Format `.cmf` geometry.
+	 *
+	 * CMF is what EVE Frontier ships: 4,340 `.cmf` files against four `.gr2` at
+	 * build 3512930, so a client that has it has almost nothing else. Without this
+	 * the engine answers `'Resource extension' store key is unregistered (cmf)`
+	 * and every Frontier hull loads nothing at all.
+	 *
+	 * ## It is the GR2 path, not a second one
+	 *
+	 * The runtime's CMF reader emits a GR2-shaped root - meshes, models,
+	 * animations, the same vertex channels - so the whole of `Gr2Reader` and the
+	 * preparation below it apply unchanged. What arrives here is a different
+	 * container of the same geometry, and the only thing this class does is open
+	 * it.
+	 *
+	 * ## Asynchronous, because the buffers are meshopt-compressed
+	 *
+	 * `Read` refuses outright: "CMF compressed GPU buffers require ReadAsync so
+	 * meshoptimizer can initialize". That is why `Tw2GeometryRes.Process` treats
+	 * this extension like `gr2` and yields the decode rather than calling
+	 * `Prepare` - a sync reader cannot open one of these files.
+	 *
+	 * It decodes on the rendering thread for now, where GR2 has a worker pool. The
+	 * pool is a separate piece of work: its worker imports the GR2 reader, and the
+	 * wasm meshopt initialisation has to go with it.
+	 */
+	class CmfReader {
+	  /**
+	   * Decodes CMF bytes into the prepared JSON the GR2 path consumes.
+	   * @param {ArrayBuffer|Uint8Array} data
+	   * @param {Object} [options]
+	   * @returns {Promise<Object>}
+	   */
+	  static Decode(data) {
+	    var _arguments = arguments;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : {};
+	      var format = new CjsCmfFormat({
+	        emit: "gr2",
+	        classes: {
+	          Root: CmfReader.Root
+	        }
+	      });
+	      var root = yield format.ReadAsync(data);
+
+	      // Spread, because the root is a class instance and the preparation
+	      // rewrites what it is handed: it deletes `mesh.vertex` once packed and
+	      // stamps `_prepared` on. A plain object is what every other path gives
+	      // it.
+	      var json = _objectSpread2({}, root);
+	      for (var mesh of (_json$meshes = json.meshes) != null ? _json$meshes : []) {
+	        var _json$meshes;
+	        var vertex = mesh.vertex;
+	        if (!vertex) continue;
+	        for (var key of CmfReader.PACKED_TANGENTS) {
+	          var _vertex$key, _vertex$tangent;
+	          if ((_vertex$key = vertex[key]) !== null && _vertex$key !== void 0 && _vertex$key.length && !((_vertex$tangent = vertex.tangent) !== null && _vertex$tangent !== void 0 && _vertex$tangent.length)) vertex.tangent = vertex[key];
+	          delete vertex[key];
+	        }
+	      }
+	      return prepareGr2JSON(json, options);
+	    })();
+	  }
+	}
+	CmfReader.extension = "cmf";
+	/**
+	 * How the bytes are asked for.
+	 *
+	 * Declared, never defaulted: `DoCustomLoad` reads it straight off the
+	 * reader and hands it to the fetch, which refuses anything it does not
+	 * recognise - "Invalid fetch type: undefined" arrives long before any of
+	 * this class runs.
+	 */
+	CmfReader.requestResponseType = "arraybuffer";
+	/**
+	 * The class a hydrated root is handed to.
+	 *
+	 * The runtime refuses `emit: "gr2"` with no classes at all, and everything
+	 * below the root is wanted plain - `hydrateNode` returns the fields
+	 * untouched for any key that has no class - so exactly one is registered.
+	 */
+	CmfReader.Root = class CmfRoot {
+	  SetValues(values) {
+	    Object.assign(this, values);
+	  }
+	};
+	/**
+	 * The packed tangent frame, under the name the geometry path knows.
+	 *
+	 * CMF declares `PackedTangent` and `PackedTangentLegacy` as usages of their
+	 * own, and Carbon maps BOTH to the ordinary TANGENT semantic while keeping
+	 * their four-component normalized storage - it does not call the tangent
+	 * codec on the render path, and the compiled shaders agree: `quadv5.sm_hi`
+	 * declares TANGENT0 as four components with no NORMAL or BITANGENT, and the
+	 * unpacked frame is a different shader. See the organization's
+	 * geometry-vertex-binding contract.
+	 *
+	 * So this renames rather than decodes. Unpacking here would produce three
+	 * three-component channels the Frontier shaders do not declare, and the
+	 * ranges differ as well - Int16Norm reaches the shader as SNORM where the
+	 * legacy UInt16Norm reaches it as UNORM - so the values are passed through
+	 * exactly as authored.
+	 *
+	 * Validation already makes either packed usage mutually exclusive with
+	 * Normal, Tangent and Binormal at the same index, so there is nothing to
+	 * collide with.
+	 */
+	CmfReader.PACKED_TANGENTS = ["packedTangent", "packedTangentLegacy"];
+
 	var _dec$7U, _class$7U, _Tw2GeometryRes;
 
 	// Todo: Change to registration process
@@ -60759,7 +64463,11 @@
 	  [Gr2Reader.extension.toLowerCase()]: Gr2Reader,
 	  [GR2JsonReader.extension.toLowerCase()]: GR2JsonReader,
 	  [GltfReader.extension.toLowerCase()]: GltfReader,
-	  [GsfReader.extension.toLowerCase()]: GsfReader
+	  [GsfReader.extension.toLowerCase()]: GsfReader,
+	  // Registered here as well as in the extension map: this table is what
+	  // `DoCustomLoad` checks before a byte is read, and an extension missing
+	  // from it is refused as an unsupported format however it decodes later.
+	  [CmfReader.extension.toLowerCase()]: CmfReader
 	};
 
 	/**
@@ -61064,7 +64772,12 @@
 	    return super.RegisterCallbacks(onResolved, onRejected);
 	  }
 	  *Process(data, options) {
-	    if (this._extension !== "gr2") {
+	    // CMF DECODES LIKE GR2. Both end in the same prepared JSON - the
+	    // runtime's CMF reader emits a GR2-shaped root - and both have to be
+	    // opened asynchronously, CMF because its GPU buffers are meshopt
+	    // compressed and the decoder is wasm. `Prepare` is synchronous, so a
+	    // sync reader cannot open one of these files at all.
+	    if (this._extension !== "gr2" && this._extension !== "cmf") {
 	      this.Prepare(data, options, true);
 	      return;
 	    }
@@ -61074,7 +64787,10 @@
 	    // load, must not be overruled by a fetch that passes no options.
 	    var decodeOptions = Tw2GeometryRes.GetGr2DecodeOptions(options);
 	    this._gr2DecodeOptions = decodeOptions;
-	    var decoded = resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
+	    // No worker for CMF yet: the pool's worker imports the GR2 reader, and
+	    // moving meshopt's wasm initialisation into it is its own piece of
+	    // work. It decodes on the rendering thread until then.
+	    var decoded = this._extension === "cmf" ? CmfReader.Decode(data, decodeOptions) : resMan.useGeometryWorkers ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl) : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
 	    // Cancellation of the yielded promise is owned by the scheduler.
 	    data = null;
 	    var json = yield decoded;
@@ -61085,7 +64801,7 @@
 	  }
 	  Prepare(data, options) {
 	    var processing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-	    if (this._extension === "gr2") {
+	    if (this._extension === "gr2" || this._extension === "cmf") {
 	      resMan.Queue(this, data, options);
 	      return;
 	    }
@@ -64272,7 +67988,7 @@
 	      error.code = "CJS_DECOMPRESSION_UNSUPPORTED";
 	      throw error;
 	    }
-	    var source = new ResponseClass(asUint8Array(value, "compressed input"));
+	    var source = new ResponseClass(asUint8Array$1(value, "compressed input"));
 	    if (!source.body) {
 	      throw new Error("The platform Response did not expose a readable byte stream.");
 	    }
@@ -64290,7 +68006,7 @@
 	/** Decompresses gzip input and returns an unchanged view for plain bytes. */
 	function decompressGzipIfNeeded(value) {
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	  var bytes = asUint8Array(value, "input");
+	  var bytes = asUint8Array$1(value, "input");
 	  return isGzip(bytes) ? decompressGzip(bytes, options) : Promise.resolve(bytes);
 	}
 
@@ -64614,12 +68330,12 @@
 	  return _decodeVolumes.apply(this, arguments);
 	}
 	function inspectWithValues$4(input) {
-	  return inspectBytes(asUint8Array(input, "VTA input"));
+	  return inspectBytes(asUint8Array$1(input, "VTA input"));
 	}
 
 	/** Cheap support report: signature, version, and pixel-format coverage. */
 	function probeSupportWithValues$1(input) {
-	  var bytes = asUint8Array(input, "VTA input");
+	  var bytes = asUint8Array$1(input, "VTA input");
 	  if (!isVTA(bytes)) return {
 	    supported: false,
 	    reason: "not a VTA version-1 file"
@@ -64642,7 +68358,7 @@
 
 	/** Synchronous read: raw passthrough and structural debug only. */
 	function readWithValues$4(input, values) {
-	  var bytes = asUint8Array(input, "VTA input");
+	  var bytes = asUint8Array$1(input, "VTA input");
 	  if (values.emit === OUTPUT_RAW$4) {
 	    return {
 	      sourceFormat: "vta",
@@ -64670,7 +68386,7 @@
 	    if (values.emit !== OUTPUT_VOLUME) {
 	      return readWithValues$4(input, values);
 	    }
-	    return decodeVolumes(asUint8Array(input, "VTA input"), values);
+	    return decodeVolumes(asUint8Array$1(input, "VTA input"), values);
 	  });
 	  return _readAsyncWithValues.apply(this, arguments);
 	}
@@ -64840,7 +68556,7 @@
 	   */
 	  static isVTA(input) {
 	    try {
-	      return isVTA(asUint8Array(input, "VTA input"));
+	      return isVTA(asUint8Array$1(input, "VTA input"));
 	    } catch (_unused) {
 	      return false;
 	    }
@@ -67809,7 +71525,7 @@
 	  [GL_NEAREST]: 1,
 	  [GL_LINEAR]: 2
 	};
-	var Tw2SamplerState = (_dec$7O = define("Tw2SamplerState"), _dec2$79 = string, _dec3$6G = int32$1, _dec4$5Q = uint, _dec5$5h = uint, _dec6$4G = uint, _dec7$40 = uint, _dec8$3t = uint, _dec9$2Z = uint, _dec0$2M = uint, _dec1$2x = uint, _dec10$2b = uint, _dec11$20 = boolean, _dec12$1O = boolean, _dec13$1B = boolean, _dec14$1p = uint, _dec15$1j = uint, _dec16$18 = isPrivate, _dec17$11 = uint, _dec$7O(_class$7O = (_class2$75 = (_Tw2SamplerState = class Tw2SamplerState extends Model$1 {
+	var Tw2SamplerState = (_dec$7O = define("Tw2SamplerState"), _dec2$79 = string, _dec3$6G = int32$1, _dec4$5Q = uint$1, _dec5$5h = uint$1, _dec6$4G = uint$1, _dec7$40 = uint$1, _dec8$3t = uint$1, _dec9$2Z = uint$1, _dec0$2M = uint$1, _dec1$2x = uint$1, _dec10$2b = uint$1, _dec11$20 = boolean, _dec12$1O = boolean, _dec13$1B = boolean, _dec14$1p = uint$1, _dec15$1j = uint$1, _dec16$18 = isPrivate, _dec17$11 = uint$1, _dec$7O(_class$7O = (_class2$75 = (_Tw2SamplerState = class Tw2SamplerState extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$74, this);
@@ -107310,7 +111026,7 @@
 	/** Inspects input using normalized format options for the WEM format reader. */
 	function inspectWithValues$3(input) {
 	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$4;
-	  var bytes = asUint8Array(input, "Wem input");
+	  var bytes = asUint8Array$1(input, "Wem input");
 	  if (!isWEM(bytes)) {
 	    throw new TypeError("CjsWemFormat: expected a RIFF/RIFX WAVE (wem) container");
 	  }
@@ -107360,7 +111076,7 @@
 	/** Reads input using normalized format options for the WEM format reader. */
 	function readWithValues$3(input) {
 	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES$4;
-	  var bytes = asUint8Array(input, "Wem input");
+	  var bytes = asUint8Array$1(input, "Wem input");
 	  var metadata = inspectWithValues$3(bytes, values);
 	  if (values.emit === OUTPUT_WEM_JSON) return metadata;
 	  if (values.emit === OUTPUT_OGG) {
@@ -107707,7 +111423,7 @@
 	   */
 	  static isWEM(input) {
 	    try {
-	      return isWEM(asUint8Array(input, "Wem input"));
+	      return isWEM(asUint8Array$1(input, "Wem input"));
 	    } catch (_unused) {
 	      return false;
 	    }
@@ -108167,7 +111883,7 @@
 	}
 	 */
 
-	var Tw2ShaderAnnotation = (_dec$7J = define("Tw2ShaderAnnotation"), _dec2$77 = string, _dec3$6E = string, _dec4$5O = array, _dec5$5f = boolean, _dec6$4E = string, _dec7$3_ = string, _dec$7J(_class$7J = (_class2$73 = class Tw2ShaderAnnotation {
+	var Tw2ShaderAnnotation = (_dec$7J = define("Tw2ShaderAnnotation"), _dec2$77 = string, _dec3$6E = string, _dec4$5O = array$1, _dec5$5f = boolean, _dec6$4E = string, _dec7$3_ = string, _dec$7J(_class$7J = (_class2$73 = class Tw2ShaderAnnotation {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$72, this);
 	    _initializerDefineProperty(this, "description", _descriptor2$6u, this);
@@ -108318,7 +112034,7 @@
 	}), _class2$73)) || _class$7J);
 
 	var _dec$7I, _dec2$76, _dec3$6D, _dec4$5N, _dec5$5e, _dec6$4D, _dec7$3Z, _dec8$3r, _dec9$2X, _dec0$2K, _dec1$2v, _class$7I, _class2$72, _descriptor$71, _descriptor2$6t, _descriptor3$5E, _descriptor4$4Y, _descriptor5$4i, _descriptor6$3B, _descriptor7$31, _descriptor8$2E, _descriptor9$2p, _Tw2ShaderStageConstant;
-	var Tw2ShaderStageConstant = (_dec$7I = define("Tw2ShaderStageConstant"), _dec2$76 = string, _dec3$6D = uint, _dec4$5N = uint, _dec5$5e = uint, _dec6$4D = boolean, _dec7$3Z = todo("Why is this here?"), _dec8$3r = int32$1, _dec9$2X = uint, _dec0$2K = uint, _dec1$2v = vector, _dec$7I(_class$7I = (_class2$72 = (_Tw2ShaderStageConstant = class Tw2ShaderStageConstant extends Model$1 {
+	var Tw2ShaderStageConstant = (_dec$7I = define("Tw2ShaderStageConstant"), _dec2$76 = string, _dec3$6D = uint$1, _dec4$5N = uint$1, _dec5$5e = uint$1, _dec6$4D = boolean, _dec7$3Z = todo("Why is this here?"), _dec8$3r = int32$1, _dec9$2X = uint$1, _dec0$2K = uint$1, _dec1$2v = vector, _dec$7I(_class$7I = (_class2$72 = (_Tw2ShaderStageConstant = class Tw2ShaderStageConstant extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$71, this);
@@ -108497,7 +112213,7 @@
 	}), _class2$72)) || _class$7I);
 
 	var _dec$7H, _dec2$75, _dec3$6C, _dec4$5M, _dec5$5d, _dec6$4C, _class$7H, _class2$71, _descriptor$70, _descriptor2$6s, _descriptor3$5D, _descriptor4$4X, _descriptor5$4h;
-	var Tw2ShaderStageTexture = (_dec$7H = define("Tw2ShaderStageTexture"), _dec2$75 = string, _dec3$6C = uint, _dec4$5M = uint, _dec5$5d = int32$1, _dec6$4C = int32$1, _dec$7H(_class$7H = (_class2$71 = class Tw2ShaderStageTexture extends Model$1 {
+	var Tw2ShaderStageTexture = (_dec$7H = define("Tw2ShaderStageTexture"), _dec2$75 = string, _dec3$6C = uint$1, _dec4$5M = uint$1, _dec5$5d = int32$1, _dec6$4C = int32$1, _dec$7H(_class$7H = (_class2$71 = class Tw2ShaderStageTexture extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$70, this);
@@ -108728,7 +112444,7 @@
 	  }
 	  return out;
 	}
-	var Tw2ShaderStage = (_dec$7G = define("Tw2ShaderStage"), _dec2$74 = uint, _dec3$6B = vector, _dec4$5L = list("Tw2ShaderStageConstant"), _dec5$5c = struct("Tw2VertexDeclaration"), _dec6$4B = list("Tw2SamplerState"), _dec7$3Y = struct(WebGLShader), _dec8$3q = isPrivate, _dec9$2W = string, _dec0$2J = struct("WebGLShader"), _dec1$2u = isPrivate, _dec10$29 = string, _dec11$1_ = uint, _dec12$1M = isPrivate, _dec13$1A = list("Tw2ShaderTexture"), _dec$7G(_class$7G = (_class2$70 = (_Tw2ShaderStage = class Tw2ShaderStage {
+	var Tw2ShaderStage = (_dec$7G = define("Tw2ShaderStage"), _dec2$74 = uint$1, _dec3$6B = vector, _dec4$5L = list("Tw2ShaderStageConstant"), _dec5$5c = struct("Tw2VertexDeclaration"), _dec6$4B = list("Tw2SamplerState"), _dec7$3Y = struct(WebGLShader), _dec8$3q = isPrivate, _dec9$2W = string, _dec0$2J = struct("WebGLShader"), _dec1$2u = isPrivate, _dec10$29 = string, _dec11$1_ = uint$1, _dec12$1M = isPrivate, _dec13$1A = list("Tw2ShaderTexture"), _dec$7G(_class$7G = (_class2$70 = (_Tw2ShaderStage = class Tw2ShaderStage {
 	  constructor() {
 	    _initializerDefineProperty(this, "constantSize", _descriptor$6$, this);
 	    _initializerDefineProperty(this, "constantValues", _descriptor2$6r, this);
@@ -109543,7 +113259,7 @@
 	 * @type {Number}
 	 */
 	var SAMPLER_SETUP_UNITS = 16;
-	var Tw2ShaderProgram = (_dec$7E = define("Tw2ShaderProgram"), _dec2$72 = list(WebGLUniformLocation), _dec3$6z = list(Number), _dec4$5K = struct("Tw2VertexDeclaration"), _dec5$5b = list(WebGLUniformLocation), _dec6$4A = struct(WebGLUniformLocation), _dec7$3X = struct(WebGLUniformLocation), _dec8$3p = struct(WebGLUniformLocation), _dec9$2V = list(WebGLUniformLocation), _dec0$2I = array, _dec$7E(_class$7E = (_class2$6_ = class Tw2ShaderProgram {
+	var Tw2ShaderProgram = (_dec$7E = define("Tw2ShaderProgram"), _dec2$72 = list(WebGLUniformLocation), _dec3$6z = list(Number), _dec4$5K = struct("Tw2VertexDeclaration"), _dec5$5b = list(WebGLUniformLocation), _dec6$4A = struct(WebGLUniformLocation), _dec7$3X = struct(WebGLUniformLocation), _dec8$3p = struct(WebGLUniformLocation), _dec9$2V = list(WebGLUniformLocation), _dec0$2I = array$1, _dec$7E(_class$7E = (_class2$6_ = class Tw2ShaderProgram {
 	  constructor() {
 	    _initializerDefineProperty(this, "constantBufferHandles", _descriptor$6Z, this);
 	    _initializerDefineProperty(this, "constantBufferSizes", _descriptor2$6p, this);
@@ -111013,7 +114729,7 @@
 	}
 
 	var _dec$7A, _dec2$6$, _dec3$6w, _dec4$5I, _dec5$59, _dec6$4z, _dec7$3W, _class$7A, _class2$6X, _descriptor$6W, _descriptor2$6m, _descriptor3$5z, _descriptor4$4T, _descriptor5$4e, _descriptor6$3y, _Tw2ShaderPermutation;
-	var Tw2ShaderPermutation = (_dec$7A = define("Tw2ShaderPermutation"), _dec2$6$ = string, _dec3$6w = uint, _dec4$5I = string, _dec5$59 = uint, _dec6$4z = plain, _dec7$3W = uint, _dec$7A(_class$7A = (_class2$6X = (_Tw2ShaderPermutation = class Tw2ShaderPermutation {
+	var Tw2ShaderPermutation = (_dec$7A = define("Tw2ShaderPermutation"), _dec2$6$ = string, _dec3$6w = uint$1, _dec4$5I = string, _dec5$59 = uint$1, _dec6$4z = plain, _dec7$3W = uint$1, _dec$7A(_class$7A = (_class2$6X = (_Tw2ShaderPermutation = class Tw2ShaderPermutation {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$6W, this);
 	    _initializerDefineProperty(this, "defaultOption", _descriptor2$6m, this);
@@ -111178,12 +114894,12 @@
 	  constructor(bytes) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	    super(options);
-	    this.bytes = asUint8Array(bytes);
+	    this.bytes = asUint8Array$1(bytes);
 	    this.view = new DataView(this.bytes.buffer, this.bytes.byteOffset, this.bytes.byteLength);
 	    this.offset = Number(options.offset) || 0;
 	    this.end = Number.isInteger(options.end) ? options.end : this.bytes.length;
 	    this.source = options.source || "memory";
-	    this.stringTable = options.stringTable ? asUint8Array(options.stringTable) : null;
+	    this.stringTable = options.stringTable ? asUint8Array$1(options.stringTable) : null;
 	    this.stringTableSize = Number.isInteger(options.stringTableSize) ? options.stringTableSize : this.stringTable ? this.stringTable.length : 0;
 	  }
 
@@ -111195,7 +114911,7 @@
 	   */
 	  SetStringTable(bytes) {
 	    var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	    this.stringTable = asUint8Array(bytes);
+	    this.stringTable = asUint8Array$1(bytes);
 	    this.stringTableSize = Number.isInteger(size) ? size : this.stringTable.length;
 	  }
 
@@ -111511,7 +115227,7 @@
 	  * @returns {boolean} True when the payload looks like DXBC.
 	  */
 	  static IsDxbc(bytes) {
-	    var data = asUint8Array(bytes);
+	    var data = asUint8Array$1(bytes);
 	    return data.length >= DXBC_MAGIC.length && DXBC_MAGIC.every((byte, index) => data[index] === byte);
 	  }
 
@@ -111525,7 +115241,7 @@
 	  */
 	  Read(bytes) {
 	    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    this.bytes = asUint8Array(bytes);
+	    this.bytes = asUint8Array$1(bytes);
 	    this.source = options.source || "memory";
 	    if (!DxbcContainer.IsDxbc(this.bytes)) {
 	      throw new DxbcReadError("Missing DXBC container magic", {
@@ -113069,7 +116785,7 @@
 	 * @returns {object} Raw read result (class instances).
 	 */
 	function readRaw$1(input, values) {
-	  var bytes = asUint8Array(input, "CjsDxbcFormat input");
+	  var bytes = asUint8Array$1(input, "CjsDxbcFormat input");
 	  var source = values.source;
 	  var container = new DxbcContainer().Read(bytes, {
 	    source
@@ -119361,7 +123077,7 @@
 	 */
 	function isWebglEffectContainer(input) {
 	  try {
-	    return looksLikeCarbonEffectContainer(asUint8Array(input, "CjsWebglFormat input"));
+	    return looksLikeCarbonEffectContainer(asUint8Array$1(input, "CjsWebglFormat input"));
 	  } catch (_unused) {
 	    return false;
 	  }
@@ -119898,7 +123614,7 @@
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    this.stageType = Number.isInteger(options.stageType) ? options.stageType : null;
 	    this.stageName = options.stageName || null;
-	    this.bytes = options.bytes ? asUint8Array(options.bytes) : new Uint8Array(0);
+	    this.bytes = options.bytes ? asUint8Array$1(options.bytes) : new Uint8Array(0);
 	    this.shaderSize = Number(options.shaderSize) || this.bytes.length;
 	    this.stringTableOffset = Number.isInteger(options.stringTableOffset) ? options.stringTableOffset : null;
 	    this.effectName = options.effectName || "";
@@ -121454,7 +125170,7 @@
 	      var _reader$sourceHash;
 	      // Carbon owns a memcpy of the loaded resource. Keep the JS graph
 	      // equally isolated from later caller mutation.
-	      this.m_data = Uint8Array.from(asUint8Array(source));
+	      this.m_data = Uint8Array.from(asUint8Array$1(source));
 
 	      // One header walk, for every accepted version. This header -
 	      // version, compiler version and source hash where present, arena,
@@ -122795,7 +126511,7 @@
 	 * @returns {HlslEffectRes} The loaded effect resource graph.
 	 */
 	function readRaw(input, values) {
-	  var bytes = asUint8Array(input, "CjsHlslFormat input");
+	  var bytes = asUint8Array$1(input, "CjsHlslFormat input");
 	  var effect = new HlslEffectRes();
 	  var ok = effect.DoLoad(bytes, {
 	    source: values.source
@@ -123078,7 +126794,7 @@
 	   */
 	  static probeSupport(input) {
 	    try {
-	      var bytes = asUint8Array(input, "CjsHlslFormat input");
+	      var bytes = asUint8Array$1(input, "CjsHlslFormat input");
 	      return new HlslEffectRes().DoLoad(bytes, {
 	        source: "probeSupport"
 	      });
@@ -128414,7 +132130,7 @@
 	  if (!options || typeof options !== "object" || Array.isArray(options)) {
 	    throw new TypeError("Carbon WebGL effect options must be an object");
 	  }
-	  var sourceBytes = asUint8Array(input, "CjsWebglFormat input");
+	  var sourceBytes = asUint8Array$1(input, "CjsWebglFormat input");
 	  var source = String((_options$source = options.source) != null ? _options$source : "memory").trim() || "memory";
 	  var selection = {
 	    technique: options.technique === undefined || options.technique === null ? null : String(options.technique),
@@ -150165,317 +153881,6 @@
 	 */
 	function IsVertexElementType(type) {
 	  return Object.hasOwn(ELEMENT_TYPES, type);
-	}
-
-	/**
-	 * GPU-buffer packing for CMF writing.
-	 *
-	 * `buildCmfFromShared` (and hand-built graphs) carry deinterleaved vertex
-	 * channels and index groups but no GPU bytes. This packer interleaves each
-	 * LOD's channels per the mesh declaration, packs index groups, assigns
-	 * unique buffer indices across the whole graph, and returns a graph + buffer
-	 * list ready for `writeCmf`. Skeletons and animations must already be
-	 * CMF-native shaped; GR2-shaped skeletons are rejected with a clear error
-	 * (GR2 bone/track conversion is a separate adapter).
-	 */
-
-	var CHANNEL_NAMES = Object.freeze({
-	  Position: "position",
-	  Normal: "normal",
-	  Tangent: "tangent",
-	  Binormal: "binormal",
-	  TexCoord: "texcoord",
-	  Color: "color",
-	  BoneIndices: "blendIndice",
-	  BoneWeights: "blendWeight",
-	  PackedTangent: "packedTangent",
-	  PackedTangentLegacy: "packedTangentLegacy"
-	});
-	function packError(message) {
-	  var error = new Error("CMF pack: ".concat(message));
-	  error.code = "CJS_FORMAT_WRITE_ERROR";
-	  return error;
-	}
-	function channelName(element) {
-	  var base = CHANNEL_NAMES[element.usage];
-	  if (!base) throw packError("unknown vertex usage ".concat(JSON.stringify(element.usage)));
-	  if (element.usage === "TexCoord" || element.usage === "Color") return "".concat(base).concat(element.usageIndex);
-	  if (element.usageIndex > 0) return "".concat(base).concat(element.usageIndex);
-	  return base;
-	}
-	function packedElementTypeSize(type) {
-	  try {
-	    return elementTypeSize$1(type);
-	  } catch (_unused) {
-	    throw packError("unsupported vertex element type ".concat(JSON.stringify(type)));
-	  }
-	}
-	function floatToHalf(value) {
-	  if (Number.isNaN(value)) return 0x7e00;
-	  if (value === Infinity) return 0x7c00;
-	  if (value === -Infinity) return 0xfc00;
-	  var sign = value < 0 || Object.is(value, -0) ? 0x8000 : 0;
-	  var v = Math.abs(value);
-	  if (v >= 65520) return sign | 0x7c00;
-	  if (v < Math.pow(2, -24)) return sign;
-	  if (v < Math.pow(2, -14)) {
-	    return sign | Math.round(v / Math.pow(2, -24));
-	  }
-	  var exponent = Math.floor(Math.log2(v));
-	  var mantissa = Math.round((v / Math.pow(2, exponent) - 1) * 1024);
-	  if (mantissa === 1024) return sign | exponent + 16 << 10;
-	  return sign | exponent + 15 << 10 | mantissa;
-	}
-	function writeComponent(view, offset, type, value) {
-	  switch (type) {
-	    case "Float32":
-	      view.setFloat32(offset, value || 0, true);
-	      break;
-	    case "Float16":
-	      view.setUint16(offset, floatToHalf(value || 0), true);
-	      break;
-	    case "UInt16Norm":
-	      view.setUint16(offset, clampRound(value * 65535, 0, 65535), true);
-	      break;
-	    case "UInt16":
-	      view.setUint16(offset, clampRound(value, 0, 65535), true);
-	      break;
-	    case "Int16Norm":
-	      view.setInt16(offset, clampRound(value * 32767, -32767, 32767), true);
-	      break;
-	    case "Int16":
-	      view.setInt16(offset, clampRound(value, -32768, 32767), true);
-	      break;
-	    case "UInt8Norm":
-	      view.setUint8(offset, clampRound(value * 255, 0, 255));
-	      break;
-	    case "UInt8":
-	      view.setUint8(offset, clampRound(value, 0, 255));
-	      break;
-	    case "Int8Norm":
-	      view.setInt8(offset, clampRound(value * 127, -127, 127));
-	      break;
-	    case "Int8":
-	      view.setInt8(offset, clampRound(value, -128, 127));
-	      break;
-	    default:
-	      throw packError("unsupported vertex element type ".concat(JSON.stringify(type)));
-	  }
-	}
-	function clampRound(value, min, max) {
-	  var rounded = Math.round(value || 0);
-	  return rounded < min ? min : rounded > max ? max : rounded;
-	}
-	function vertexCountFor(decl, vertex) {
-	  // One declaration describes one vertex row count. Taking the shortest
-	  // channel would silently discard valid vertices from every longer channel.
-	  var count = null;
-	  var countChannel = "";
-	  for (var element of decl) {
-	    var name = channelName(element);
-	    var channel = vertex[name];
-	    if (!Array.isArray(channel)) {
-	      throw packError("missing declared vertex channel ".concat(JSON.stringify(name)));
-	    }
-	    if (channel.length % element.elementCount) {
-	      throw packError("vertex channel ".concat(JSON.stringify(name), " length ").concat(channel.length, " is not divisible by ") + "".concat(element.elementCount, " components"));
-	    }
-	    var channelCount = channel.length / element.elementCount;
-	    if (count === null) {
-	      count = channelCount;
-	      countChannel = name;
-	    } else if (channelCount !== count) {
-	      throw packError("vertex channel ".concat(JSON.stringify(name), " has ").concat(channelCount, " vertices; expected ").concat(count, " ") + "from ".concat(JSON.stringify(countChannel)));
-	    }
-	  }
-	  return count != null ? count : 0;
-	}
-	function strideFor(decl) {
-	  try {
-	    return estimateStrideFromDecl(decl);
-	  } catch (error) {
-	    throw packError(error.message.replace(/^Unsupported CMF /, "unsupported "));
-	  }
-	}
-
-	/** Pack semantic CMF element values while preserving already-packed byte payloads. */
-	function packElementArray(values, type, elementCount) {
-	  var size = packedElementTypeSize(type);
-	  if (values instanceof Uint8Array) return values;
-	  if (values instanceof ArrayBuffer) return new Uint8Array(values);
-	  if (values instanceof DataView) return new Uint8Array(values.buffer, values.byteOffset, values.byteLength);
-	  var source = Array.isArray(values) || ArrayBuffer.isView(values) ? Array.from(values) : [];
-	  if (size > 1 && source.length === elementCount * size && source.every(value => Number.isInteger(value) && value >= 0 && value <= 255)) {
-	    return Uint8Array.from(source);
-	  }
-	  var bytes = new Uint8Array(source.length * size);
-	  var view = new DataView(bytes.buffer);
-	  for (var index = 0; index < source.length; index++) {
-	    writeComponent(view, index * size, type, source[index]);
-	  }
-	  return bytes;
-	}
-
-	/** Pack every native CMF animation curve's knot and value payloads. */
-	function packAnimationCurves(animations) {
-	  return (animations || []).map(animation => _objectSpread2(_objectSpread2({}, animation), {}, {
-	    curves: (animation.curves || []).map(curve => _objectSpread2(_objectSpread2({}, curve), {}, {
-	      knots: packElementArray(curve.knots, curve.knotType, curve.knotCount),
-	      values: packElementArray(curve.values, curve.valueType, curve.knotCount * curve.valueDimension)
-	    }))
-	  }));
-	}
-
-	/**
-	 * Interleave deinterleaved channels into vertex-buffer bytes per `decl`.
-	 *
-	 * @param {Array<object>} decl Vertex declaration.
-	 * @param {object} vertex Channel-name-keyed flat arrays.
-	 * @returns {object} `{ bytes, stride, count }`.
-	 * @throws {Error} When a declared channel is missing, partial, or has a
-	 * different vertex count from its peers.
-	 */
-	function packVertexBuffer(decl, vertex) {
-	  var stride = strideFor(decl);
-	  var count = vertexCountFor(decl, vertex || {});
-	  var bytes = new Uint8Array(count * stride);
-	  var view = new DataView(bytes.buffer);
-	  for (var element of decl) {
-	    var channel = (vertex || {})[channelName(element)];
-	    if (!Array.isArray(channel) || channel.length === 0) continue;
-	    var size = packedElementTypeSize(element.type);
-	    for (var i = 0; i < count; i++) {
-	      var base = i * stride + (element.offset || 0);
-	      for (var component = 0; component < element.elementCount; component++) {
-	        writeComponent(view, base + component * size, element.type, channel[i * element.elementCount + component]);
-	      }
-	    }
-	  }
-	  return {
-	    bytes,
-	    stride,
-	    count
-	  };
-	}
-
-	/**
-	 * Concatenate index groups into index-buffer bytes.
-	 *
-	 * @param {Array<object>} groups Index groups with `faces` arrays.
-	 * @returns {object} `{ bytes, stride, count }` (u16 unless any index needs u32).
-	 */
-	function packIndexBuffer(groups) {
-	  var faces = [];
-	  for (var group of groups || []) {
-	    for (var index of group.faces || []) faces.push(index);
-	  }
-	  var stride = bytesPerIndex(groups);
-	  var wide = stride === 4;
-	  var bytes = new Uint8Array(faces.length * stride);
-	  var view = new DataView(bytes.buffer);
-	  for (var i = 0; i < faces.length; i++) {
-	    if (wide) view.setUint32(i * stride, faces[i], true);else view.setUint16(i * stride, faces[i], true);
-	  }
-	  return {
-	    bytes,
-	    stride,
-	    count: faces.length
-	  };
-	}
-	function assertCmfNativeSkeleton(skeleton) {
-	  var bonesAreNames = Array.isArray(skeleton === null || skeleton === void 0 ? void 0 : skeleton.bones) && skeleton.bones.every(bone => typeof bone === "string");
-	  if (!bonesAreNames) {
-	    throw packError("skeletons must be CMF-native shaped (bones as name strings with parents/restTransforms); " + "GR2-shaped skeletons need conversion before writing");
-	  }
-	}
-
-	/**
-	 * Pack a channel-carrying CMF-native graph into a writable graph + buffers.
-	 *
-	 * Buffer indices are reassigned uniquely across all meshes/LODs/morph
-	 * targets; BufferViews are rebuilt from the packed bytes.
-	 *
-	 * @param {object} graph CMF-native graph carrying `vertex`/`indices` channel data.
-	 * @returns {object} `{ graph, buffers }` ready for `writeCmf`.
-	 */
-	function packGraphBuffers(graph) {
-	  var buffers = [null];
-	  var allocate = bytes => {
-	    var index = buffers.length;
-	    buffers.push({
-	      index,
-	      data: bytes
-	    });
-	    return index;
-	  };
-	  for (var skeleton of graph.skeletons || []) assertCmfNativeSkeleton(skeleton);
-	  var meshes = (graph.meshes || []).map(mesh => {
-	    var _mesh$morphTargets;
-	    var decl = mesh.decl || [];
-	    var morphDecl = ((_mesh$morphTargets = mesh.morphTargets) === null || _mesh$morphTargets === void 0 ? void 0 : _mesh$morphTargets.decl) || [];
-	    var lods = (mesh.lods || []).map(lod => {
-	      var _ref, _lod$vertex, _ref2, _lod$indices, _lod$threshold;
-	      var vertexSource = (_ref = (_lod$vertex = lod.vertex) != null ? _lod$vertex : mesh.vertex) != null ? _ref : {};
-	      var indexSource = (_ref2 = (_lod$indices = lod.indices) != null ? _lod$indices : mesh.indices) != null ? _ref2 : [];
-	      var packedVb = packVertexBuffer(decl, vertexSource);
-	      var packedIb = packIndexBuffer(indexSource);
-	      var vb = packedVb.count ? {
-	        index: allocate(packedVb.bytes),
-	        offset: 0,
-	        size: packedVb.bytes.byteLength,
-	        stride: packedVb.stride
-	      } : {
-	        index: 0,
-	        offset: 0,
-	        size: 0,
-	        stride: 0
-	      };
-	      var ib = packedIb.count ? {
-	        index: allocate(packedIb.bytes),
-	        offset: 0,
-	        size: packedIb.bytes.byteLength,
-	        stride: packedIb.stride
-	      } : {
-	        index: 0,
-	        offset: 0,
-	        size: 0,
-	        stride: 0
-	      };
-	      var morphTargets = (lod.morphTargets || []).map(target => {
-	        var packed = packVertexBuffer(morphDecl, target.vertex || {});
-	        return {
-	          vb: packed.count ? {
-	            index: allocate(packed.bytes),
-	            offset: 0,
-	            size: packed.bytes.byteLength,
-	            stride: packed.stride
-	          } : {
-	            index: 0,
-	            offset: 0,
-	            size: 0,
-	            stride: 0
-	          }
-	        };
-	      });
-	      return {
-	        vb,
-	        ib,
-	        areas: lod.areas || [],
-	        morphTargets,
-	        threshold: (_lod$threshold = lod.threshold) != null ? _lod$threshold : 0xffffffff
-	      };
-	    });
-	    return _objectSpread2(_objectSpread2({}, mesh), {}, {
-	      lods
-	    });
-	  });
-	  return {
-	    graph: _objectSpread2(_objectSpread2({}, graph), {}, {
-	      meshes,
-	      animations: packAnimationCurves(graph.animations)
-	    }),
-	    buffers
-	  };
 	}
 
 	// Interleaved GPU-ready bytes for one LOD of a decoded mesh.
@@ -206131,7 +209536,7 @@
 	}), _class2$6N)) || _class$7o);
 
 	var _dec$7n, _dec2$6Q, _dec3$6l, _dec4$5D, _dec5$54, _dec6$4u, _class$7n, _class2$6M, _descriptor$6L, _descriptor2$6b, _descriptor3$5u, _descriptor4$4O, _descriptor5$4a;
-	var Tw2DepthRenderTarget = (_dec$7n = define("Tw2DepthRenderTarget"), _dec2$6Q = string, _dec3$6l = float, _dec4$5D = float, _dec5$54 = uint, _dec6$4u = string, _dec$7n(_class$7n = (_class2$6M = class Tw2DepthRenderTarget {
+	var Tw2DepthRenderTarget = (_dec$7n = define("Tw2DepthRenderTarget"), _dec2$6Q = string, _dec3$6l = float, _dec4$5D = float, _dec5$54 = uint$1, _dec6$4u = string, _dec$7n(_class$7n = (_class2$6M = class Tw2DepthRenderTarget {
 	  /**
 	   * Identifies if the depth texture is an attachment
 	   * @returns {boolean}
@@ -208494,7 +211899,7 @@
 	 * shadow setting and volumetric flag - used as the compat view over a light's
 	 * flattened fields.
 	 */
-	var CjsLightData = (_dec$7m = define("CjsLightData", true), _dec2$6P = vector3, _dec3$6k = color$2, _dec4$5C = float, _dec5$53 = float, _dec6$4t = float, _dec7$3S = uint, _dec8$3n = float, _dec9$2T = float, _dec0$2G = quaternion, _dec1$2s = float, _dec10$27 = float, _dec11$1Z = string, _dec12$1L = int32$1, _dec13$1z = uint, _dec14$1o = float, _dec15$1i = enums(PerLightShadowSetting), _dec16$17 = boolean, _dec$7m(_class$7m = (_class2$6L = (_CjsLightData = class CjsLightData extends Model$1 {
+	var CjsLightData = (_dec$7m = define("CjsLightData", true), _dec2$6P = vector3, _dec3$6k = color$2, _dec4$5C = float, _dec5$53 = float, _dec6$4t = float, _dec7$3S = uint$1, _dec8$3n = float, _dec9$2T = float, _dec0$2G = quaternion, _dec1$2s = float, _dec10$27 = float, _dec11$1Z = string, _dec12$1L = int32$1, _dec13$1z = uint$1, _dec14$1o = float, _dec15$1i = enums(PerLightShadowSetting), _dec16$17 = boolean, _dec$7m(_class$7m = (_class2$6L = (_CjsLightData = class CjsLightData extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "position", _descriptor$6K, this);
@@ -209009,7 +212414,7 @@
 	}), _class2$6K)) || _class$7l);
 
 	var _dec$7k, _dec2$6N, _dec3$6i, _dec4$5A, _dec5$51, _dec6$4r, _dec7$3Q, _dec8$3l, _dec9$2S, _dec0$2F, _dec1$2r, _dec10$26, _dec11$1Y, _dec12$1K, _dec13$1y, _dec14$1n, _dec15$1h, _dec16$16, _class$7k, _class2$6J, _descriptor$6I, _descriptor2$68, _descriptor3$5r, _descriptor4$4L, _descriptor5$47, _descriptor6$3t, _descriptor7$2X, _descriptor8$2z, _descriptor9$2l, _descriptor0$27, _descriptor1$1N, _descriptor10$1C, _descriptor11$1r, _descriptor12$1j, _descriptor13$1d, _descriptor14$14, _descriptor15$S;
-	var Tr2SpotLight = (_dec$7k = define("Tr2SpotLight", true), _dec2$6N = string, _dec3$6i = int32$1, _dec4$5A = float, _dec5$51 = int32$1, _dec6$4r = color$2, _dec7$3Q = ushort, _dec8$3l = float, _dec9$2S = float, _dec0$2F = boolean, _dec1$2r = path, _dec10$26 = float, _dec11$1Y = float, _dec12$1K = uint, _dec13$1y = float, _dec14$1n = vector3, _dec15$1h = float, _dec16$16 = quaternion, _dec$7k(_class$7k = (_class2$6J = class Tr2SpotLight extends Tr2Light {
+	var Tr2SpotLight = (_dec$7k = define("Tr2SpotLight", true), _dec2$6N = string, _dec3$6i = int32$1, _dec4$5A = float, _dec5$51 = int32$1, _dec6$4r = color$2, _dec7$3Q = ushort, _dec8$3l = float, _dec9$2S = float, _dec0$2F = boolean, _dec1$2r = path, _dec10$26 = float, _dec11$1Y = float, _dec12$1K = uint$1, _dec13$1y = float, _dec14$1n = vector3, _dec15$1h = float, _dec16$16 = quaternion, _dec$7k(_class$7k = (_class2$6J = class Tr2SpotLight extends Tr2Light {
 	  constructor() {
 	    super(...arguments);
 	    this.type = 2;
@@ -209165,7 +212570,7 @@
 	    return this.light && this.light._effect && this.light._effect.HasTechnique(technique);
 	  }
 	}
-	var Tr2PointLight = (_dec$7j = define("Tr2PointLight", true), _dec2$6M = string, _dec3$6h = int32$1, _dec4$5z = float, _dec5$50 = int32$1, _dec6$4q = color$2, _dec7$3P = ushort, _dec8$3k = float, _dec9$2R = boolean, _dec0$2E = path, _dec1$2q = float, _dec10$25 = float, _dec11$1X = uint, _dec12$1J = vector3, _dec13$1x = float, _dec14$1m = quaternion, _dec$7j(_class$7j = (_class2$6I = (_Tr2PointLight = class Tr2PointLight extends Tr2Light {
+	var Tr2PointLight = (_dec$7j = define("Tr2PointLight", true), _dec2$6M = string, _dec3$6h = int32$1, _dec4$5z = float, _dec5$50 = int32$1, _dec6$4q = color$2, _dec7$3P = ushort, _dec8$3k = float, _dec9$2R = boolean, _dec0$2E = path, _dec1$2q = float, _dec10$25 = float, _dec11$1X = uint$1, _dec12$1J = vector3, _dec13$1x = float, _dec14$1m = quaternion, _dec$7j(_class$7j = (_class2$6I = (_Tr2PointLight = class Tr2PointLight extends Tr2Light {
 	  constructor() {
 	    super(...arguments);
 	    this.type = 1;
@@ -209764,7 +213169,7 @@
 	}), _class2$6H)) || _class$7i);
 
 	var _dec$7h, _dec2$6K, _dec3$6f, _dec4$5x, _dec5$4_, _dec6$4p, _dec7$3O, _dec8$3j, _dec9$2Q, _dec0$2D, _dec1$2p, _dec10$24, _dec11$1W, _dec12$1I, _dec13$1w, _dec14$1l, _dec15$1g, _dec16$15, _dec17$10, _class$7h, _class2$6G, _descriptor$6F, _descriptor2$65, _descriptor3$5o, _descriptor4$4J, _descriptor5$45, _descriptor6$3r, _descriptor7$2V, _descriptor8$2x, _descriptor9$2j, _descriptor0$25, _descriptor1$1L, _descriptor10$1A, _descriptor11$1p, _descriptor12$1h, _descriptor13$1b, _descriptor14$13, _descriptor15$R, _descriptor16$K;
-	var Tr2TexturedPointLight = (_dec$7h = define("Tr2TexturedPointLight", true), _dec2$6K = string, _dec3$6f = int32$1, _dec4$5x = float, _dec5$4_ = int32$1, _dec6$4p = vector4, _dec7$3O = ushort, _dec8$3j = float, _dec9$2Q = float, _dec0$2D = boolean, _dec1$2p = path, _dec10$24 = float, _dec11$1W = float, _dec12$1I = uint, _dec13$1w = float, _dec14$1l = vector3, _dec15$1g = float, _dec16$15 = quaternion, _dec17$10 = path, _dec$7h(_class$7h = (_class2$6G = class Tr2TexturedPointLight extends Tr2PointLight {
+	var Tr2TexturedPointLight = (_dec$7h = define("Tr2TexturedPointLight", true), _dec2$6K = string, _dec3$6f = int32$1, _dec4$5x = float, _dec5$4_ = int32$1, _dec6$4p = vector4, _dec7$3O = ushort, _dec8$3j = float, _dec9$2Q = float, _dec0$2D = boolean, _dec1$2p = path, _dec10$24 = float, _dec11$1W = float, _dec12$1I = uint$1, _dec13$1w = float, _dec14$1l = vector3, _dec15$1g = float, _dec16$15 = quaternion, _dec17$10 = path, _dec$7h(_class$7h = (_class2$6G = class Tr2TexturedPointLight extends Tr2PointLight {
 	  constructor() {
 	    super(...arguments);
 	    this.type = 1;
@@ -209941,7 +213346,7 @@
 	}), _class2$6G)) || _class$7h);
 
 	var _dec$7g, _dec2$6J, _dec3$6e, _dec4$5w, _dec5$4Z, _dec6$4o, _dec7$3N, _dec8$3i, _dec9$2P, _dec0$2C, _dec1$2o, _dec10$23, _dec11$1V, _dec12$1H, _dec13$1v, _dec14$1k, _dec15$1f, _dec16$14, _dec17$$, _dec18$W, _class$7g, _class2$6F, _descriptor$6E, _descriptor2$64, _descriptor3$5n, _descriptor4$4I, _descriptor5$44, _descriptor6$3q, _descriptor7$2U, _descriptor8$2w, _descriptor9$2i, _descriptor0$24, _descriptor1$1K, _descriptor10$1z, _descriptor11$1o, _descriptor12$1g, _descriptor13$1a, _descriptor14$12, _descriptor15$Q, _descriptor16$J, _descriptor17$G;
-	var Tr2FactionLight = (_dec$7g = define("Tr2FactionLight", true), _dec2$6J = vector3, _dec3$6e = rotation, _dec4$5w = int32$1, _dec5$4Z = float, _dec6$4o = int32$1, _dec7$3N = int32$1, _dec8$3i = ushort, _dec9$2P = float, _dec0$2C = float, _dec1$2o = boolean, _dec10$23 = boolean, _dec11$1V = path, _dec12$1H = string, _dec13$1v = float, _dec14$1k = float, _dec15$1f = uint, _dec16$14 = float, _dec17$$ = float, _dec18$W = float, _dec$7g(_class$7g = (_class2$6F = class Tr2FactionLight extends Tr2Light {
+	var Tr2FactionLight = (_dec$7g = define("Tr2FactionLight", true), _dec2$6J = vector3, _dec3$6e = rotation, _dec4$5w = int32$1, _dec5$4Z = float, _dec6$4o = int32$1, _dec7$3N = int32$1, _dec8$3i = ushort, _dec9$2P = float, _dec0$2C = float, _dec1$2o = boolean, _dec10$23 = boolean, _dec11$1V = path, _dec12$1H = string, _dec13$1v = float, _dec14$1k = float, _dec15$1f = uint$1, _dec16$14 = float, _dec17$$ = float, _dec18$W = float, _dec$7g(_class$7g = (_class2$6F = class Tr2FactionLight extends Tr2Light {
 	  constructor() {
 	    super(...arguments);
 	    this.type = 1;
@@ -210143,7 +213548,7 @@
 	// non-class members (constants/functions). Import it by path instead.
 
 	var _dec$7f, _dec2$6I, _dec3$6d, _dec4$5v, _dec5$4Y, _dec6$4n, _dec7$3M, _dec8$3h, _dec9$2O, _dec0$2B, _dec1$2n, _dec10$22, _dec11$1U, _dec12$1G, _class$7f, _class2$6E, _descriptor$6D, _descriptor2$63, _descriptor3$5m, _descriptor4$4H, _descriptor5$43, _descriptor6$3p, _descriptor7$2T, _descriptor8$2v, _descriptor9$2h, _Tw2MeshArea;
-	var Tw2MeshArea = (_dec$7f = define("Tw2MeshArea", "Tr2MeshArea"), _dec2$6I = stage(1), _dec3$6d = string, _dec4$5v = boolean, _dec5$4Y = uint, _dec6$4n = struct("Tw2Effect"), _dec7$3M = uint, _dec8$3h = notImplemented, _dec9$2O = boolean, _dec0$2B = notImplemented, _dec1$2n = boolean, _dec10$22 = uint, _dec11$1U = plain, _dec12$1G = isPrivate, _dec$7f(_class$7f = _dec2$6I(_class$7f = (_class2$6E = (_Tw2MeshArea = class Tw2MeshArea extends Model$1 {
+	var Tw2MeshArea = (_dec$7f = define("Tw2MeshArea", "Tr2MeshArea"), _dec2$6I = stage(1), _dec3$6d = string, _dec4$5v = boolean, _dec5$4Y = uint$1, _dec6$4n = struct("Tw2Effect"), _dec7$3M = uint$1, _dec8$3h = notImplemented, _dec9$2O = boolean, _dec0$2B = notImplemented, _dec1$2n = boolean, _dec10$22 = uint$1, _dec11$1U = plain, _dec12$1G = isPrivate, _dec$7f(_class$7f = _dec2$6I(_class$7f = (_class2$6E = (_Tw2MeshArea = class Tw2MeshArea extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6D, this);
@@ -210270,7 +213675,7 @@
 	}), _class2$6E)) || _class$7f) || _class$7f);
 
 	var _dec$7e, _dec2$6H, _dec3$6c, _dec4$5u, _dec5$4X, _dec6$4m, _dec7$3L, _dec8$3g, _dec9$2N, _dec0$2A, _dec1$2m, _dec10$21, _dec11$1T, _dec12$1F, _dec13$1u, _dec14$1j, _dec15$1e, _dec16$13, _dec17$_, _dec18$V, _dec19$K, _dec20$H, _dec21$C, _dec22$z, _dec23$v, _dec24$u, _class$7e, _class2$6D, _descriptor$6C, _descriptor2$62, _descriptor3$5l, _descriptor4$4G, _descriptor5$42, _descriptor6$3o, _descriptor7$2S, _descriptor8$2u, _descriptor9$2g, _descriptor0$23, _descriptor1$1J, _descriptor10$1y, _descriptor11$1n, _descriptor12$1f, _descriptor13$19, _descriptor14$11, _descriptor15$P, _descriptor16$I, _descriptor17$F;
-	var Tw2Mesh = (_dec$7e = define("Tw2Mesh", "Tr2Mesh"), _dec2$6H = string, _dec3$6c = list("Tw2MeshArea"), _dec4$5u = list("Tw2MeshArea"), _dec5$4X = notImplemented, _dec6$4m = boolean, _dec7$3L = list("Tw2MeshArea"), _dec8$3g = list("Tw2MeshArea"), _dec9$2N = boolean, _dec0$2A = list("Tw2MeshArea"), _dec1$2m = path, _dec10$21 = uint, _dec11$1T = list("Tw2MeshArea"), _dec12$1F = notImplemented, _dec13$1u = list("Tw2MeshArea"), _dec14$1j = list("Tw2MeshArea"), _dec15$1e = list("Tw2MeshArea"), _dec16$13 = plain, _dec17$_ = struct("Tw2GeometryRes"), _dec18$V = isPrivate, _dec19$K = float, _dec20$H = notImplemented, _dec21$C = boolean, _dec22$z = notImplemented, _dec23$v = float, _dec24$u = notImplemented, _dec$7e(_class$7e = (_class2$6D = class Tw2Mesh extends Model$1 {
+	var Tw2Mesh = (_dec$7e = define("Tw2Mesh", "Tr2Mesh"), _dec2$6H = string, _dec3$6c = list("Tw2MeshArea"), _dec4$5u = list("Tw2MeshArea"), _dec5$4X = notImplemented, _dec6$4m = boolean, _dec7$3L = list("Tw2MeshArea"), _dec8$3g = list("Tw2MeshArea"), _dec9$2N = boolean, _dec0$2A = list("Tw2MeshArea"), _dec1$2m = path, _dec10$21 = uint$1, _dec11$1T = list("Tw2MeshArea"), _dec12$1F = notImplemented, _dec13$1u = list("Tw2MeshArea"), _dec14$1j = list("Tw2MeshArea"), _dec15$1e = list("Tw2MeshArea"), _dec16$13 = plain, _dec17$_ = struct("Tw2GeometryRes"), _dec18$V = isPrivate, _dec19$K = float, _dec20$H = notImplemented, _dec21$C = boolean, _dec22$z = notImplemented, _dec23$v = float, _dec24$u = notImplemented, _dec$7e(_class$7e = (_class2$6D = class Tw2Mesh extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6C, this);
@@ -210863,7 +214268,7 @@
 	}), _class2$6D)) || _class$7e);
 
 	var _dec$7d, _dec2$6G, _dec3$6b, _dec4$5t, _dec5$4W, _dec6$4l, _dec7$3K, _dec8$3f, _dec9$2M, _dec0$2z, _dec1$2l, _dec10$20, _dec11$1S, _dec12$1E, _dec13$1t, _dec14$1i, _dec15$1d, _dec16$12, _dec17$Z, _dec18$U, _dec19$J, _dec20$G, _dec21$B, _dec22$y, _class$7d, _class2$6C, _descriptor$6B, _descriptor2$61, _descriptor3$5k, _descriptor4$4F, _descriptor5$41, _descriptor6$3n, _descriptor7$2R, _descriptor8$2t, _descriptor9$2f, _descriptor0$22, _descriptor1$1I, _descriptor10$1x, _descriptor11$1m, _descriptor12$1e, _descriptor13$18, _descriptor14$10, _descriptor15$O, _descriptor16$H, _descriptor17$E, _descriptor18$A, _Tw2InstancedMesh;
-	var Tw2InstancedMesh = (_dec$7d = todo("Is this deprecated?"), _dec2$6G = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$6b = string, _dec4$5t = boolean, _dec5$4W = list("Tw2MeshArea"), _dec6$4l = struct(), _dec7$3K = list("Tw2MeshArea"), _dec8$3f = list("Tw2MeshArea"), _dec9$2M = list("Tw2MeshArea"), _dec0$2z = struct("Tw2GeometryResource"), _dec1$2l = isPrivate, _dec10$20 = path, _dec11$1S = struct(), _dec12$1E = path, _dec13$1t = uint, _dec14$1i = vector3, _dec15$1d = notImplemented, _dec16$12 = uint, _dec17$Z = vector3, _dec18$U = list("Tw2MeshArea"), _dec19$J = list("Tw2MeshArea"), _dec20$G = list("Tw2MeshArea"), _dec21$B = list("Tw2MeshArea"), _dec22$y = plain, _dec$7d(_class$7d = _dec2$6G(_class$7d = (_class2$6C = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model$1 {
+	var Tw2InstancedMesh = (_dec$7d = todo("Is this deprecated?"), _dec2$6G = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$6b = string, _dec4$5t = boolean, _dec5$4W = list("Tw2MeshArea"), _dec6$4l = struct(), _dec7$3K = list("Tw2MeshArea"), _dec8$3f = list("Tw2MeshArea"), _dec9$2M = list("Tw2MeshArea"), _dec0$2z = struct("Tw2GeometryResource"), _dec1$2l = isPrivate, _dec10$20 = path, _dec11$1S = struct(), _dec12$1E = path, _dec13$1t = uint$1, _dec14$1i = vector3, _dec15$1d = notImplemented, _dec16$12 = uint$1, _dec17$Z = vector3, _dec18$U = list("Tw2MeshArea"), _dec19$J = list("Tw2MeshArea"), _dec20$G = list("Tw2MeshArea"), _dec21$B = list("Tw2MeshArea"), _dec22$y = plain, _dec$7d(_class$7d = _dec2$6G(_class$7d = (_class2$6C = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6B, this);
@@ -211495,7 +214900,7 @@
 	}), _class2$6C)) || _class$7d) || _class$7d);
 
 	var _dec$7c, _dec2$6F, _dec3$6a, _dec4$5s, _dec5$4V, _dec6$4k, _dec7$3J, _dec8$3e, _dec9$2L, _dec0$2y, _dec1$2k, _class$7c, _class2$6B, _descriptor$6A, _descriptor2$60, _descriptor3$5j, _descriptor4$4E, _descriptor5$40, _descriptor6$3m, _descriptor7$2Q, _Tw2MeshLineArea;
-	var Tw2MeshLineArea = (_dec$7c = define("Tw2MeshLineArea"), _dec2$6F = stage(1), _dec3$6a = string, _dec4$5s = boolean, _dec5$4V = uint, _dec6$4k = struct("Tw2Effect"), _dec7$3J = uint, _dec8$3e = notImplemented, _dec9$2L = boolean, _dec0$2y = notImplemented, _dec1$2k = boolean, _dec$7c(_class$7c = _dec2$6F(_class$7c = (_class2$6B = (_Tw2MeshLineArea = class Tw2MeshLineArea extends Tw2MeshArea {
+	var Tw2MeshLineArea = (_dec$7c = define("Tw2MeshLineArea"), _dec2$6F = stage(1), _dec3$6a = string, _dec4$5s = boolean, _dec5$4V = uint$1, _dec6$4k = struct("Tw2Effect"), _dec7$3J = uint$1, _dec8$3e = notImplemented, _dec9$2L = boolean, _dec0$2y = notImplemented, _dec1$2k = boolean, _dec$7c(_class$7c = _dec2$6F(_class$7c = (_class2$6B = (_Tw2MeshLineArea = class Tw2MeshLineArea extends Tw2MeshArea {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6A, this);
@@ -211956,7 +215361,7 @@
 	}), _class2$6z)) || _class$7a);
 
 	var _dec$79, _dec2$6C, _dec3$67, _class$79, _class2$6y, _descriptor$6x, _descriptor2$5Z;
-	var Tw2BoneBinding = (_dec$79 = define("Tw2BoneBinding"), _dec2$6C = vector, _dec3$67 = uint, _dec$79(_class$79 = (_class2$6y = class Tw2BoneBinding {
+	var Tw2BoneBinding = (_dec$79 = define("Tw2BoneBinding"), _dec2$6C = vector, _dec3$67 = uint$1, _dec$79(_class$79 = (_class2$6y = class Tw2BoneBinding {
 	  constructor() {
 	    _initializerDefineProperty(this, "array", _descriptor$6x, this);
 	    _initializerDefineProperty(this, "offset", _descriptor2$5Z, this);
@@ -213139,7 +216544,7 @@
 	 *
 	 * @ccp Tr2PPBloomEffect
 	 */
-	var Tr2PPBloomEffect = (_dec$72 = define("Tr2PPBloomEffect", true), _dec2$6v = float, _dec3$61 = float, _dec4$5m = float, _dec5$4Q = boolean, _dec6$4g = float, _dec7$3F = path, _dec8$3b = uint, _dec9$2I = float, _dec0$2v = float, _dec1$2h = float, _dec10$1_ = float, _dec11$1Q = float, _dec12$1C = float, _dec13$1r = float, _dec14$1h = float, _dec15$1c = color$2, _dec16$11 = color$2, _dec17$Y = color$2, _dec18$T = color$2, _dec19$I = color$2, _dec20$F = color$2, _dec$72(_class$72 = (_class2$6r = class Tr2PPBloomEffect extends Tr2PPEffect {
+	var Tr2PPBloomEffect = (_dec$72 = define("Tr2PPBloomEffect", true), _dec2$6v = float, _dec3$61 = float, _dec4$5m = float, _dec5$4Q = boolean, _dec6$4g = float, _dec7$3F = path, _dec8$3b = uint$1, _dec9$2I = float, _dec0$2v = float, _dec1$2h = float, _dec10$1_ = float, _dec11$1Q = float, _dec12$1C = float, _dec13$1r = float, _dec14$1h = float, _dec15$1c = color$2, _dec16$11 = color$2, _dec17$Y = color$2, _dec18$T = color$2, _dec19$I = color$2, _dec20$F = color$2, _dec$72(_class$72 = (_class2$6r = class Tr2PPBloomEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "luminanceThreshold", _descriptor$6q, this);
@@ -214011,7 +217416,7 @@
 	 *
 	 * @ccp Tr2PPGenericEffect
 	 */
-	var Tr2PPGenericEffect = (_dec$6W = define("Tr2PPGenericEffect", true), _dec2$6n = uint, _dec3$5W = struct("Tw2Effect"), _dec$6W(_class$6W = (_class2$6j = class Tr2PPGenericEffect extends Tr2PPEffect {
+	var Tr2PPGenericEffect = (_dec$6W = define("Tr2PPGenericEffect", true), _dec2$6n = uint$1, _dec3$5W = struct("Tw2Effect"), _dec$6W(_class$6W = (_class2$6j = class Tr2PPGenericEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "quality", _descriptor$6i, this);
@@ -214497,7 +217902,7 @@
 	}), _class2$6d)) || _class$6Q);
 
 	var _dec$6P, _dec2$6g, _dec3$5Q, _dec4$5c, _dec5$4I, _dec6$48, _dec7$3x, _dec8$33, _class$6P, _class2$6c, _descriptor$6b, _descriptor2$5G, _descriptor3$53, _descriptor4$4s, _descriptor5$3Q, _descriptor6$3b, _descriptor7$2G;
-	var Tw2PostProcess = (_dec$6P = define("Tw2PostProcess", "Tr2PostProcess"), _dec2$6g = list("Tw2Effect"), _dec3$5Q = boolean, _dec4$5c = string, _dec5$4I = float, _dec6$48 = boolean, _dec7$3x = uint, _dec8$33 = uint, _dec$6P(_class$6P = (_class2$6c = class Tw2PostProcess extends Model$1 {
+	var Tw2PostProcess = (_dec$6P = define("Tw2PostProcess", "Tr2PostProcess"), _dec2$6g = list("Tw2Effect"), _dec3$5Q = boolean, _dec4$5c = string, _dec5$4I = float, _dec6$48 = boolean, _dec7$3x = uint$1, _dec8$33 = uint$1, _dec$6P(_class$6P = (_class2$6c = class Tw2PostProcess extends Model$1 {
 	  /**
 	   * Constructor
 	   * @param {String} name
@@ -215461,7 +218866,7 @@
 	 * GLSL ES 3.00 to declare them, which is WebGL2 anyway. On WebGL1 this refuses
 	 * to create rather than half-working.
 	 */
-	var Tw2MultiRenderTarget = (_dec$6M = define("Tw2MultiRenderTarget"), _dec2$6e = string, _dec3$5O = uint, _dec4$5a = uint, _dec5$4G = uint, _dec6$46 = string, _dec7$3v = string, _dec8$31 = string, _dec9$2C = uint, _dec$6M(_class$6M = (_class2$6a = class Tw2MultiRenderTarget {
+	var Tw2MultiRenderTarget = (_dec$6M = define("Tw2MultiRenderTarget"), _dec2$6e = string, _dec3$5O = uint$1, _dec4$5a = uint$1, _dec5$4G = uint$1, _dec6$46 = string, _dec7$3v = string, _dec8$31 = string, _dec9$2C = uint$1, _dec$6M(_class$6M = (_class2$6a = class Tw2MultiRenderTarget {
 	  /**
 	   * @param {String} [name]
 	   * @param {Number} [width]
@@ -216890,7 +220295,7 @@
 	  MASS: 3,
 	  CUSTOM: 4
 	};
-	var Tw2ParticleElement = (_dec$6H = define("Tw2ParticleElement"), _dec2$6b = enums(ParticleType), _dec3$5M = string, _dec4$59 = uint, _dec5$4F = uint, _dec6$45 = boolean, _dec7$3u = uint, _dec8$30 = uint, _dec9$2B = uint, _dec0$2p = uint, _dec1$2b = boolean, _dec10$1U = isPrivate, _dec$6H(_class$6H = (_class2$67 = (_Tw2ParticleElement = class Tw2ParticleElement {
+	var Tw2ParticleElement = (_dec$6H = define("Tw2ParticleElement"), _dec2$6b = enums(ParticleType), _dec3$5M = string, _dec4$59 = uint$1, _dec5$4F = uint$1, _dec6$45 = boolean, _dec7$3u = uint$1, _dec8$30 = uint$1, _dec9$2B = uint$1, _dec0$2p = uint$1, _dec1$2b = boolean, _dec10$1U = isPrivate, _dec$6H(_class$6H = (_class2$67 = (_Tw2ParticleElement = class Tw2ParticleElement {
 	  constructor() {
 	    _initializerDefineProperty(this, "elementType", _descriptor$66, this);
 	    _initializerDefineProperty(this, "customName", _descriptor2$5C, this);
@@ -217022,7 +220427,7 @@
 	}), _class2$67)) || _class$6H);
 
 	var _dec$6G, _dec2$6a, _dec3$5L, _dec4$58, _dec5$4E, _dec6$44, _dec7$3t, _class$6G, _class2$66, _descriptor$65, _descriptor2$5B, _descriptor3$4$, _descriptor4$4o, _descriptor5$3M;
-	var Tw2ParticleElementDeclaration = (_dec$6G = define("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2$6a = string, _dec3$5L = uint, _dec4$58 = uint, _dec5$4E = enums(Tw2ParticleElement.Type), _dec6$44 = uint, _dec7$3t = boolean, _dec$6G(_class$6G = (_class2$66 = class Tw2ParticleElementDeclaration extends Model$1 {
+	var Tw2ParticleElementDeclaration = (_dec$6G = define("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2$6a = string, _dec3$5L = uint$1, _dec4$58 = uint$1, _dec5$4E = enums(Tw2ParticleElement.Type), _dec6$44 = uint$1, _dec7$3t = boolean, _dec$6G(_class$6G = (_class2$66 = class Tw2ParticleElementDeclaration extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "customName", _descriptor$65, this);
@@ -219628,6 +223033,7 @@
 
 	var core = {
 		__proto__: null,
+		CmfReader: CmfReader,
 		ErrAbstractClass: ErrAbstractClass,
 		ErrAbstractMethod: ErrAbstractMethod,
 		ErrBinaryFormat: ErrBinaryFormat,
@@ -221223,7 +224629,7 @@
 	    return Tr2CurveTangentType.AUTO_CLAMP;
 	  }
 	}), _class3$x)) || _class2$5$);
-	var Tr2CurveColorKey = (_dec9$2y = color$2, _dec0$2m = color$2, _dec1$29 = color$2, _dec10$1S = uint, _dec11$1K = uint, _class4$v = class Tr2CurveColorKey extends Tr2CurveKey {
+	var Tr2CurveColorKey = (_dec9$2y = color$2, _dec0$2m = color$2, _dec1$29 = color$2, _dec10$1S = uint$1, _dec11$1K = uint$1, _class4$v = class Tr2CurveColorKey extends Tr2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor8$2i, this);
@@ -221278,7 +224684,7 @@
 	    return 0;
 	  }
 	}), _class4$v);
-	var Tr2CurveVector2Key = (_dec12$1y = vector2, _dec13$1n = vector2, _dec14$1d = vector2, _dec15$18 = uint, _dec16$_ = uint, _class5$8 = class Tr2CurveVector2Key extends Tr2CurveKey {
+	var Tr2CurveVector2Key = (_dec12$1y = vector2, _dec13$1n = vector2, _dec14$1d = vector2, _dec15$18 = uint$1, _dec16$_ = uint$1, _class5$8 = class Tr2CurveVector2Key extends Tr2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor11$1h, this);
@@ -221333,7 +224739,7 @@
 	    return 0;
 	  }
 	}), _class5$8);
-	var Tr2CurveVector3Key = (_dec17$V = vector3, _dec18$Q = vector3, _dec19$G = vector3, _dec20$D = uint, _dec21$z = uint, _class6$6 = class Tr2CurveVector3Key extends Tr2CurveKey {
+	var Tr2CurveVector3Key = (_dec17$V = vector3, _dec18$Q = vector3, _dec19$G = vector3, _dec20$D = uint$1, _dec21$z = uint$1, _class6$6 = class Tr2CurveVector3Key extends Tr2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor16$D, this);
@@ -221388,7 +224794,7 @@
 	    return 0;
 	  }
 	}), _class6$6);
-	var Tr2CurveEulerRotationKey = (_dec22$w = vector3, _dec23$t = vector3, _dec24$s = vector3, _dec25$q = uint, _dec26$m = uint, _class7 = class Tr2CurveEulerRotationKey extends Tr2CurveKey {
+	var Tr2CurveEulerRotationKey = (_dec22$w = vector3, _dec23$t = vector3, _dec24$s = vector3, _dec25$q = uint$1, _dec26$m = uint$1, _class7 = class Tr2CurveEulerRotationKey extends Tr2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor21$o, this);
@@ -221537,7 +224943,7 @@
 	    return "";
 	  }
 	}), _class2$5_)) || _class$6v);
-	var Tw2EventCurve = (_dec3$5C = define("Tw2EventCurve", "TriEventCurve"), _dec4$50 = string, _dec5$4w = float, _dec6$3_ = float, _dec7$3n = float, _dec8$2X = string, _dec9$2x = uint, _dec0$2l = list("Tw2EventKey", "TriEventKey"), _dec1$28 = struct(), _dec3$5C(_class3$w = (_class4$u = (_Tw2EventCurve = class Tw2EventCurve extends Model$1 {
+	var Tw2EventCurve = (_dec3$5C = define("Tw2EventCurve", "TriEventCurve"), _dec4$50 = string, _dec5$4w = float, _dec6$3_ = float, _dec7$3n = float, _dec8$2X = string, _dec9$2x = uint$1, _dec0$2l = list("Tw2EventKey", "TriEventKey"), _dec1$28 = struct(), _dec3$5C(_class3$w = (_class4$u = (_Tw2EventCurve = class Tw2EventCurve extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor2$5s, this);
@@ -221893,7 +225299,7 @@
 	}), _applyDecoratedDescriptor(_class2$5Z.prototype, "GetLength", [_dec4$4$], Object.getOwnPropertyDescriptor(_class2$5Z.prototype, "GetLength"), _class2$5Z.prototype), _applyDecoratedDescriptor(_class2$5Z.prototype, "UpdateValue", [_dec5$4v], Object.getOwnPropertyDescriptor(_class2$5Z.prototype, "UpdateValue"), _class2$5Z.prototype), _class2$5Z);
 
 	var _dec$6t, _dec2$5$, _dec3$5A, _dec4$4_, _dec5$4u, _dec6$3Z, _dec7$3m, _dec8$2W, _dec9$2w, _dec0$2k, _class$6t, _class2$5Y, _descriptor$5W, _descriptor2$5q, _descriptor3$4Q, _descriptor4$4f, _descriptor5$3G, _descriptor6$33, _descriptor7$2y, _descriptor8$2g, _Tw2PerlinCurve;
-	var Tw2PerlinCurve = (_dec$6t = define("Tw2PerlinCurve", "TriPerlinCurve"), _dec2$5$ = string, _dec3$5A = float, _dec4$4_ = float, _dec5$4u = uint, _dec6$3Z = float, _dec7$3m = float, _dec8$2W = float, _dec9$2w = float, _dec0$2k = isPrivate, _dec$6t(_class$6t = (_class2$5Y = (_Tw2PerlinCurve = class Tw2PerlinCurve extends Tw2Curve {
+	var Tw2PerlinCurve = (_dec$6t = define("Tw2PerlinCurve", "TriPerlinCurve"), _dec2$5$ = string, _dec3$5A = float, _dec4$4_ = float, _dec5$4u = uint$1, _dec6$3Z = float, _dec7$3m = float, _dec8$2W = float, _dec9$2w = float, _dec0$2k = isPrivate, _dec$6t(_class$6t = (_class2$5Y = (_Tw2PerlinCurve = class Tw2PerlinCurve extends Tw2Curve {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$5W, this);
@@ -222063,7 +225469,7 @@
 	}), _class2$5Y)) || _class$6t);
 
 	var _dec$6s, _dec2$5_, _dec3$5z, _dec4$4Z, _dec5$4t, _dec6$3Y, _dec7$3l, _dec8$2V, _class$6s, _class2$5X, _descriptor$5V, _descriptor2$5p, _descriptor3$4P, _descriptor4$4e, _descriptor5$3F, _descriptor6$32, _descriptor7$2x;
-	var Tr2CurveScalar = (_dec$6s = define("Tr2CurveScalar", true), _dec2$5_ = string, _dec3$5z = list(Tr2CurveScalarKey), _dec4$4Z = float, _dec5$4t = uint, _dec6$3Y = uint, _dec7$3l = float, _dec8$2V = float, _dec$6s(_class$6s = (_class2$5X = class Tr2CurveScalar extends Model$1 {
+	var Tr2CurveScalar = (_dec$6s = define("Tr2CurveScalar", true), _dec2$5_ = string, _dec3$5z = list(Tr2CurveScalarKey), _dec4$4Z = float, _dec5$4t = uint$1, _dec6$3Y = uint$1, _dec7$3l = float, _dec8$2V = float, _dec$6s(_class$6s = (_class2$5X = class Tr2CurveScalar extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$5V, this);
@@ -222536,7 +225942,7 @@
 	}), _class2$5W)) || _class$6r);
 
 	var _dec$6q, _dec2$5Y, _dec3$5x, _dec4$4X, _dec5$4r, _dec6$3W, _class$6q, _class2$5V, _descriptor$5T, _descriptor2$5n, _descriptor3$4N, _descriptor4$4c, _descriptor5$3D;
-	var Tr2CurveQuaternion = (_dec$6q = define("Tr2CurveQuaternion", true), _dec2$5Y = string, _dec3$5x = list(Tr2CurveQuaternionKey), _dec4$4X = quaternion, _dec5$4r = uint, _dec6$3W = uint, _dec$6q(_class$6q = (_class2$5V = class Tr2CurveQuaternion extends Model$1 {
+	var Tr2CurveQuaternion = (_dec$6q = define("Tr2CurveQuaternion", true), _dec2$5Y = string, _dec3$5x = list(Tr2CurveQuaternionKey), _dec4$4X = quaternion, _dec5$4r = uint$1, _dec6$3W = uint$1, _dec$6q(_class$6q = (_class2$5V = class Tr2CurveQuaternion extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$5T, this);
@@ -223092,7 +226498,7 @@
 	  LINEAR: 1,
 	  HERMITE: 2
 	};
-	var Tr2CurveVector3Lerp = (_dec$6m = define("Tr2CurveVector3Lerp", true), _dec2$5U = string, _dec3$5t = isPrivate, _dec4$4U = vector3, _dec5$4o = isPrivate, _dec6$3T = vector3, _dec7$3j = float, _dec8$2T = isPrivate, _dec9$2u = uint, _dec0$2i = notOwned, _dec1$26 = struct(), _dec$6m(_class$6m = (_class2$5R = class Tr2CurveVector3Lerp extends Model$1 {
+	var Tr2CurveVector3Lerp = (_dec$6m = define("Tr2CurveVector3Lerp", true), _dec2$5U = string, _dec3$5t = isPrivate, _dec4$4U = vector3, _dec5$4o = isPrivate, _dec6$3T = vector3, _dec7$3j = float, _dec8$2T = isPrivate, _dec9$2u = uint$1, _dec0$2i = notOwned, _dec1$26 = struct(), _dec$6m(_class$6m = (_class2$5R = class Tr2CurveVector3Lerp extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$5P, this);
@@ -223224,7 +226630,7 @@
 	}
 
 	var _dec$6l, _dec2$5T, _dec3$5s, _dec4$4T, _dec5$4n, _dec6$3S, _dec7$3i, _dec8$2S, _dec9$2t, _dec0$2h, _class$6l, _class2$5Q, _descriptor$5O, _descriptor2$5i, _descriptor3$4J, _descriptor4$49, _descriptor5$3A, _descriptor6$2$;
-	var Tr2CurveRandomAxisRotation = (_dec$6l = define("Tr2CurveRandomAxisRotation", true), _dec2$5T = string, _dec3$5s = isPrivate, _dec4$4T = quaternion, _dec5$4n = isPrivate, _dec6$3S = quaternion, _dec7$3i = isPrivate, _dec8$2S = quaternion, _dec9$2t = float, _dec0$2h = uint, _dec$6l(_class$6l = (_class2$5Q = class Tr2CurveRandomAxisRotation extends Model$1 {
+	var Tr2CurveRandomAxisRotation = (_dec$6l = define("Tr2CurveRandomAxisRotation", true), _dec2$5T = string, _dec3$5s = isPrivate, _dec4$4T = quaternion, _dec5$4n = isPrivate, _dec6$3S = quaternion, _dec7$3i = isPrivate, _dec8$2S = quaternion, _dec9$2t = float, _dec0$2h = uint$1, _dec$6l(_class$6l = (_class2$5Q = class Tr2CurveRandomAxisRotation extends Model$1 {
 	  constructor() {
 	    super();
 	    _initializerDefineProperty(this, "name", _descriptor$5O, this);
@@ -228812,7 +232218,7 @@
 	 * and the owner's motion and activation state. Rebuilt by the parent for each
 	 * child update, so nothing in it survives the call.
 	 */
-	var EveChildUpdateParams = (_dec$5O = define("EveChildUpdateParams", true), _dec2$5m = struct("IEveSpaceObject2"), _dec3$4X = struct("IEveSpaceObjectChild"), _dec4$4m = uint, _dec5$3S = struct("Float4x3"), _dec6$3n = float, _dec7$2W = float, _dec8$2z = float, _dec9$2c = boolean, _dec0$21 = matrix4, _dec1$1U = vector3, _dec$5O(_class$5O = (_class2$5j = class EveChildUpdateParams extends Model$1 {
+	var EveChildUpdateParams = (_dec$5O = define("EveChildUpdateParams", true), _dec2$5m = struct("IEveSpaceObject2"), _dec3$4X = struct("IEveSpaceObjectChild"), _dec4$4m = uint$1, _dec5$3S = struct("Float4x3"), _dec6$3n = float, _dec7$2W = float, _dec8$2z = float, _dec9$2c = boolean, _dec0$21 = matrix4, _dec1$1U = vector3, _dec$5O(_class$5O = (_class2$5j = class EveChildUpdateParams extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "spaceObjectParent", _descriptor$5g, this);
@@ -228951,7 +232357,7 @@
 	}), _class2$5j)) || _class$5O);
 
 	var _dec$5N, _dec2$5l, _dec3$4W, _dec4$4l, _dec5$3R, _dec6$3m, _dec7$2V, _dec8$2y, _dec9$2b, _dec0$20, _dec1$1T, _class$5N, _class2$5i, _descriptor$5f, _descriptor2$4M, _descriptor3$4b, _descriptor4$3F, _descriptor5$3c, _descriptor6$2H, _descriptor7$2f, _descriptor8$1_, _descriptor9$1R;
-	var EveChildBillboard = (_dec$5N = define("EveChildBillboard", true), _dec2$5l = todo("Deprecated?"), _dec3$4W = boolean, _dec4$4l = matrix4, _dec5$3R = uint, _dec6$3m = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec7$2V = quaternion, _dec8$2y = vector3, _dec9$2b = vector3, _dec0$20 = boolean, _dec1$1T = boolean, _dec$5N(_class$5N = _dec2$5l(_class$5N = (_class2$5i = class EveChildBillboard extends EveChild {
+	var EveChildBillboard = (_dec$5N = define("EveChildBillboard", true), _dec2$5l = todo("Deprecated?"), _dec3$4W = boolean, _dec4$4l = matrix4, _dec5$3R = uint$1, _dec6$3m = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec7$2V = quaternion, _dec8$2y = vector3, _dec9$2b = vector3, _dec0$20 = boolean, _dec1$1T = boolean, _dec$5N(_class$5N = _dec2$5l(_class$5N = (_class2$5i = class EveChildBillboard extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$5f, this);
@@ -231383,7 +234789,7 @@
 	 * the component registry, none of which exist on ccpwgl's child path - and the
 	 * debug renderer holds the only three matrix compositions in the class.
 	 */
-	var EveChildEffectPropagator = (_dec$5J = define("EveChildEffectPropagator", true), _dec2$5h = stage(2), _dec3$4S = uint, _dec4$4h = uint, _dec5$3N = struct("EveChildInstanceContainer"), _dec6$3i = struct("Tr2CurveScalar"), _dec7$2R = struct("EveLocatorSets"), _dec8$2u = float, _dec9$27 = vector3, _dec0$1Y = vector3, _dec1$1P = float, _dec10$1A = float, _dec11$1t = float, _dec12$1k = boolean, _dec13$1b = boolean, _dec14$13 = uint, _dec15$_ = float, _dec16$R = float, _dec17$M = float, _dec18$H = string, _dec19$C = float, _dec20$z = float, _dec21$v = float, _dec22$t = boolean, _dec23$q = boolean, _dec24$p = float, _dec25$n = float, _dec$5J(_class$5J = _dec2$5h(_class$5J = (_class2$5e = (_EveChildEffectPropagator = class EveChildEffectPropagator extends EveChildContainer {
+	var EveChildEffectPropagator = (_dec$5J = define("EveChildEffectPropagator", true), _dec2$5h = stage(2), _dec3$4S = uint$1, _dec4$4h = uint$1, _dec5$3N = struct("EveChildInstanceContainer"), _dec6$3i = struct("Tr2CurveScalar"), _dec7$2R = struct("EveLocatorSets"), _dec8$2u = float, _dec9$27 = vector3, _dec0$1Y = vector3, _dec1$1P = float, _dec10$1A = float, _dec11$1t = float, _dec12$1k = boolean, _dec13$1b = boolean, _dec14$13 = uint$1, _dec15$_ = float, _dec16$R = float, _dec17$M = float, _dec18$H = string, _dec19$C = float, _dec20$z = float, _dec21$v = float, _dec22$t = boolean, _dec23$q = boolean, _dec24$p = float, _dec25$n = float, _dec$5J(_class$5J = _dec2$5h(_class$5J = (_class2$5e = (_EveChildEffectPropagator = class EveChildEffectPropagator extends EveChildContainer {
 	  constructor() {
 	    super(...arguments);
 	    /** How spawn points are chosen. @see EveChildEffectPropagator.PropagationType */
@@ -232720,7 +236126,7 @@
 	  SPHERED: 2,
 	  CURVED: 3
 	};
-	var EveCurveLineSetItem = (_dec$5H = define("EveCurveLineSetItem", true), _dec2$5f = float, _dec3$4Q = float, _dec4$4f = color$2, _dec5$3L = color$2, _dec6$3g = vector3, _dec7$2P = color$2, _dec8$2t = float, _dec9$26 = uint, _dec0$1X = color$2, _dec1$1O = vector3, _dec10$1z = vector3, _dec11$1s = float, _dec12$1j = uint, _dec13$1a = notImplemented, _dec$5H(_class$5H = (_class2$5c = (_EveCurveLineSetItem = class EveCurveLineSetItem extends EveObjectSetItem {
+	var EveCurveLineSetItem = (_dec$5H = define("EveCurveLineSetItem", true), _dec2$5f = float, _dec3$4Q = float, _dec4$4f = color$2, _dec5$3L = color$2, _dec6$3g = vector3, _dec7$2P = color$2, _dec8$2t = float, _dec9$26 = uint$1, _dec0$1X = color$2, _dec1$1O = vector3, _dec10$1z = vector3, _dec11$1s = float, _dec12$1j = uint$1, _dec13$1a = notImplemented, _dec$5H(_class$5H = (_class2$5c = (_EveCurveLineSetItem = class EveCurveLineSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "animationSpeed", _descriptor$59, this);
@@ -234214,7 +237620,7 @@
 	 * The instance stream holds three float4 rows of each transposed local matrix;
 	 * the child world transform is supplied separately through per-object data.
 	 */
-	var EveChildLineSet = (_dec$5G = define("EveChildLineSet", true), _dec2$5e = stage(2), _dec3$4P = string, _dec4$4e = boolean, _dec5$3K = boolean, _dec6$3f = vector4, _dec7$2O = vector4, _dec8$2s = float, _dec9$25 = float, _dec0$1W = boolean, _dec1$1N = list(), _dec10$1y = struct("EveCurveLineSet"), _dec11$1r = struct("Tw2Mesh", "Tr2Mesh"), _dec12$1i = float, _dec13$19 = uint, _dec14$11 = quaternion, _dec15$Y = vector3, _dec16$P = float, _dec17$K = vector3, _dec18$F = matrix4, _dec19$A = boolean, _dec20$x = boolean, _dec21$t = boolean, _dec$5G(_class$5G = _dec2$5e(_class$5G = (_class2$5b = (_EveChildLineSet = class EveChildLineSet extends EveChild {
+	var EveChildLineSet = (_dec$5G = define("EveChildLineSet", true), _dec2$5e = stage(2), _dec3$4P = string, _dec4$4e = boolean, _dec5$3K = boolean, _dec6$3f = vector4, _dec7$2O = vector4, _dec8$2s = float, _dec9$25 = float, _dec0$1W = boolean, _dec1$1N = list(), _dec10$1y = struct("EveCurveLineSet"), _dec11$1r = struct("Tw2Mesh", "Tr2Mesh"), _dec12$1i = float, _dec13$19 = uint$1, _dec14$11 = quaternion, _dec15$Y = vector3, _dec16$P = float, _dec17$K = vector3, _dec18$F = matrix4, _dec19$A = boolean, _dec20$x = boolean, _dec21$t = boolean, _dec$5G(_class$5G = _dec2$5e(_class$5G = (_class2$5b = (_EveChildLineSet = class EveChildLineSet extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$58, this);
@@ -234787,7 +238193,7 @@
 	}), _class2$5b)) || _class$5G) || _class$5G);
 
 	var _dec$5F, _dec2$5d, _dec3$4O, _dec4$4d, _dec5$3J, _dec6$3e, _dec7$2N, _dec8$2r, _dec9$24, _dec0$1V, _dec1$1M, _dec10$1x, _dec11$1q, _dec12$1h, _dec13$18, _dec14$10, _dec15$X, _dec16$O, _dec17$J, _dec18$E, _dec19$z, _dec20$w, _dec21$s, _dec22$r, _dec23$o, _dec24$n, _dec25$l, _dec26$i, _dec27$h, _dec28$g, _dec29$c, _dec30$a, _class$5F, _class2$5a, _descriptor$57, _descriptor2$4E, _descriptor3$43, _descriptor4$3y, _descriptor5$35, _descriptor6$2A, _descriptor7$28, _descriptor8$1T, _descriptor9$1K, _descriptor0$1E, _descriptor1$1m, _descriptor10$1d, _descriptor11$14, _descriptor12$Y, _descriptor13$T, _descriptor14$L, _descriptor15$D, _descriptor16$w, _descriptor17$t, _descriptor18$r, _descriptor19$l, _descriptor20$k, _descriptor21$k, _descriptor22$j, _descriptor23$i, _descriptor24$g, _descriptor25$e, _EveChildMesh;
-	var EveChildMesh = (_dec$5F = define("EveChildMesh", true), _dec2$5d = string, _dec3$4O = boolean, _dec4$4d = boolean, _dec5$3J = list(), _dec6$3e = list("EveObjectSet"), _dec7$2N = list("EveSpaceObjectDecal"), _dec8$2r = list("EveMeshOverlayEffect"), _dec9$24 = boolean, _dec0$1V = matrix4, _dec1$1M = uint, _dec10$1x = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec11$1q = struct("Tr2GrannyAnimation"), _dec12$1h = float, _dec13$18 = float, _dec14$10 = float, _dec15$X = notImplemented, _dec16$O = uint, _dec17$J = quaternion, _dec18$E = vector3, _dec19$z = notImplemented, _dec20$w = float, _dec21$s = float, _dec22$r = notImplemented, _dec23$o = boolean, _dec24$n = list("EveChildModifier"), _dec25$l = vector3, _dec26$i = boolean, _dec27$h = boolean, _dec28$g = boolean, _dec29$c = uint, _dec30$a = notImplemented, _dec$5F(_class$5F = (_class2$5a = (_EveChildMesh = class EveChildMesh extends EveChild {
+	var EveChildMesh = (_dec$5F = define("EveChildMesh", true), _dec2$5d = string, _dec3$4O = boolean, _dec4$4d = boolean, _dec5$3J = list(), _dec6$3e = list("EveObjectSet"), _dec7$2N = list("EveSpaceObjectDecal"), _dec8$2r = list("EveMeshOverlayEffect"), _dec9$24 = boolean, _dec0$1V = matrix4, _dec1$1M = uint$1, _dec10$1x = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec11$1q = struct("Tr2GrannyAnimation"), _dec12$1h = float, _dec13$18 = float, _dec14$10 = float, _dec15$X = notImplemented, _dec16$O = uint$1, _dec17$J = quaternion, _dec18$E = vector3, _dec19$z = notImplemented, _dec20$w = float, _dec21$s = float, _dec22$r = notImplemented, _dec23$o = boolean, _dec24$n = list("EveChildModifier"), _dec25$l = vector3, _dec26$i = boolean, _dec27$h = boolean, _dec28$g = boolean, _dec29$c = uint$1, _dec30$a = notImplemented, _dec$5F(_class$5F = (_class2$5a = (_EveChildMesh = class EveChildMesh extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$57, this);
@@ -235563,7 +238969,7 @@
 	 * have nothing to do with each other, which looks like a physics bug rather
 	 * than a sampler one.
 	 */
-	var Tw2GpuParticleState = (_dec$5E = define("Tw2GpuParticleState"), _dec2$5c = uint, _dec3$4N = uint, _dec4$4c = uint, _dec$5E(_class$5E = (_class2$59 = class Tw2GpuParticleState {
+	var Tw2GpuParticleState = (_dec$5E = define("Tw2GpuParticleState"), _dec2$5c = uint$1, _dec3$4N = uint$1, _dec4$4c = uint$1, _dec$5E(_class$5E = (_class2$59 = class Tw2GpuParticleState {
 	  /**
 	   * @param {Number} [capacity]
 	   */
@@ -237145,7 +240551,7 @@
 	Tw2GpuParticleRenderer.NOISE = "res:/texture/global/noise32cube_volume.dds";
 
 	var _dec$5D, _dec2$5b, _dec3$4M, _dec4$4b, _dec5$3I, _dec6$3d, _dec7$2M, _dec8$2q, _dec9$23, _dec0$1U, _dec1$1L, _dec10$1w, _dec11$1p, _dec12$1g, _dec13$17, _dec14$$, _dec15$W, _dec16$N, _dec17$I, _dec18$D, _dec19$y, _dec20$v, _class$5D, _class2$58, _descriptor$55, _descriptor2$4C, _descriptor3$41, _descriptor4$3x, _descriptor5$34, _descriptor6$2z, _descriptor7$27, _descriptor8$1S, _descriptor9$1J, _descriptor0$1D, _descriptor1$1l, _descriptor10$1c, _descriptor11$13, _descriptor12$X, _descriptor13$S, _descriptor14$K, _descriptor15$C, _descriptor16$v, _descriptor17$s, _descriptor18$q, _EveChildParticleSystem;
-	var EveChildParticleSystem = (_dec$5D = define("EveChildParticleSystem", true), _dec2$5b = stage(1), _dec3$4M = string, _dec4$4b = boolean, _dec5$3I = matrix4, _dec6$3d = float, _dec7$2M = uint, _dec8$2q = float, _dec9$23 = float, _dec0$1U = struct("Tw2InstancedMesh"), _dec1$1L = float, _dec10$1w = float, _dec11$1p = list("Tw2ParticleEmitter"), _dec12$1g = list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec13$17 = uint, _dec14$$ = quaternion, _dec15$W = vector3, _dec16$N = vector3, _dec17$I = list(), _dec18$D = boolean, _dec19$y = boolean, _dec20$v = boolean, _dec$5D(_class$5D = _dec2$5b(_class$5D = (_class2$58 = (_EveChildParticleSystem = class EveChildParticleSystem extends EveChild {
+	var EveChildParticleSystem = (_dec$5D = define("EveChildParticleSystem", true), _dec2$5b = stage(1), _dec3$4M = string, _dec4$4b = boolean, _dec5$3I = matrix4, _dec6$3d = float, _dec7$2M = uint$1, _dec8$2q = float, _dec9$23 = float, _dec0$1U = struct("Tw2InstancedMesh"), _dec1$1L = float, _dec10$1w = float, _dec11$1p = list("Tw2ParticleEmitter"), _dec12$1g = list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec13$17 = uint$1, _dec14$$ = quaternion, _dec15$W = vector3, _dec16$N = vector3, _dec17$I = list(), _dec18$D = boolean, _dec19$y = boolean, _dec20$v = boolean, _dec$5D(_class$5D = _dec2$5b(_class$5D = (_class2$58 = (_EveChildParticleSystem = class EveChildParticleSystem extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$55, this);
@@ -239464,7 +242870,7 @@
 	 * Carbon packing keep those layouts separate from ship/turret POD.
 	 * Component registration and debug drawing remain outside ccpwgl's scene API.
 	 */
-	var EveStretch2 = (_dec$5v = define("EveStretch2", true), _dec2$53 = string, _dec3$4E = float, _dec4$45 = notOwned, _dec5$3C = struct("Tr2GpuSharedEmitter"), _dec6$38 = notOwned, _dec7$2H = struct("Tr2PointLight"), _dec8$2m = notOwned, _dec9$1$ = struct("TriObserverLocal"), _dec0$1Q = struct("Tw2Effect"), _dec1$1H = struct("Tw2CurveSet"), _dec10$1t = struct("Tw2CurveSet"), _dec11$1m = uint, _dec12$1d = notOwned, _dec13$14 = struct("Tr2GpuSharedEmitter"), _dec14$Y = notOwned, _dec15$T = struct("Tr2PointLight"), _dec16$K = notOwned, _dec17$F = struct("TriObserverLocal"), _dec18$A = struct("Tw2CurveSet"), _dec$5v(_class$5v = (_class2$50 = (_EveStretch$1 = class EveStretch2 extends Model$1 {
+	var EveStretch2 = (_dec$5v = define("EveStretch2", true), _dec2$53 = string, _dec3$4E = float, _dec4$45 = notOwned, _dec5$3C = struct("Tr2GpuSharedEmitter"), _dec6$38 = notOwned, _dec7$2H = struct("Tr2PointLight"), _dec8$2m = notOwned, _dec9$1$ = struct("TriObserverLocal"), _dec0$1Q = struct("Tw2Effect"), _dec1$1H = struct("Tw2CurveSet"), _dec10$1t = struct("Tw2CurveSet"), _dec11$1m = uint$1, _dec12$1d = notOwned, _dec13$14 = struct("Tr2GpuSharedEmitter"), _dec14$Y = notOwned, _dec15$T = struct("Tr2PointLight"), _dec16$K = notOwned, _dec17$F = struct("TriObserverLocal"), _dec18$A = struct("Tw2CurveSet"), _dec$5v(_class$5v = (_class2$50 = (_EveStretch$1 = class EveStretch2 extends Model$1 {
 	  /**
 	   * Constructor
 	   */
@@ -240900,7 +244306,7 @@
 	    return this.planeSet.effect && this.planeSet.effect.HasTechnique(technique);
 	  }
 	}
-	var EvePlaneSetItem = (_dec$5t = define("EvePlaneSetItem", true), _dec2$51 = string, _dec3$4C = int32$1, _dec4$43 = color$2, _dec5$3A = vector4, _dec6$36 = vector4, _dec7$2F = vector4, _dec8$2k = vector4, _dec9$1Z = uint, _dec0$1O = vector3, _dec1$1F = quaternion, _dec10$1r = vector3, _dec11$1k = int32$1, _dec12$1b = float, _dec13$12 = float, _dec14$W = uint, _dec15$R = float, _dec16$I = notImplemented, _dec17$D = float, _dec18$y = int32$1, _dec19$u = alias("maskAtlasID"), _dec$5t(_class$5t = (_class2$4_ = class EvePlaneSetItem extends EveObjectSetItem {
+	var EvePlaneSetItem = (_dec$5t = define("EvePlaneSetItem", true), _dec2$51 = string, _dec3$4C = int32$1, _dec4$43 = color$2, _dec5$3A = vector4, _dec6$36 = vector4, _dec7$2F = vector4, _dec8$2k = vector4, _dec9$1Z = uint$1, _dec0$1O = vector3, _dec1$1F = quaternion, _dec10$1r = vector3, _dec11$1k = int32$1, _dec12$1b = float, _dec13$12 = float, _dec14$W = uint$1, _dec15$R = float, _dec16$I = notImplemented, _dec17$D = float, _dec18$y = int32$1, _dec19$u = alias("maskAtlasID"), _dec$5t(_class$5t = (_class2$4_ = class EvePlaneSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4X, this);
@@ -241146,7 +244552,7 @@
 	 * lights. Its `lightData` radii were derived from the SOF multipliers and the
 	 * owning item's scale (see `EveSOFDataPointLightAttachment.AsLightData`).
 	 */
-	var EvePlaneLight = (_dec20$s = define("EvePlaneLight", true), _dec21$p = struct("CjsLightData"), _dec22$o = float, _dec23$l = notOwned, _dec24$l = struct(), _dec25$j = uint, _dec26$g = float, _dec27$f = float, _dec28$e = uint, _dec29$a = matrix4, _dec30$8 = path, _dec20$s(_class3$j = (_class4$h = (_EvePlaneLight = class EvePlaneLight extends Model$1 {
+	var EvePlaneLight = (_dec20$s = define("EvePlaneLight", true), _dec21$p = struct("CjsLightData"), _dec22$o = float, _dec23$l = notOwned, _dec24$l = struct(), _dec25$j = uint$1, _dec26$g = float, _dec27$f = float, _dec28$e = uint$1, _dec29$a = matrix4, _dec30$8 = path, _dec20$s(_class3$j = (_class4$h = (_EvePlaneLight = class EvePlaneLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor17$p, this);
@@ -241230,7 +244636,7 @@
 	    return "";
 	  }
 	}), _class4$h)) || _class3$j);
-	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$6 = notImplemented, _dec37$5 = byte, _dec38$5 = uint, _dec39$4 = boolean, _dec40$4 = list("EvePlaneSetItem"), _dec41$4 = list("EvePlaneLight"), _dec31$8(_class5$6 = (_class6$4 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
+	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$6 = notImplemented, _dec37$5 = byte, _dec38$5 = uint$1, _dec39$4 = boolean, _dec40$4 = list("EvePlaneSetItem"), _dec41$4 = list("EvePlaneLight"), _dec31$8(_class5$6 = (_class6$4 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor26$a, this);
@@ -241782,7 +245188,7 @@
 	var _dec$5s, _dec2$50, _dec3$4B, _dec4$42, _dec5$3z, _dec6$35, _class$5s, _class2$4Z, _descriptor$4W, _descriptor2$4s, _descriptor3$3U, _descriptor4$3q, _descriptor5$2Z, _dec7$2E, _dec8$2j, _dec9$1Y, _class3$i, _class4$g, _descriptor6$2s;
 
 	/** Carbon EveBannerSet.h:32: a runtime light record, not a Blue-persisted item. */
-	var EveBannerLight = (_dec$5s = define("EveBannerLight"), _dec2$50 = struct("CjsLightData"), _dec3$4B = float, _dec4$42 = uint, _dec5$3z = matrix4, _dec6$35 = path, _dec$5s(_class$5s = (_class2$4Z = class EveBannerLight extends Model$1 {
+	var EveBannerLight = (_dec$5s = define("EveBannerLight"), _dec2$50 = struct("CjsLightData"), _dec3$4B = float, _dec4$42 = uint$1, _dec5$3z = matrix4, _dec6$35 = path, _dec$5s(_class$5s = (_class2$4Z = class EveBannerLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor$4W, this);
@@ -241924,7 +245330,7 @@
 	}), _class4$g)) || _class3$i) || _class3$i);
 
 	var _dec$5r, _dec2$4$, _dec3$4A, _dec4$41, _dec5$3y, _dec6$34, _dec7$2D, _dec8$2i, _dec9$1X, _dec0$1N, _dec1$1E, _dec10$1q, _dec11$1j, _dec12$1a, _dec13$11, _class$5r, _class2$4Y, _descriptor$4V, _descriptor2$4r, _descriptor3$3T, _descriptor4$3p, _descriptor5$2Y, _descriptor6$2r, _descriptor7$20, _descriptor8$1L, _descriptor9$1C, _descriptor0$1w, _descriptor1$1f, _EveBanner;
-	var EveBanner = (_dec$5r = define("EveBanner", true), _dec2$4$ = partialImplementation, _dec3$4A = string, _dec4$41 = float, _dec5$3y = notImplemented, _dec6$34 = float, _dec7$2D = notImplemented, _dec8$2i = int32$1, _dec9$1X = boolean, _dec0$1N = translation, _dec1$1E = rotation, _dec10$1q = scaling, _dec11$1j = uint, _dec12$1a = matrix4, _dec13$11 = struct(), _dec$5r(_class$5r = _dec2$4$(_class$5r = (_class2$4Y = (_EveBanner = class EveBanner extends Model$1 {
+	var EveBanner = (_dec$5r = define("EveBanner", true), _dec2$4$ = partialImplementation, _dec3$4A = string, _dec4$41 = float, _dec5$3y = notImplemented, _dec6$34 = float, _dec7$2D = notImplemented, _dec8$2i = int32$1, _dec9$1X = boolean, _dec0$1N = translation, _dec1$1E = rotation, _dec10$1q = scaling, _dec11$1j = uint$1, _dec12$1a = matrix4, _dec13$11 = struct(), _dec$5r(_class$5r = _dec2$4$(_class$5r = (_class2$4Y = (_EveBanner = class EveBanner extends Model$1 {
 	  /* CCPWGL ONLY */
 
 	  constructor() {
@@ -242627,7 +246033,7 @@
 	}), _class2$4X)) || _class$5q);
 
 	/** Carbon EveSpriteLight: runtime SOF light record, separate from drawable items. */
-	var EveSpriteLight = (_dec13$10 = define("EveSpriteLight"), _dec14$V = struct("CjsLightData"), _dec15$Q = uint, _dec16$H = matrix4, _dec17$C = path, _dec18$x = float, _dec19$t = float, _dec20$r = float, _dec21$o = float, _dec13$10(_class3$h = (_class4$f = class EveSpriteLight extends Model$1 {
+	var EveSpriteLight = (_dec13$10 = define("EveSpriteLight"), _dec14$V = struct("CjsLightData"), _dec15$Q = uint$1, _dec16$H = matrix4, _dec17$C = path, _dec18$x = float, _dec19$t = float, _dec20$r = float, _dec21$o = float, _dec13$10(_class3$h = (_class4$f = class EveSpriteLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor12$S, this);
@@ -243302,7 +246708,7 @@
 	    return this.boosters && this.boosters.effect && this.boosters.effect.HasTechnique(technique);
 	  }
 	}
-	var EveBoosterSetItem = (_dec$5p = define("EveBoosterSetItem", true), _dec2$4Z = string, _dec3$4y = uint, _dec4$3$ = uint, _dec5$3w = string, _dec6$32 = float, _dec7$2B = matrix4, _dec8$2g = boolean, _dec9$1V = plain, _dec0$1L = float, _dec$5p(_class$5p = (_class2$4W = class EveBoosterSetItem extends EveObjectSetItem {
+	var EveBoosterSetItem = (_dec$5p = define("EveBoosterSetItem", true), _dec2$4Z = string, _dec3$4y = uint$1, _dec4$3$ = uint$1, _dec5$3w = string, _dec6$32 = float, _dec7$2B = matrix4, _dec8$2g = boolean, _dec9$1V = plain, _dec0$1L = float, _dec$5p(_class$5p = (_class2$4W = class EveBoosterSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4T, this);
@@ -244061,7 +247467,7 @@
 	var _excluded$b = ["skipUpdate"];
 	var _dec$5o, _dec2$4Y, _dec3$4x, _dec4$3_, _dec5$3v, _dec6$31, _dec7$2A, _dec8$2f, _dec9$1U, _dec0$1K, _dec1$1B, _dec10$1n, _dec11$1g, _dec12$17, _dec13$_, _class$5o, _class2$4V, _descriptor$4S, _descriptor2$4o, _descriptor3$3Q, _descriptor4$3m, _descriptor5$2V, _descriptor6$2o, _descriptor7$1Z, _descriptor8$1I, _descriptor9$1z, _descriptor0$1t;
 	var VALID_BLEND_MODES = new Set(Object.values(CustomMaskBlendMode));
-	var EveCustomMask = (_dec$5o = define("EveCustomMask", true), _dec2$4Y = stage(1), _dec3$4x = string, _dec4$3_ = boolean, _dec5$3v = boolean, _dec6$31 = boolean, _dec7$2A = string, _dec8$2f = uint, _dec9$1U = quaternion, _dec0$1K = vector3, _dec1$1B = vector4, _dec10$1n = plain, _dec11$1g = todo("Move to direct class properties"), _dec12$17 = isPrivate, _dec13$_ = vector3, _dec$5o(_class$5o = _dec2$4Y(_class$5o = (_class2$4V = class EveCustomMask extends WglTransform {
+	var EveCustomMask = (_dec$5o = define("EveCustomMask", true), _dec2$4Y = stage(1), _dec3$4x = string, _dec4$3_ = boolean, _dec5$3v = boolean, _dec6$31 = boolean, _dec7$2A = string, _dec8$2f = uint$1, _dec9$1U = quaternion, _dec0$1K = vector3, _dec1$1B = vector4, _dec10$1n = plain, _dec11$1g = todo("Move to direct class properties"), _dec12$17 = isPrivate, _dec13$_ = vector3, _dec$5o(_class$5o = _dec2$4Y(_class$5o = (_class2$4V = class EveCustomMask extends WglTransform {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4S, this);
@@ -244418,7 +247824,7 @@
 	}), _applyDecoratedDescriptor(_class2$4V.prototype, "position", [_dec13$_], Object.getOwnPropertyDescriptor(_class2$4V.prototype, "position"), _class2$4V.prototype), _class2$4V)) || _class$5o) || _class$5o);
 
 	var _dec$5n, _dec2$4X, _dec3$4w, _dec4$3Z, _dec5$3u, _dec6$30, _dec7$2z, _dec8$2e, _dec9$1T, _dec0$1J, _dec1$1A, _dec10$1m, _dec11$1f, _dec12$16, _class$5n, _class2$4U, _descriptor$4R, _descriptor2$4n, _descriptor3$3P, _descriptor4$3l, _descriptor5$2U, _descriptor6$2n, _descriptor7$1Y, _EveLocator, _dec13$Z, _class3$f;
-	var EveLocator2 = (_dec$5n = define("EveLocator2", true), _dec2$4X = stage(1), _dec3$4w = string, _dec4$3Z = matrix4, _dec5$3u = uint, _dec6$30 = todo("Move to EveLocator only?"), _dec7$2z = uint, _dec8$2e = todo("Move to EveLocator only?"), _dec9$1T = vector4, _dec0$1J = todo("Move to EveLocator only?"), _dec1$1A = boolean, _dec10$1m = todo("Move to EveLocator only?"), _dec11$1f = float, _dec12$16 = todo("Move to EveLocator only?"), _dec$5n(_class$5n = _dec2$4X(_class$5n = (_class2$4U = (_EveLocator = class EveLocator2 extends Model$1 {
+	var EveLocator2 = (_dec$5n = define("EveLocator2", true), _dec2$4X = stage(1), _dec3$4w = string, _dec4$3Z = matrix4, _dec5$3u = uint$1, _dec6$30 = todo("Move to EveLocator only?"), _dec7$2z = uint$1, _dec8$2e = todo("Move to EveLocator only?"), _dec9$1T = vector4, _dec0$1J = todo("Move to EveLocator only?"), _dec1$1A = boolean, _dec10$1m = todo("Move to EveLocator only?"), _dec11$1f = float, _dec12$16 = todo("Move to EveLocator only?"), _dec$5n(_class$5n = _dec2$4X(_class$5n = (_class2$4U = (_EveLocator = class EveLocator2 extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4R, this);
@@ -245008,7 +248414,7 @@
 	}), _class6$2)) || _class5$4);
 
 	var _dec$5l, _dec2$4V, _dec3$4u, _dec4$3X, _dec5$3s, _dec6$2_, _dec7$2x, _dec8$2c, _dec9$1R, _dec0$1H, _dec1$1y, _dec10$1k, _dec11$1d, _dec12$14, _class$5l, _class2$4S, _descriptor$4P, _descriptor2$4l, _descriptor3$3N, _descriptor4$3j, _descriptor5$2S, _descriptor6$2l, _descriptor7$1W, _descriptor8$1G, _descriptor9$1x, _descriptor0$1r, _descriptor1$1c, _descriptor10$14, _descriptor11$X, _EveSpaceObjectDecal;
-	var EveSpaceObjectDecal = (_dec$5l = define("EveSpaceObjectDecal", true), _dec2$4V = string, _dec3$4u = struct("Tw2Effect"), _dec4$3X = boolean, _dec5$3s = int32$1, _dec6$2_ = int32$1, _dec7$2x = boolean, _dec8$2c = uint, _dec9$1R = int32$1, _dec0$1H = int32$1, _dec1$1y = struct("Tw2Effect"), _dec10$1k = translation, _dec11$1d = rotation, _dec12$14 = scaling, _dec$5l(_class$5l = (_class2$4S = (_EveSpaceObjectDecal = class EveSpaceObjectDecal extends Model$1 {
+	var EveSpaceObjectDecal = (_dec$5l = define("EveSpaceObjectDecal", true), _dec2$4V = string, _dec3$4u = struct("Tw2Effect"), _dec4$3X = boolean, _dec5$3s = int32$1, _dec6$2_ = int32$1, _dec7$2x = boolean, _dec8$2c = uint$1, _dec9$1R = int32$1, _dec0$1H = int32$1, _dec1$1y = struct("Tw2Effect"), _dec10$1k = translation, _dec11$1d = rotation, _dec12$14 = scaling, _dec$5l(_class$5l = (_class2$4S = (_EveSpaceObjectDecal = class EveSpaceObjectDecal extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4P, this);
@@ -245909,7 +249315,7 @@
 	}), _class2$4R)) || _class$5k);
 
 	/** Carbon EveSpotlightLight: runtime SOF light record, separate from drawable items. */
-	var EveSpotlightLight = (_dec14$S = define("EveSpotlightLight"), _dec15$O = struct("CjsLightData"), _dec16$F = uint, _dec17$A = matrix4, _dec18$v = path, _dec19$r = boolean, _dec14$S(_class3$d = (_class4$c = class EveSpotlightLight extends Model$1 {
+	var EveSpotlightLight = (_dec14$S = define("EveSpotlightLight"), _dec15$O = struct("CjsLightData"), _dec16$F = uint$1, _dec17$A = matrix4, _dec18$v = path, _dec19$r = boolean, _dec14$S(_class3$d = (_class4$c = class EveSpotlightLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor13$L, this);
@@ -246910,7 +250316,7 @@
 	    return quat$2.create();
 	  }
 	}), _class2$4P)) || _class$5i);
-	var EveTurretSet = (_dec7$2u = define("EveTurretSet", true), _dec8$29 = stage(1), _dec9$1P = string, _dec0$1F = float, _dec1$1w = vector4, _dec10$1i = boolean, _dec11$1b = uint, _dec12$12 = path, _dec13$W = path, _dec14$R = string, _dec15$N = string, _dec16$E = notImplemented, _dec17$z = boolean, _dec18$u = float, _dec19$q = uint, _dec20$o = notImplemented, _dec21$l = boolean, _dec22$k = notImplemented, _dec23$h = vector3, _dec24$h = notImplemented, _dec25$f = quaternion, _dec26$c = notImplemented, _dec27$b = vector3, _dec28$a = notImplemented, _dec29$8 = boolean, _dec30$7 = notImplemented, _dec31$7 = struct(), _dec32$7 = uint, _dec33$6 = float, _dec34$6 = boolean, _dec35$6 = string, _dec36$5 = uint, _dec37$4 = notImplemented, _dec38$4 = struct(), _dec39$3 = boolean, _dec40$3 = float, _dec41$3 = float, _dec42$3 = float, _dec43$3 = float, _dec44$3 = float, _dec45$3 = float, _dec46$2 = float, _dec47$1 = float, _dec48$1 = float, _dec49$1 = float, _dec50$1 = float, _dec51$1 = struct("Tw2Effect"), _dec52$1 = boolean, _dec53$1 = notImplemented, _dec54$1 = boolean, _dec55$1 = boolean, _dec56$1 = struct(), _dec57$1 = struct("EveTurretTarget"), _dec58$1 = struct("Tw2GeometryResource"), _dec59$1 = todo("Make private"), _dec60$1 = plain, _dec61$1 = todo("Update parent class and replace with direct value"), _dec7$2u(_class3$c = _dec8$29(_class3$c = (_class4$b = (_EveTurretSet = class EveTurretSet extends EveObjectSet {
+	var EveTurretSet = (_dec7$2u = define("EveTurretSet", true), _dec8$29 = stage(1), _dec9$1P = string, _dec0$1F = float, _dec1$1w = vector4, _dec10$1i = boolean, _dec11$1b = uint$1, _dec12$12 = path, _dec13$W = path, _dec14$R = string, _dec15$N = string, _dec16$E = notImplemented, _dec17$z = boolean, _dec18$u = float, _dec19$q = uint$1, _dec20$o = notImplemented, _dec21$l = boolean, _dec22$k = notImplemented, _dec23$h = vector3, _dec24$h = notImplemented, _dec25$f = quaternion, _dec26$c = notImplemented, _dec27$b = vector3, _dec28$a = notImplemented, _dec29$8 = boolean, _dec30$7 = notImplemented, _dec31$7 = struct(), _dec32$7 = uint$1, _dec33$6 = float, _dec34$6 = boolean, _dec35$6 = string, _dec36$5 = uint$1, _dec37$4 = notImplemented, _dec38$4 = struct(), _dec39$3 = boolean, _dec40$3 = float, _dec41$3 = float, _dec42$3 = float, _dec43$3 = float, _dec44$3 = float, _dec45$3 = float, _dec46$2 = float, _dec47$1 = float, _dec48$1 = float, _dec49$1 = float, _dec50$1 = float, _dec51$1 = struct("Tw2Effect"), _dec52$1 = boolean, _dec53$1 = notImplemented, _dec54$1 = boolean, _dec55$1 = boolean, _dec56$1 = struct(), _dec57$1 = struct("EveTurretTarget"), _dec58$1 = struct("Tw2GeometryResource"), _dec59$1 = todo("Make private"), _dec60$1 = plain, _dec61$1 = todo("Update parent class and replace with direct value"), _dec7$2u(_class3$c = _dec8$29(_class3$c = (_class4$b = (_EveTurretSet = class EveTurretSet extends EveObjectSet {
 	  /**
 	   * Attaches the Carbon packer and its buffers to both per-object data sets.
 	   *
@@ -250304,7 +253710,7 @@
 	  EVE_SIMPLE_HALO: 102,
 	  EVE_CAMERA_ROTATION: 103
 	};
-	var EveTransform = (_dec$5a = define("EveTransform", true), _dec2$4M = string, _dec3$4l = list("EveObject"), _dec4$3O = list("Tw2CurveSet"), _dec5$3j = boolean, _dec6$2R = notImplemented, _dec7$2o = float, _dec8$24 = notImplemented, _dec9$1L = float, _dec0$1B = notImplemented, _dec1$1t = boolean, _dec10$1f = struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec11$18 = uint, _dec12$$ = enums(Modifier), _dec13$T = list("Tr2ObserverLocal"), _dec14$O = vector3, _dec15$K = vector3, _dec16$B = list("EveParticleEmitter"), _dec17$w = list("EveParticleSystem"), _dec18$s = notImplemented, _dec19$p = float, _dec20$n = boolean, _dec21$k = notImplemented, _dec22$j = boolean, _dec23$g = boolean, _dec24$g = float, _dec25$e = plain, _dec$5a(_class$5a = (_class2$4K = (_EveTransform = class EveTransform extends EveObject {
+	var EveTransform = (_dec$5a = define("EveTransform", true), _dec2$4M = string, _dec3$4l = list("EveObject"), _dec4$3O = list("Tw2CurveSet"), _dec5$3j = boolean, _dec6$2R = notImplemented, _dec7$2o = float, _dec8$24 = notImplemented, _dec9$1L = float, _dec0$1B = notImplemented, _dec1$1t = boolean, _dec10$1f = struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec11$18 = uint$1, _dec12$$ = enums(Modifier), _dec13$T = list("Tr2ObserverLocal"), _dec14$O = vector3, _dec15$K = vector3, _dec16$B = list("EveParticleEmitter"), _dec17$w = list("EveParticleSystem"), _dec18$s = notImplemented, _dec19$p = float, _dec20$n = boolean, _dec21$k = notImplemented, _dec22$j = boolean, _dec23$g = boolean, _dec24$g = float, _dec25$e = plain, _dec$5a(_class$5a = (_class2$4K = (_EveTransform = class EveTransform extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4G, this);
@@ -252195,7 +255601,7 @@
 	 * and NormalHeight2 instead. gles2 still wants a baked map, and `EveOldPlanet`
 	 * is still the only thing that produces one.
 	 */
-	var EvePlanet = (_dec$57 = define("EvePlanet", true), _dec2$4J = stage(2), _dec3$4i = float, _dec4$3L = color$2, _dec5$3g = color$2, _dec6$2O = float, _dec7$2l = struct("EveChildMesh"), _dec8$21 = float, _dec9$1I = path, _dec0$1y = path, _dec1$1q = uint, _dec$57(_class$57 = _dec2$4J(_class$57 = (_class2$4H = (_EvePlanet = class EvePlanet extends EveEffectRoot2 {
+	var EvePlanet = (_dec$57 = define("EvePlanet", true), _dec2$4J = stage(2), _dec3$4i = float, _dec4$3L = color$2, _dec5$3g = color$2, _dec6$2O = float, _dec7$2l = struct("EveChildMesh"), _dec8$21 = float, _dec9$1I = path, _dec0$1y = path, _dec1$1q = uint$1, _dec$57(_class$57 = _dec2$4J(_class$57 = (_class2$4H = (_EvePlanet = class EvePlanet extends EveEffectRoot2 {
 	  constructor() {
 	    super(...arguments);
 	    /**
@@ -252983,7 +256389,7 @@
 	// TODO: Add "OnValueChanged" handler
 	// TODO: Handle height map resolution size
 
-	var EveOldPlanet = (_dec$56 = define("EveOldPlanet", true), _dec2$4I = list("Tw2CurveSet"), _dec3$4h = struct("EveTransform"), _dec4$3K = struct("Tw2Effect"), _dec5$3f = struct("Tw2RenderTarget"), _dec6$2N = struct("EveTransform"), _dec7$2k = uint, _dec8$20 = uint, _dec9$1H = isPrivate, _dec0$1x = path, _dec1$1p = isPrivate, _dec10$1c = path, _dec11$15 = isPrivate, _dec12$Y = list("EveChild"), _dec13$R = float, _dec14$M = uint, _dec15$I = notImplemented, _dec16$z = uint, _dec17$u = notImplemented, _dec$56(_class$56 = (_class2$4G = (_EveOldPlanet = class EveOldPlanet extends EveObject {
+	var EveOldPlanet = (_dec$56 = define("EveOldPlanet", true), _dec2$4I = list("Tw2CurveSet"), _dec3$4h = struct("EveTransform"), _dec4$3K = struct("Tw2Effect"), _dec5$3f = struct("Tw2RenderTarget"), _dec6$2N = struct("EveTransform"), _dec7$2k = uint$1, _dec8$20 = uint$1, _dec9$1H = isPrivate, _dec0$1x = path, _dec1$1p = isPrivate, _dec10$1c = path, _dec11$15 = isPrivate, _dec12$Y = list("EveChild"), _dec13$R = float, _dec14$M = uint$1, _dec15$I = notImplemented, _dec16$z = uint$1, _dec17$u = notImplemented, _dec$56(_class$56 = (_class2$4G = (_EveOldPlanet = class EveOldPlanet extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    /**
@@ -254207,7 +257613,7 @@
 	 * One authored booster placement: its local transform, functionality inputs,
 	 * atlas slots, light scale and whether it emits a trail
 	 */
-	var EveBoosterSet2Item = (_dec$53 = define("EveBoosterSet2Item", true), _dec2$4F = string, _dec3$4e = string, _dec4$3H = boolean, _dec5$3c = matrix4, _dec6$2L = vector4, _dec7$2i = boolean, _dec8$1_ = uint, _dec9$1F = uint, _dec0$1v = float, _dec1$1n = float, _dec$53(_class$53 = (_class2$4D = class EveBoosterSet2Item extends EveObjectSetItem {
+	var EveBoosterSet2Item = (_dec$53 = define("EveBoosterSet2Item", true), _dec2$4F = string, _dec3$4e = string, _dec4$3H = boolean, _dec5$3c = matrix4, _dec6$2L = vector4, _dec7$2i = boolean, _dec8$1_ = uint$1, _dec9$1F = uint$1, _dec0$1v = float, _dec1$1n = float, _dec$53(_class$53 = (_class2$4D = class EveBoosterSet2Item extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4z, this);
@@ -255494,7 +258900,7 @@
 	}), _class2$4C)) || _class$52);
 
 	/** Carbon EveHazeSetLight: runtime SOF light record, separate from drawable items. */
-	var EveHazeSetLight = (_dec0$1u = define("EveHazeSetLight"), _dec1$1m = struct("CjsLightData"), _dec10$19 = uint, _dec11$13 = matrix4, _dec12$W = path, _dec13$P = boolean, _dec0$1u(_class3$a = (_class4$9 = class EveHazeSetLight extends Model$1 {
+	var EveHazeSetLight = (_dec0$1u = define("EveHazeSetLight"), _dec1$1m = struct("CjsLightData"), _dec10$19 = uint$1, _dec11$13 = matrix4, _dec12$W = path, _dec13$P = boolean, _dec0$1u(_class3$a = (_class4$9 = class EveHazeSetLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lightData", _descriptor9$1l, this);
@@ -255903,7 +259309,7 @@
 	    this.spriteLineSet.Render(technique);
 	  }
 	}) || _class$51);
-	var EveSpriteLineSetItem = (_dec2$4D = partialImplementation, _dec3$4c = define("EveSpriteLineSetItem", true), _dec4$3F = float, _dec5$3a = float, _dec6$2J = float, _dec7$2g = int32$1, _dec8$1Y = uint, _dec9$1D = float, _dec0$1t = float, _dec1$1l = boolean, _dec10$18 = float, _dec11$12 = float, _dec12$V = vector3, _dec13$O = quaternion, _dec14$J = vector3, _dec15$F = float, _dec16$w = boolean, _dec17$r = matrix4, _dec2$4D(_class2$4B = _dec3$4c(_class2$4B = (_class3$9 = class EveSpriteLineSetItem extends EveObjectSetItem {
+	var EveSpriteLineSetItem = (_dec2$4D = partialImplementation, _dec3$4c = define("EveSpriteLineSetItem", true), _dec4$3F = float, _dec5$3a = float, _dec6$2J = float, _dec7$2g = int32$1, _dec8$1Y = uint$1, _dec9$1D = float, _dec0$1t = float, _dec1$1l = boolean, _dec10$18 = float, _dec11$12 = float, _dec12$V = vector3, _dec13$O = quaternion, _dec14$J = vector3, _dec15$F = float, _dec16$w = boolean, _dec17$r = matrix4, _dec2$4D(_class2$4B = _dec3$4c(_class2$4B = (_class3$9 = class EveSpriteLineSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "blinkPhase", _descriptor$4x, this);
@@ -256106,7 +259512,7 @@
 	}), _class5$1)) || _class4$8) || _class4$8);
 
 	var _dec$50, _dec2$4C, _dec3$4b, _dec4$3E, _dec5$39, _dec6$2I, _dec7$2f, _dec8$1X, _dec9$1C, _dec0$1s, _dec1$1k, _dec10$17, _dec11$11, _dec12$U, _dec13$N, _dec14$I, _dec15$E, _dec16$v, _dec17$q, _dec18$n, _dec19$l, _dec20$j, _dec21$h, _dec22$g, _dec23$d, _dec24$d, _dec25$b, _dec26$a, _dec27$9, _dec28$8, _dec29$6, _dec30$5, _dec31$5, _dec32$5, _dec33$4, _dec34$4, _dec35$4, _class$50, _class2$4A, _descriptor$4w, _descriptor2$42, _descriptor3$3u, _descriptor4$31, _descriptor5$2B, _descriptor6$24, _descriptor7$1G, _descriptor8$1r, _descriptor9$1j, _descriptor0$1f, _descriptor1$10, _descriptor10$V, _descriptor11$M, _descriptor12$H, _descriptor13$C, _descriptor14$v, _descriptor15$n, _descriptor16$i, _descriptor17$g, _descriptor18$g, _descriptor19$c, _descriptor20$c, _descriptor21$c, _descriptor22$b, _descriptor23$a, _descriptor24$9, _descriptor25$9, _EveSpaceObject$1;
-	var EveSpaceObject2 = (_dec$50 = define("EveSpaceObject2", true), _dec2$4C = stage(2), _dec3$4b = struct("Tw2Animation"), _dec4$3E = isPrivate, _dec5$39 = list("EveObjectSet"), _dec6$2I = list("Tw2CurveSet"), _dec7$2f = vector3, _dec8$1X = isPrivate, _dec9$1C = float, _dec0$1s = isPrivate, _dec1$1k = list("EveObject"), _dec10$17 = list("EveCustomMask"), _dec11$11 = string, _dec12$U = list("EveSpaceObjectDecal"), _dec13$N = string, _dec14$I = list("EveLocatorSets"), _dec15$E = list("EveLocator2"), _dec16$v = struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"), _dec17$q = struct("EveCurve"), _dec18$n = isPrivate, _dec19$l = vector3, _dec20$j = isPrivate, _dec21$h = vector3, _dec22$g = isPrivate, _dec23$d = struct("EveCurve"), _dec24$d = isPrivate, _dec25$b = uint, _dec26$a = vector3, _dec27$9 = float, _dec28$8 = float, _dec29$6 = float, _dec30$5 = float, _dec31$5 = list("EveChild"), _dec32$5 = plain, _dec33$4 = ui({
+	var EveSpaceObject2 = (_dec$50 = define("EveSpaceObject2", true), _dec2$4C = stage(2), _dec3$4b = struct("Tw2Animation"), _dec4$3E = isPrivate, _dec5$39 = list("EveObjectSet"), _dec6$2I = list("Tw2CurveSet"), _dec7$2f = vector3, _dec8$1X = isPrivate, _dec9$1C = float, _dec0$1s = isPrivate, _dec1$1k = list("EveObject"), _dec10$17 = list("EveCustomMask"), _dec11$11 = string, _dec12$U = list("EveSpaceObjectDecal"), _dec13$N = string, _dec14$I = list("EveLocatorSets"), _dec15$E = list("EveLocator2"), _dec16$v = struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"), _dec17$q = struct("EveCurve"), _dec18$n = isPrivate, _dec19$l = vector3, _dec20$j = isPrivate, _dec21$h = vector3, _dec22$g = isPrivate, _dec23$d = struct("EveCurve"), _dec24$d = isPrivate, _dec25$b = uint$1, _dec26$a = vector3, _dec27$9 = float, _dec28$8 = float, _dec29$6 = float, _dec30$5 = float, _dec31$5 = list("EveChild"), _dec32$5 = plain, _dec33$4 = ui({
 	  group: "Dirt"
 	}), _dec34$4 = float, _dec35$4 = float, _dec$50(_class$50 = _dec2$4C(_class$50 = (_class2$4A = (_EveSpaceObject$1 = class EveSpaceObject2 extends EveObject {
 	  constructor() {
@@ -258662,7 +262068,7 @@
 	 * `buildClass` 0 builds a ship; 3 builds `EveSwarm`, which extends it
 	 * (`EveSOF.cpp:614-654`).
 	 */
-	var EveShip2 = (_dec$4_ = define("EveShip2", true), _dec2$4A = stage(2), _dec3$4a = struct("EveBoosterSet2"), _dec4$3D = uint, _dec5$38 = float, _dec6$2H = ui({
+	var EveShip2 = (_dec$4_ = define("EveShip2", true), _dec2$4A = stage(2), _dec3$4a = struct("EveBoosterSet2"), _dec4$3D = uint$1, _dec5$38 = float, _dec6$2H = ui({
 	  group: "Speed",
 	  index: 2
 	}), _dec7$2e = float, _dec8$1W = ui({
@@ -259804,7 +263210,7 @@
 	 * Endpoints come either from plain positions or from curves. `Update` samples
 	 * the curves; `AddLine` uses whatever the last sample left.
 	 */
-	var EveConnector = (_dec$4W = define("EveConnector", true), _dec2$4w = color$2, _dec3$46 = float, _dec4$3z = float, _dec5$35 = boolean, _dec6$2F = color$2, _dec7$2c = notOwned, _dec8$1U = struct(), _dec9$1z = vector3, _dec0$1q = boolean, _dec1$1i = float, _dec10$15 = float, _dec11$$ = vector3, _dec12$S = notOwned, _dec13$L = struct(), _dec14$G = vector3, _dec15$C = uint, _dec$4W(_class$4W = (_class2$4v = (_EveConnector = class EveConnector extends Model$1 {
+	var EveConnector = (_dec$4W = define("EveConnector", true), _dec2$4w = color$2, _dec3$46 = float, _dec4$3z = float, _dec5$35 = boolean, _dec6$2F = color$2, _dec7$2c = notOwned, _dec8$1U = struct(), _dec9$1z = vector3, _dec0$1q = boolean, _dec1$1i = float, _dec10$15 = float, _dec11$$ = vector3, _dec12$S = notOwned, _dec13$L = struct(), _dec14$G = vector3, _dec15$C = uint$1, _dec$4W(_class$4W = (_class2$4v = (_EveConnector = class EveConnector extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "animationColor", _descriptor$4r, this);
@@ -260362,7 +263768,7 @@
 	 * a connector using one draws from wherever it last was instead of snapping to
 	 * the origin.
 	 */
-	var EveLocalPositionCurve = (_dec$4V = define("EveLocalPositionCurve", true), _dec2$4v = uint, _dec3$45 = vector3, _dec4$3y = notOwned, _dec5$34 = struct(), _dec6$2E = notOwned, _dec7$2b = struct(), _dec8$1T = notOwned, _dec9$1y = struct(), _dec0$1p = notOwned, _dec1$1h = struct(), _dec10$14 = notOwned, _dec11$_ = struct(), _dec12$R = uint, _dec13$K = vector3, _dec14$F = float, _dec15$B = vector3, _dec16$t = string, _dec17$o = int32$1, _dec18$l = int32$1, _dec19$j = float, _dec$4V(_class$4V = (_class2$4u = (_EveLocalPositionCurve = class EveLocalPositionCurve extends Model$1 {
+	var EveLocalPositionCurve = (_dec$4V = define("EveLocalPositionCurve", true), _dec2$4v = uint$1, _dec3$45 = vector3, _dec4$3y = notOwned, _dec5$34 = struct(), _dec6$2E = notOwned, _dec7$2b = struct(), _dec8$1T = notOwned, _dec9$1y = struct(), _dec0$1p = notOwned, _dec1$1h = struct(), _dec10$14 = notOwned, _dec11$_ = struct(), _dec12$R = uint$1, _dec13$K = vector3, _dec14$F = float, _dec15$B = vector3, _dec16$t = string, _dec17$o = int32$1, _dec18$l = int32$1, _dec19$j = float, _dec$4V(_class$4V = (_class2$4u = (_EveLocalPositionCurve = class EveLocalPositionCurve extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "behavior", _descriptor$4q, this);
@@ -261457,7 +264863,7 @@
 	 * have accumulated, and the identity and lifetime that let those modifiers
 	 * recognise the same placement between frames.
 	 */
-	var PlacementDataWithIdentifier = (_dec$4O = define("PlacementDataWithIdentifier", true), _dec2$4o = vector3, _dec3$3_ = quaternion, _dec4$3t = vector3, _dec5$30 = vector3, _dec6$2A = vector3, _dec7$27 = quaternion, _dec8$1Q = vector3, _dec9$1w = int32$1, _dec0$1n = float, _dec1$1f = uint, _dec10$12 = int32$1, _dec$4O(_class$4O = (_class2$4n = class PlacementDataWithIdentifier extends Model$1 {
+	var PlacementDataWithIdentifier = (_dec$4O = define("PlacementDataWithIdentifier", true), _dec2$4o = vector3, _dec3$3_ = quaternion, _dec4$3t = vector3, _dec5$30 = vector3, _dec6$2A = vector3, _dec7$27 = quaternion, _dec8$1Q = vector3, _dec9$1w = int32$1, _dec0$1n = float, _dec1$1f = uint$1, _dec10$12 = int32$1, _dec$4O(_class$4O = (_class2$4n = class PlacementDataWithIdentifier extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "initialTranslation", _descriptor$4j, this);
@@ -261753,7 +265159,7 @@
 	var _dec$4L, _dec2$4l, _dec3$3Z, _dec4$3s, _dec5$2$, _class$4L, _class2$4k, _descriptor$4g, _descriptor2$3Q, _descriptor3$3i, _descriptor4$2T;
 
 	/** EveDistributionPlacementGeneratorVolume (eve/distribution/placement) - generated from schema shapeHash d6e2cbac.... */
-	var EveDistributionPlacementGeneratorVolume = (_dec$4L = define("EveDistributionPlacementGeneratorVolume", true), _dec2$4l = uint, _dec3$3Z = boolean, _dec4$3s = float, _dec5$2$ = struct("IEveVolume"), _dec$4L(_class$4L = (_class2$4k = class EveDistributionPlacementGeneratorVolume extends Model$1 {
+	var EveDistributionPlacementGeneratorVolume = (_dec$4L = define("EveDistributionPlacementGeneratorVolume", true), _dec2$4l = uint$1, _dec3$3Z = boolean, _dec4$3s = float, _dec5$2$ = struct("IEveVolume"), _dec$4L(_class$4L = (_class2$4k = class EveDistributionPlacementGeneratorVolume extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    this._isRequestingRegeneration = true;
@@ -262245,7 +265651,7 @@
 	}), _class2$4g)) || _class$4H);
 
 	var _dec$4G, _dec2$4g, _dec3$3U, _dec4$3n, _class$4G, _class2$4f, _descriptor$4b, _descriptor2$3L, _descriptor3$3d;
-	var EveDistributionSpawnerBurst = (_dec$4G = define("EveDistributionSpawnerBurst", true), _dec2$4g = float, _dec3$3U = uint, _dec4$3n = float, _dec$4G(_class$4G = (_class2$4f = class EveDistributionSpawnerBurst extends Model$1 {
+	var EveDistributionSpawnerBurst = (_dec$4G = define("EveDistributionSpawnerBurst", true), _dec2$4g = float, _dec3$3U = uint$1, _dec4$3n = float, _dec$4G(_class$4G = (_class2$4f = class EveDistributionSpawnerBurst extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    this._localTimer = 0;
@@ -262437,7 +265843,7 @@
 	}), _class2$4e)) || _class$4F);
 
 	var _dec$4E, _dec2$4e, _dec3$3S, _dec4$3l, _dec5$2V, _dec6$2w, _class$4E, _class2$4d, _descriptor$49, _descriptor2$3J, _descriptor3$3b, _descriptor4$2N, _descriptor5$2p;
-	var EveDistributionSpawnerInterval = (_dec$4E = define("EveDistributionSpawnerInterval", true), _dec2$4e = float, _dec3$3S = uint, _dec4$3l = boolean, _dec5$2V = float, _dec6$2w = float, _dec$4E(_class$4E = (_class2$4d = class EveDistributionSpawnerInterval extends Model$1 {
+	var EveDistributionSpawnerInterval = (_dec$4E = define("EveDistributionSpawnerInterval", true), _dec2$4e = float, _dec3$3S = uint$1, _dec4$3l = boolean, _dec5$2V = float, _dec6$2w = float, _dec$4E(_class$4E = (_class2$4d = class EveDistributionSpawnerInterval extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    this._localTimer = 0;
@@ -262931,7 +266337,7 @@
 	var _dec$4A, _dec2$4a, _dec3$3O, _dec4$3h, _dec5$2R, _dec6$2s, _dec7$22, _dec8$1P, _dec9$1v, _dec0$1m, _dec1$1e, _class$4A, _class2$49, _descriptor$45, _descriptor2$3F, _descriptor3$37, _descriptor4$2J, _descriptor5$2l, _descriptor6$1U, _descriptor7$1z, _descriptor8$1l, _descriptor9$1d, _descriptor0$19;
 
 	/** EveBaseDistributionMethod (eve/distribution) - generated from schema shapeHash 498ea86d.... */
-	var EveBaseDistributionMethod = (_dec$4A = define("EveBaseDistributionMethod", true), _dec2$4a = list("IEveDistributionModifier"), _dec3$3O = boolean, _dec4$3h = float, _dec5$2R = uint, _dec6$2s = uint, _dec7$22 = float, _dec8$1P = list("IEveDistributionPlacementGenerators"), _dec9$1v = list("PlacementDataWithIdentifier"), _dec0$1m = list("IEveDistributionSpawnModifier"), _dec1$1e = list("IEveDistributionSpawner"), _dec$4A(_class$4A = (_class2$49 = class EveBaseDistributionMethod extends Model$1 {
+	var EveBaseDistributionMethod = (_dec$4A = define("EveBaseDistributionMethod", true), _dec2$4a = list("IEveDistributionModifier"), _dec3$3O = boolean, _dec4$3h = float, _dec5$2R = uint$1, _dec6$2s = uint$1, _dec7$22 = float, _dec8$1P = list("IEveDistributionPlacementGenerators"), _dec9$1v = list("PlacementDataWithIdentifier"), _dec0$1m = list("IEveDistributionSpawnModifier"), _dec1$1e = list("IEveDistributionSpawner"), _dec$4A(_class$4A = (_class2$49 = class EveBaseDistributionMethod extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    this._initialPlacements = [];
@@ -266066,7 +269472,7 @@
 	var _dec$4s, _dec2$42, _dec3$3G, _dec4$3a, _class$4s, _class2$41, _descriptor$3Z, _descriptor2$3x, _descriptor3$30;
 
 	/** EveSmartLightAttributeModifierNoise (eve/smartLights/attributeModifiers) - generated from schema shapeHash 60b52eeb.... */
-	var EveSmartLightAttributeModifierNoise = (_dec$4s = define("EveSmartLightAttributeModifierNoise", true), _dec2$42 = float, _dec3$3G = float, _dec4$3a = uint, _dec$4s(_class$4s = (_class2$41 = class EveSmartLightAttributeModifierNoise extends EveSmartLightBaseAttributeModifier {
+	var EveSmartLightAttributeModifierNoise = (_dec$4s = define("EveSmartLightAttributeModifierNoise", true), _dec2$42 = float, _dec3$3G = float, _dec4$3a = uint$1, _dec$4s(_class$4s = (_class2$41 = class EveSmartLightAttributeModifierNoise extends EveSmartLightBaseAttributeModifier {
 	  constructor() {
 	    super(...arguments);
 	    /** m_noiseAmplitude (float) [READWRITE, PERSIST] */
@@ -266759,7 +270165,7 @@
 	 * engine and every console probe silently returns nothing for the beams, which
 	 * reads as "the beams do not exist" rather than "the walk cannot reach them".
 	 */
-	var EveChildInstanceMeshRenderer = (_dec$4p = notImplemented, _dec2$3$ = define("EveChildInstanceMeshRenderer", true), _dec3$3D = string, _dec4$37 = boolean, _dec5$2I = boolean, _dec6$2n = list(), _dec7$1Z = matrix4, _dec8$1K = uint, _dec9$1s = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec0$1j = float, _dec1$1b = uint, _dec10$$ = quaternion, _dec11$W = vector3, _dec12$N = float, _dec13$G = boolean, _dec14$C = list("EveChildModifier"), _dec15$y = vector3, _dec16$q = boolean, _dec17$m = boolean, _dec18$j = boolean, _dec19$i = uint, _dec20$h = unknown, _dec21$f = uint, _dec22$e = vector3, _dec23$b = quaternion, _dec24$b = vector3, _dec$4p(_class$4p = _dec2$3$(_class$4p = (_class2$3_ = (_EveChildInstanceMeshRenderer = class EveChildInstanceMeshRenderer extends EveChild {
+	var EveChildInstanceMeshRenderer = (_dec$4p = notImplemented, _dec2$3$ = define("EveChildInstanceMeshRenderer", true), _dec3$3D = string, _dec4$37 = boolean, _dec5$2I = boolean, _dec6$2n = list(), _dec7$1Z = matrix4, _dec8$1K = uint$1, _dec9$1s = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec0$1j = float, _dec1$1b = uint$1, _dec10$$ = quaternion, _dec11$W = vector3, _dec12$N = float, _dec13$G = boolean, _dec14$C = list("EveChildModifier"), _dec15$y = vector3, _dec16$q = boolean, _dec17$m = boolean, _dec18$j = boolean, _dec19$i = uint$1, _dec20$h = unknown, _dec21$f = uint$1, _dec22$e = vector3, _dec23$b = quaternion, _dec24$b = vector3, _dec$4p(_class$4p = _dec2$3$(_class$4p = (_class2$3_ = (_EveChildInstanceMeshRenderer = class EveChildInstanceMeshRenderer extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$3W, this);
@@ -267828,7 +271234,7 @@
 	var _dec$4n, _dec2$3Z, _dec3$3B, _dec4$35, _dec5$2G, _dec6$2l, _dec7$1X, _dec8$1I, _dec9$1r, _dec0$1i, _dec1$1a, _dec10$_, _dec11$V, _dec12$M, _class$4n, _class2$3Y, _descriptor$3U, _descriptor2$3s, _descriptor3$2X, _descriptor4$2y, _descriptor5$2e, _descriptor6$1N, _descriptor7$1s, _descriptor8$1h, _descriptor9$19, _descriptor0$15, _descriptor1$T, _descriptor10$N, _descriptor11$E, _EveSmartLightPointLight;
 
 	/** A smart-light group member that places faction-colour-aware point or spot lights at each distribution placement and submits them to the light manager. */
-	var EveSmartLightPointLight = (_dec$4n = define("EveSmartLightPointLight", true), _dec2$3Z = uint, _dec3$3B = float, _dec4$35 = float, _dec5$2G = float, _dec6$2l = string, _dec7$1X = boolean, _dec8$1I = string, _dec9$1r = vector3, _dec0$1i = quaternion, _dec1$1a = int32$1, _dec10$_ = boolean, _dec11$V = list("IEveSmartLightGroupAttributeModifier"), _dec12$M = color$2, _dec$4n(_class$4n = (_class2$3Y = (_EveSmartLightPointLight = class EveSmartLightPointLight extends EveEntity {
+	var EveSmartLightPointLight = (_dec$4n = define("EveSmartLightPointLight", true), _dec2$3Z = uint$1, _dec3$3B = float, _dec4$35 = float, _dec5$2G = float, _dec6$2l = string, _dec7$1X = boolean, _dec8$1I = string, _dec9$1r = vector3, _dec0$1i = quaternion, _dec1$1a = int32$1, _dec10$_ = boolean, _dec11$V = list("IEveSmartLightGroupAttributeModifier"), _dec12$M = color$2, _dec$4n(_class$4n = (_class2$3Y = (_EveSmartLightPointLight = class EveSmartLightPointLight extends EveEntity {
 	  constructor() {
 	    super(...arguments);
 	    /** m_lightGroupData.flags (uint16_t) [READWRITE, PERSIST] */
@@ -271761,7 +275167,7 @@
 	 * pointed at {@link depthTextureRes} explicitly, the way
 	 * `Tw2CarbonShadowRenderer` does for its resolve pass.
 	 */
-	var EveSpaceSceneDepthHandler = (_dec$4e = define("EveSpaceSceneDepthHandler"), _dec2$3R = boolean, _dec3$3t = boolean, _dec4$2_ = uint, _dec5$2z = uint, _dec6$2f = uint, _dec7$1R = uint, _dec$4e(_class$4e = (_class2$3Q = (_EveSpaceSceneDepthHandler = class EveSpaceSceneDepthHandler extends Model$1 {
+	var EveSpaceSceneDepthHandler = (_dec$4e = define("EveSpaceSceneDepthHandler"), _dec2$3R = boolean, _dec3$3t = boolean, _dec4$2_ = uint$1, _dec5$2z = uint$1, _dec6$2f = uint$1, _dec7$1R = uint$1, _dec$4e(_class$4e = (_class2$3Q = (_EveSpaceSceneDepthHandler = class EveSpaceSceneDepthHandler extends Model$1 {
 	  /**
 	   * @param {EveSpaceScene} [scene]
 	   */
@@ -272797,7 +276203,7 @@
 	 * it can't run SSAO (depth-in / texture-out). Routing the passes through the
 	 * shader store / `Tw2Effect` is a later refinement.
 	 */
-	var EveSpaceSceneAO = (_dec$4d = define("EveSpaceSceneAO"), _dec2$3Q = boolean, _dec3$3s = float, _dec4$2Z = float, _dec5$2y = float, _dec6$2e = float, _dec7$1Q = uint, _dec8$1E = uint, _dec$4d(_class$4d = (_class2$3P = class EveSpaceSceneAO extends Model$1 {
+	var EveSpaceSceneAO = (_dec$4d = define("EveSpaceSceneAO"), _dec2$3Q = boolean, _dec3$3s = float, _dec4$2Z = float, _dec5$2y = float, _dec6$2e = float, _dec7$1Q = uint$1, _dec8$1E = uint$1, _dec$4d(_class$4d = (_class2$3P = class EveSpaceSceneAO extends Model$1 {
 	  /**
 	   * @param {EveSpaceScene} [scene]
 	   * @param {Object} [config]
@@ -273349,7 +276755,7 @@
 	// family divides by them before sampling EveSceneFogVolumeMap, so leaving the
 	// declared register at zero makes the otherwise-neutral fog path produce NaNs.
 	var VOLUMETRIC_SLICES = new Float32Array([1000, 10000, 100000, 1000000]);
-	var EveSpaceScene = (_dec$4c = define("EveSpaceScene", true), _dec2$3P = struct("Tw2Effect"), _dec3$3r = list("EveObject"), _dec4$2Y = boolean, _dec5$2x = isPrivate, _dec6$2d = boolean, _dec7$1P = boolean, _dec8$1D = float, _dec9$1n = float, _dec0$1e = uint, _dec1$16 = uint, _dec10$W = boolean, _dec11$R = boolean, _dec12$J = boolean, _dec13$D = plain, _dec14$z = path, _dec15$v = isPrivate, _dec16$o = path, _dec17$k = isPrivate, _dec18$h = path, _dec19$g = isPrivate, _dec20$f = quaternion, _dec21$d = notImplemented, _dec22$c = list("Tr2ExternalParameter"), _dec23$9 = color$2, _dec24$9 = float, _dec25$8 = float, _dec26$8 = list("EveObject"), _dec27$7 = list("EveObject"), _dec28$6 = path, _dec29$4 = isPrivate, _dec30$3 = todo("Check case on this property"), _dec31$3 = struct(), _dec32$3 = color$2, _dec33$2 = vector3, _dec34$2 = boolean, _dec35$2 = vector3, _dec36$2 = isPrivate, _dec37$2 = list("EveLensflare"), _dec38$2 = list("EvePlanet"), _dec39$2 = list("Tr2PointLight", "Tr2SpotLight", "Tr2FactionLight"), _dec40$2 = color$2, _dec41$2 = notImplemented, _dec42$2 = struct("Tw2Effect"), _dec43$2 = color$2, _dec44$2 = noLongerSupported, _dec45$2 = float, _dec46$1 = noLongerSupported, _dec47 = float, _dec48 = noLongerSupported, _dec49 = float, _dec50 = noLongerSupported, _dec51 = float, _dec52 = float, _dec53 = notImplemented, _dec54 = path, _dec55 = isPrivate, _dec56 = notImplemented, _dec57 = path, _dec58 = isPrivate, _dec59 = float, _dec60 = notImplemented, _dec61 = boolean, _dec62 = notImplemented, _dec63 = float, _dec64 = todo("Identify ps/vs frame data"), _dec65 = notImplemented, _dec66 = float, _dec67 = todo("Identify ps/vs frame data"), _dec68 = notImplemented, _dec69 = struct("Tr2ShLightingManager"), _dec70 = notImplemented, _dec71 = struct("EveStarField"), _dec72 = notImplemented, _dec73 = color$2, _dec74 = notImplemented, _dec75 = boolean, _dec76 = uint, _dec77 = plain, _dec78 = boolean, _dec79 = boolean, _dec80 = struct("Tw2PostProcess2"), _dec81 = boolean, _dec82 = float, _dec83 = boolean, _dec84 = list("EveCurveLineSet"), _dec85 = plain, _dec86 = color$2, _dec87 = boolean, _dec88 = path, _dec89 = struct("EveSpaceSceneAO"), _dec90 = struct("EveSpaceSceneDepthHandler"), _dec91 = boolean, _dec92 = boolean, _dec93 = matrix4, _dec94 = matrix4, _dec95 = matrix4, _dec96 = vector4, _dec97 = struct("Tw2TextureRes"), _dec98 = float, _dec99 = float, _dec100 = float, _dec101 = float, _dec102 = float, _dec103 = float, _dec$4c(_class$4c = (_class2$3O = (_EveSpaceScene = class EveSpaceScene extends Model$1 {
+	var EveSpaceScene = (_dec$4c = define("EveSpaceScene", true), _dec2$3P = struct("Tw2Effect"), _dec3$3r = list("EveObject"), _dec4$2Y = boolean, _dec5$2x = isPrivate, _dec6$2d = boolean, _dec7$1P = boolean, _dec8$1D = float, _dec9$1n = float, _dec0$1e = uint$1, _dec1$16 = uint$1, _dec10$W = boolean, _dec11$R = boolean, _dec12$J = boolean, _dec13$D = plain, _dec14$z = path, _dec15$v = isPrivate, _dec16$o = path, _dec17$k = isPrivate, _dec18$h = path, _dec19$g = isPrivate, _dec20$f = quaternion, _dec21$d = notImplemented, _dec22$c = list("Tr2ExternalParameter"), _dec23$9 = color$2, _dec24$9 = float, _dec25$8 = float, _dec26$8 = list("EveObject"), _dec27$7 = list("EveObject"), _dec28$6 = path, _dec29$4 = isPrivate, _dec30$3 = todo("Check case on this property"), _dec31$3 = struct(), _dec32$3 = color$2, _dec33$2 = vector3, _dec34$2 = boolean, _dec35$2 = vector3, _dec36$2 = isPrivate, _dec37$2 = list("EveLensflare"), _dec38$2 = list("EvePlanet"), _dec39$2 = list("Tr2PointLight", "Tr2SpotLight", "Tr2FactionLight"), _dec40$2 = color$2, _dec41$2 = notImplemented, _dec42$2 = struct("Tw2Effect"), _dec43$2 = color$2, _dec44$2 = noLongerSupported, _dec45$2 = float, _dec46$1 = noLongerSupported, _dec47 = float, _dec48 = noLongerSupported, _dec49 = float, _dec50 = noLongerSupported, _dec51 = float, _dec52 = float, _dec53 = notImplemented, _dec54 = path, _dec55 = isPrivate, _dec56 = notImplemented, _dec57 = path, _dec58 = isPrivate, _dec59 = float, _dec60 = notImplemented, _dec61 = boolean, _dec62 = notImplemented, _dec63 = float, _dec64 = todo("Identify ps/vs frame data"), _dec65 = notImplemented, _dec66 = float, _dec67 = todo("Identify ps/vs frame data"), _dec68 = notImplemented, _dec69 = struct("Tr2ShLightingManager"), _dec70 = notImplemented, _dec71 = struct("EveStarField"), _dec72 = notImplemented, _dec73 = color$2, _dec74 = notImplemented, _dec75 = boolean, _dec76 = uint$1, _dec77 = plain, _dec78 = boolean, _dec79 = boolean, _dec80 = struct("Tw2PostProcess2"), _dec81 = boolean, _dec82 = float, _dec83 = boolean, _dec84 = list("EveCurveLineSet"), _dec85 = plain, _dec86 = color$2, _dec87 = boolean, _dec88 = path, _dec89 = struct("EveSpaceSceneAO"), _dec90 = struct("EveSpaceSceneDepthHandler"), _dec91 = boolean, _dec92 = boolean, _dec93 = matrix4, _dec94 = matrix4, _dec95 = matrix4, _dec96 = vector4, _dec97 = struct("Tw2TextureRes"), _dec98 = float, _dec99 = float, _dec100 = float, _dec101 = float, _dec102 = float, _dec103 = float, _dec$4c(_class$4c = (_class2$3O = (_EveSpaceScene = class EveSpaceScene extends Model$1 {
 	  get objectsByDistance() {
 	    var out = [],
 	      cameraWorldPosition = vec3$3.alloc(),
@@ -279006,7 +282412,7 @@
 	}), _class2$3K)) || _class$48) || _class$48);
 
 	var _dec$47, _dec2$3K, _dec3$3o, _dec4$2V, _dec5$2u, _dec6$2a, _dec7$1N, _dec8$1B, _dec9$1l, _dec0$1c, _dec1$14, _dec10$U, _dec11$P, _dec12$H, _dec13$B, _dec14$x, _dec15$t, _class$47, _class2$3J, _descriptor$3F, _descriptor2$3f, _descriptor3$2L, _descriptor4$2m, _descriptor5$23, _descriptor6$1D, _descriptor7$1l, _descriptor8$1b, _descriptor9$13, _descriptor0$$, _descriptor1$N, _descriptor10$H, _descriptor11$z, _descriptor12$w, _descriptor13$s, _descriptor14$o, _Tr2InteriorScene;
-	var Tr2InteriorScene = (_dec$47 = define("Tr2InteriorScene", true), _dec2$3K = path, _dec3$3o = boolean, _dec4$2V = list(["Tr2IntSkinnedObject", "Tr2InteriorPlaceable"]), _dec5$2u = list("Tr2InteriorLightSource"), _dec6$2a = list("Tw2CurveSet"), _dec7$1N = boolean, _dec8$1B = float, _dec9$1l = float, _dec0$1c = float, _dec1$14 = vector4, _dec10$U = vector4, _dec11$P = vector4, _dec12$H = vector3, _dec13$B = vector4, _dec14$x = uint, _dec15$t = uint, _dec$47(_class$47 = (_class2$3J = (_Tr2InteriorScene = class Tr2InteriorScene extends Model$1 {
+	var Tr2InteriorScene = (_dec$47 = define("Tr2InteriorScene", true), _dec2$3K = path, _dec3$3o = boolean, _dec4$2V = list(["Tr2IntSkinnedObject", "Tr2InteriorPlaceable"]), _dec5$2u = list("Tr2InteriorLightSource"), _dec6$2a = list("Tw2CurveSet"), _dec7$1N = boolean, _dec8$1B = float, _dec9$1l = float, _dec0$1c = float, _dec1$14 = vector4, _dec10$U = vector4, _dec11$P = vector4, _dec12$H = vector3, _dec13$B = vector4, _dec14$x = uint$1, _dec15$t = uint$1, _dec$47(_class$47 = (_class2$3J = (_Tr2InteriorScene = class Tr2InteriorScene extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "backgroundCubemapPath", _descriptor$3F, this);
@@ -281692,7 +285098,7 @@
 	}), _class2$3y)) || _class$3X);
 
 	var _dec$3W, _dec2$3y, _dec3$3f, _dec4$2M, _dec5$2n, _dec6$23, _dec7$1H, _class$3W, _class2$3x, _descriptor$3u, _descriptor2$36, _descriptor3$2D, _descriptor4$2f, _descriptor5$1Y;
-	var Tw2StaticEmitter = (_dec$3W = define("Tw2StaticEmitter", "Tr2StaticEmitter"), _dec2$3y = string, _dec3$3f = path, _dec4$2M = uint, _dec5$2n = struct("Tw2ParticleSystem"), _dec6$23 = struct("Tw2GeometryRes"), _dec7$1H = isPrivate, _dec$3W(_class$3W = (_class2$3x = class Tw2StaticEmitter extends Tw2ParticleEmitter {
+	var Tw2StaticEmitter = (_dec$3W = define("Tw2StaticEmitter", "Tr2StaticEmitter"), _dec2$3y = string, _dec3$3f = path, _dec4$2M = uint$1, _dec5$2n = struct("Tw2ParticleSystem"), _dec6$23 = struct("Tw2GeometryRes"), _dec7$1H = isPrivate, _dec$3W(_class$3W = (_class2$3x = class Tw2StaticEmitter extends Tw2ParticleEmitter {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$3u, this);
@@ -282793,7 +286199,7 @@
 	}), _class2$3j)) || _class$3I);
 
 	var _dec$3H, _dec2$3j, _dec3$34, _dec4$2E, _dec5$2h, _dec6$1$, _dec7$1F, _class$3H, _class2$3i, _descriptor$3h, _descriptor2$2Y, _descriptor3$2v, _descriptor4$29, _descriptor5$1U;
-	var Tw2RandomIntegerAttributeGenerator = (_dec$3H = define("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator"), _dec2$3j = string, _dec3$34 = uint, _dec4$2E = enums(Tw2ParticleElement.Type), _dec5$2h = vector4, _dec6$1$ = vector4, _dec7$1F = struct("Tw2ParticleElement"), _dec$3H(_class$3H = (_class2$3i = class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator {
+	var Tw2RandomIntegerAttributeGenerator = (_dec$3H = define("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator"), _dec2$3j = string, _dec3$34 = uint$1, _dec4$2E = enums(Tw2ParticleElement.Type), _dec5$2h = vector4, _dec6$1$ = vector4, _dec7$1F = struct("Tw2ParticleElement"), _dec$3H(_class$3H = (_class2$3i = class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "customName", _descriptor$3h, this);
@@ -282866,7 +286272,7 @@
 	}), _class2$3i)) || _class$3H);
 
 	var _dec$3G, _dec2$3i, _dec3$33, _dec4$2D, _dec5$2g, _dec6$1_, _dec7$1E, _class$3G, _class2$3h, _descriptor$3g, _descriptor2$2X, _descriptor3$2u, _descriptor4$28, _descriptor5$1T;
-	var Tw2RandomUniformAttributeGenerator = (_dec$3G = define("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator"), _dec2$3i = string, _dec3$33 = uint, _dec4$2D = enums(Tw2ParticleElement.Type), _dec5$2g = vector4, _dec6$1_ = vector4, _dec7$1E = struct("Tw2ParticleElement"), _dec$3G(_class$3G = (_class2$3h = class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGenerator {
+	var Tw2RandomUniformAttributeGenerator = (_dec$3G = define("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator"), _dec2$3i = string, _dec3$33 = uint$1, _dec4$2D = enums(Tw2ParticleElement.Type), _dec5$2g = vector4, _dec6$1_ = vector4, _dec7$1E = struct("Tw2ParticleElement"), _dec$3G(_class$3G = (_class2$3h = class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGenerator {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "customName", _descriptor$3g, this);
@@ -283164,7 +286570,7 @@
 	// One scratch buffer for the params hash: 33 floats, the EmitterParams fields
 	// in declaration order.
 	var HASH_FLOATS = new Float32Array(33);
-	var Tr2GpuSharedEmitter = (_dec$3E = define("Tr2GpuSharedEmitter", true), _dec2$3g = string, _dec3$31 = float, _dec4$2B = color$2, _dec5$2e = color$2, _dec6$1Y = color$2, _dec7$1C = color$2, _dec8$1t = float, _dec9$1f = boolean, _dec0$17 = vector3, _dec1$$ = float, _dec10$P = float, _dec11$K = float, _dec12$D = float, _dec13$x = float, _dec14$u = float, _dec15$q = float, _dec16$l = float, _dec17$h = float, _dec18$e = float, _dec19$e = float, _dec20$d = struct("Tr2GpuParticleSystem"), _dec21$b = vector3, _dec22$a = float, _dec23$8 = float, _dec24$8 = float, _dec25$7 = vector3, _dec26$7 = uint, _dec27$6 = float, _dec28$5 = uint, _dec29$3 = float, _dec$3E(_class$3E = (_class2$3f = (_Tr2GpuSharedEmitter = class Tr2GpuSharedEmitter extends Tw2ParticleEmitter {
+	var Tr2GpuSharedEmitter = (_dec$3E = define("Tr2GpuSharedEmitter", true), _dec2$3g = string, _dec3$31 = float, _dec4$2B = color$2, _dec5$2e = color$2, _dec6$1Y = color$2, _dec7$1C = color$2, _dec8$1t = float, _dec9$1f = boolean, _dec0$17 = vector3, _dec1$$ = float, _dec10$P = float, _dec11$K = float, _dec12$D = float, _dec13$x = float, _dec14$u = float, _dec15$q = float, _dec16$l = float, _dec17$h = float, _dec18$e = float, _dec19$e = float, _dec20$d = struct("Tr2GpuParticleSystem"), _dec21$b = vector3, _dec22$a = float, _dec23$8 = float, _dec24$8 = float, _dec25$7 = vector3, _dec26$7 = uint$1, _dec27$6 = float, _dec28$5 = uint$1, _dec29$3 = float, _dec$3E(_class$3E = (_class2$3f = (_Tr2GpuSharedEmitter = class Tr2GpuSharedEmitter extends Tw2ParticleEmitter {
 	  constructor() {
 	    super(...arguments);
 	    /**
@@ -284158,7 +287564,7 @@
 	 * `shaders/particleDraw`), which is commutative, so particle order cannot change
 	 * a pixel. A sort added here would cost a pass and change nothing.
 	 */
-	var Tr2GpuParticleSystem = (_dec$3C = define("Tr2GpuParticleSystem", true), _dec2$3e = struct("Tw2Effect"), _dec3$2$ = struct("Tw2Effect"), _dec4$2z = struct("Tw2Effect"), _dec5$2d = struct("Tw2Effect"), _dec6$1X = struct("Tw2Effect"), _dec7$1B = struct("Tw2Effect"), _dec8$1s = struct("Tw2Effect"), _dec9$1e = struct("Tw2Effect"), _dec0$16 = struct("Tw2Effect"), _dec1$_ = uint, _dec10$O = isPrivate, _dec11$J = boolean, _dec12$C = isPrivate, _dec13$w = boolean, _dec14$t = isPrivate, _dec15$p = boolean, _dec16$k = isPrivate, _dec17$g = boolean, _dec18$d = isPrivate, _dec19$d = boolean, _dec20$c = isPrivate, _dec21$a = uint, _dec$3C(_class$3C = (_class2$3d = class Tr2GpuParticleSystem extends Model$1 {
+	var Tr2GpuParticleSystem = (_dec$3C = define("Tr2GpuParticleSystem", true), _dec2$3e = struct("Tw2Effect"), _dec3$2$ = struct("Tw2Effect"), _dec4$2z = struct("Tw2Effect"), _dec5$2d = struct("Tw2Effect"), _dec6$1X = struct("Tw2Effect"), _dec7$1B = struct("Tw2Effect"), _dec8$1s = struct("Tw2Effect"), _dec9$1e = struct("Tw2Effect"), _dec0$16 = struct("Tw2Effect"), _dec1$_ = uint$1, _dec10$O = isPrivate, _dec11$J = boolean, _dec12$C = isPrivate, _dec13$w = boolean, _dec14$t = isPrivate, _dec15$p = boolean, _dec16$k = isPrivate, _dec17$g = boolean, _dec18$d = isPrivate, _dec19$d = boolean, _dec20$c = isPrivate, _dec21$a = uint$1, _dec$3C(_class$3C = (_class2$3d = class Tr2GpuParticleSystem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "clear", _descriptor$3c, this);
@@ -284498,7 +287904,7 @@
 	 * @property {WebGLBuffer} _vb                                  - Vertex buffer
 	 * @property {Array} _vertexStride                              - Vertex stride
 	 */
-	var Tw2ParticleSystem = (_dec$3B = define("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2$3d = string, _dec3$2_ = boolean, _dec4$2y = boolean, _dec5$2c = list("Tw2ParticleConstraint"), _dec6$1W = list("Tw2ParticleElementDeclaration"), _dec7$1A = struct("Tw2ParticleEmitter"), _dec8$1r = struct("Tw2ParticleEmitter"), _dec9$1d = list("Tw2ParticleForce"), _dec0$15 = uint, _dec1$Z = boolean, _dec10$N = boolean, _dec11$I = boolean, _dec12$B = notImplemented, _dec13$v = boolean, _dec14$s = todo("This is unused, remove it?"), _dec15$o = todo("This is unused, remove it?"), _dec$3B(_class$3B = (_class2$3c = (_Tw2ParticleSystem = class Tw2ParticleSystem extends Model$1 {
+	var Tw2ParticleSystem = (_dec$3B = define("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2$3d = string, _dec3$2_ = boolean, _dec4$2y = boolean, _dec5$2c = list("Tw2ParticleConstraint"), _dec6$1W = list("Tw2ParticleElementDeclaration"), _dec7$1A = struct("Tw2ParticleEmitter"), _dec8$1r = struct("Tw2ParticleEmitter"), _dec9$1d = list("Tw2ParticleForce"), _dec0$15 = uint$1, _dec1$Z = boolean, _dec10$N = boolean, _dec11$I = boolean, _dec12$B = notImplemented, _dec13$v = boolean, _dec14$s = todo("This is unused, remove it?"), _dec15$o = todo("This is unused, remove it?"), _dec$3B(_class$3B = (_class2$3c = (_Tw2ParticleSystem = class Tw2ParticleSystem extends Model$1 {
 	  /**
 	   * Constructor
 	   */
@@ -285738,7 +289144,7 @@
 	}), _class2$3a)) || _class$3z);
 
 	var _dec$3y, _dec2$3a, _dec3$2Y, _dec4$2w, _dec5$2a, _dec6$1U, _dec7$1y, _dec8$1p, _dec9$1b, _dec0$13, _dec1$X, _class$3y, _class2$39, _descriptor$38, _descriptor2$2Q, _descriptor3$2n, _descriptor4$22, _descriptor5$1N, _descriptor6$1r, _descriptor7$1b, _descriptor8$11, _descriptor9$W, _descriptor0$S;
-	var EveSOFDataPointLightAttachment = (_dec$3y = define("EveSOFDataPointLightAttachment", true), _dec2$3a = float, _dec3$2Y = float, _dec4$2w = path, _dec5$2a = float, _dec6$1U = float, _dec7$1y = uint, _dec8$1p = float, _dec9$1b = vector3, _dec0$13 = quaternion, _dec1$X = float, _dec$3y(_class$3y = (_class2$39 = class EveSOFDataPointLightAttachment extends Model$1 {
+	var EveSOFDataPointLightAttachment = (_dec$3y = define("EveSOFDataPointLightAttachment", true), _dec2$3a = float, _dec3$2Y = float, _dec4$2w = path, _dec5$2a = float, _dec6$1U = float, _dec7$1y = uint$1, _dec8$1p = float, _dec9$1b = vector3, _dec0$13 = quaternion, _dec1$X = float, _dec$3y(_class$3y = (_class2$39 = class EveSOFDataPointLightAttachment extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "intensity", _descriptor$38, this);
@@ -285988,7 +289394,7 @@
 	var EveSOFDataSpotlightAttachment = (_dec11$G = define("EveSOFDataSpotlightAttachment", true), _dec11$G(_class3$7 = class EveSOFDataSpotlightAttachment extends EveSOFDataSpotLightAttachment {}) || _class3$7);
 
 	var _dec$3w, _dec2$38, _dec3$2W, _dec4$2u, _dec5$28, _dec6$1S, _dec7$1w, _class$3w, _class2$37, _descriptor$36, _descriptor2$2O, _descriptor3$2l, _descriptor4$20, _descriptor5$1L, _descriptor6$1p;
-	var EveSOFDataAreaMaterial = (_dec$3w = define("EveSOFDataAreaMaterial", true), _dec2$38 = string, _dec3$2W = uint, _dec4$2u = string, _dec5$28 = string, _dec6$1S = string, _dec7$1w = string, _dec$3w(_class$3w = (_class2$37 = class EveSOFDataAreaMaterial extends Model$1 {
+	var EveSOFDataAreaMaterial = (_dec$3w = define("EveSOFDataAreaMaterial", true), _dec2$38 = string, _dec3$2W = uint$1, _dec4$2u = string, _dec5$28 = string, _dec6$1S = string, _dec7$1w = string, _dec$3w(_class$3w = (_class2$37 = class EveSOFDataAreaMaterial extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$36, this);
@@ -286347,7 +289753,7 @@
 	}), _applyDecoratedDescriptor(_class2$35.prototype, "noiseAmplitudeEnd", [_dec8$1m], Object.getOwnPropertyDescriptor(_class2$35.prototype, "noiseAmplitudeEnd"), _class2$35.prototype), _applyDecoratedDescriptor(_class2$35.prototype, "noiseAmplitudeStart", [_dec9$18], Object.getOwnPropertyDescriptor(_class2$35.prototype, "noiseAmplitudeStart"), _class2$35.prototype), _class2$35)) || _class$3u);
 
 	var _dec$3t, _dec2$35, _dec3$2T, _dec4$2r, _dec5$25, _dec6$1P, _dec7$1t, _dec8$1l, _dec9$17, _dec0$10, _dec1$U, _dec10$K, _dec11$F, _dec12$z, _dec13$t, _dec14$q, _dec15$m, _dec16$i, _dec17$e, _dec18$b, _dec19$b, _dec20$a, _dec21$8, _dec22$8, _dec23$6, _dec24$6, _dec25$5, _dec26$5, _dec27$4, _dec28$3, _class$3t, _class2$34, _descriptor$33, _descriptor2$2L, _descriptor3$2i, _descriptor4$1Z, _descriptor5$1I, _descriptor6$1m, _descriptor7$18, _descriptor8$_, _descriptor9$T, _descriptor0$P, _descriptor1$D, _descriptor10$z, _descriptor11$r, _descriptor12$p, _descriptor13$l, _descriptor14$i, _descriptor15$d, _descriptor16$a, _descriptor17$9, _descriptor18$9, _descriptor19$6, _descriptor20$6, _descriptor21$6, _descriptor22$5, _descriptor23$5, _descriptor24$4, _descriptor25$4, _descriptor26$3;
-	var EveSOFDataBooster = (_dec$3t = define("EveSOFDataBooster", true), _dec2$35 = vector4, _dec3$2T = color$2, _dec4$2r = float, _dec5$25 = path, _dec6$1P = path, _dec7$1t = color$2, _dec8$1l = float, _dec9$17 = float, _dec0$10 = color$2, _dec1$U = float, _dec10$K = float, _dec11$F = float, _dec12$z = float, _dec13$t = color$2, _dec14$q = float, _dec15$m = struct("EveSOFDataBoosterShape"), _dec16$i = struct("EveSOFDataBoosterShape"), _dec17$e = uint, _dec18$b = uint, _dec19$b = path, _dec20$a = uint, _dec21$8 = float, _dec22$8 = color$2, _dec23$6 = vector4, _dec24$6 = color$2, _dec25$5 = color$2, _dec26$5 = struct("EveSOFDataBoosterShape"), _dec27$4 = struct("EveSOFDataBoosterShape"), _dec28$3 = alias("warpHalpColor"), _dec$3t(_class$3t = (_class2$34 = class EveSOFDataBooster extends Model$1 {
+	var EveSOFDataBooster = (_dec$3t = define("EveSOFDataBooster", true), _dec2$35 = vector4, _dec3$2T = color$2, _dec4$2r = float, _dec5$25 = path, _dec6$1P = path, _dec7$1t = color$2, _dec8$1l = float, _dec9$17 = float, _dec0$10 = color$2, _dec1$U = float, _dec10$K = float, _dec11$F = float, _dec12$z = float, _dec13$t = color$2, _dec14$q = float, _dec15$m = struct("EveSOFDataBoosterShape"), _dec16$i = struct("EveSOFDataBoosterShape"), _dec17$e = uint$1, _dec18$b = uint$1, _dec19$b = path, _dec20$a = uint$1, _dec21$8 = float, _dec22$8 = color$2, _dec23$6 = vector4, _dec24$6 = color$2, _dec25$5 = color$2, _dec26$5 = struct("EveSOFDataBoosterShape"), _dec27$4 = struct("EveSOFDataBoosterShape"), _dec28$3 = alias("warpHalpColor"), _dec$3t(_class$3t = (_class2$34 = class EveSOFDataBooster extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "scale", _descriptor$33, this);
@@ -286748,7 +290154,7 @@
 	    return null;
 	  }
 	}), _class2$31)) || _class$3p);
-	var EveSOFDataInstancedMesh = (_dec3$2R = define("EveSOFDataInstancedMesh", true), _dec4$2p = string, _dec5$23 = uint, _dec6$1N = todo("Figure out constants"), _dec7$1s = path, _dec8$1k = list(EveSOFDataInstancedMeshInstanceReader), _dec9$16 = uint, _dec0$$ = string, _dec1$T = list("EveSOFDataTexture"), _dec3$2R(_class3$6 = (_class4$6 = class EveSOFDataInstancedMesh extends Model$1 {
+	var EveSOFDataInstancedMesh = (_dec3$2R = define("EveSOFDataInstancedMesh", true), _dec4$2p = string, _dec5$23 = uint$1, _dec6$1N = todo("Figure out constants"), _dec7$1s = path, _dec8$1k = list(EveSOFDataInstancedMeshInstanceReader), _dec9$16 = uint$1, _dec0$$ = string, _dec1$T = list("EveSOFDataTexture"), _dec3$2R(_class3$6 = (_class4$6 = class EveSOFDataInstancedMesh extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor2$2J, this);
@@ -287318,7 +290724,7 @@
 	}), _class2$2W)) || _class$3i);
 
 	var _dec$3h, _dec2$2W, _dec3$2K, _dec4$2l, _dec5$1$, _dec6$1K, _dec7$1p, _dec8$1i, _dec9$14, _dec0$Z, _dec1$R, _dec10$J, _dec11$E, _dec12$y, _dec13$s, _dec14$p, _dec15$l, _dec16$h, _dec17$d, _dec18$a, _dec19$a, _dec20$9, _class$3h, _class2$2V, _descriptor$2U, _descriptor2$2C, _descriptor3$2c, _descriptor4$1T, _descriptor5$1D, _descriptor6$1i, _descriptor7$15, _descriptor8$X, _descriptor9$R, _descriptor0$N, _descriptor1$C, _descriptor10$y, _descriptor11$q, _descriptor12$o, _descriptor13$k, _descriptor14$h, _descriptor15$c, _descriptor16$9;
-	var EveSOFDataFaction = (_dec$3h = define("EveSOFDataFaction", true), _dec2$2W = string, _dec3$2K = struct("EveSOFDataArea"), _dec4$2l = list("EveSOFDataFactionChild"), _dec5$1$ = desc("Deprecated?"), _dec6$1K = struct("EveSOFDataFactionColorSet"), _dec7$1p = struct("EveSOFDataPatternLayer"), _dec8$1i = string, _dec9$14 = string, _dec0$Z = string, _dec1$R = string, _dec10$J = struct("EveSOFDataLogoSet"), _dec11$E = uint, _dec12$y = uint, _dec13$s = uint, _dec14$p = uint, _dec15$l = list("EveSOFDataFactionPlaneSet"), _dec16$h = desc("Deprecated"), _dec17$d = string, _dec18$a = list("EveSOFDataFactionSpotlightSet"), _dec19$a = desc("Deprecated"), _dec20$9 = struct("EveSOFDataFactionVisibilityGroupSet"), _dec$3h(_class$3h = (_class2$2V = class EveSOFDataFaction extends Model$1 {
+	var EveSOFDataFaction = (_dec$3h = define("EveSOFDataFaction", true), _dec2$2W = string, _dec3$2K = struct("EveSOFDataArea"), _dec4$2l = list("EveSOFDataFactionChild"), _dec5$1$ = desc("Deprecated?"), _dec6$1K = struct("EveSOFDataFactionColorSet"), _dec7$1p = struct("EveSOFDataPatternLayer"), _dec8$1i = string, _dec9$14 = string, _dec0$Z = string, _dec1$R = string, _dec10$J = struct("EveSOFDataLogoSet"), _dec11$E = uint$1, _dec12$y = uint$1, _dec13$s = uint$1, _dec14$p = uint$1, _dec15$l = list("EveSOFDataFactionPlaneSet"), _dec16$h = desc("Deprecated"), _dec17$d = string, _dec18$a = list("EveSOFDataFactionSpotlightSet"), _dec19$a = desc("Deprecated"), _dec20$9 = struct("EveSOFDataFactionVisibilityGroupSet"), _dec$3h(_class$3h = (_class2$2V = class EveSOFDataFaction extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2U, this);
@@ -287846,7 +291252,7 @@
 	}), _class2$2R)) || _class$3d);
 
 	var _dec$3c, _dec2$2R, _dec3$2F, _dec4$2h, _dec5$1Z, _dec6$1I, _dec7$1o, _dec8$1h, _dec9$13, _dec0$Y, _dec1$Q, _dec10$I, _dec11$D, _dec12$x, _dec13$r, _dec14$o, _dec15$k, _dec16$g, _dec17$c, _dec18$9, _dec19$9, _dec20$8, _dec21$7, _dec22$7, _dec23$5, _dec24$5, _dec25$4, _dec26$4, _dec27$3, _class$3c, _class2$2Q, _descriptor$2P, _descriptor2$2x, _descriptor3$28, _descriptor4$1R, _descriptor5$1B, _descriptor6$1h, _descriptor7$14, _descriptor8$W, _descriptor9$Q, _descriptor0$M, _descriptor1$B, _descriptor10$x, _descriptor11$p, _descriptor12$n, _descriptor13$j, _descriptor14$g, _descriptor15$b, _descriptor16$8, _descriptor17$8, _descriptor18$8, _descriptor19$5, _descriptor20$5, _descriptor21$5, _descriptor22$4, _descriptor23$4, _descriptor24$3, _descriptor25$3, _descriptor26$2;
-	var EveSOFDataGeneric = (_dec$3c = define("EveSOFDataGeneric", true), _dec2$2R = path, _dec3$2F = list("EveSOFDataGenericShader"), _dec4$2h = rawObject("EveSOFDataGenericShader"), _dec5$1Z = struct("EveSOFDataGenericDamage"), _dec6$1I = path, _dec7$1o = float, _dec8$1h = float, _dec9$13 = float, _dec0$Y = float, _dec1$Q = float, _dec10$I = float, _dec11$D = float, _dec12$x = list("EveSOFDataGenericDecalShader"), _dec13$r = struct("EveSOFDataAreaMaterial"), _dec14$o = struct("EveSOFDataGenericHullDamage"), _dec15$k = list(), _dec16$g = list(), _dec17$c = list("EveSOFDataGenericString"), _dec18$9 = list("EveSOFDataGenericString"), _dec19$9 = path, _dec20$8 = path, _dec21$7 = path, _dec22$7 = string, _dec23$5 = string, _dec24$5 = uint, _dec25$4 = struct("EveSOFDataGenericSwarm"), _dec26$4 = list("EveSOFDataGenericVariant"), _dec27$3 = list("EveSOFDataVisibilityGroup"), _dec$3c(_class$3c = (_class2$2Q = class EveSOFDataGeneric extends Model$1 {
+	var EveSOFDataGeneric = (_dec$3c = define("EveSOFDataGeneric", true), _dec2$2R = path, _dec3$2F = list("EveSOFDataGenericShader"), _dec4$2h = rawObject("EveSOFDataGenericShader"), _dec5$1Z = struct("EveSOFDataGenericDamage"), _dec6$1I = path, _dec7$1o = float, _dec8$1h = float, _dec9$13 = float, _dec0$Y = float, _dec1$Q = float, _dec10$I = float, _dec11$D = float, _dec12$x = list("EveSOFDataGenericDecalShader"), _dec13$r = struct("EveSOFDataAreaMaterial"), _dec14$o = struct("EveSOFDataGenericHullDamage"), _dec15$k = list(), _dec16$g = list(), _dec17$c = list("EveSOFDataGenericString"), _dec18$9 = list("EveSOFDataGenericString"), _dec19$9 = path, _dec20$8 = path, _dec21$7 = path, _dec22$7 = string, _dec23$5 = string, _dec24$5 = uint$1, _dec25$4 = struct("EveSOFDataGenericSwarm"), _dec26$4 = list("EveSOFDataGenericVariant"), _dec27$3 = list("EveSOFDataVisibilityGroup"), _dec$3c(_class$3c = (_class2$2Q = class EveSOFDataGeneric extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "areaShaderLocation", _descriptor$2P, this);
@@ -288343,7 +291749,7 @@
 	}
 
 	var _dec$3b, _dec2$2Q, _dec3$2E, _dec4$2g, _dec5$1Y, _dec6$1H, _dec7$1n, _dec8$1g, _dec9$12, _dec0$X, _dec1$P, _dec10$H, _dec11$C, _dec12$w, _dec13$q, _dec14$n, _dec15$j, _dec16$f, _dec17$b, _dec18$8, _dec19$8, _dec20$7, _dec21$6, _dec22$6, _class$3b, _class2$2P, _descriptor$2O, _descriptor2$2w, _descriptor3$27, _descriptor4$1Q, _descriptor5$1A, _descriptor6$1g, _descriptor7$13, _descriptor8$V, _descriptor9$P, _descriptor0$L, _descriptor1$A, _descriptor10$w, _descriptor11$o, _descriptor12$m, _descriptor13$i, _descriptor14$f, _descriptor15$a, _descriptor16$7, _descriptor17$7, _descriptor18$7, _descriptor19$4, _descriptor20$4, _descriptor21$4;
-	var EveSOFDataGenericDamage = (_dec$3b = define("EveSOFDataGenericDamage", true), _dec2$2Q = float, _dec3$2E = color$2, _dec4$2g = color$2, _dec5$1Y = color$2, _dec6$1H = color$2, _dec7$1n = float, _dec8$1g = float, _dec9$12 = vector2, _dec0$X = vector2, _dec1$P = float, _dec10$H = vector4, _dec11$C = uint, _dec12$w = float, _dec13$q = uint, _dec14$n = float, _dec15$j = string, _dec16$f = float, _dec17$b = float, _dec18$8 = uint, _dec19$8 = float, _dec20$7 = path, _dec21$6 = string, _dec22$6 = string, _dec$3b(_class$3b = (_class2$2P = class EveSOFDataGenericDamage extends Model$1 {
+	var EveSOFDataGenericDamage = (_dec$3b = define("EveSOFDataGenericDamage", true), _dec2$2Q = float, _dec3$2E = color$2, _dec4$2g = color$2, _dec5$1Y = color$2, _dec6$1H = color$2, _dec7$1n = float, _dec8$1g = float, _dec9$12 = vector2, _dec0$X = vector2, _dec1$P = float, _dec10$H = vector4, _dec11$C = uint$1, _dec12$w = float, _dec13$q = uint$1, _dec14$n = float, _dec15$j = string, _dec16$f = float, _dec17$b = float, _dec18$8 = uint$1, _dec19$8 = float, _dec20$7 = path, _dec21$6 = string, _dec22$6 = string, _dec$3b(_class$3b = (_class2$2P = class EveSOFDataGenericDamage extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "armorParticleAngle", _descriptor$2O, this);
@@ -288661,7 +292067,7 @@
 	}), _class2$2O)) || _class$3a);
 
 	var _dec$39, _dec2$2O, _dec3$2C, _class$39, _class2$2N, _descriptor$2M, _descriptor2$2u;
-	var EveSOFDataGenericHullCategory = (_dec$39 = define("EveSOFDataGenericHullCategory", true), _dec2$2O = string, _dec3$2C = uint, _dec$39(_class$39 = (_class2$2N = class EveSOFDataGenericHullCategory extends Model$1 {
+	var EveSOFDataGenericHullCategory = (_dec$39 = define("EveSOFDataGenericHullCategory", true), _dec2$2O = string, _dec3$2C = uint$1, _dec$39(_class$39 = (_class2$2N = class EveSOFDataGenericHullCategory extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2M, this);
@@ -288684,7 +292090,7 @@
 	}), _class2$2N)) || _class$39);
 
 	var _dec$38, _dec2$2N, _dec3$2B, _dec4$2e, _dec5$1W, _dec6$1F, _dec7$1m, _dec8$1f, _dec9$11, _dec0$W, _dec1$O, _dec10$G, _dec11$B, _dec12$v, _dec13$p, _dec14$m, _dec15$i, _class$38, _class2$2M, _descriptor$2L, _descriptor2$2t, _descriptor3$25, _descriptor4$1O, _descriptor5$1y, _descriptor6$1f, _descriptor7$12, _descriptor8$U, _descriptor9$O, _descriptor0$K, _descriptor1$z, _descriptor10$v, _descriptor11$n, _descriptor12$l, _descriptor13$h, _descriptor14$e;
-	var EveSOFDataGenericHullDamage = (_dec$38 = define("EveSOFDataGenericHullDamage", true), _dec2$2N = float, _dec3$2B = color$2, _dec4$2e = color$2, _dec5$1W = color$2, _dec6$1F = color$2, _dec7$1m = float, _dec8$1f = float, _dec9$11 = float, _dec0$W = vector2, _dec1$O = vector2, _dec10$G = float, _dec11$B = vector4, _dec12$v = uint, _dec13$p = float, _dec14$m = uint, _dec15$i = float, _dec$38(_class$38 = (_class2$2M = class EveSOFDataGenericHullDamage extends Model$1 {
+	var EveSOFDataGenericHullDamage = (_dec$38 = define("EveSOFDataGenericHullDamage", true), _dec2$2N = float, _dec3$2B = color$2, _dec4$2e = color$2, _dec5$1W = color$2, _dec6$1F = color$2, _dec7$1m = float, _dec8$1f = float, _dec9$11 = float, _dec0$W = vector2, _dec1$O = vector2, _dec10$G = float, _dec11$B = vector4, _dec12$v = uint$1, _dec13$p = float, _dec14$m = uint$1, _dec15$i = float, _dec$38(_class$38 = (_class2$2M = class EveSOFDataGenericHullDamage extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "hullParticleAngle", _descriptor$2L, this);
@@ -289242,7 +292648,7 @@
 	}), _class2$2H)) || _class$33);
 
 	var _dec$32, _dec2$2H, _dec3$2w, _dec4$2a, _dec5$1T, _dec6$1C, _dec7$1j, _dec8$1c, _dec9$_, _dec0$U, _dec1$M, _dec10$E, _dec11$z, _dec12$t, _dec13$n, _dec14$k, _dec15$g, _dec16$d, _dec17$9, _dec18$6, _dec19$6, _dec20$5, _dec21$4, _dec22$4, _dec23$3, _dec24$3, _dec25$3, _dec26$3, _dec27$2, _dec28$2, _dec29$1, _dec30$1, _dec31$1, _dec32$1, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _class$32, _class2$2G, _descriptor$2F, _descriptor2$2o, _descriptor3$21, _descriptor4$1L, _descriptor5$1v, _descriptor6$1c, _descriptor7$10, _descriptor8$S, _descriptor9$M, _descriptor0$I, _descriptor1$x, _descriptor10$t, _descriptor11$l, _descriptor12$j, _descriptor13$f, _descriptor14$c, _descriptor15$8, _descriptor16$5, _descriptor17$5, _descriptor18$5, _descriptor19$2, _descriptor20$2, _descriptor21$2, _descriptor22$2, _descriptor23$2, _descriptor24$2, _descriptor25$2, _descriptor26$1, _descriptor27$1, _descriptor28$1, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _descriptor41, _descriptor42;
-	var EveSOFDataHull = (_dec$32 = define("EveSOFDataHull", true), _dec2$2H = string, _dec3$2w = list("EveSOFDataHullArea"), _dec4$2a = list("EveSOFDataHullAnimation"), _dec5$1T = vector3, _dec6$1C = list("EveSOFDataHullBanner"), _dec7$1j = desc("Deprecated"), _dec8$1c = list("EveSOFDataHullBannerSet"), _dec9$_ = struct("EveSOFDataHullBooster"), _dec0$U = vector4, _dec1$M = uint, _dec10$E = int32$1, _dec11$z = boolean, _dec12$t = string, _dec13$n = list("EveSOFDataHullChild"), _dec14$k = desc("Deprecated"), _dec15$g = list(), _dec16$d = list("EveSOFDataHullController"), _dec17$9 = list("EveSOFDataHullArea"), _dec18$6 = list("EveSOFDataHullDecalSet"), _dec19$6 = struct("EveSOFDataPatternPerHull"), _dec20$5 = list("EveSOFDataHullArea"), _dec21$4 = string, _dec22$4 = list("EveSOFDataHullArea"), _dec23$3 = boolean, _dec24$3 = path, _dec25$3 = list("EveSOFDataHullHazeSet"), _dec26$3 = list("EveSOFDataHullDecalSet"), _dec27$2 = uint, _dec28$2 = list("EveSOFDataInstancedMesh"), _dec29$1 = boolean, _dec30$1 = list("EveSOFDataHullLightSet"), _dec31$1 = list(), _dec32$1 = list("EveSOFDataHullLocator"), _dec33 = path, _dec34 = path, _dec35 = list("EveSOFDataHullArea"), _dec36 = list("EveSOFDataHullPlaneSet"), _dec37 = vector3, _dec38 = vector3, _dec39 = boolean, _dec40 = list("EveSOFDataHullSoundEmitter"), _dec41 = list("EveSOFDataHullSpotlightSet"), _dec42 = list("EveSOFDataHullSpriteLineSet"), _dec43 = list("EveSOFDataHullSpriteSet"), _dec44 = list("EveSOFDataHullArea"), _dec45 = string, _dec$32(_class$32 = (_class2$2G = class EveSOFDataHull extends Model$1 {
+	var EveSOFDataHull = (_dec$32 = define("EveSOFDataHull", true), _dec2$2H = string, _dec3$2w = list("EveSOFDataHullArea"), _dec4$2a = list("EveSOFDataHullAnimation"), _dec5$1T = vector3, _dec6$1C = list("EveSOFDataHullBanner"), _dec7$1j = desc("Deprecated"), _dec8$1c = list("EveSOFDataHullBannerSet"), _dec9$_ = struct("EveSOFDataHullBooster"), _dec0$U = vector4, _dec1$M = uint$1, _dec10$E = int32$1, _dec11$z = boolean, _dec12$t = string, _dec13$n = list("EveSOFDataHullChild"), _dec14$k = desc("Deprecated"), _dec15$g = list(), _dec16$d = list("EveSOFDataHullController"), _dec17$9 = list("EveSOFDataHullArea"), _dec18$6 = list("EveSOFDataHullDecalSet"), _dec19$6 = struct("EveSOFDataPatternPerHull"), _dec20$5 = list("EveSOFDataHullArea"), _dec21$4 = string, _dec22$4 = list("EveSOFDataHullArea"), _dec23$3 = boolean, _dec24$3 = path, _dec25$3 = list("EveSOFDataHullHazeSet"), _dec26$3 = list("EveSOFDataHullDecalSet"), _dec27$2 = uint$1, _dec28$2 = list("EveSOFDataInstancedMesh"), _dec29$1 = boolean, _dec30$1 = list("EveSOFDataHullLightSet"), _dec31$1 = list(), _dec32$1 = list("EveSOFDataHullLocator"), _dec33 = path, _dec34 = path, _dec35 = list("EveSOFDataHullArea"), _dec36 = list("EveSOFDataHullPlaneSet"), _dec37 = vector3, _dec38 = vector3, _dec39 = boolean, _dec40 = list("EveSOFDataHullSoundEmitter"), _dec41 = list("EveSOFDataHullSpotlightSet"), _dec42 = list("EveSOFDataHullSpriteLineSet"), _dec43 = list("EveSOFDataHullSpriteSet"), _dec44 = list("EveSOFDataHullArea"), _dec45 = string, _dec$32(_class$32 = (_class2$2G = class EveSOFDataHull extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2F, this);
@@ -289718,7 +293124,7 @@
 	}), _class2$2F)) || _class$31);
 
 	var _dec$30, _dec2$2F, _dec3$2u, _dec4$28, _dec5$1R, _dec6$1A, _dec7$1h, _dec8$1a, _dec9$Y, _dec0$S, _class$30, _class2$2E, _descriptor$2D, _descriptor2$2m, _descriptor3$1$, _descriptor4$1J, _descriptor5$1t, _descriptor6$1a, _descriptor7$_, _descriptor8$Q;
-	var EveSOFDataHullArea = (_dec$30 = define("EveSOFDataHullArea", true), _dec2$2F = string, _dec3$2u = uint, _dec4$28 = uint, _dec5$1R = todo("Figure out what this is for"), _dec6$1A = uint, _dec7$1h = uint, _dec8$1a = list("EveSOFDataParameter"), _dec9$Y = string, _dec0$S = list("EveSOFDataTexture"), _dec$30(_class$30 = (_class2$2E = class EveSOFDataHullArea extends Model$1 {
+	var EveSOFDataHullArea = (_dec$30 = define("EveSOFDataHullArea", true), _dec2$2F = string, _dec3$2u = uint$1, _dec4$28 = uint$1, _dec5$1R = todo("Figure out what this is for"), _dec6$1A = uint$1, _dec7$1h = uint$1, _dec8$1a = list("EveSOFDataParameter"), _dec9$Y = string, _dec0$S = list("EveSOFDataTexture"), _dec$30(_class$30 = (_class2$2E = class EveSOFDataHullArea extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2D, this);
@@ -289889,7 +293295,7 @@
 	}), _class2$2D)) || _class$2$);
 
 	var _dec$2_, _dec2$2D, _dec3$2s, _dec4$26, _dec5$1P, _dec6$1y, _dec7$1f, _dec8$18, _dec9$X, _dec0$R, _dec1$K, _dec10$C, _dec11$x, _class$2_, _class2$2C, _descriptor$2B, _descriptor2$2k, _descriptor3$1Z, _descriptor4$1H, _descriptor5$1r, _descriptor6$18, _descriptor7$Y, _descriptor8$P, _descriptor9$K, _descriptor0$G, _descriptor1$v, _descriptor10$r;
-	var EveSOFDataHullBanner = (_dec$2_ = define("EveSOFDataHullBanner", true), _dec2$2D = string, _dec3$2s = float, _dec4$26 = float, _dec5$1P = float, _dec6$1y = int32$1, _dec7$1f = struct("EveSOFDataHullBannerLight"), _dec8$18 = boolean, _dec9$X = vector3, _dec0$R = quaternion, _dec1$K = vector3, _dec10$C = uint, _dec11$x = string, _dec$2_(_class$2_ = (_class2$2C = class EveSOFDataHullBanner extends Model$1 {
+	var EveSOFDataHullBanner = (_dec$2_ = define("EveSOFDataHullBanner", true), _dec2$2D = string, _dec3$2s = float, _dec4$26 = float, _dec5$1P = float, _dec6$1y = int32$1, _dec7$1f = struct("EveSOFDataHullBannerLight"), _dec8$18 = boolean, _dec9$X = vector3, _dec0$R = quaternion, _dec1$K = vector3, _dec10$C = uint$1, _dec11$x = string, _dec$2_(_class$2_ = (_class2$2C = class EveSOFDataHullBanner extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2B, this);
@@ -290167,7 +293573,7 @@
 	}), _class2$2z)) || _class$2X);
 
 	var _dec$2W, _dec2$2z, _dec3$2o, _dec4$22, _dec5$1N, _dec6$1w, _dec7$1d, _dec8$16, _class$2W, _class2$2y, _descriptor$2x, _descriptor2$2g, _descriptor3$1V, _descriptor4$1F, _descriptor5$1p, _descriptor6$16;
-	var EveSOFDataHullBoosterItem = (_dec$2W = define("EveSOFDataHullBoosterItem", true), _dec2$2z = uint, _dec3$2o = uint, _dec4$22 = vector4, _dec5$1N = boolean, _dec6$1w = float, _dec7$1d = todo("What should the default value be?"), _dec8$16 = matrix4, _dec$2W(_class$2W = (_class2$2y = class EveSOFDataHullBoosterItem extends Model$1 {
+	var EveSOFDataHullBoosterItem = (_dec$2W = define("EveSOFDataHullBoosterItem", true), _dec2$2z = uint$1, _dec3$2o = uint$1, _dec4$22 = vector4, _dec5$1N = boolean, _dec6$1w = float, _dec7$1d = todo("What should the default value be?"), _dec8$16 = matrix4, _dec$2W(_class$2W = (_class2$2y = class EveSOFDataHullBoosterItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "atlasIndex0", _descriptor$2x, this);
@@ -290222,7 +293628,7 @@
 	}), _class2$2y)) || _class$2W);
 
 	var _dec$2V, _dec2$2y, _dec3$2n, _dec4$21, _dec5$1M, _dec6$1v, _dec7$1c, _dec8$15, _dec9$V, _dec0$P, _dec1$I, _class$2V, _class2$2x, _descriptor$2w, _descriptor2$2f, _descriptor3$1U, _descriptor4$1E, _descriptor5$1o, _descriptor6$15, _descriptor7$W, _descriptor8$N, _descriptor9$I, _descriptor0$E;
-	var EveSOFDataHullChild = (_dec$2V = define("EveSOFDataHullChild", true), _dec2$2y = string, _dec3$2n = int32$1, _dec4$21 = int32$1, _dec5$1M = int32$1, _dec6$1v = uint, _dec7$1c = path, _dec8$15 = quaternion, _dec9$V = vector3, _dec0$P = vector3, _dec1$I = string, _dec$2V(_class$2V = (_class2$2x = class EveSOFDataHullChild extends Model$1 {
+	var EveSOFDataHullChild = (_dec$2V = define("EveSOFDataHullChild", true), _dec2$2y = string, _dec3$2n = int32$1, _dec4$21 = int32$1, _dec5$1M = int32$1, _dec6$1v = uint$1, _dec7$1c = path, _dec8$15 = quaternion, _dec9$V = vector3, _dec0$P = vector3, _dec1$I = string, _dec$2V(_class$2V = (_class2$2x = class EveSOFDataHullChild extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2w, this);
@@ -290473,7 +293879,7 @@
 	  GLOW: 5,
 	  LOGO: 6
 	};
-	var EveSOFDataHullDecalSetItem = (_dec$2Q = define("EveSOFDataHullDecalSetItem", true), _dec2$2t = string, _dec3$2i = int32$1, _dec4$1Z = list(), _dec5$1K = list("EveSOFDataMultiHullDecalIndexBuffers"), _dec6$1t = uint, _dec7$1a = uint, _dec8$13 = uint, _dec9$U = list("EveSOFDataParameter"), _dec0$O = vector3, _dec1$H = quaternion, _dec10$B = vector3, _dec11$w = list("EveSOFDataTexture"), _dec12$s = uint, _dec13$m = string, _dec14$j = uint16Array, _dec$2Q(_class$2Q = (_class2$2s = (_EveSOFDataHullDecalSetItem = class EveSOFDataHullDecalSetItem extends Model$1 {
+	var EveSOFDataHullDecalSetItem = (_dec$2Q = define("EveSOFDataHullDecalSetItem", true), _dec2$2t = string, _dec3$2i = int32$1, _dec4$1Z = list(), _dec5$1K = list("EveSOFDataMultiHullDecalIndexBuffers"), _dec6$1t = uint$1, _dec7$1a = uint$1, _dec8$13 = uint$1, _dec9$U = list("EveSOFDataParameter"), _dec0$O = vector3, _dec1$H = quaternion, _dec10$B = vector3, _dec11$w = list("EveSOFDataTexture"), _dec12$s = uint$1, _dec13$m = string, _dec14$j = uint16Array, _dec$2Q(_class$2Q = (_class2$2s = (_EveSOFDataHullDecalSetItem = class EveSOFDataHullDecalSetItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2r, this);
@@ -290867,7 +294273,7 @@
 	}
 
 	var _dec$2P, _dec2$2s, _dec3$2h, _dec4$1Y, _dec5$1J, _dec6$1s, _class$2P, _class2$2r, _descriptor$2q, _descriptor2$29, _descriptor3$1P, _descriptor4$1B, _descriptor5$1l;
-	var EveSOFDataHullHazeSet = (_dec$2P = define("EveSOFDataHullHazeSet", true), _dec2$2s = string, _dec3$2h = list("EveSOFDataHullHazeSetItem"), _dec4$1Y = uint, _dec5$1J = string, _dec6$1s = boolean, _dec$2P(_class$2P = (_class2$2r = class EveSOFDataHullHazeSet extends Model$1 {
+	var EveSOFDataHullHazeSet = (_dec$2P = define("EveSOFDataHullHazeSet", true), _dec2$2s = string, _dec3$2h = list("EveSOFDataHullHazeSetItem"), _dec4$1Y = uint$1, _dec5$1J = string, _dec6$1s = boolean, _dec$2P(_class$2P = (_class2$2r = class EveSOFDataHullHazeSet extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2q, this);
@@ -290914,7 +294320,7 @@
 	}), _class2$2r)) || _class$2P);
 
 	var _dec$2O, _dec2$2r, _dec3$2g, _dec4$1X, _dec5$1I, _dec6$1r, _dec7$19, _dec8$12, _dec9$T, _dec0$N, _dec1$G, _dec10$A, _dec11$v, _class$2O, _class2$2q, _descriptor$2p, _descriptor2$28, _descriptor3$1O, _descriptor4$1A, _descriptor5$1k, _descriptor6$12, _descriptor7$T, _descriptor8$L, _descriptor9$G, _descriptor0$C, _descriptor1$t, _descriptor10$p;
-	var EveSOFDataHullHazeSetItem = (_dec$2O = define("EveSOFDataHullHazeSetItem", true), _dec2$2r = int32$1, _dec3$2g = boolean, _dec4$1X = uint, _dec5$1I = float, _dec6$1r = float, _dec7$19 = list("EveSOFDataPointLightAttachment"), _dec8$12 = vector3, _dec9$T = quaternion, _dec0$N = float, _dec1$G = vector3, _dec10$A = float, _dec11$v = float, _dec$2O(_class$2O = (_class2$2q = class EveSOFDataHullHazeSetItem extends Model$1 {
+	var EveSOFDataHullHazeSetItem = (_dec$2O = define("EveSOFDataHullHazeSetItem", true), _dec2$2r = int32$1, _dec3$2g = boolean, _dec4$1X = uint$1, _dec5$1I = float, _dec6$1r = float, _dec7$19 = list("EveSOFDataPointLightAttachment"), _dec8$12 = vector3, _dec9$T = quaternion, _dec0$N = float, _dec1$G = vector3, _dec10$A = float, _dec11$v = float, _dec$2O(_class$2O = (_class2$2q = class EveSOFDataHullHazeSetItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "boneIndex", _descriptor$2p, this);
@@ -291166,7 +294572,7 @@
 	}), _class2$2o)) || _class$2M);
 
 	var _dec$2L, _dec2$2o, _dec3$2d, _dec4$1U, _dec5$1F, _dec6$1o, _dec7$16, _dec8$10, _dec9$R, _dec0$L, _dec1$E, _dec10$z, _dec11$u, _dec12$r, _class$2L, _class2$2n, _descriptor$2m, _descriptor2$25, _descriptor3$1L, _descriptor4$1x, _descriptor5$1h, _descriptor6$$, _descriptor7$R, _descriptor8$J, _descriptor9$E, _descriptor0$A, _descriptor1$s, _descriptor10$o, _descriptor11$j;
-	var EveSOFDataHullLightSetSpotLight = (_dec$2L = define("EveSOFDataHullLightSetSpotLight", true), _dec2$2o = string, _dec3$2d = int32$1, _dec4$1U = float, _dec5$1F = float, _dec6$1o = float, _dec7$16 = color$2, _dec8$10 = float, _dec9$R = float, _dec0$L = float, _dec1$E = float, _dec10$z = vector3, _dec11$u = uint, _dec12$r = quaternion, _dec$2L(_class$2L = (_class2$2n = class EveSOFDataHullLightSetSpotLight extends Model$1 {
+	var EveSOFDataHullLightSetSpotLight = (_dec$2L = define("EveSOFDataHullLightSetSpotLight", true), _dec2$2o = string, _dec3$2d = int32$1, _dec4$1U = float, _dec5$1F = float, _dec6$1o = float, _dec7$16 = color$2, _dec8$10 = float, _dec9$R = float, _dec0$L = float, _dec1$E = float, _dec10$z = vector3, _dec11$u = uint$1, _dec12$r = quaternion, _dec$2L(_class$2L = (_class2$2n = class EveSOFDataHullLightSetSpotLight extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2m, this);
@@ -291409,7 +294815,7 @@
 	}), _class2$2j)) || _class$2H);
 
 	var _dec$2G, _dec2$2j, _dec3$28, _dec4$1S, _dec5$1D, _dec6$1m, _dec7$14, _dec8$_, _dec9$Q, _dec0$K, _dec1$D, _class$2G, _class2$2i, _descriptor$2h, _descriptor2$20, _descriptor3$1J, _descriptor4$1v, _descriptor5$1f, _descriptor6$Z, _descriptor7$P, _descriptor8$I, _descriptor9$D, _descriptor0$z, _EveSOFDataHullPlaneSet;
-	var EveSOFDataHullPlaneSet = (_dec$2G = define("EveSOFDataHullPlaneSet", true), _dec2$2j = string, _dec3$28 = uint, _dec4$1S = vector2, _dec5$1D = list("EveSOFDataHullPlaneSetItem"), _dec6$1m = path, _dec7$14 = path, _dec8$_ = path, _dec9$Q = boolean, _dec0$K = uint, _dec1$D = string, _dec$2G(_class$2G = (_class2$2i = (_EveSOFDataHullPlaneSet = class EveSOFDataHullPlaneSet extends Model$1 {
+	var EveSOFDataHullPlaneSet = (_dec$2G = define("EveSOFDataHullPlaneSet", true), _dec2$2j = string, _dec3$28 = uint$1, _dec4$1S = vector2, _dec5$1D = list("EveSOFDataHullPlaneSetItem"), _dec6$1m = path, _dec7$14 = path, _dec8$_ = path, _dec9$Q = boolean, _dec0$K = uint$1, _dec1$D = string, _dec$2G(_class$2G = (_class2$2i = (_EveSOFDataHullPlaneSet = class EveSOFDataHullPlaneSet extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$2h, this);
@@ -291514,7 +294920,7 @@
 	}), _class2$2i)) || _class$2G);
 
 	var _dec$2F, _dec2$2i, _dec3$27, _dec4$1R, _dec5$1C, _dec6$1l, _dec7$13, _dec8$Z, _dec9$P, _dec0$J, _dec1$C, _dec10$y, _dec11$t, _dec12$q, _dec13$l, _dec14$i, _dec15$f, _dec16$c, _dec17$8, _dec18$5, _dec19$5, _dec20$4, _class$2F, _class2$2h, _descriptor$2g, _descriptor2$1$, _descriptor3$1I, _descriptor4$1u, _descriptor5$1e, _descriptor6$Y, _descriptor7$O, _descriptor8$H, _descriptor9$C, _descriptor0$y, _descriptor1$r, _descriptor10$n, _descriptor11$i, _descriptor12$h, _descriptor13$d, _descriptor14$b, _descriptor15$7, _descriptor16$4, _descriptor17$4, _descriptor18$4;
-	var EveSOFDataHullPlaneSetItem = (_dec$2F = define("EveSOFDataHullPlaneSetItem", true), _dec2$2i = float, _dec3$27 = float, _dec4$1R = alias("phase"), _dec5$1C = uint, _dec6$1l = int32$1, _dec7$13 = color$2, _dec8$Z = uint, _dec9$P = float, _dec0$J = int32$1, _dec1$C = float, _dec10$y = vector4, _dec11$t = vector4, _dec12$q = vector4, _dec13$l = vector4, _dec14$i = list("EveSOFDataPointLightAttachment"), _dec15$f = uint, _dec16$c = vector3, _dec17$8 = float, _dec18$5 = quaternion, _dec19$5 = float, _dec20$4 = vector3, _dec$2F(_class$2F = (_class2$2h = class EveSOFDataHullPlaneSetItem extends Model$1 {
+	var EveSOFDataHullPlaneSetItem = (_dec$2F = define("EveSOFDataHullPlaneSetItem", true), _dec2$2i = float, _dec3$27 = float, _dec4$1R = alias("phase"), _dec5$1C = uint$1, _dec6$1l = int32$1, _dec7$13 = color$2, _dec8$Z = uint$1, _dec9$P = float, _dec0$J = int32$1, _dec1$C = float, _dec10$y = vector4, _dec11$t = vector4, _dec12$q = vector4, _dec13$l = vector4, _dec14$i = list("EveSOFDataPointLightAttachment"), _dec15$f = uint$1, _dec16$c = vector3, _dec17$8 = float, _dec18$5 = quaternion, _dec19$5 = float, _dec20$4 = vector3, _dec$2F(_class$2F = (_class2$2h = class EveSOFDataHullPlaneSetItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "blinkRate", _descriptor$2g, this);
@@ -291806,7 +295212,7 @@
 	}), _class2$2f)) || _class$2D);
 
 	var _dec$2C, _dec2$2f, _dec3$24, _dec4$1O, _dec5$1z, _dec6$1i, _dec7$11, _dec8$X, _dec9$O, _dec0$I, _dec1$B, _dec10$x, _class$2C, _class2$2e, _descriptor$2d, _descriptor2$1Y, _descriptor3$1F, _descriptor4$1r, _descriptor5$1b, _descriptor6$W, _descriptor7$M, _descriptor8$G, _descriptor9$B, _descriptor0$x, _descriptor1$q;
-	var EveSOFDataHullSpotlightSetItem = (_dec$2C = define("EveSOFDataHullSpotlightSetItem", true), _dec2$2f = int32$1, _dec3$24 = boolean, _dec4$1O = uint, _dec5$1z = float, _dec6$1i = float, _dec7$11 = int32$1, _dec8$X = struct("EveSOFDataSpotLightAttachment"), _dec9$O = float, _dec0$I = float, _dec1$B = vector3, _dec10$x = matrix4, _dec$2C(_class$2C = (_class2$2e = class EveSOFDataHullSpotlightSetItem extends Model$1 {
+	var EveSOFDataHullSpotlightSetItem = (_dec$2C = define("EveSOFDataHullSpotlightSetItem", true), _dec2$2f = int32$1, _dec3$24 = boolean, _dec4$1O = uint$1, _dec5$1z = float, _dec6$1i = float, _dec7$11 = int32$1, _dec8$X = struct("EveSOFDataSpotLightAttachment"), _dec9$O = float, _dec0$I = float, _dec1$B = vector3, _dec10$x = matrix4, _dec$2C(_class$2C = (_class2$2e = class EveSOFDataHullSpotlightSetItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "boneIndex", _descriptor$2d, this);
@@ -291940,7 +295346,7 @@
 	}), _class2$2d)) || _class$2B);
 
 	var _dec$2A, _dec2$2d, _dec3$22, _dec4$1M, _dec5$1x, _dec6$1h, _dec7$10, _dec8$W, _dec9$N, _dec0$H, _dec1$A, _dec10$w, _dec11$s, _dec12$p, _dec13$k, _dec14$h, _dec15$e, _dec16$b, _dec17$7, _class$2A, _class2$2c, _descriptor$2b, _descriptor2$1W, _descriptor3$1D, _descriptor4$1p, _descriptor5$1a, _descriptor6$V, _descriptor7$L, _descriptor8$F, _descriptor9$A, _descriptor0$w, _descriptor1$p, _descriptor10$m, _descriptor11$h, _descriptor12$g, _descriptor13$c, _descriptor14$a, _descriptor15$6;
-	var EveSOFDataHullSpriteLineSetItem = (_dec$2A = define("EveSOFDataHullSpriteLineSetItem", true), _dec2$2d = float, _dec3$22 = float, _dec4$1M = float, _dec5$1x = int32$1, _dec6$1h = uint, _dec7$10 = float, _dec8$W = uint, _dec9$N = desc("Deprecated"), _dec0$H = float, _dec1$A = boolean, _dec10$w = struct("EveSOFDataPointLightAttachment"), _dec11$s = float, _dec12$p = float, _dec13$k = vector3, _dec14$h = quaternion, _dec15$e = float, _dec16$b = vector3, _dec17$7 = float, _dec$2A(_class$2A = (_class2$2c = class EveSOFDataHullSpriteLineSetItem extends Model$1 {
+	var EveSOFDataHullSpriteLineSetItem = (_dec$2A = define("EveSOFDataHullSpriteLineSetItem", true), _dec2$2d = float, _dec3$22 = float, _dec4$1M = float, _dec5$1x = int32$1, _dec6$1h = uint$1, _dec7$10 = float, _dec8$W = uint$1, _dec9$N = desc("Deprecated"), _dec0$H = float, _dec1$A = boolean, _dec10$w = struct("EveSOFDataPointLightAttachment"), _dec11$s = float, _dec12$p = float, _dec13$k = vector3, _dec14$h = quaternion, _dec15$e = float, _dec16$b = vector3, _dec17$7 = float, _dec$2A(_class$2A = (_class2$2c = class EveSOFDataHullSpriteLineSetItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "blinkPhase", _descriptor$2b, this);
@@ -292122,7 +295528,7 @@
 	}), _class2$2b)) || _class$2z);
 
 	var _dec$2y, _dec2$2b, _dec3$20, _dec4$1K, _dec5$1v, _dec6$1g, _dec7$$, _dec8$V, _dec9$M, _dec0$G, _dec1$z, _dec10$v, _dec11$r, _class$2y, _class2$2a, _descriptor$29, _descriptor2$1U, _descriptor3$1B, _descriptor4$1n, _descriptor5$19, _descriptor6$U, _descriptor7$K, _descriptor8$E, _descriptor9$z, _descriptor0$v, _descriptor1$o, _descriptor10$l;
-	var EveSOFDataHullSpriteSetItem = (_dec$2y = define("EveSOFDataHullSpriteSetItem", true), _dec2$2b = float, _dec3$20 = float, _dec4$1K = int32$1, _dec5$1v = uint, _dec6$1g = float, _dec7$$ = int32$1, _dec8$V = float, _dec9$M = struct("EveSOFDataPointLightAttachment"), _dec0$G = float, _dec1$z = float, _dec10$v = vector3, _dec11$r = float, _dec$2y(_class$2y = (_class2$2a = class EveSOFDataHullSpriteSetItem extends Model$1 {
+	var EveSOFDataHullSpriteSetItem = (_dec$2y = define("EveSOFDataHullSpriteSetItem", true), _dec2$2b = float, _dec3$20 = float, _dec4$1K = int32$1, _dec5$1v = uint$1, _dec6$1g = float, _dec7$$ = int32$1, _dec8$V = float, _dec9$M = struct("EveSOFDataPointLightAttachment"), _dec0$G = float, _dec1$z = float, _dec10$v = vector3, _dec11$r = float, _dec$2y(_class$2y = (_class2$2a = class EveSOFDataHullSpriteSetItem extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "blinkPhase", _descriptor$29, this);
@@ -292248,7 +295654,7 @@
 	}), _class2$29)) || _class$2x);
 
 	var _dec$2w, _dec2$29, _dec3$1_, _dec4$1J, _dec5$1u, _dec6$1f, _dec7$_, _dec8$U, _dec9$L, _dec0$F, _dec1$y, _class$2w, _class2$28, _descriptor$27, _descriptor2$1S, _descriptor3$1A, _descriptor4$1m, _descriptor5$18, _descriptor6$T, _descriptor7$J, _descriptor8$D, _descriptor9$y, _descriptor0$u, _EveSOFDataPatternLayer;
-	var EveSOFDataPatternLayer = (_dec$2w = define("EveSOFDataPatternLayer", true), _dec2$29 = boolean, _dec3$1_ = boolean, _dec4$1J = boolean, _dec5$1u = boolean, _dec6$1f = string, _dec7$_ = uint, _dec8$U = uint, _dec9$L = uint, _dec0$F = string, _dec1$y = path, _dec$2w(_class$2w = (_class2$28 = (_EveSOFDataPatternLayer = class EveSOFDataPatternLayer extends Model$1 {
+	var EveSOFDataPatternLayer = (_dec$2w = define("EveSOFDataPatternLayer", true), _dec2$29 = boolean, _dec3$1_ = boolean, _dec4$1J = boolean, _dec5$1u = boolean, _dec6$1f = string, _dec7$_ = uint$1, _dec8$U = uint$1, _dec9$L = uint$1, _dec0$F = string, _dec1$y = path, _dec$2w(_class$2w = (_class2$28 = (_EveSOFDataPatternLayer = class EveSOFDataPatternLayer extends Model$1 {
 	  /**
 	   * Constructor
 	   * @param {String} name
@@ -292877,7 +296283,7 @@
 	}), _class2$24)) || _class$2s);
 
 	var _dec$2r, _dec2$24, _dec3$1V, _dec4$1E, _dec5$1q, _dec6$1d, _dec7$Y, _dec8$S, _dec9$K, _dec0$E, _dec1$x, _dec10$u, _dec11$q, _dec12$o, _dec13$j, _dec14$g, _class$2r, _class2$23, _descriptor$22, _descriptor2$1N, _descriptor3$1v, _descriptor4$1i, _descriptor5$16, _descriptor6$R, _descriptor7$H, _descriptor8$C, _descriptor9$x, _descriptor0$t, _descriptor1$n, _descriptor10$k, _descriptor11$g, _descriptor12$f, _descriptor13$b, _EveSOFDataPatternLayerProperties;
-	var EveSOFDataPatternLayerProperties = (_dec$2r = define("EveSOFDataPatternLayerProperties", true), _dec2$24 = uint, _dec3$1V = uint, _dec4$1E = boolean, _dec5$1q = boolean, _dec6$1d = boolean, _dec7$Y = boolean, _dec8$S = boolean, _dec9$K = boolean, _dec0$E = boolean, _dec1$x = boolean, _dec10$u = boolean, _dec11$q = boolean, _dec12$o = boolean, _dec13$j = boolean, _dec14$g = boolean, _dec$2r(_class$2r = (_class2$23 = (_EveSOFDataPatternLayerProperties = class EveSOFDataPatternLayerProperties extends Model$1 {
+	var EveSOFDataPatternLayerProperties = (_dec$2r = define("EveSOFDataPatternLayerProperties", true), _dec2$24 = uint$1, _dec3$1V = uint$1, _dec4$1E = boolean, _dec5$1q = boolean, _dec6$1d = boolean, _dec7$Y = boolean, _dec8$S = boolean, _dec9$K = boolean, _dec0$E = boolean, _dec1$x = boolean, _dec10$u = boolean, _dec11$q = boolean, _dec12$o = boolean, _dec13$j = boolean, _dec14$g = boolean, _dec$2r(_class$2r = (_class2$23 = (_EveSOFDataPatternLayerProperties = class EveSOFDataPatternLayerProperties extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "projectionTypeU", _descriptor$22, this);
@@ -293167,7 +296573,7 @@
 	}), _class2$21)) || _class$2p);
 
 	var _dec$2o, _dec2$21, _dec3$1S, _dec4$1B, _dec5$1n, _dec6$1c, _class$2o, _class2$20, _descriptor$1$, _descriptor2$1K, _descriptor3$1s, _descriptor4$1f, _descriptor5$15;
-	var EveSOFDataRace = (_dec$2o = define("EveSOFDataRace", true), _dec2$21 = string, _dec3$1S = struct("EveSOFDataBooster"), _dec4$1B = uint, _dec5$1n = uint, _dec6$1c = struct("EveSOFDataRaceDamage"), _dec$2o(_class$2o = (_class2$20 = class EveSOFDataRace extends Model$1 {
+	var EveSOFDataRace = (_dec$2o = define("EveSOFDataRace", true), _dec2$21 = string, _dec3$1S = struct("EveSOFDataBooster"), _dec4$1B = uint$1, _dec5$1n = uint$1, _dec6$1c = struct("EveSOFDataRaceDamage"), _dec$2o(_class$2o = (_class2$20 = class EveSOFDataRace extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1$, this);
@@ -299456,7 +302862,7 @@
 	}), _class2$1Q)) || _class$2b);
 
 	var _dec$2a, _dec2$1Q, _dec3$1F, _dec4$1t, _dec5$1g, _dec6$16, _dec7$U, _dec8$O, _dec9$G, _class$2a, _class2$1P, _descriptor$1O, _descriptor2$1x, _descriptor3$1k, _descriptor4$18, _descriptor5$$, _descriptor6$N, _descriptor7$D, _descriptor8$y;
-	var Tr2Controller = (_dec$2a = define("Tr2Controller", true), _dec2$1Q = boolean, _dec3$1F = uint, _dec4$1t = uint, _dec5$1g = string, _dec6$16 = boolean, _dec7$U = list("Tr2StateMachine"), _dec8$O = list("Tr2ControllerFloatVariable"), _dec9$G = list("Tr2ControllerEventHandler"), _dec$2a(_class$2a = (_class2$1P = class Tr2Controller extends Model$1 {
+	var Tr2Controller = (_dec$2a = define("Tr2Controller", true), _dec2$1Q = boolean, _dec3$1F = uint$1, _dec4$1t = uint$1, _dec5$1g = string, _dec6$16 = boolean, _dec7$U = list("Tr2StateMachine"), _dec8$O = list("Tr2ControllerFloatVariable"), _dec9$G = list("Tr2ControllerEventHandler"), _dec$2a(_class$2a = (_class2$1P = class Tr2Controller extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "updateThrottle", _descriptor$1O, this);
@@ -301378,7 +304784,7 @@
 	}), _class2$1G)) || _class$21);
 
 	var _dec$20, _dec2$1G, _dec3$1x, _dec4$1m, _dec5$1a, _dec6$12, _dec7$R, _dec8$M, _dec9$F, _dec0$A, _dec1$t, _dec10$q, _dec11$m, _class$20, _class2$1F, _descriptor$1E, _descriptor2$1p, _descriptor3$1d, _descriptor4$13, _descriptor5$X, _descriptor6$L, _descriptor7$C, _descriptor8$x, _descriptor9$t, _descriptor0$p, _descriptor1$j, _Tr2ActionPlayMeshAnimation;
-	var Tr2ActionPlayMeshAnimation = (_dec$20 = define("Tr2ActionPlayMeshAnimation", true), _dec2$1G = string, _dec3$1x = string, _dec4$1m = uint, _dec5$1a = uint, _dec6$12 = int32$1, _dec7$R = float, _dec8$M = float, _dec9$F = uint, _dec0$A = string, _dec1$t = notOwned, _dec10$q = struct(), _dec11$m = boolean, _dec$20(_class$20 = (_class2$1F = (_Tr2ActionPlayMeshAnimation = class Tr2ActionPlayMeshAnimation extends Tw2Action {
+	var Tr2ActionPlayMeshAnimation = (_dec$20 = define("Tr2ActionPlayMeshAnimation", true), _dec2$1G = string, _dec3$1x = string, _dec4$1m = uint$1, _dec5$1a = uint$1, _dec6$12 = int32$1, _dec7$R = float, _dec8$M = float, _dec9$F = uint$1, _dec0$A = string, _dec1$t = notOwned, _dec10$q = struct(), _dec11$m = boolean, _dec$20(_class$20 = (_class2$1F = (_Tr2ActionPlayMeshAnimation = class Tr2ActionPlayMeshAnimation extends Tw2Action {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "animation", _descriptor$1E, this);
@@ -301854,7 +305260,7 @@
 	}), _class2$1D)) || _class$1_);
 
 	var _dec$1Z, _dec2$1D, _dec3$1u, _dec4$1j, _class$1Z, _class2$1C, _descriptor$1B, _descriptor2$1m, _descriptor3$1a, _Tr2ActionResetClipSphereCenter;
-	var Tr2ActionResetClipSphereCenter = (_dec$1Z = define("Tr2ActionResetClipSphereCenter", true), _dec2$1D = string, _dec3$1u = int32$1, _dec4$1j = uint, _dec$1Z(_class$1Z = (_class2$1C = (_Tr2ActionResetClipSphereCenter = class Tr2ActionResetClipSphereCenter extends Tw2Action {
+	var Tr2ActionResetClipSphereCenter = (_dec$1Z = define("Tr2ActionResetClipSphereCenter", true), _dec2$1D = string, _dec3$1u = int32$1, _dec4$1j = uint$1, _dec$1Z(_class$1Z = (_class2$1C = (_Tr2ActionResetClipSphereCenter = class Tr2ActionResetClipSphereCenter extends Tw2Action {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "locatorSetName", _descriptor$1B, this);
@@ -302552,7 +305958,7 @@
 	}), _class2$1u)) || _class$1R);
 
 	var _dec$1Q, _dec2$1u, _dec3$1m, _dec4$1e, _dec5$14, _dec6$_, _class$1Q, _class2$1t, _descriptor$1s, _descriptor2$1e, _descriptor3$15, _descriptor4$_, _descriptor5$U;
-	var Tr2ControllerFloatVariable = (_dec$1Q = define("Tr2ControllerFloatVariable", true), _dec2$1u = string, _dec3$1m = float, _dec4$1e = string, _dec5$14 = uint, _dec6$_ = float, _dec$1Q(_class$1Q = (_class2$1t = class Tr2ControllerFloatVariable extends Model$1 {
+	var Tr2ControllerFloatVariable = (_dec$1Q = define("Tr2ControllerFloatVariable", true), _dec2$1u = string, _dec3$1m = float, _dec4$1e = string, _dec5$14 = uint$1, _dec6$_ = float, _dec$1Q(_class$1Q = (_class2$1t = class Tr2ControllerFloatVariable extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1s, this);
@@ -304695,7 +308101,7 @@
 	 * before the emitter has a placement holds the latest event until one
 	 * arrives, matching Carbon.
 	 */
-	var AudEventCurve = (_dec4$14 = define("AudEventCurve", true), _dec5$X = string, _dec6$T = string, _dec7$K = uint, _dec8$H = list("AudEventKey"), _dec9$A = struct("TriObserverLocal"), _dec4$14(_class3$5 = (_class4$5 = (_AudEventCurve = class AudEventCurve extends Tw2Curve {
+	var AudEventCurve = (_dec4$14 = define("AudEventCurve", true), _dec5$X = string, _dec6$T = string, _dec7$K = uint$1, _dec8$H = list("AudEventKey"), _dec9$A = struct("TriObserverLocal"), _dec4$14(_class3$5 = (_class4$5 = (_AudEventCurve = class AudEventCurve extends Tw2Curve {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor3$Y, this);
@@ -305258,7 +308664,7 @@
 	}), _class2$1f)) || _class$1B);
 
 	var _dec$1A, _dec2$1e, _dec3$18, _dec4$11, _dec5$U, _dec6$R, _dec7$I, _dec8$F, _dec9$y, _dec0$w, _dec1$p, _dec10$m, _dec11$i, _dec12$i, _class$1A, _class2$1e, _descriptor$1d, _descriptor2$10, _descriptor3$V, _descriptor4$R, _descriptor5$N, _descriptor6$F, _descriptor7$x, _descriptor8$t, _descriptor9$p, _Tr2ObjectFollowCurveKey, _dec13$d, _dec14$b, _dec15$9, _dec16$7, _dec17$4, _dec18$4, _dec19$4, _dec20$3, _dec21$3, _dec22$3, _dec23$2, _dec24$2, _dec25$2, _dec26$2, _dec27$1, _dec28$1, _class3$3, _class4$3, _descriptor0$l, _descriptor1$f, _descriptor10$e, _descriptor11$d, _descriptor12$c, _descriptor13$8, _descriptor14$7, _descriptor15$5, _descriptor16$3, _descriptor17$3, _descriptor18$3;
-	var Tr2ObjectFollowCurveKey = (_dec$1A = define("Tr2ObjectFollowCurveKey", true), _dec2$1e = vector3, _dec3$18 = vector3, _dec4$11 = isPrivate, _dec5$U = vector3, _dec6$R = isPrivate, _dec7$I = vector3, _dec8$F = uint, _dec9$y = isPrivate, _dec0$w = notOwned, _dec1$p = struct(), _dec10$m = string, _dec11$i = vector3, _dec12$i = uint, _dec$1A(_class$1A = (_class2$1e = (_Tr2ObjectFollowCurveKey = class Tr2ObjectFollowCurveKey extends Tw2CurveKey {
+	var Tr2ObjectFollowCurveKey = (_dec$1A = define("Tr2ObjectFollowCurveKey", true), _dec2$1e = vector3, _dec3$18 = vector3, _dec4$11 = isPrivate, _dec5$U = vector3, _dec6$R = isPrivate, _dec7$I = vector3, _dec8$F = uint$1, _dec9$y = isPrivate, _dec0$w = notOwned, _dec1$p = struct(), _dec10$m = string, _dec11$i = vector3, _dec12$i = uint$1, _dec$1A(_class$1A = (_class2$1e = (_Tr2ObjectFollowCurveKey = class Tr2ObjectFollowCurveKey extends Tw2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "leftTangent", _descriptor$1d, this);
@@ -305360,7 +308766,7 @@
 	    return 0;
 	  }
 	}), _class2$1e)) || _class$1A);
-	var Tr2CameraFollowCurveKey = (_dec13$d = define("Tr2CameraFollowCurveKey", true), _dec14$b = float, _dec15$9 = float, _dec16$7 = float, _dec17$4 = isPrivate, _dec18$4 = vector3, _dec19$4 = vector3, _dec20$3 = vector3, _dec21$3 = vector3, _dec22$3 = isPrivate, _dec23$2 = vector3, _dec24$2 = isPrivate, _dec25$2 = vector3, _dec26$2 = uint, _dec27$1 = isPrivate, _dec28$1 = vector3, _dec13$d(_class3$3 = (_class4$3 = class Tr2CameraFollowCurveKey extends Tw2CurveKey {
+	var Tr2CameraFollowCurveKey = (_dec13$d = define("Tr2CameraFollowCurveKey", true), _dec14$b = float, _dec15$9 = float, _dec16$7 = float, _dec17$4 = isPrivate, _dec18$4 = vector3, _dec19$4 = vector3, _dec20$3 = vector3, _dec21$3 = vector3, _dec22$3 = isPrivate, _dec23$2 = vector3, _dec24$2 = isPrivate, _dec25$2 = vector3, _dec26$2 = uint$1, _dec27$1 = isPrivate, _dec28$1 = vector3, _dec13$d(_class3$3 = (_class4$3 = class Tr2CameraFollowCurveKey extends Tw2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "fovMultiplication", _descriptor0$l, this);
@@ -305639,7 +309045,7 @@
 	 * `VariableBuffer` layout. `perlin`/`perlin_simple` remain hash-based
 	 * placeholders for the native PerlinNoise1D wrappers.
 	 */
-	var Tr2ScalarExprKey = (_dec$1v = define("Tr2ScalarExprKey", true), _dec2$19 = float, _dec3$13 = float, _dec4$Y = float, _dec5$R = float, _dec6$O = uint, _dec7$F = float, _dec8$C = float, _dec9$v = float, _dec0$t = expression, _dec1$o = float, _dec10$l = isPrivate, _dec$1v(_class$1v = (_class2$19 = class Tr2ScalarExprKey extends Tw2CurveKey {
+	var Tr2ScalarExprKey = (_dec$1v = define("Tr2ScalarExprKey", true), _dec2$19 = float, _dec3$13 = float, _dec4$Y = float, _dec5$R = float, _dec6$O = uint$1, _dec7$F = float, _dec8$C = float, _dec9$v = float, _dec0$t = expression, _dec1$o = float, _dec10$l = isPrivate, _dec$1v(_class$1v = (_class2$19 = class Tr2ScalarExprKey extends Tw2CurveKey {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "input1", _descriptor$18, this);
@@ -305831,7 +309237,7 @@
 	 * - The native cycle/reversed time rebasing mixes `front()->m_value` into time
 	 *   math; that is transcribed verbatim as a documented native quirk.
 	 */
-	var Tr2ScalarExprKeyCurve = (_dec11$h = define("Tr2ScalarExprKeyCurve", true), _dec12$h = string, _dec13$c = uint, _dec14$a = list("Tr2ScalarExprKey"), _dec15$8 = float, _dec11$h(_class3$2 = (_class4$2 = class Tr2ScalarExprKeyCurve extends Tw2Curve {
+	var Tr2ScalarExprKeyCurve = (_dec11$h = define("Tr2ScalarExprKeyCurve", true), _dec12$h = string, _dec13$c = uint$1, _dec14$a = list("Tr2ScalarExprKey"), _dec15$8 = float, _dec11$h(_class3$2 = (_class4$2 = class Tr2ScalarExprKeyCurve extends Tw2Curve {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor1$e, this);
@@ -306132,7 +309538,7 @@
 	}
 
 	var _dec$1u, _dec2$18, _dec3$12, _dec4$X, _dec5$Q, _dec6$N, _dec7$E, _dec8$B, _dec9$u, _dec0$s, _dec1$n, _dec10$k, _dec11$g, _dec12$g, _class$1u, _class2$18, _descriptor$17, _descriptor2$Y, _descriptor3$R, _descriptor4$N, _descriptor5$K, _descriptor6$C, _descriptor7$v, _descriptor8$r, _descriptor9$n;
-	var Tr2ScalarExprCurve = (_dec$1u = define("Tr2ScalarExprCurve", true), _dec2$18 = notImplemented, _dec3$12 = float, _dec4$X = float, _dec5$Q = float, _dec6$N = float, _dec7$E = isPrivate, _dec8$B = float, _dec9$u = isPrivate, _dec0$s = uint, _dec1$n = uint, _dec10$k = isPrivate, _dec11$g = string, _dec12$g = expression, _dec$1u(_class$1u = _dec2$18(_class$1u = (_class2$18 = class Tr2ScalarExprCurve extends Tw2Curve {
+	var Tr2ScalarExprCurve = (_dec$1u = define("Tr2ScalarExprCurve", true), _dec2$18 = notImplemented, _dec3$12 = float, _dec4$X = float, _dec5$Q = float, _dec6$N = float, _dec7$E = isPrivate, _dec8$B = float, _dec9$u = isPrivate, _dec0$s = uint$1, _dec1$n = uint$1, _dec10$k = isPrivate, _dec11$g = string, _dec12$g = expression, _dec$1u(_class$1u = _dec2$18(_class$1u = (_class2$18 = class Tr2ScalarExprCurve extends Tw2Curve {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "input1", _descriptor$17, this);
@@ -307465,7 +310871,7 @@
 	}), _class2$11)) || _class$1m);
 
 	var _dec$1l, _dec2$10, _dec3$W, _dec4$Q, _class$1l, _class2$10, _descriptor$$, _descriptor2$Q;
-	var EveAnimation = (_dec$1l = notImplemented, _dec2$10 = define("EveAnimation", true), _dec3$W = string, _dec4$Q = uint, _dec$1l(_class$1l = _dec2$10(_class$1l = (_class2$10 = class EveAnimation {
+	var EveAnimation = (_dec$1l = notImplemented, _dec2$10 = define("EveAnimation", true), _dec3$W = string, _dec4$Q = uint$1, _dec$1l(_class$1l = _dec2$10(_class$1l = (_class2$10 = class EveAnimation {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$$, this);
 	    _initializerDefineProperty(this, "loops", _descriptor2$Q, this);
@@ -307487,7 +310893,7 @@
 	}), _class2$10)) || _class$1l) || _class$1l);
 
 	var _dec$1k, _dec2$$, _dec3$V, _dec4$P, _class$1k, _class2$$, _descriptor$_;
-	var EveAnimationCommand = (_dec$1k = notImplemented, _dec2$$ = define("EveAnimationCommand", true), _dec3$V = uint, _dec4$P = todo("Identify default value"), _dec$1k(_class$1k = _dec2$$(_class$1k = (_class2$$ = class EveAnimationCommand {
+	var EveAnimationCommand = (_dec$1k = notImplemented, _dec2$$ = define("EveAnimationCommand", true), _dec3$V = uint$1, _dec4$P = todo("Identify default value"), _dec$1k(_class$1k = _dec2$$(_class$1k = (_class2$$ = class EveAnimationCommand {
 	  constructor() {
 	    _initializerDefineProperty(this, "command", _descriptor$_, this);
 	  }
@@ -309661,7 +313067,7 @@
 
 	/** A spatial index that builds and incrementally rebalances a k-d tree over a group's drone agents and answers nearest-neighbour and multi-radius range queries against it. */
 
-	var EveKDdroneManagementTree = (_dec$_ = define("EveKDdroneManagementTree", true), _dec2$M = struct("Agent"), _dec3$J = float, _dec4$E = float, _dec5$B = uint, _dec6$z = float, _dec7$t = list("Agent"), _dec8$q = list("std::vector<std::vector<DroneAgent>>"), _dec9$l = list("DroneAgent"), _dec0$k = int32$1, _dec1$g = float, _dec10$d = struct("DroneAgent"), _dec11$b = float, _dec12$b = int32$1, _dec13$9 = int32$1, _dec14$8 = int32$1, _dec15$6 = struct("Agent"), _dec16$5 = struct("Agent"), _dec$_(_class$_ = (_class2$M = (_EveKDdroneManagementTree = class EveKDdroneManagementTree extends Model$1 {
+	var EveKDdroneManagementTree = (_dec$_ = define("EveKDdroneManagementTree", true), _dec2$M = struct("Agent"), _dec3$J = float, _dec4$E = float, _dec5$B = uint$1, _dec6$z = float, _dec7$t = list("Agent"), _dec8$q = list("std::vector<std::vector<DroneAgent>>"), _dec9$l = list("DroneAgent"), _dec0$k = int32$1, _dec1$g = float, _dec10$d = struct("DroneAgent"), _dec11$b = float, _dec12$b = int32$1, _dec13$9 = int32$1, _dec14$8 = int32$1, _dec15$6 = struct("Agent"), _dec16$5 = struct("Agent"), _dec$_(_class$_ = (_class2$M = (_EveKDdroneManagementTree = class EveKDdroneManagementTree extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    /** m_tree (AgentRef) */
@@ -311436,7 +314842,7 @@
 	var _dec$X, _dec2$J, _dec3$G, _dec4$B, _dec5$y, _dec6$w, _dec7$q, _dec8$n, _dec9$j, _dec0$i, _dec1$e, _dec10$b, _dec11$9, _dec12$9, _dec13$7, _dec14$6, _dec15$4, _dec16$3, _dec17$2, _dec18$2, _dec19$2, _dec20$2, _dec21$2, _dec22$2, _dec23$1, _dec24$1, _dec25$1, _dec26$1, _class$X, _class2$J, _descriptor$I, _descriptor2$C, _descriptor3$z, _descriptor4$w, _descriptor5$t, _descriptor6$o, _descriptor7$l, _descriptor8$i, _descriptor9$f, _descriptor0$c, _descriptor1$9, _descriptor10$8, _descriptor11$7, _descriptor12$7, _descriptor13$4, _descriptor14$3, _descriptor15$2, _descriptor16$1, _descriptor17$1, _descriptor18$1, _descriptor19$1, _descriptor20$1, _descriptor21$1, _descriptor22$1, _descriptor23$1, _descriptor24$1, _descriptor25$1;
 
 	/** Hydration shape for the effects, flares, and light attached to a behavior group. */
-	var BehaviorGroupBooster = (_dec$X = define("BehaviorGroupBooster", true), _dec2$J = boolean, _dec3$G = uint, _dec4$B = vector3, _dec5$y = uint, _dec6$w = uint, _dec7$q = struct("Tw2Effect"), _dec8$n = struct("Tw2Effect"), _dec9$j = vector3, _dec0$i = vector3, _dec1$e = float, _dec10$b = color$2, _dec11$9 = float, _dec12$9 = float, _dec13$7 = uint, _dec14$6 = struct("Tw2Effect"), _dec15$4 = vector3, _dec16$3 = vector3, _dec17$2 = float, _dec18$2 = color$2, _dec19$2 = float, _dec20$2 = float, _dec21$2 = uint, _dec22$2 = float, _dec23$1 = color$2, _dec24$1 = boolean, _dec25$1 = boolean, _dec26$1 = boolean, _dec$X(_class$X = (_class2$J = class BehaviorGroupBooster extends Model$1 {
+	var BehaviorGroupBooster = (_dec$X = define("BehaviorGroupBooster", true), _dec2$J = boolean, _dec3$G = uint$1, _dec4$B = vector3, _dec5$y = uint$1, _dec6$w = uint$1, _dec7$q = struct("Tw2Effect"), _dec8$n = struct("Tw2Effect"), _dec9$j = vector3, _dec0$i = vector3, _dec1$e = float, _dec10$b = color$2, _dec11$9 = float, _dec12$9 = float, _dec13$7 = uint$1, _dec14$6 = struct("Tw2Effect"), _dec15$4 = vector3, _dec16$3 = vector3, _dec17$2 = float, _dec18$2 = color$2, _dec19$2 = float, _dec20$2 = float, _dec21$2 = uint$1, _dec22$2 = float, _dec23$1 = color$2, _dec24$1 = boolean, _dec25$1 = boolean, _dec26$1 = boolean, _dec$X(_class$X = (_class2$J = class BehaviorGroupBooster extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$I, this);
@@ -315723,7 +319129,7 @@
 	}), _class2$s)) || _class$G);
 
 	var _dec$F, _dec2$r, _dec3$o, _dec4$j, _dec5$i, _dec6$h, _dec7$f, _class$F, _class2$r, _descriptor$q, _descriptor2$k, _descriptor3$h, _descriptor4$g, _descriptor5$e;
-	var EveChildBulletStorm = (_dec$F = notImplemented, _dec2$r = define("EveChildBulletStorm", true), _dec3$o = struct("Tw2Effect"), _dec4$j = uint, _dec5$i = float, _dec6$h = string, _dec7$f = float, _dec$F(_class$F = _dec2$r(_class$F = (_class2$r = class EveChildBulletStorm extends EveChild {
+	var EveChildBulletStorm = (_dec$F = notImplemented, _dec2$r = define("EveChildBulletStorm", true), _dec3$o = struct("Tw2Effect"), _dec4$j = uint$1, _dec5$i = float, _dec6$h = string, _dec7$f = float, _dec$F(_class$F = _dec2$r(_class$F = (_class2$r = class EveChildBulletStorm extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "effect", _descriptor$q, this);
@@ -315780,7 +319186,7 @@
 	}), _class2$r)) || _class$F) || _class$F);
 
 	var _dec$E, _dec2$q, _dec3$n, _dec4$i, _dec5$h, _dec6$g, _dec7$e, _dec8$d, _dec9$c, _dec0$b, _class$E, _class2$q, _descriptor$p, _descriptor2$j, _descriptor3$g, _descriptor4$f, _descriptor5$d, _descriptor6$d, _descriptor7$b, _descriptor8$b;
-	var EveChildCloud = (_dec$E = notImplemented, _dec2$q = define("EveChildCloud", true), _dec3$n = string, _dec4$i = float, _dec5$h = struct("Tw2Effect"), _dec6$g = uint, _dec7$e = quaternion, _dec8$d = vector3, _dec9$c = float, _dec0$b = vector3, _dec$E(_class$E = _dec2$q(_class$E = (_class2$q = class EveChildCloud extends EveChild {
+	var EveChildCloud = (_dec$E = notImplemented, _dec2$q = define("EveChildCloud", true), _dec3$n = string, _dec4$i = float, _dec5$h = struct("Tw2Effect"), _dec6$g = uint$1, _dec7$e = quaternion, _dec8$d = vector3, _dec9$c = float, _dec0$b = vector3, _dec$E(_class$E = _dec2$q(_class$E = (_class2$q = class EveChildCloud extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$p, this);
@@ -315861,7 +319267,7 @@
 	}), _class2$q)) || _class$E) || _class$E);
 
 	var _dec$D, _dec2$p, _dec3$m, _dec4$h, _dec5$g, _dec6$f, _dec7$d, _dec8$c, _dec9$b, _dec0$a, _dec1$9, _dec10$7, _dec11$6, _dec12$6, _dec13$4, _dec14$4, _dec15$2, _class$D, _class2$p, _descriptor$o, _descriptor2$i, _descriptor3$f, _descriptor4$e, _descriptor5$c, _descriptor6$c, _descriptor7$a, _descriptor8$a, _descriptor9$8, _descriptor0$7, _descriptor1$5, _descriptor10$5, _descriptor11$4, _descriptor12$4, _descriptor13$2;
-	var EveChildCloud2 = (_dec$D = notImplemented, _dec2$p = define("EveChildCloud2", true), _dec3$m = string, _dec4$h = struct(), _dec5$g = list(), _dec6$f = float, _dec7$d = uint, _dec8$c = vector3, _dec9$b = vector3, _dec0$a = quaternion, _dec1$9 = struct(), _dec10$7 = int32$1, _dec11$6 = uint, _dec12$6 = boolean, _dec13$4 = boolean, _dec14$4 = boolean, _dec15$2 = float, _dec$D(_class$D = _dec2$p(_class$D = (_class2$p = class EveChildCloud2 extends EveChild {
+	var EveChildCloud2 = (_dec$D = notImplemented, _dec2$p = define("EveChildCloud2", true), _dec3$m = string, _dec4$h = struct(), _dec5$g = list(), _dec6$f = float, _dec7$d = uint$1, _dec8$c = vector3, _dec9$b = vector3, _dec0$a = quaternion, _dec1$9 = struct(), _dec10$7 = int32$1, _dec11$6 = uint$1, _dec12$6 = boolean, _dec13$4 = boolean, _dec14$4 = boolean, _dec15$2 = float, _dec$D(_class$D = _dec2$p(_class$D = (_class2$p = class EveChildCloud2 extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$o, this);
@@ -316867,7 +320273,7 @@
 	}), _class4$1)) || _class3$1);
 
 	var _dec$t, _dec2$f, _dec3$d, _dec4$a, _dec5$9, _dec6$8, _dec7$7, _dec8$6, _dec9$6, _dec0$6, _dec1$5, _class$t, _class2$f, _descriptor$e, _descriptor2$b, _descriptor3$8, _descriptor4$7, _descriptor5$6, _descriptor6$6, _descriptor7$5, _descriptor8$5, _descriptor9$4;
-	var EveStarfield = (_dec$t = notImplemented, _dec2$f = define("EveStarfield", true), _dec3$d = boolean, _dec4$a = struct("Tw2Effect"), _dec5$9 = float, _dec6$8 = float, _dec7$7 = float, _dec8$6 = float, _dec9$6 = float, _dec0$6 = uint, _dec1$5 = uint, _dec$t(_class$t = _dec2$f(_class$t = (_class2$f = class EveStarfield extends Model$1 {
+	var EveStarfield = (_dec$t = notImplemented, _dec2$f = define("EveStarfield", true), _dec3$d = boolean, _dec4$a = struct("Tw2Effect"), _dec5$9 = float, _dec6$8 = float, _dec7$7 = float, _dec8$6 = float, _dec9$6 = float, _dec0$6 = uint$1, _dec1$5 = uint$1, _dec$t(_class$t = _dec2$f(_class$t = (_class2$f = class EveStarfield extends Model$1 {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$e, this);
@@ -317617,7 +321023,7 @@
 	}), _class2$e)) || _class$s) || _class$s);
 
 	var _dec$r, _dec2$d, _dec3$b, _dec4$8, _dec5$7, _dec6$6, _dec7$5, _dec8$4, _dec9$4, _dec0$4, _dec1$3, _dec10$2, _dec11$2, _dec12$2, _dec13$1, _dec14$1, _class$r, _class2$d, _descriptor$c, _descriptor2$9, _descriptor3$6, _descriptor4$5, _descriptor5$4, _descriptor6$4, _descriptor7$3, _descriptor8$3, _descriptor9$2, _descriptor0$2, _descriptor1$1, _descriptor10$1, _descriptor11$1, _descriptor12$1;
-	var EveRootTransform = (_dec$r = notImplemented, _dec2$d = define("EveRootTransform", true), _dec3$b = string, _dec4$8 = float, _dec5$7 = list("EveObject"), _dec6$6 = list("Tw2CurveSet"), _dec7$5 = boolean, _dec8$4 = struct("Tw2Mesh"), _dec9$4 = uint, _dec0$4 = list("TriObserverLocal"), _dec1$3 = quaternion, _dec10$2 = struct("Tw2Curve"), _dec11$2 = vector3, _dec12$2 = float, _dec13$1 = vector3, _dec14$1 = struct("Tw2Curve"), _dec$r(_class$r = _dec2$d(_class$r = (_class2$d = class EveRootTransform extends EveObject {
+	var EveRootTransform = (_dec$r = notImplemented, _dec2$d = define("EveRootTransform", true), _dec3$b = string, _dec4$8 = float, _dec5$7 = list("EveObject"), _dec6$6 = list("Tw2CurveSet"), _dec7$5 = boolean, _dec8$4 = struct("Tw2Mesh"), _dec9$4 = uint$1, _dec0$4 = list("TriObserverLocal"), _dec1$3 = quaternion, _dec10$2 = struct("Tw2Curve"), _dec11$2 = vector3, _dec12$2 = float, _dec13$1 = vector3, _dec14$1 = struct("Tw2Curve"), _dec$r(_class$r = _dec2$d(_class$r = (_class2$d = class EveRootTransform extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$c, this);
@@ -318562,6 +321968,10 @@
 
 	    //Geometry
 	    "gr2": Tw2GeometryRes,
+	    // Carbon Mesh Format. EVE Frontier ships 4,340 of these against four
+	    // .gr2, so a client that has it has almost nothing else; see CmfReader
+	    // for why it decodes on the gr2 path rather than through Prepare.
+	    "cmf": Tw2GeometryRes,
 	    "gr2_json": Tw2GeometryRes,
 	    "gsf": Tw2GeometryRes,
 	    "obj": Tw2GeometryRes,
@@ -323320,7 +326730,7 @@
 	}
 
 	var _dec$9, _dec2$6, _dec3$5, _dec4$5, _class$9, _class2$6, _TnyShip;
-	var TnyShip = (_dec$9 = define("TnyShip"), _dec2$6 = uint, _dec3$5 = uint, _dec4$5 = uint, _dec$9(_class$9 = (_class2$6 = (_TnyShip = class TnyShip extends TnyMobile {
+	var TnyShip = (_dec$9 = define("TnyShip"), _dec2$6 = uint$1, _dec3$5 = uint$1, _dec4$5 = uint$1, _dec$9(_class$9 = (_class2$6 = (_TnyShip = class TnyShip extends TnyMobile {
 	  get kills() {
 	    return this.wrapped ? this.wrapped.killCount || 0 : 0;
 	  }
@@ -326430,7 +329840,7 @@
 	/**
 	 * Renderable 3D transform gizmo made from EveCurveLineSet parts.
 	 */
-	var TnyTransformGizmo = (_dec$2 = define("TnyTransformGizmo"), _dec2$1 = boolean, _dec3$1 = boolean, _dec4$1 = string, _dec5$1 = float, _dec6$1 = float, _dec7$1 = uint, _dec8 = boolean, _dec9 = boolean, _dec0 = boolean, _dec1 = boolean, _dec10 = boolean, _dec11 = boolean, _dec12 = boolean, _dec13 = boolean, _dec14 = float, _dec15 = boolean, _dec16 = boolean, _dec17 = boolean, _dec18 = float, _dec19 = float, _dec20 = float, _dec21 = float, _dec22 = float, _dec23 = float, _dec24 = float, _dec25 = float, _dec26 = boolean, _dec27 = boolean, _dec28 = boolean, _dec29 = boolean, _dec$2(_class$2 = (_class2$1 = class TnyTransformGizmo extends WglTransform {
+	var TnyTransformGizmo = (_dec$2 = define("TnyTransformGizmo"), _dec2$1 = boolean, _dec3$1 = boolean, _dec4$1 = string, _dec5$1 = float, _dec6$1 = float, _dec7$1 = uint$1, _dec8 = boolean, _dec9 = boolean, _dec0 = boolean, _dec1 = boolean, _dec10 = boolean, _dec11 = boolean, _dec12 = boolean, _dec13 = boolean, _dec14 = float, _dec15 = boolean, _dec16 = boolean, _dec17 = boolean, _dec18 = float, _dec19 = float, _dec20 = float, _dec21 = float, _dec22 = float, _dec23 = float, _dec24 = float, _dec25 = float, _dec26 = boolean, _dec27 = boolean, _dec28 = boolean, _dec29 = boolean, _dec$2(_class$2 = (_class2$1 = class TnyTransformGizmo extends WglTransform {
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
@@ -335608,7 +339018,7 @@
 	 * index IS the mesh area's own `index`, so both are the numbers ccpwgl already
 	 * uses rather than a private numbering a consumer would have to translate.
 	 */
-	var Tw2MaterialPicker = (_dec = define("Tw2MaterialPicker"), _dec2 = color$2, _dec3 = vector4, _dec4 = vector4, _dec5 = float, _dec6 = boolean, _dec7 = uint, _dec(_class = (_class2 = (_Tw2MaterialPicker = class Tw2MaterialPicker {
+	var Tw2MaterialPicker = (_dec = define("Tw2MaterialPicker"), _dec2 = color$2, _dec3 = vector4, _dec4 = vector4, _dec5 = float, _dec6 = boolean, _dec7 = uint$1, _dec(_class = (_class2 = (_Tw2MaterialPicker = class Tw2MaterialPicker {
 	  /**
 	   * @param {EveSpaceScene} [scene]
 	   */
@@ -337676,7 +341086,7 @@
 	/** Inspects input using normalized format options for the BNK format reader. */
 	function inspectWithValues(input) {
 	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES;
-	  var bytes = asUint8Array(input, "Bnk input");
+	  var bytes = asUint8Array$1(input, "Bnk input");
 	  if (!isBNK(bytes)) {
 	    throw new TypeError("CjsBnkFormat: expected a Wwise soundbank starting with a BKHD chunk");
 	  }
@@ -337767,7 +341177,7 @@
 	/** Reads input using normalized format options for the BNK format reader. */
 	function readWithValues(input) {
 	  var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_VALUES;
-	  var bytes = asUint8Array(input, "Bnk input");
+	  var bytes = asUint8Array$1(input, "Bnk input");
 	  var metadata = inspectWithValues(bytes, values);
 	  if (values.emit === OUTPUT_BNK_JSON) return metadata;
 	  if (values.emit === OUTPUT_MEDIA) {
@@ -340079,7 +343489,7 @@
 	   * @returns {Array<object>} Extracted media items with undecoded bytes.
 	   */
 	  static extractMedia(input, mediaId) {
-	    var bytes = asUint8Array(input, "Bnk input");
+	    var bytes = asUint8Array$1(input, "Bnk input");
 	    var metadata = inspectWithValues(bytes, DEFAULT_VALUES);
 	    return extractMedia(bytes, metadata, mediaId);
 	  }
@@ -340102,7 +343512,7 @@
 	   */
 	  static isBNK(input) {
 	    try {
-	      return isBNK(asUint8Array(input, "Bnk input"));
+	      return isBNK(asUint8Array$1(input, "Bnk input"));
 	    } catch (_unused) {
 	      return false;
 	    }

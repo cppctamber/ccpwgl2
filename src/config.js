@@ -469,6 +469,10 @@ export const config = {
 
         //Geometry
         "gr2": core.Tw2GeometryRes,
+        // Carbon Mesh Format. EVE Frontier ships 4,340 of these against four
+        // .gr2, so a client that has it has almost nothing else; see CmfReader
+        // for why it decodes on the gr2 path rather than through Prepare.
+        "cmf": core.Tw2GeometryRes,
         "gr2_json": core.Tw2GeometryRes,
         "gsf": core.Tw2GeometryRes,
         "obj": core.Tw2GeometryRes,

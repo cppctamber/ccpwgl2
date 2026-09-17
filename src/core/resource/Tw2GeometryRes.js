@@ -3,7 +3,7 @@ import { prepareGr2 } from "../reader/geometry/Gr2Preparation";
 import { meta } from "utils";
 import { resMan, device } from "global";
 import { box3, sph3, vec3, vertex } from "math";
-import { Tw2BinaryReader, GsfReader, Gr2Reader, OBJReader, GR2JsonReader, GltfReader } from "../reader";
+import { Tw2BinaryReader, GsfReader, Gr2Reader, OBJReader, GR2JsonReader, GltfReader, CmfReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
@@ -24,7 +24,11 @@ const readers = {
     [Gr2Reader.extension.toLowerCase()]: Gr2Reader,
     [GR2JsonReader.extension.toLowerCase()]: GR2JsonReader,
     [GltfReader.extension.toLowerCase()]: GltfReader,
-    [GsfReader.extension.toLowerCase()]: GsfReader
+    [GsfReader.extension.toLowerCase()]: GsfReader,
+    // Registered here as well as in the extension map: this table is what
+    // `DoCustomLoad` checks before a byte is read, and an extension missing
+    // from it is refused as an unsupported format however it decodes later.
+    [CmfReader.extension.toLowerCase()]: CmfReader
 };
 
 /**
@@ -381,7 +385,12 @@ export class Tw2GeometryRes extends Tw2Resource
 
     *Process(data, options)
     {
-        if (this._extension !== "gr2")
+        // CMF DECODES LIKE GR2. Both end in the same prepared JSON - the
+        // runtime's CMF reader emits a GR2-shaped root - and both have to be
+        // opened asynchronously, CMF because its GPU buffers are meshopt
+        // compressed and the decoder is wasm. `Prepare` is synchronous, so a
+        // sync reader cannot open one of these files at all.
+        if (this._extension !== "gr2" && this._extension !== "cmf")
         {
             this.Prepare(data, options, true);
             return;
@@ -393,9 +402,14 @@ export class Tw2GeometryRes extends Tw2Resource
         // load, must not be overruled by a fetch that passes no options.
         const decodeOptions = Tw2GeometryRes.GetGr2DecodeOptions(options);
         this._gr2DecodeOptions = decodeOptions;
-        const decoded = resMan.useGeometryWorkers
-            ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl)
-            : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
+        // No worker for CMF yet: the pool's worker imports the GR2 reader, and
+        // moving meshopt's wasm initialisation into it is its own piece of
+        // work. It decodes on the rendering thread until then.
+        const decoded = this._extension === "cmf"
+            ? CmfReader.Decode(data, decodeOptions)
+            : resMan.useGeometryWorkers
+                ? gr2WorkerPool.Decode(data, decodeOptions, resMan.geometryWorkerUrl)
+                : Promise.resolve(data).then(input => prepareGr2(input, decodeOptions));
         // Cancellation of the yielded promise is owned by the scheduler.
         data = null;
         const json = yield decoded;
@@ -407,7 +421,7 @@ export class Tw2GeometryRes extends Tw2Resource
 
     Prepare(data, options, processing = false)
     {
-        if (this._extension === "gr2")
+        if (this._extension === "gr2" || this._extension === "cmf")
         {
             resMan.Queue(this, data, options);
             return;
