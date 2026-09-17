@@ -6,6 +6,7 @@ import { Tw2ResManWorkerLoader } from "./Tw2ResManWorkerLoader";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2ColorTextureRes } from "../resource/Tw2ColorTextureRes";
+import { Tw2DepthTextureRes } from "../resource/Tw2DepthTextureRes";
 import { Tw2TextureArrayRes } from "../resource/Tw2TextureArrayRes";
 import { Tw2TextureAtlasArrayRes } from "../resource/Tw2TextureAtlasArrayRes";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
@@ -267,6 +268,14 @@ export class Tw2ResMan extends Tw2EventEmitter
                 GetResource: query => Tw2ColorTextureRes.FromQuery(query, dimension)
             });
         }
+
+        // A comparable depth neutral, for a shadow sampler with no shadow map.
+        // Carbon's neutral there is an empty handle and D3D11 reads that as
+        // unshadowed; WebGL refuses the draw instead, so the platform needs a
+        // real texture to say the same thing. See Tw2DepthTextureRes.
+        this.RegisterResourceConstructor("depth", {
+            GetResource: query => Tw2DepthTextureRes.FromQuery(query)
+        });
 
         // Ordered layer paths -> one shared 2D array texture. Keying the
         // cache on the full ordered path list is the point: two effects

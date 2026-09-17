@@ -647,6 +647,41 @@ export const config = {
         // the screen-space visibility slot alike, which cannot both be right.
         "EveSpaceSceneCascadedShadowMap": "dynamic:/color/1,1,1,1",
 
+        // WHITE, and for the reason the note above gives: white is "nothing
+        // occluding". Carbon registers this one with an empty texture
+        // (trinity/trinity/Tr2LightManager.cpp:166) because D3D11 reads an
+        // unbound resource as exactly that; WebGL has no such state, so the
+        // neutral has to be a real texture.
+        //
+        // Declared here because EVE's shaders never ask for it and Frontier's
+        // do - the comment beside the cascaded map above describes CARBON
+        // registering both this and EveSpaceSceneShadowMap white, and only the
+        // second of the two was ever declared in this file.
+        "EveSpaceSceneDynamicShadowMap": "dynamic:/color/1,1,1,1",
+
+        // BLACK, which is Carbon's own answer rather than a guess: the driver
+        // registers the real correction map when reflection correction is on
+        // and `m_blackReflectionCorrectionMap` when it is off
+        // (trinity/trinity/Eve/EveSpaceSceneRenderDriver.cpp:428). We have no
+        // producer for the real one, so we are always in the second case.
+        "EveSpaceSceneReflectionCorrectionLookupTable": "dynamic:/color/0,0,0,1",
+
+        // THE FAR PLANE, in a texture a comparison sampler will accept.
+        //
+        // This is the depth atlas for DYNAMIC lights - one tile per
+        // shadow-casting local light, built by Carbon's light manager
+        // (Tr2LightManager.cpp:442) and registered from
+        // `shadowResources.pointLightShadowDepth`
+        // (trinity/trinity/Eve/EveSpaceScene.cpp:4265). It is neither of the sun
+        // shadow maps above it, and we have no local-light shadow system to
+        // produce one.
+        //
+        // Frontier's shaders sample it with a `sampler2DShadow`, so an ordinary
+        // colour texture is not merely wrong, it fails the draw outright. At the
+        // far plane every comparison passes, which reads as "this light shadows
+        // nothing" - the same thing Carbon's empty handle says on D3D11.
+        "ShadowMapAtlas": "dynamic:/depth/1",
+
         // WHITE, for the same reason the shadow map above is white, but with
         // different arithmetic behind it. Carbon's `DepthMap` is a scene depth
         // sample; the soft-particle shaders linearise it as

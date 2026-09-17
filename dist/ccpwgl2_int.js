@@ -40380,8 +40380,8 @@
 	}
 	Tw2Notifications.onNotification = null;
 
-	var _dec$87, _class$87, _Tw2Resource;
-	var Tw2Resource = (_dec$87 = define("Tw2Resource"), _dec$87(_class$87 = (_Tw2Resource = class Tw2Resource extends Tw2Notifications {
+	var _dec$88, _class$88, _Tw2Resource;
+	var Tw2Resource = (_dec$88 = define("Tw2Resource"), _dec$88(_class$88 = (_Tw2Resource = class Tw2Resource extends Tw2Notifications {
 	  constructor() {
 	    super(...arguments);
 	    this.path = "";
@@ -40906,7 +40906,7 @@
 	  RES_PREPARED: "prepared",
 	  RES_REMOVED: "removed",
 	  RES_COMPLETED: "completed"
-	}, _Tw2Resource)) || _class$87);
+	}, _Tw2Resource)) || _class$88);
 
 	/**
 	 * An optional function for when the resource handles it's own loading
@@ -40943,10 +40943,10 @@
 	  }
 	}
 
-	var _dec$86, _class$86, _Tr2LightProfileRes;
+	var _dec$87, _class$87, _Tr2LightProfileRes;
 
 	/** Carbon Tr2LightProfileRes: an IES distribution or a baked R16F strip. */
-	var Tr2LightProfileRes$1 = (_dec$86 = define("Tr2LightProfileRes"), _dec$86(_class$86 = (_Tr2LightProfileRes = class Tr2LightProfileRes extends Tw2Resource {
+	var Tr2LightProfileRes$1 = (_dec$87 = define("Tr2LightProfileRes"), _dec$87(_class$87 = (_Tr2LightProfileRes = class Tr2LightProfileRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    this.sourcePath = "";
@@ -41056,7 +41056,7 @@
 	    }
 	    return samples;
 	  }
-	}, _Tr2LightProfileRes.profiles = [], _Tr2LightProfileRes.revision = 0, _Tr2LightProfileRes.TEXEL_BASE = 196608, _Tr2LightProfileRes.TEXELS_PER_PROFILE = 256, _Tr2LightProfileRes)) || _class$86);
+	}, _Tr2LightProfileRes.profiles = [], _Tr2LightProfileRes.revision = 0, _Tr2LightProfileRes.TEXEL_BASE = 196608, _Tr2LightProfileRes.TEXELS_PER_PROFILE = 256, _Tr2LightProfileRes)) || _class$87);
 
 	class Tw2MotherLode {
 	  constructor() {
@@ -53997,8 +53997,8 @@
 	}
 	var gr2WorkerPool = new Gr2WorkerPool();
 
-	var _dec$85, _dec2$7n, _dec3$6U, _dec4$61, _dec5$5p, _dec6$4M, _dec7$44, _class$85, _class2$7i, _descriptor$7i, _descriptor2$6K, _descriptor3$5R, _descriptor4$56, _descriptor5$4q, _descriptor6$3I, _Tw2VertexElement;
-	var Tw2VertexElement = (_dec$85 = define("Tw2VertexElement"), _dec2$7n = uint$1, _dec3$6U = uint$1, _dec4$61 = uint$1, _dec5$5p = uint$1, _dec6$4M = int32$1, _dec7$44 = uint$1, _dec$85(_class$85 = (_class2$7i = (_Tw2VertexElement = class Tw2VertexElement {
+	var _dec$86, _dec2$7n, _dec3$6U, _dec4$61, _dec5$5p, _dec6$4M, _dec7$44, _class$86, _class2$7i, _descriptor$7i, _descriptor2$6K, _descriptor3$5R, _descriptor4$56, _descriptor5$4q, _descriptor6$3I, _Tw2VertexElement;
+	var Tw2VertexElement = (_dec$86 = define("Tw2VertexElement"), _dec2$7n = uint$1, _dec3$6U = uint$1, _dec4$61 = uint$1, _dec5$5p = uint$1, _dec6$4M = int32$1, _dec7$44 = uint$1, _dec$86(_class$86 = (_class2$7i = (_Tw2VertexElement = class Tw2VertexElement {
 	  constructor() {
 	    this.customSetter = null;
 	    _initializerDefineProperty(this, "elements", _descriptor$7i, this);
@@ -54152,10 +54152,10 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7i)) || _class$85);
+	}), _class2$7i)) || _class$86);
 
-	var _dec$84, _dec2$7m, _dec3$6T, _dec4$60, _class$84, _class2$7h, _descriptor$7h, _descriptor2$6J;
-	var Tw2VertexDeclaration = (_dec$84 = define("Tw2VertexDeclaration"), _dec2$7m = list("Tw2VertexElement"), _dec3$6T = list("Tw2VertexElement"), _dec4$60 = isPrivate, _dec$84(_class$84 = (_class2$7h = class Tw2VertexDeclaration {
+	var _dec$85, _dec2$7m, _dec3$6T, _dec4$60, _class$85, _class2$7h, _descriptor$7h, _descriptor2$6J;
+	var Tw2VertexDeclaration = (_dec$85 = define("Tw2VertexDeclaration"), _dec2$7m = list("Tw2VertexElement"), _dec3$6T = list("Tw2VertexElement"), _dec4$60 = isPrivate, _dec$85(_class$85 = (_class2$7h = class Tw2VertexDeclaration {
 	  constructor() {
 	    /** Whether this geometry uses direct Trinity blend semantics. */
 	    this.swapBlendWeightsAndIndices = false;
@@ -54442,7 +54442,7 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$7h)) || _class$84);
+	}), _class2$7h)) || _class$85);
 
 	/**
 	 * Raw vertex element data
@@ -54461,8 +54461,8 @@
 	 * @typedef {Array<RawVertexData>} RawVertexDataArray
 	 */
 
-	var _dec$83, _dec2$7l, _dec3$6S, _dec4$5$, _dec5$5o, _dec6$4L, _class$83, _class2$7g, _descriptor$7g, _descriptor2$6I, _descriptor3$5Q, _descriptor4$55, _descriptor5$4p;
-	var Tw2BlendShapeData = (_dec$83 = define("Tw2BlendShapeData"), _dec2$7l = string, _dec3$6S = struct("Tw2VertexDeclaration"), _dec4$5$ = vector, _dec5$5o = unknown, _dec6$4L = unknown, _dec$83(_class$83 = (_class2$7g = class Tw2BlendShapeData {
+	var _dec$84, _dec2$7l, _dec3$6S, _dec4$5$, _dec5$5o, _dec6$4L, _class$84, _class2$7g, _descriptor$7g, _descriptor2$6I, _descriptor3$5Q, _descriptor4$55, _descriptor5$4p;
+	var Tw2BlendShapeData = (_dec$84 = define("Tw2BlendShapeData"), _dec2$7l = string, _dec3$6S = struct("Tw2VertexDeclaration"), _dec4$5$ = vector, _dec5$5o = unknown, _dec6$4L = unknown, _dec$84(_class$84 = (_class2$7g = class Tw2BlendShapeData {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7g, this);
 	    _initializerDefineProperty(this, "declaration", _descriptor2$6I, this);
@@ -54505,10 +54505,10 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7g)) || _class$83);
+	}), _class2$7g)) || _class$84);
 
-	var _dec$82, _dec2$7k, _dec3$6R, _dec4$5_, _class$82, _class2$7f, _descriptor$7f, _descriptor2$6H, _descriptor3$5P;
-	var Tw2GeometryAnimation = (_dec$82 = define("Tw2GeometryAnimation"), _dec2$7k = string, _dec3$6R = float, _dec4$5_ = list("Tw2GeometryTrackGroup"), _dec$82(_class$82 = (_class2$7f = class Tw2GeometryAnimation {
+	var _dec$83, _dec2$7k, _dec3$6R, _dec4$5_, _class$83, _class2$7f, _descriptor$7f, _descriptor2$6H, _descriptor3$5P;
+	var Tw2GeometryAnimation = (_dec$83 = define("Tw2GeometryAnimation"), _dec2$7k = string, _dec3$6R = float, _dec4$5_ = list("Tw2GeometryTrackGroup"), _dec$83(_class$83 = (_class2$7f = class Tw2GeometryAnimation {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7f, this);
 	    _initializerDefineProperty(this, "duration", _descriptor2$6H, this);
@@ -54535,10 +54535,10 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$7f)) || _class$82);
+	}), _class2$7f)) || _class$83);
 
-	var _dec$81, _dec2$7j, _dec3$6Q, _dec4$5Z, _dec5$5n, _dec6$4K, _dec7$43, _dec8$3w, _dec9$2$, _dec0$2O, _dec1$2z, _dec10$2d, _dec11$22, _class$81, _class2$7e, _descriptor$7e, _descriptor2$6G, _descriptor3$5O, _descriptor4$54, _descriptor5$4o, _descriptor6$3H, _descriptor7$36, _descriptor8$2I, _descriptor9$2t, _descriptor0$2d, _Tw2GeometryBone;
-	var Tw2GeometryBone = (_dec$81 = define("Tw2GeometryBone"), _dec2$7j = string, _dec3$6Q = int32$1, _dec4$5Z = vector3, _dec5$5n = quaternion, _dec6$4K = matrix4, _dec7$43 = matrix4, _dec8$3w = matrix4, _dec9$2$ = matrix4, _dec0$2O = float32Array, _dec1$2z = isPrivate, _dec10$2d = plain, _dec11$22 = isPrivate, _dec$81(_class$81 = (_class2$7e = (_Tw2GeometryBone = class Tw2GeometryBone {
+	var _dec$82, _dec2$7j, _dec3$6Q, _dec4$5Z, _dec5$5n, _dec6$4K, _dec7$43, _dec8$3w, _dec9$2$, _dec0$2O, _dec1$2z, _dec10$2d, _dec11$22, _class$82, _class2$7e, _descriptor$7e, _descriptor2$6G, _descriptor3$5O, _descriptor4$54, _descriptor5$4o, _descriptor6$3H, _descriptor7$36, _descriptor8$2I, _descriptor9$2t, _descriptor0$2d, _Tw2GeometryBone;
+	var Tw2GeometryBone = (_dec$82 = define("Tw2GeometryBone"), _dec2$7j = string, _dec3$6Q = int32$1, _dec4$5Z = vector3, _dec5$5n = quaternion, _dec6$4K = matrix4, _dec7$43 = matrix4, _dec8$3w = matrix4, _dec9$2$ = matrix4, _dec0$2O = float32Array, _dec1$2z = isPrivate, _dec10$2d = plain, _dec11$22 = isPrivate, _dec$82(_class$82 = (_class2$7e = (_Tw2GeometryBone = class Tw2GeometryBone {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7e, this);
 	    _initializerDefineProperty(this, "parentIndex", _descriptor2$6G, this);
@@ -54707,10 +54707,10 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7e)) || _class$81);
+	}), _class2$7e)) || _class$82);
 
-	var _dec$80, _dec2$7i, _dec3$6P, _dec4$5Y, _dec5$5m, _class$80, _class2$7d, _descriptor$7d, _descriptor2$6F, _descriptor3$5N, _descriptor4$53;
-	var Tw2GeometryCurve = (_dec$80 = define("Tw2GeometryCurve"), _dec2$7i = float, _dec3$6P = float, _dec4$5Y = vector, _dec5$5m = vector, _dec$80(_class$80 = (_class2$7d = class Tw2GeometryCurve {
+	var _dec$81, _dec2$7i, _dec3$6P, _dec4$5Y, _dec5$5m, _class$81, _class2$7d, _descriptor$7d, _descriptor2$6F, _descriptor3$5N, _descriptor4$53;
+	var Tw2GeometryCurve = (_dec$81 = define("Tw2GeometryCurve"), _dec2$7i = float, _dec3$6P = float, _dec4$5Y = vector, _dec5$5m = vector, _dec$81(_class$81 = (_class2$7d = class Tw2GeometryCurve {
 	  constructor() {
 	    _initializerDefineProperty(this, "dimension", _descriptor$7d, this);
 	    _initializerDefineProperty(this, "degree", _descriptor2$6F, this);
@@ -54745,10 +54745,10 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$7d)) || _class$80);
+	}), _class2$7d)) || _class$81);
 
-	var _dec$7$, _dec2$7h, _dec3$6O, _dec4$5X, _dec5$5l, _dec6$4J, _dec7$42, _dec8$3v, _class$7$, _class2$7c, _descriptor$7c, _descriptor2$6E, _descriptor3$5M, _descriptor4$52, _descriptor5$4n, _descriptor6$3G, _descriptor7$35;
-	var Tw2GeometryMeshArea = (_dec$7$ = define("Tw2GeometryMeshArea"), _dec2$7h = string, _dec3$6O = uint$1, _dec4$5X = uint$1, _dec5$5l = vector3, _dec6$4J = vector3, _dec7$42 = vector3, _dec8$3v = float, _dec$7$(_class$7$ = (_class2$7c = class Tw2GeometryMeshArea {
+	var _dec$80, _dec2$7h, _dec3$6O, _dec4$5X, _dec5$5l, _dec6$4J, _dec7$42, _dec8$3v, _class$80, _class2$7c, _descriptor$7c, _descriptor2$6E, _descriptor3$5M, _descriptor4$52, _descriptor5$4n, _descriptor6$3G, _descriptor7$35;
+	var Tw2GeometryMeshArea = (_dec$80 = define("Tw2GeometryMeshArea"), _dec2$7h = string, _dec3$6O = uint$1, _dec4$5X = uint$1, _dec5$5l = vector3, _dec6$4J = vector3, _dec7$42 = vector3, _dec8$3v = float, _dec$80(_class$80 = (_class2$7c = class Tw2GeometryMeshArea {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7c, this);
 	    _initializerDefineProperty(this, "start", _descriptor2$6E, this);
@@ -54824,10 +54824,10 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _class2$7c)) || _class$7$);
+	}), _class2$7c)) || _class$80);
 
-	var _dec$7_, _dec2$7g, _dec3$6N, _dec4$5W, _dec5$5k, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$L, _dec20$I, _dec21$D, _dec22$A, _dec23$w, _dec24$v, _class$7_, _class2$7b, _descriptor$7b, _descriptor2$6D, _descriptor3$5L, _descriptor4$51, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
-	var Tw2GeometryMesh = (_dec$7_ = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint$1, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint$1, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$L = vector3, _dec20$I = float, _dec21$D = list("String"), _dec22$A = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7_(_class$7_ = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
+	var _dec$7$, _dec2$7g, _dec3$6N, _dec4$5W, _dec5$5k, _dec6$4I, _dec7$41, _dec8$3u, _dec9$2_, _dec0$2N, _dec1$2y, _dec10$2c, _dec11$21, _dec12$1P, _dec13$1C, _dec14$1q, _dec15$1k, _dec16$19, _dec17$12, _dec18$X, _dec19$L, _dec20$I, _dec21$D, _dec22$A, _dec23$w, _dec24$v, _class$7$, _class2$7b, _descriptor$7b, _descriptor2$6D, _descriptor3$5L, _descriptor4$51, _descriptor5$4m, _descriptor6$3F, _descriptor7$34, _descriptor8$2H, _descriptor9$2s, _descriptor0$2c, _descriptor1$1S, _descriptor10$1F, _descriptor11$1u, _descriptor12$1m, _descriptor13$1g, _descriptor14$17, _descriptor15$V, _Tw2GeometryMesh;
+	var Tw2GeometryMesh = (_dec$7$ = define("Tw2GeometryMesh"), _dec2$7g = string, _dec3$6N = struct("Tw2VertexDeclaration"), _dec4$5W = list("Tw2GeometryMeshArea"), _dec5$5k = struct("WebGLBuffer"), _dec6$4I = isPrivate, _dec7$41 = uint$1, _dec8$3u = isPrivate, _dec9$2_ = isPrivate, _dec0$2N = vector, _dec1$2y = todo("Make private"), _dec10$2c = struct("WebGLBuffer"), _dec11$21 = isPrivate, _dec12$1P = vector, _dec13$1C = isPrivate, _dec14$1q = todo("Make private"), _dec15$1k = uint$1, _dec16$19 = isPrivate, _dec17$12 = vector3, _dec18$X = vector3, _dec19$L = vector3, _dec20$I = float, _dec21$D = list("String"), _dec22$A = list(), _dec23$w = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7$(_class$7$ = (_class2$7b = (_Tw2GeometryMesh = class Tw2GeometryMesh {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$7b, this);
 	    _initializerDefineProperty(this, "declaration", _descriptor2$6D, this);
@@ -55787,7 +55787,7 @@
 	  initializer: function () {
 	    return false;
 	  }
-	}), _class2$7b)) || _class$7_);
+	}), _class2$7b)) || _class$7$);
 	class ErrSystemMirrorDisabled extends Tw2Error {
 	  constructor(data) {
 	    super(data, "System mirror is required but has been disabled");
@@ -55799,8 +55799,8 @@
 	  }
 	}
 
-	var _dec$7Z, _dec2$7f, _dec3$6M, _class$7Z, _class2$7a, _descriptor$7a, _descriptor2$6C;
-	var Tw2GeometryMeshBinding = (_dec$7Z = define("Tw2GeometryMeshBinding"), _dec2$7f = struct("Tw2GeometryMesh"), _dec3$6M = list("Tw2GeometryBone"), _dec$7Z(_class$7Z = (_class2$7a = class Tw2GeometryMeshBinding {
+	var _dec$7_, _dec2$7f, _dec3$6M, _class$7_, _class2$7a, _descriptor$7a, _descriptor2$6C;
+	var Tw2GeometryMeshBinding = (_dec$7_ = define("Tw2GeometryMeshBinding"), _dec2$7f = struct("Tw2GeometryMesh"), _dec3$6M = list("Tw2GeometryBone"), _dec$7_(_class$7_ = (_class2$7a = class Tw2GeometryMeshBinding {
 	  constructor() {
 	    _initializerDefineProperty(this, "mesh", _descriptor$7a, this);
 	    _initializerDefineProperty(this, "bones", _descriptor2$6C, this);
@@ -55819,10 +55819,10 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$7a)) || _class$7Z);
+	}), _class2$7a)) || _class$7_);
 
-	var _dec$7Y, _dec2$7e, _dec3$6L, _dec4$5V, _class$7Y, _class2$79, _descriptor$79, _descriptor2$6B, _descriptor3$5K;
-	var Tw2GeometryModel = (_dec$7Y = define("Tw2GeometryModel"), _dec2$7e = string, _dec3$6L = list("Tw2GeometryMeshBinding"), _dec4$5V = struct("Tw2GeometrySkeleton"), _dec$7Y(_class$7Y = (_class2$79 = class Tw2GeometryModel {
+	var _dec$7Z, _dec2$7e, _dec3$6L, _dec4$5V, _class$7Z, _class2$79, _descriptor$79, _descriptor2$6B, _descriptor3$5K;
+	var Tw2GeometryModel = (_dec$7Z = define("Tw2GeometryModel"), _dec2$7e = string, _dec3$6L = list("Tw2GeometryMeshBinding"), _dec4$5V = struct("Tw2GeometrySkeleton"), _dec$7Z(_class$7Z = (_class2$79 = class Tw2GeometryModel {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$79, this);
 	    _initializerDefineProperty(this, "meshBindings", _descriptor2$6B, this);
@@ -55865,10 +55865,10 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$79)) || _class$7Y);
+	}), _class2$79)) || _class$7Z);
 
-	var _dec$7X, _dec2$7d, _dec3$6K, _dec4$5U, _class$7X, _class2$78, _descriptor$78, _descriptor2$6A;
-	var Tw2GeometrySkeleton = (_dec$7X = define("Tw2GeometrySkeleton"), _dec2$7d = list("Tw2GeometryBone"), _dec3$6K = plain, _dec4$5U = isPrivate, _dec$7X(_class$7X = (_class2$78 = class Tw2GeometrySkeleton {
+	var _dec$7Y, _dec2$7d, _dec3$6K, _dec4$5U, _class$7Y, _class2$78, _descriptor$78, _descriptor2$6A;
+	var Tw2GeometrySkeleton = (_dec$7Y = define("Tw2GeometrySkeleton"), _dec2$7d = list("Tw2GeometryBone"), _dec3$6K = plain, _dec4$5U = isPrivate, _dec$7Y(_class$7Y = (_class2$78 = class Tw2GeometrySkeleton {
 	  constructor() {
 	    _initializerDefineProperty(this, "bones", _descriptor$78, this);
 	    _initializerDefineProperty(this, "trackMasks", _descriptor2$6A, this);
@@ -55917,10 +55917,10 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$78)) || _class$7X);
+	}), _class2$78)) || _class$7Y);
 
-	var _dec$7W, _dec2$7c, _dec3$6J, _dec4$5T, _class$7W, _class2$77, _descriptor$77, _descriptor2$6z, _descriptor3$5J;
-	var Tw2GeometryTrackGroup = (_dec$7W = define("Tw2GeometryTrackGroup"), _dec2$7c = string, _dec3$6J = struct("Tw2GeometryModel"), _dec4$5T = list("Tw2GeometryTransformTrack"), _dec$7W(_class$7W = (_class2$77 = class Tw2GeometryTrackGroup {
+	var _dec$7X, _dec2$7c, _dec3$6J, _dec4$5T, _class$7X, _class2$77, _descriptor$77, _descriptor2$6z, _descriptor3$5J;
+	var Tw2GeometryTrackGroup = (_dec$7X = define("Tw2GeometryTrackGroup"), _dec2$7c = string, _dec3$6J = struct("Tw2GeometryModel"), _dec4$5T = list("Tw2GeometryTransformTrack"), _dec$7X(_class$7X = (_class2$77 = class Tw2GeometryTrackGroup {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$77, this);
 	    _initializerDefineProperty(this, "model", _descriptor2$6z, this);
@@ -55947,10 +55947,10 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _class2$77)) || _class$7W);
+	}), _class2$77)) || _class$7X);
 
-	var _dec$7V, _dec2$7b, _dec3$6I, _dec4$5S, _dec5$5j, _class$7V, _class2$76, _descriptor$76, _descriptor2$6y, _descriptor3$5I, _descriptor4$50;
-	var Tw2GeometryTransformTrack = (_dec$7V = define("Tw2GeometryTransformTrack"), _dec2$7b = string, _dec3$6I = struct("Tw2GeometryCurve"), _dec4$5S = struct("Tw2GeometryCurve"), _dec5$5j = unknown, _dec$7V(_class$7V = (_class2$76 = class Tw2GeometryTransformTrack {
+	var _dec$7W, _dec2$7b, _dec3$6I, _dec4$5S, _dec5$5j, _class$7W, _class2$76, _descriptor$76, _descriptor2$6y, _descriptor3$5I, _descriptor4$50;
+	var Tw2GeometryTransformTrack = (_dec$7W = define("Tw2GeometryTransformTrack"), _dec2$7b = string, _dec3$6I = struct("Tw2GeometryCurve"), _dec4$5S = struct("Tw2GeometryCurve"), _dec5$5j = unknown, _dec$7W(_class$7W = (_class2$76 = class Tw2GeometryTransformTrack {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$76, this);
 	    _initializerDefineProperty(this, "position", _descriptor2$6y, this);
@@ -55985,7 +55985,7 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _class2$76)) || _class$7V);
+	}), _class2$76)) || _class$7W);
 
 	class ErrCurveDataInvalid extends Tw2Error {
 	  constructor(data) {
@@ -64503,7 +64503,7 @@
 	 */
 	CmfReader.PACKED_TANGENTS = /^packedTangent(?:Legacy)?([0-9]*)$/;
 
-	var _dec$7U, _class$7U, _Tw2GeometryRes;
+	var _dec$7V, _class$7V, _Tw2GeometryRes;
 
 	// Todo: Change to registration process
 	var readers = {
@@ -64531,7 +64531,7 @@
 	 * @property {Array<Tw2GeometryAnimation>} animations
 	 * @property {Boolean} _boundsDirty
 	 */
-	var Tw2GeometryRes = (_dec$7U = define("Tw2GeometryRes", "TriGeometryRes"), _dec$7U(_class$7U = (_Tw2GeometryRes = class Tw2GeometryRes extends Tw2Resource {
+	var Tw2GeometryRes = (_dec$7V = define("Tw2GeometryRes", "TriGeometryRes"), _dec$7V(_class$7V = (_Tw2GeometryRes = class Tw2GeometryRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    this.meshes = [];
@@ -65223,7 +65223,7 @@
 	    res.UpdateFromJSON(json, options);
 	    return res;
 	  }
-	}, _Tw2GeometryRes.requiresProcessing = true, _Tw2GeometryRes)) || _class$7U);
+	}, _Tw2GeometryRes.requiresProcessing = true, _Tw2GeometryRes)) || _class$7V);
 
 	/**
 	 * Throws when a geometry mesh lacks an element required for a particle system
@@ -68796,8 +68796,8 @@
 	TextureFormatVta.formatName = "VTA";
 	TextureFormatVta.exts = ["vta"];
 
-	var _dec$7T, _class$7T, _Tw2TextureRes;
-	var Tw2TextureRes = (_dec$7T = define("Tw2TextureRes"), _dec$7T(_class$7T = (_Tw2TextureRes = class Tw2TextureRes extends Tw2Resource {
+	var _dec$7U, _class$7U, _Tw2TextureRes;
+	var Tw2TextureRes = (_dec$7U = define("Tw2TextureRes"), _dec$7U(_class$7U = (_Tw2TextureRes = class Tw2TextureRes extends Tw2Resource {
 	  constructor() {
 	    super(...arguments);
 	    this.texture = null;
@@ -69345,7 +69345,7 @@
 	  }
 	}, _Tw2TextureRes._formats = new Map(), _Tw2TextureRes._formatHandlers = [], _Tw2TextureRes.Capability = {
 	  FORMATS: "texture.formats"
-	}, _Tw2TextureRes)) || _class$7T);
+	}, _Tw2TextureRes)) || _class$7U);
 	Tw2Resource.prototype.DoCustomLoad = null;
 	Tw2TextureRes.RegisterFormat(TextureFormatDDS);
 	Tw2TextureRes.RegisterFormat(TextureFormatImage);
@@ -69354,7 +69354,7 @@
 	Tw2TextureRes.RegisterFormat(TextureFormatHTML);
 	Tw2TextureRes.RegisterFormat(TextureFormatVta);
 
-	var _dec$7S, _class$7S;
+	var _dec$7T, _class$7T;
 
 	/**
 	 * A generated solid-colour texture, rasterized from its own path so a constant
@@ -69387,7 +69387,7 @@
 	 * `sampler2DArray` is an INVALID_OPERATION rather than a wrong picture, so a
 	 * scene global like `EveSceneFogVolumeMap` needs `colorarray`, not `color`.
 	 */
-	var Tw2ColorTextureRes = (_dec$7S = define("Tw2ColorTextureRes"), _dec$7S(_class$7S = class Tw2ColorTextureRes extends Tw2TextureRes {
+	var Tw2ColorTextureRes = (_dec$7T = define("Tw2ColorTextureRes"), _dec$7T(_class$7T = class Tw2ColorTextureRes extends Tw2TextureRes {
 	  constructor() {
 	    super(...arguments);
 	    /**
@@ -69559,6 +69559,110 @@
 	    // the shape of its first consumer and hands that guess to every other.
 	    this._target = Tw2ColorTextureRes.GetTarget(gl, dimension);
 	    this._isCube = dimension === "cube";
+	    this._width = 1;
+	    this._height = 1;
+	    return true;
+	  }
+	}) || _class$7T);
+
+	var _dec$7S, _class$7S;
+
+	/**
+	 * A generated 1x1 depth texture that answers a comparison sampler.
+	 *
+	 * `dynamic:/depth/<value>` - the value is the stored depth, 0..1, and defaults
+	 * to 1, the far plane, which means "nothing is occluding here".
+	 *
+	 * Carbon does not need one. Its neutral for a shadow resource is an empty
+	 * handle - `Tr2DepthStencilPtr emptyTexture` for `ShadowMapAtlas`
+	 * (trinity/trinity/Tr2LightManager.cpp:188-189), an empty `Tr2TextureAL{}` for
+	 * `EveSpaceSceneDynamicShadowMap` (:166) - and D3D11 reads an unbound
+	 * comparison resource as "unshadowed". WebGL has no such state: a
+	 * `sampler2DShadow` with nothing bound, or with an ordinary colour texture
+	 * bound, fails the draw with "Mismatch between texture format and sampler type
+	 * (signed/unsigned/float/shadow)". So the platform forces a real texture where
+	 * Carbon needs none, and this is the smallest one that says the same thing.
+	 *
+	 * It is a DEPTH_COMPONENT with `TEXTURE_COMPARE_MODE` set to
+	 * `COMPARE_REF_TO_TEXTURE`, which is what makes it a legal partner for a shadow
+	 * sampler - the compare mode is part of the match, not just the format.
+	 *
+	 * Filtering is NEAREST and wrapping is CLAMP_TO_EDGE, as for the colour
+	 * neutrals beside it: one texel has nothing to interpolate and nothing to tile.
+	 */
+	var Tw2DepthTextureRes = (_dec$7S = define("Tw2DepthTextureRes"), _dec$7S(_class$7S = class Tw2DepthTextureRes extends Tw2TextureRes {
+	  constructor() {
+	    super(...arguments);
+	    /**
+	     * The depth to store, 0..1. 1 is the far plane.
+	     * @type {Number}
+	     */
+	    this.depthValue = 1;
+	  }
+	  /**
+	   * Parses a `dynamic:/depth/<value>` query.
+	   * @param {String} query
+	   * @returns {Number|null} the depth, or null when the query is not one
+	   */
+	  static ParseQuery(query) {
+	    var text = String(query != null ? query : "").trim();
+	    if (!text) return 1;
+	    var value = Number(text.split(",")[0]);
+	    return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : null;
+	  }
+
+	  /**
+	   * Creates a depth resource from a `dynamic:/depth` query.
+	   * @param {String} query
+	   * @returns {Tw2DepthTextureRes|null}
+	   */
+	  static FromQuery(query) {
+	    var depthValue = Tw2DepthTextureRes.ParseQuery(query);
+	    if (depthValue === null) return null;
+	    var res = new Tw2DepthTextureRes();
+	    res.depthValue = depthValue;
+	    return res;
+	  }
+
+	  /**
+	   * Rasterizes one 1x1 comparable depth texture.
+	   * @param {WebGL2RenderingContext} gl
+	   * @param {Number} depthValue - 0..1
+	   * @returns {WebGLTexture}
+	   */
+	  static CreateTexture(gl, depthValue) {
+	    var texture = gl.createTexture();
+	    gl.bindTexture(gl.TEXTURE_2D, texture);
+	    // 24-bit, because DEPTH_COMPONENT16 is the one depth format some
+	    // drivers refuse to filter or compare against, and this texture exists
+	    // precisely to be compared against.
+	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, 1, 1, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, new Uint32Array([Math.round(depthValue * 0xffffffff)]));
+	    // THE COMPARE MODE IS THE POINT. Without it this is a depth texture a
+	    // shadow sampler still refuses; with it, the sampler's compare against
+	    // the far plane passes for every fragment and the result is "lit".
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_FUNC, gl.LEQUAL);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	    gl.bindTexture(gl.TEXTURE_2D, null);
+	    return texture;
+	  }
+
+	  /**
+	   * Rasterizes the depth. Returning true tells the resource manager the
+	   * resource has handled its own loading and must not be fetched.
+	   * @returns {Boolean}
+	   */
+	  DoCustomLoad() {
+	    var gl = device.gl;
+	    this.Attach(Tw2DepthTextureRes.CreateTexture(gl, this.depthValue), this.path);
+
+	    // After Attach, which clears metadata - the same ordering the colour
+	    // neutral beside this one documents.
+	    this._target = gl.TEXTURE_2D;
+	    this._isCube = false;
 	    this._width = 1;
 	    this._height = 1;
 	    return true;
@@ -70296,6 +70400,14 @@
 	    for (var _ref3 of [["color", "2d"], ["colorcube", "cube"], ["colorarray", "2darray"], ["colorvolume", "3d"]]) {
 	      _loop();
 	    }
+
+	    // A comparable depth neutral, for a shadow sampler with no shadow map.
+	    // Carbon's neutral there is an empty handle and D3D11 reads that as
+	    // unshadowed; WebGL refuses the draw instead, so the platform needs a
+	    // real texture to say the same thing. See Tw2DepthTextureRes.
+	    this.RegisterResourceConstructor("depth", {
+	      GetResource: query => Tw2DepthTextureRes.FromQuery(query)
+	    });
 
 	    // Ordered layer paths -> one shared 2D array texture. Keying the
 	    // cache on the full ordered path list is the point: two effects
@@ -223165,6 +223277,7 @@
 		Tw2ConstructorStore: Tw2ConstructorStore,
 		Tw2DepthOfFieldRenderer: Tw2DepthOfFieldRenderer,
 		Tw2DepthRenderTarget: Tw2DepthRenderTarget,
+		Tw2DepthTextureRes: Tw2DepthTextureRes,
 		Tw2DirectInstanceData: Tw2DirectInstanceData,
 		Tw2Effect: Tw2Effect,
 		Tw2EffectRes: Tw2EffectRes,
@@ -322212,6 +322325,38 @@
 	    // authority here: it attaches its light-space atlas to this slot and to
 	    // the screen-space visibility slot alike, which cannot both be right.
 	    "EveSpaceSceneCascadedShadowMap": "dynamic:/color/1,1,1,1",
+	    // WHITE, and for the reason the note above gives: white is "nothing
+	    // occluding". Carbon registers this one with an empty texture
+	    // (trinity/trinity/Tr2LightManager.cpp:166) because D3D11 reads an
+	    // unbound resource as exactly that; WebGL has no such state, so the
+	    // neutral has to be a real texture.
+	    //
+	    // Declared here because EVE's shaders never ask for it and Frontier's
+	    // do - the comment beside the cascaded map above describes CARBON
+	    // registering both this and EveSpaceSceneShadowMap white, and only the
+	    // second of the two was ever declared in this file.
+	    "EveSpaceSceneDynamicShadowMap": "dynamic:/color/1,1,1,1",
+	    // BLACK, which is Carbon's own answer rather than a guess: the driver
+	    // registers the real correction map when reflection correction is on
+	    // and `m_blackReflectionCorrectionMap` when it is off
+	    // (trinity/trinity/Eve/EveSpaceSceneRenderDriver.cpp:428). We have no
+	    // producer for the real one, so we are always in the second case.
+	    "EveSpaceSceneReflectionCorrectionLookupTable": "dynamic:/color/0,0,0,1",
+	    // THE FAR PLANE, in a texture a comparison sampler will accept.
+	    //
+	    // This is the depth atlas for DYNAMIC lights - one tile per
+	    // shadow-casting local light, built by Carbon's light manager
+	    // (Tr2LightManager.cpp:442) and registered from
+	    // `shadowResources.pointLightShadowDepth`
+	    // (trinity/trinity/Eve/EveSpaceScene.cpp:4265). It is neither of the sun
+	    // shadow maps above it, and we have no local-light shadow system to
+	    // produce one.
+	    //
+	    // Frontier's shaders sample it with a `sampler2DShadow`, so an ordinary
+	    // colour texture is not merely wrong, it fails the draw outright. At the
+	    // far plane every comparison passes, which reads as "this light shadows
+	    // nothing" - the same thing Carbon's empty handle says on D3D11.
+	    "ShadowMapAtlas": "dynamic:/depth/1",
 	    // WHITE, for the same reason the shadow map above is white, but with
 	    // different arithmetic behind it. Carbon's `DepthMap` is a scene depth
 	    // sample; the soft-particle shaders linearise it as

@@ -7,6 +7,7 @@ export * from "./Tw2LoadingObject";
 export * from "./Tw2Resource";
 export * from "./Tw2TextureRes";
 export * from "./Tw2ColorTextureRes";
+export * from "./Tw2DepthTextureRes";
 export * from "./Tw2TextureArrayRes";
 export * from "./Tw2TextureAtlasArrayRes";
 
