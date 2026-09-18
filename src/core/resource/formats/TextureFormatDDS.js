@@ -115,6 +115,23 @@ const DXGI_NAME =
     [DXGI.BC7_UNORM_SRGB]: "BC7_UNORM_SRGB"
 };
 
+/**
+ * Block formats delegated to the runtime, keyed by this file's own format name.
+ *
+ * The names on the left come from `ParseDDS`; the names on the right are the
+ * runtime's pixel formats. Only formats with no decoder in this file appear -
+ * BC1/BC2/BC3 are decoded locally and deliberately absent.
+ */
+const RUNTIME_BLOCK_FORMATS =
+{
+    "DX10/BC4_UNORM": "bc4-r-unorm",
+    "DX10/BC4_SNORM": "bc4-r-snorm",
+    "DX10/BC5_UNORM": "bc5-rg-unorm",
+    "DX10/BC5_SNORM": "bc5-rg-snorm",
+    "DX10/BC7_UNORM": "bc7-rgba-unorm",
+    "DX10/BC7_UNORM_SRGB": "bc7-rgba-unorm-srgb"
+};
+
 const GL_COMPRESSED =
 {
     COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT: 0x8C4D,
@@ -517,12 +534,25 @@ export const TextureFormatDDS =
 
         // A block-compressed volume is decoded on the CPU and uploaded as RGBA8.
         //
-        // Not a shortcut taken to avoid work - it is the only thing GL permits.
-        // S3TC has no 3D form: the extension allows its formats through
-        // compressedTexImage3D only for TEXTURE_2D_ARRAY, and a 2D array is not
-        // a substitute here, because these are sampled with 3D coordinates and
-        // an array does not filter between its slices. Uploading one would swap
-        // a hard failure for a subtly wrong image.
+        // For S3TC this is the only thing GL permits: the extension allows its
+        // formats through compressedTexImage3D only for TEXTURE_2D_ARRAY, and a
+        // 2D array is not a substitute here, because these are sampled with 3D
+        // coordinates and an array does not filter between its slices.
+        //
+        // For BPTC it is a choice, and this comment used to claim otherwise.
+        // The GL/ES extension does grant CompressedTexImage3D for BC7, and
+        // ANGLE permits it (ValidCompressedFormatForTexture3D allows BPTC while
+        // rejecting S3TC) - but WEBGL's EXT_texture_compression_bptc grants
+        // compressedTexImage2D and compressedTexSubImage2D only, and names
+        // neither TEXTURE_3D nor compressedTexImage3D anywhere. Uploading the
+        // blocks would be relying on an implementation's leniency rather than
+        // on the contract, unprobed on Metal, Vulkan, Firefox and Safari. So
+        // BC7 volumes decode too, and a compressed path stays available later
+        // behind a capability probe rather than an assumption.
+        //
+        // Carbon does not decode at all - it hands D3D11 the blocks verbatim,
+        // volumes included (trinity/trinity/Tr2ImageIOHelpers.cpp:48-88). This
+        // is a platform-forced divergence, not a design difference.
         //
         // EVE ships these as BC3 at 128x128x128 with 8 mips, so decoding costs
         // about 9 MB of RGBA per texture and happens once, at load.
@@ -749,17 +779,20 @@ export const TextureFormatDDS =
      */
     CanDecodeBlocks(info)
     {
-        return [ "DXT1/BC1", "DXT3/BC2", "DXT5/BC3" ].includes(info.name);
+        return [ "DXT1/BC1", "DXT3/BC2", "DXT5/BC3" ].includes(info.name)
+            || RUNTIME_BLOCK_FORMATS[info.name] !== undefined;
     },
 
     /**
      * Decodes one block-compressed 2D slice to RGBA8.
      *
-     * Written out rather than pulled from runtime-resource, which has these
-     * decoders already: its RGBA path reads a whole file down to one
-     * subresource, and a volume needs each slice of each mip separately. The
-     * two want different shapes, and a reader that hands back one image is the
-     * wrong seam for a 128-slice volume.
+     * BC1/BC2/BC3 are written out here for history rather than necessity: the
+     * runtime always had the decoders, and the reason given for duplicating
+     * them - that its RGBA path reads a whole file down to one subresource -
+     * stopped being true once `CjsDdsFormat.decodeBlockSlice` existed. That is
+     * the seam a volume needs, and everything else now goes through it. These
+     * three stay only because they are proven against every shipped volume;
+     * they are deletable work, not a design.
      * @param {ArrayBuffer} arrayBuffer
      * @param {Number} offset - byte offset of this slice
      * @param {Number} width
@@ -770,6 +803,23 @@ export const TextureFormatDDS =
     DecodeBlockSlice(arrayBuffer, offset, width, height, info)
     {
         const src = new Uint8Array(arrayBuffer, offset, this.GetCompressedMipSize(width, height, info.blockBytes));
+
+        // Anything this file has no decoder for goes to the runtime, which has
+        // them all. The local BC1/BC2/BC3 path below stays because it is what
+        // every shipped volume uses today and it is proven; new formats have no
+        // reason to be written twice.
+        const runtimeFormat = RUNTIME_BLOCK_FORMATS[info.name];
+
+        if (runtimeFormat)
+        {
+            return CjsDdsFormat.decodeBlockSlice(src, {
+                pixelFormat: runtimeFormat,
+                width,
+                height,
+                rowPitch: Math.max(1, Math.ceil(width / 4)) * info.blockBytes
+            });
+        }
+
         const out = new Uint8Array(width * height * 4);
         const blocksX = Math.max(1, Math.ceil(width / 4));
         const blocksY = Math.max(1, Math.ceil(height / 4));
