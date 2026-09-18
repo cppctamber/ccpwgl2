@@ -78049,13 +78049,43 @@
 	  };
 	}
 	var CONTEXT_FIRST_PARAMETER = /^\(?\s*_?(context|updateContext)\b/;
+
+	/**
+	 * Whether a function's source still carries the names it was written with.
+	 *
+	 * A minifier renames parameters to one or two characters, so `(context)`
+	 * arrives as `(t)` and any assertion about the NAME becomes an assertion about
+	 * the build. There is no way to tell a minified name from a wrongly chosen one
+	 * by inspection, so the only sound thing is to stop asking once the names are
+	 * gone - which a parameter list of nothing but short identifiers says plainly.
+	 *
+	 * @param {string} parameterList Source from the opening parenthesis.
+	 * @returns {boolean} True when at least one parameter kept a real name.
+	 */
+	function hasReadableParameterNames(parameterList) {
+	  var close = parameterList.indexOf(")");
+	  var declared = close === -1 ? parameterList : parameterList.slice(0, close);
+	  return /[\$A-Z_a-z][\$0-9A-Z_a-z]{2,}/.test(declared);
+	}
 	function assertContextFirstMethod(fn, methodName) {
 	  if (typeof fn !== "function") {
 	    return;
 	  }
 	  var source = String(fn);
 	  var parameterList = source.slice(source.indexOf("("));
-	  if (fn.length < 1 || !CONTEXT_FIRST_PARAMETER.test(parameterList)) {
+
+	  // Arity is the contract and holds in any build: a contextual method that
+	  // takes nothing cannot have been given a context.
+	  if (fn.length < 1) {
+	    throw new TypeError("CjsSchema.carbon.contextual method \"".concat(String(methodName), "\" must take a context as its first parameter."));
+	  }
+
+	  // The NAME is an authoring convention, and it is only checkable while the
+	  // names exist. Asserting it against a minified bundle threw on every
+	  // contextual method in the shipped build and took the engine down at load
+	  // - the failure is the assertion's, not the code's.
+	  if (!hasReadableParameterNames(parameterList)) return;
+	  if (!CONTEXT_FIRST_PARAMETER.test(parameterList)) {
 	    throw new TypeError("CjsSchema.carbon.contextual method \"".concat(String(methodName), "\" must be context-first ") + "(first parameter named context or updateContext).");
 	  }
 	}
@@ -79369,18 +79399,35 @@
 	  }
 
 	  /**
-	   * The settle hook: reproduces the meaningful consequences of the
-	   * corresponding Carbon INotify::OnModified implementation.
+	   * The settle hook: Carbon's `INotify::OnModified`, which fires when a
+	   * mapped member is modified from outside and the object re-derives whatever
+	   * depended on it.
 	   *
-	   * Invoked only by UpdateValues. Receives the mutation options bag
-	   * (source, caller context, skipEvents, ...). There is no changed-property
-	   * list - the pipeline is cooperative and cannot guarantee one - so
-	   * overrides are written broad-safe: consult own state, compare cached
-	   * derivations, and rely on `__state.flags`/`__state.rebuild` tokens for
-	   * targeted signals. Returning `false` rejects the update and retains the
-	   * dirty mark.
+	   * Invoked only by `UpdateValues`, which spreads its whole options bag in.
 	   *
-	   * @param {object} [options={}]
+	   * **`options.changedFields` IS A `Set` OF THE FIELD NAMES THAT CHANGED**,
+	   * so an override may dispatch on exactly the member that moved:
+	   *
+	   *     if (options.changedFields?.has("geometryResPath")) ...
+	   *
+	   * This block previously said the opposite - "there is no changed-property
+	   * list ... so overrides are written broad-safe". That was false when it was
+	   * written and it is why roughly twenty classes test a positional field name
+	   * that no caller passes, a duck that has never fired. `SetValues` forwards
+	   * the set at :755 and it has always arrived here. Corrected 2026-09-18.
+	   *
+	   * The set is ABSENT, not empty, when the caller did not compute one - a
+	   * hand-written `UpdateValues()` with no prior `SetValues`, for instance -
+	   * so `?.has()` rather than `.has()`, and an override that must cope with
+	   * both still needs its broad path.
+	   *
+	   * `options.source` is whoever caused the write, for two-way binding
+	   * feedback. Returning `false` rejects the update and RETAINS the dirty
+	   * mark, so the next settle tries again.
+	   *
+	   * @param {object} [options={}] The mutation options bag.
+	   * @param {Set<string>} [options.changedFields] Field names that changed.
+	   * @param {*} [options.source] Origin of the write.
 	   * @returns {boolean} Whether the update may complete.
 	   */
 	  OnModified() {
