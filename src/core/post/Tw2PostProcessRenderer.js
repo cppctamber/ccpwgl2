@@ -2,11 +2,27 @@ import { meta } from "utils";
 import { tw2, device } from "global";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2TextureParameter } from "../parameter";
+import { Tr2PPTonemappingEffect } from "./effect/Tr2PPTonemappingEffect";
 
 
 const EFFECT_PATH = "res:/graphics/effect/managed/space/postprocess/tonemapping.fx";
 
 const TOGGLE = (name, on) => on ? `${name}_ENABLED` : `${name}_DISABLED`;
+
+// ACES constants as Carbon constructs them, row-major (Tr2PostProcessRenderer.cpp:441-457).
+const ACES_INPUT_MAT = [
+    0.59719, 0.35458, 0.04823, 0, 0.07600, 0.90834, 0.01566, 0, 0.02840, 0.13383, 0.83777, 0, 0, 0, 0, 1
+];
+const ACES_OUTPUT_MAT = [
+    1.60475, -0.53108, -0.07367, 0, -0.10208, 1.10813, -0.00605, 0, -0.00327, -0.07276, 1.07602, 0, 0, 0, 0, 1
+];
+const ACES_BLUE_CORRECT = [
+    0.9404372683, -0.0183068787, 0.0778696104, 0, 0.0083786969, 0.8286599939, 0.1629613092, 0,
+    0.0005471261, -0.0008833746, 1.0003362486, 0, 0, 0, 0, 1
+];
+const ACES_BLUE_CORRECT_INV = [
+    1.06318, 0.0233956, -0.0865726, 0, -0.0106337, 1.20632, -0.19569, 0, -0.000590887, 0.00105248, 0.999538, 0, 0, 0, 0, 1
+];
 
 
 /**
@@ -172,7 +188,12 @@ export class Tw2PostProcessRenderer
             VIGNETTE_TOGGLE: TOGGLE("VIGNETTE", !!vignette),
             LUT_TOGGLE: TOGGLE("LUT", luts.length > 0),
             // Compute-only in Carbon; see the class note.
-            DYNAMIC_EXPOSURE_TOGGLE: TOGGLE("DYNAMIC_EXPOSURE", false)
+            DYNAMIC_EXPOSURE_TOGGLE: TOGGLE("DYNAMIC_EXPOSURE", false),
+            // Carbon's tone curve selection (Tr2PostProcessRenderer.cpp:1557-1575).
+            // EVE's composite declares neither option and ignores both; Frontier's
+            // falls back to its default path without them, which with no ACES
+            // values set rendered every pixel black.
+            ...Tw2PostProcessRenderer.TonemappingOptions(postProcess, tonemapping)
         }, true);
 
         const p = effect.parameters;
@@ -219,6 +240,22 @@ export class Tw2PostProcessRenderer
         this.SetParameter(p, "ToeNumerator", tonemapping ? tonemapping.toeNumerator : 0.021);
         this.SetParameter(p, "ToeDenominator", tonemapping ? tonemapping.toeDenominator : 0.3);
         this.SetParameter(p, "WhiteScale", tonemapping ? tonemapping.whiteScale : 2.5);
+
+        // ACES values, only for the ACES path - AgX takes none
+        // (`ApplyAgxTonemappingMethod`). The matrices are 3x3 constants of 11
+        // floats; Bind clamps the 16-float value to the slot, which is what
+        // Carbon's Matrix upload into a float3x3 does.
+        if (tonemapping && tonemapping.method === Tr2PPTonemappingEffect.Method.ACES)
+        {
+            this.SetParameter(p, "AcesSlope", tonemapping.slope);
+            this.SetParameter(p, "AcesToe", tonemapping.toe);
+            this.SetParameter(p, "AcesShoulder", tonemapping.shoulder);
+            this.SetParameter(p, "AcesBlackClip", tonemapping.blackClip);
+            this.SetParameter(p, "AcesWhiteClip", tonemapping.whiteClip);
+            const { input, output } = Tw2PostProcessRenderer.AcesMatrices(tonemapping.blueCorrection, tonemapping.scale);
+            this.SetParameter(p, "AcesInputMat", input);
+            this.SetParameter(p, "AcesOutputMat", output);
+        }
 
         // Debug wipes that select between hardcoded and parameter-driven curve
         // constants. Off means "use the parameters above everywhere".
@@ -332,6 +369,96 @@ export class Tw2PostProcessRenderer
         gl.enable(gl.DEPTH_TEST);
 
         return drew;
+    }
+
+
+    /**
+     * The tone curve options Carbon sets for a post process
+     *
+     * `Tonemapping::Apply*TonemappingMethod` (`Tr2PostProcessRenderer.cpp:431-508`):
+     * AgX and Uncharted2 set the method alone, ACES also sets its sweetener
+     * toggle, and a post process with no tone mapping disables it. With no post
+     * process at all Carbon sets nothing, so neither does this.
+     *
+     * @param {Tw2PostProcess2|null} postProcess
+     * @param {Tr2PPTonemappingEffect|null} tonemapping
+     * @returns {Object} options to merge
+     */
+    static TonemappingOptions(postProcess, tonemapping)
+    {
+        const { Method } = Tr2PPTonemappingEffect;
+        if (!postProcess) return {};
+        if (!tonemapping) return { TONE_MAPPING_METHOD: "TONE_MAPPING_DISABLED" };
+
+        switch (tonemapping.method)
+        {
+            case Method.ACES:
+                return {
+                    TONE_MAPPING_METHOD: "TONE_MAPPING_ACES",
+                    SWEETENER_TOGGLE: TOGGLE("SWEETENER", tonemapping.useSweeteners)
+                };
+
+            case Method.AGX:
+                return { TONE_MAPPING_METHOD: "TONE_MAPPING_AGX" };
+
+            default:
+                return { TONE_MAPPING_METHOD: "TONE_MAPPING_UNCHARTED2" };
+        }
+    }
+
+    /**
+     * Carbon's ACES input and output matrices, as uploaded
+     *
+     * A literal port of `ApplyAcesTonemappingMethod`
+     * (`Tr2PostProcessRenderer.cpp:441-484`), in Carbon's own row-major Matrix
+     * memory and operand order - these are uploaded, not composed with anything
+     * of ours. Carbon credits the fitted matrices to MJP's BakingLab ACES.hlsl
+     * and the blue correction to the ACES Central forum thread it cites.
+     *
+     * @param {Number} blueCorrection - 0..1 lerp toward the blue-corrected matrix
+     * @param {Number} scale
+     * @returns {{input: Float32Array, output: Float32Array}}
+     */
+    static AcesMatrices(blueCorrection, scale)
+    {
+        const mul = (a, b) =>
+        {
+            const r = new Float32Array(16);
+            for (let i = 0; i < 4; i++)
+                for (let j = 0; j < 4; j++)
+                    for (let k = 0; k < 4; k++) r[i * 4 + j] += a[i * 4 + k] * b[k * 4 + j];
+            return r;
+        };
+        const transpose = m =>
+        {
+            const r = new Float32Array(16);
+            for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) r[j * 4 + i] = m[i * 4 + j];
+            return r;
+        };
+        // Rows lerped from identity toward `target`'s rows, then transposed.
+        const correction = target =>
+        {
+            const m = new Float32Array(16);
+            for (let row = 0; row < 3; row++)
+                for (let col = 0; col < 3; col++)
+                {
+                    const identity = row === col ? 1 : 0;
+                    m[row * 4 + col] = identity + (target[row * 4 + col] - identity) * blueCorrection;
+                }
+            m[15] = 1;
+            return transpose(m);
+        };
+
+        const acesInput = transpose(ACES_INPUT_MAT);
+        const acesOutput = transpose(ACES_OUTPUT_MAT);
+        const blue = correction(ACES_BLUE_CORRECT);
+        const blueInv = correction(ACES_BLUE_CORRECT_INV);
+        const scaling = new Float32Array([ scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 1 ]);
+
+        return {
+            input: transpose(mul(mul(acesInput, blue), scaling)),
+            output: transpose(mul(blueInv, acesOutput))
+        };
     }
 
 }
