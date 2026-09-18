@@ -235,13 +235,44 @@ export const float64Array = create(PT_FLOAT64_ARRAY);
 export const vector = create(PT_VECTOR);
 
 /**
+ * Wire types an enum property may be STORED as, by name.
+ *
+ * `enums` does two jobs that do not always agree: it tells the UI which values
+ * a property may take, and it chooses how the Black reader decodes it. The
+ * default reader, `PT_ENUM`, expects a u16-length "NAME=value,..." string - an
+ * enum DEFINITION. A property whose value is stored as a plain integer read
+ * that way consumes the wrong number of bytes, and the stream desyncs.
+ */
+const ENUM_WIRE_TYPES = Object.freeze({
+    int32: PT_INT32,
+    uint: PT_UINT
+});
+
+/**
  * Enumerable property type
+ *
+ * `as` names the wire type when the value is stored as an integer rather than
+ * as an enum definition string. Omitted, it is `PT_ENUM` exactly as before, so
+ * no existing declaration changes meaning.
+ *
+ * This is what broke every default post-process template, on EVE as well as
+ * Frontier: `Tr2PPTonemappingEffect.method` is stored as an int
+ * (`res:/dx9/default/postprocess.black`, both games), was read as a string,
+ * and desynced the stream until the next property name landed on the text
+ * `Tr2PostProcess2` - "Unknown property Tr2PostProcess2 for
+ * Tr2PPTonemappingEffect". No tone map meant linear HDR straight to the canvas.
+ *
  * @type {function}
  */
 export const enums = createDecorator({
-    property({ target, property }, values)
+    property({ target, property }, values, as)
     {
-        typeHandler({ target, property }, PT_ENUM);
+        if (as !== undefined && !(as in ENUM_WIRE_TYPES))
+        {
+            throw new TypeError(`meta.enums: unknown wire type "${as}" for "${property}"`);
+        }
+
+        typeHandler({ target, property }, as === undefined ? PT_ENUM : ENUM_WIRE_TYPES[as]);
         defineMetadata("isPrivate", true, target, property);
         defineMetadata("enumerable", values, target, property);
     }

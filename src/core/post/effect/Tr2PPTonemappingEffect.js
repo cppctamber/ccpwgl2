@@ -28,7 +28,9 @@ const Method = Object.freeze({
 export class Tr2PPTonemappingEffect extends Tr2PPEffect
 {
 
-    @meta.enums(Method)
+    // Stored as a plain int, not as an enum-definition string - see
+    // `meta.enums`. Read as the default string it desynced the whole file.
+    @meta.enums(Method, "int32")
     method = Method.ACES;
 
     // Aces (Frontier)
