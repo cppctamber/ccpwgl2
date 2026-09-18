@@ -943,6 +943,25 @@ export class Tw2Effect extends meta.Model
                                     value = value[0];
                                 }
 
+                                // A shape no variable type holds is left alone.
+                                //
+                                // A constant spanning several registers without
+                                // filling the last is reflected WITHOUT that
+                                // register's trailing padding, so a three-register
+                                // struct arrives as 11 floats - Frontier's
+                                // tonemapping composite does exactly this. There
+                                // is no 11-float type, and borrowing a 12- or
+                                // 16-float one would write past the constant into
+                                // whatever follows it.
+                                //
+                                // Nothing is lost by skipping. This branch makes a
+                                // variable FROM the constant's own default slice,
+                                // and nothing drives it afterwards, so the buffer
+                                // already holds the exact value the variable would
+                                // have carried. Throwing instead failed the whole
+                                // shader.
+                                if (value !== undefined && !tw2.variableTypes.FindByValue(value)) continue;
+
                                 parameter = tw2.CreateVariable(name, value, type);
                                 if (parameter)
                                 {

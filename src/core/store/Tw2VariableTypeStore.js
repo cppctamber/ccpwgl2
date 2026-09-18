@@ -13,12 +13,27 @@ export class Tw2VariableTypeStore extends Tw2GenericStore
      */
     GetByValue(value)
     {
+        const Ctor = this.FindByValue(value);
+        if (!Ctor) throw new ErrStoreVariableTypeNotFoundByValue({ value });
+        return Ctor;
+    }
+
+    /**
+     * The variable type that can hold a value, or null when none can.
+     *
+     * The same search as `GetByValue` without the throw, so a caller that can
+     * reasonably do without a variable can ask first rather than be told.
+     * @param {*} value
+     * @returns {Function|null}
+     */
+    FindByValue(value)
+    {
         const { map } = STORE.get(this);
         for (let [ key, Ctor ] of map)
         {
             if ("isValue" in Ctor && Ctor.isValue(value)) return Ctor;
         }
-        throw new ErrStoreVariableTypeNotFoundByValue({ value });
+        return null;
     }
 
     /**
