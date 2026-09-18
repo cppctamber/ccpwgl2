@@ -1,4 +1,5 @@
 export * from "./effect";
+export * from "./Tr2PostProcessAttributes";
 export * from "./Tw2PostProcess";
 export * from "./Tw2PostProcess2";
 export * from "./Tw2PostProcessRenderer";
