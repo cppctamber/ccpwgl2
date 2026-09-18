@@ -2,7 +2,7 @@ import { Tw2ShaderCompilation } from "../shader/Tw2ShaderCompilation";
 import { emptyObject, meta } from "utils";
 import { Tw2BinaryReader } from "../reader";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
-import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
+import { Tw2Shader, Tw2ShaderPermutation, Tw2ShaderProgram } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 import { device, tw2 } from "global";
 import { CjsWebglFormat } from "@carbonenginejs/runtime/resource/formats/webgl";
@@ -357,6 +357,18 @@ export class Tw2EffectRes extends Tw2Resource
                 const built = CjsWebglFormat.buildEffect(bytes, {
                     source: this.path,
                     localLights: "packed-texture",
+                    // THIS device's limit, not the guaranteed minimum. The
+                    // translation happens here, in the browser, so the number is
+                    // known - and merging a family the device had room for costs
+                    // an aggregate to build and a channel unpack for nothing.
+                    // ANGLE reports 16 on D3D11 and 32 on its GL and SwiftShader
+                    // backends, so this is the difference between most shaders
+                    // merging and almost none of them.
+                    //
+                    // A cached or precompiled container could not do this: it
+                    // would have to assume the worst case, which is what a
+                    // packed/unpacked permutation axis would be for.
+                    textureUnitBudget: Tw2ShaderProgram.GetMaxTextureImageUnits(device.gl),
                     emitterOptions: {
                         depthRange: device.emitterDepthRange,
                         // CCP's `ssyf` tail; the device sets the uniform per draw.
