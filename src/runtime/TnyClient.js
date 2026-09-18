@@ -45,7 +45,11 @@ export class TnyClient extends meta.Model
             ...clientOptions
         } = options;
 
-        this.options = { ...clientOptions };
+        // colorMask: the channels the post-scene pass rewrites when no post
+        // effect ran. Alpha only by default, forcing an opaque canvas; a host
+        // wanting a transparent one sets colorMask[3] = 0 with a clearColor
+        // alpha of 0 (as the old WrappedClient did).
+        this.options = { colorMask: [ 0, 0, 0, 1 ], ...clientOptions };
 
         if (clearColor)
         {
@@ -552,9 +556,27 @@ export class TnyClient extends meta.Model
             }
         }
 
+        let didPost = false;
         if (this.post && this.post.Render)
         {
-            rendered = !!this.post.Render(dt, this) || rendered;
+            didPost = !!this.post.Render(dt, this);
+            rendered = didPost || rendered;
+        }
+
+        // Restored from WrappedClient: with no post effect, rewrite only the
+        // masked channels (alpha by default) so the canvas alpha is what the
+        // host asked for rather than whatever the scene wrote.
+        // The clear colour is put back afterwards: left white, it became the
+        // clear for every internal target on the next frame.
+        if (!didPost && !this.renderer)
+        {
+            const previous = tw2.GetClearColor(this.constructor.global.clearColor);
+            tw2
+                .SetColorMask(this.options.colorMask)
+                .SetClearColor([ 1, 1, 1, 1 ])
+                .ClearBufferBits(true, true)
+                .SetColorMask([ 1, 1, 1, 1 ])
+                .SetClearColor(previous);
         }
 
         this.EmitEvent("post_render", this, dt);
@@ -586,9 +608,12 @@ export class TnyClient extends meta.Model
             .SetDepth(true, device.reversedDepthBuffer ? "GEQUAL" : "LEQUAL", device.clearDepthValue)
             .SetViewport(viewport);
 
-        if (this.options.clearColor)
+        // The scene's own clearColor is the backdrop, as in WrappedClient; an
+        // explicit client option still wins.
+        const clearColor = this.options.clearColor ?? this.scene?.wrapped?.clearColor;
+        if (clearColor)
         {
-            tw2.SetClearColor(this.options.clearColor);
+            tw2.SetClearColor(clearColor);
         }
 
         if (this.options.clear !== false)
@@ -662,7 +687,8 @@ export class TnyClient extends meta.Model
     static global = {
         projection: mat4.create(),
         view: mat4.create(),
-        viewport: [ 0, 0, 0, 0 ]
+        viewport: [ 0, 0, 0, 0 ],
+        clearColor: [ 0, 0, 0, 0 ]
     };
 
 }
