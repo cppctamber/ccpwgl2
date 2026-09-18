@@ -45,6 +45,29 @@ export class EveSpaceScene extends meta.Model
     @meta.list("EveObject")
     backgroundObjects = [];
 
+    /**
+     * The scene's own settings container, when it has one.
+     *
+     * Frontier states a scene's sun, background and reflection intensities in a
+     * separate `scenesettings.black` - an EveChildContainer holding an
+     * EveChildLightingOverride - where EVE states them as fields on the scene
+     * object. This is where that container goes.
+     *
+     * A PROPERTY rather than an entry in `objects`, because there is exactly one
+     * of these per scene and nothing else put it there: `TnyScene.Rebuild`
+     * treats `objects` as derived state and splices it empty on every sky and
+     * hull change, so scene furniture kept there survives only until the next
+     * thing the user does.
+     *
+     * It does not make the overrides exclusive. Situational overrides - the
+     * twelve `res:/dx9/scene/overrides/*` fog containers are the shipped
+     * example - arrive as ordinary objects and blend against this one by
+     * priority, which is what Carbon's blend is for.
+     *
+     * @type {Object|null}
+     */
+    settings = null;
+
     @meta.boolean
     @meta.isPrivate
     backgroundRenderingEnabled = true;
@@ -354,6 +377,43 @@ export class EveSpaceScene extends meta.Model
     @meta.float
     reflectionIntensity = 1;
 
+    /**
+     * The roughness a surface uses for the SUN's diffuse term.
+     *
+     * Carbon carries it as a scene value and packs it into the ALPHA of the sun
+     * colour on its way to the shader - `data.Sun.DiffuseColor.a =
+     * m_defaultDiffuseRoughness` (`EveSpaceScene.cpp:3090`), default 1.
+     *
+     * ccpwgl had no name for it and sent whatever alpha the sun colour happened
+     * to carry. That is 1 for the constructor's white sun, so the value was
+     * right by coincidence rather than by intent - and any sun adopted with a
+     * different alpha silently became a roughness, with nothing to say so.
+     * @type {Number}
+     */
+    @meta.float
+    defaultDiffuseRoughness = 1;
+
+    /**
+     * The sun colour the frame actually uses: the blend of every lighting
+     * override over this scene's own, already multiplied by its intensity.
+     * Carbon's `m_currentSunColor`. Written by `_BlendLightingOverrides`.
+     * @type {vec4}
+     */
+    _currentSunColor = vec4.fromValues(1, 1, 1, 1);
+
+    /** Carbon's `m_currentNebulaIntensity`. @type {Number} */
+    _currentNebulaIntensity = 1;
+
+    /** Carbon's `m_currentReflectionIntensity`. @type {Number} */
+    _currentReflectionIntensity = 1;
+
+    /**
+     * The sun as the shader receives it: the blended colour, with the diffuse
+     * roughness in alpha. Reused per frame rather than allocated.
+     * @type {vec4}
+     */
+    _sunDataDiffuse = vec4.fromValues(1, 1, 1, 1);
+
     @meta.notImplemented
     @meta.boolean
     selfShadowOnly = false;
@@ -429,7 +489,7 @@ export class EveSpaceScene extends meta.Model
     depthCalculation = false;
 
     @meta.float
-    distortionOffset = 1.28;
+    distortionOffset = 128;
 
     @meta.boolean
     useNebulaAsReflection = true;
@@ -988,6 +1048,147 @@ export class EveSpaceScene extends meta.Model
         });
 
         Tw2CarbonResourceBinder.Get(d).SetLightList(collector.GetLightList());
+
+        // Carbon blends the lighting overrides in the same per-frame block that
+        // resolves the lights (`EveSpaceScene.cpp:1336`), before anything reads
+        // the sun. With no overrides present this resolves to the scene's own
+        // values, so it is not conditional on the source having any.
+        this._BlendLightingOverrides();
+    }
+
+    /**
+     * Blends every lighting override over a baseline built from this scene.
+     *
+     * Source: `EveSpaceScene.cpp:1336-1366`. Carbon collects the overrides from
+     * its component registry; this walks the objects for them, for the same
+     * reason `GetLights` walks.
+     *
+     * The BASELINE is the scene's own lighting entered as the lowest-priority
+     * source, so a scene with no overrides blends to exactly its own values and
+     * this path costs nothing. `sunIntensity` is the largest channel of the sun
+     * colour and the colour is normalised by it, which is what lets an override
+     * restate a sun's brightness without restating its hue.
+     *
+     * @private
+     */
+    _BlendLightingOverrides()
+    {
+        const overrides = [];
+
+        // The same groups the light collector walks, and for the same reason:
+        // this stands in for Carbon's component registry. backgroundObjects
+        // matters most - it is the one list `TnyScene.Rebuild` does not splice,
+        // so a scene-settings container belongs there and would be wiped
+        // anywhere else.
+        const groups = [
+            [ this.visible.backgroundObjects, this.backgroundObjects ],
+            [ this.visible.objects, this.objects ],
+            [ this.visible.planets, this.planets ]
+        ];
+
+        for (const [ enabled, objects ] of groups)
+        {
+            if (!enabled || !objects) continue;
+
+            for (let i = 0; i < objects.length; i++) objects[i]?.GetLightingOverrides?.(overrides);
+        }
+
+        // The scene's own settings container, which is not in any of those
+        // lists precisely so a rebuild cannot take it.
+        this.settings?.GetLightingOverrides?.(overrides);
+
+        // High priority first, which is the order the blend assumes.
+        overrides.sort((a, b) => b.priority - a.priority);
+
+        // Carbon also gates this on `g_eveSpaceSceneDynamicLighting`, a global
+        // that turns the local-light system off entirely. ccpwgl has no such
+        // switch - the light collector runs every frame - so the flag alone
+        // decides, which is Carbon's behaviour with dynamic lighting on.
+        const sunColor = this.useSunDiffuseColorWithDynamicLights
+            ? this.sunDiffuseColorWithDynamicLights
+            : this.sunDiffuseColor;
+        const sunIntensity = Math.max(sunColor[0], sunColor[1], sunColor[2]);
+
+        overrides.push({
+            // Below every authored priority, so it only takes the weight the
+            // overrides leave unclaimed.
+            priority: -1,
+            intensity: 1,
+            sunColor: sunIntensity !== 0
+                ? vec4.fromValues(
+                    sunColor[0] / sunIntensity,
+                    sunColor[1] / sunIntensity,
+                    sunColor[2] / sunIntensity,
+                    sunColor[3]
+                )
+                : sunColor,
+            sunIntensity,
+            backgroundIntensity: this.nebulaIntensity,
+            reflectionIntensity: this.reflectionIntensity
+        });
+
+        const blended = EveSpaceScene.SimplePriorityBlend(overrides);
+
+        vec4.scale(this._currentSunColor, blended.sunColor, blended.sunIntensity);
+        this._currentSunColor[3] = blended.sunColor[3];
+        this._currentNebulaIntensity = blended.backgroundIntensity;
+        this._currentReflectionIntensity = blended.reflectionIntensity;
+    }
+
+    /**
+     * Blends priority-banded contributions, highest priority first.
+     *
+     * Source: `trinity/trinity/PriorityBlend.h:372`. Sources of equal priority
+     * share their band: their intensities are summed, normalised against the
+     * larger of that sum and 1, and scaled by whatever weight lower bands have
+     * left. A band whose intensities sum to 1 or more consumes the rest, which
+     * is why an override at intensity 1 hides the baseline entirely rather than
+     * averaging with it.
+     *
+     * @param {Array<Object>} sources - sorted by priority, high to low
+     * @returns {Object} the blended value
+     */
+    static SimplePriorityBlend(sources)
+    {
+        const result = {
+            sunColor: vec4.create(),
+            sunIntensity: 0,
+            backgroundIntensity: 0,
+            reflectionIntensity: 0
+        };
+
+        let remainingWeight = 1;
+
+        for (let i = 0; i < sources.length;)
+        {
+            let j = i;
+            while (j < sources.length && sources[j].priority === sources[i].priority) j++;
+
+            let bandIntensity = 0;
+            for (let k = i; k < j; k++) bandIntensity += sources[k].intensity;
+
+            if (bandIntensity === 0) { i = j; continue; }
+
+            const normalization = (1 / Math.max(bandIntensity, 1)) * remainingWeight;
+
+            for (let k = i; k < j; k++)
+            {
+                const weight = sources[k].intensity * normalization;
+                const source = sources[k];
+
+                vec4.scaleAndAdd(result.sunColor, result.sunColor, source.sunColor, weight);
+                result.sunIntensity += source.sunIntensity * weight;
+                result.backgroundIntensity += source.backgroundIntensity * weight;
+                result.reflectionIntensity += source.reflectionIntensity * weight;
+            }
+
+            remainingWeight -= bandIntensity;
+            i = j;
+
+            if (remainingWeight <= 0) break;
+        }
+
+        return result;
     }
 
     /**
@@ -3174,11 +3375,25 @@ export class EveSpaceScene extends meta.Model
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
-        vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
+        // `_currentSunColor`, not `sunDiffuseColor`: Carbon feeds the frame
+        // `m_currentSunColor`, which is the override blend over this scene's own
+        // sun (`EveSpaceScene.cpp:1362-1364`). Identical to the raw field when
+        // nothing overrides it.
+        //
+        // ALPHA IS NOT THE SUN'S ALPHA. Carbon overwrites it with the diffuse
+        // roughness on the way out (`EveSpaceScene.cpp:3090`), so whatever the
+        // colour carried there is discarded - which is why this is assembled
+        // rather than passed straight through.
+        this._sunDataDiffuse[0] = this._currentSunColor[0];
+        this._sunDataDiffuse[1] = this._currentSunColor[1];
+        this._sunDataDiffuse[2] = this._currentSunColor[2];
+        this._sunDataDiffuse[3] = this.defaultDiffuseRoughness;
+
+        vs.Set("SunData.DiffuseColor", this._sunDataDiffuse);
         vs.Set("EnvMapRotationMat", envMapTransform);
 
         ps.Set("EnvMapRotationMat", envMapTransform);
-        ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
+        ps.Set("SunData.DiffuseColor", this._sunDataDiffuse);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
 
         // cb2[14].w, Carbon's ReflectionIntensity - NOT the nebula intensity.
@@ -3192,7 +3407,7 @@ export class EveSpaceScene extends meta.Model
         // shaders read the register and what they do with it; the short version is
         // that they all multiply an environment cube sample, and the background -
         // the one thing a nebula intensity would belong to - never reads it.
-        ps.SetIndex("SceneData.ReflectionIntensity", 0, this.reflectionIntensity);
+        ps.SetIndex("SceneData.ReflectionIntensity", 0, this._currentReflectionIntensity);
 
         // The nebula intensity is a global shader VARIABLE in Carbon, not part of
         // the per-frame data (`m_nebulaIntensityVar( "NebulaIntensity", ... )`,
@@ -3209,8 +3424,8 @@ export class EveSpaceScene extends meta.Model
         // reverted, 2026-08-17). Closing it means giving that program a real
         // per-nebula multiplier before the stars are added, with Carbon's own
         // background translation as the reference for where the multiply lands.
-        if (!tw2.HasVariable("NebulaIntensity")) tw2.SetVariable("NebulaIntensity", this.nebulaIntensity);
-        else tw2.SetVariableValue("NebulaIntensity", this.nebulaIntensity);
+        if (!tw2.HasVariable("NebulaIntensity")) tw2.SetVariable("NebulaIntensity", this._currentNebulaIntensity);
+        else tw2.SetVariableValue("NebulaIntensity", this._currentNebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
 

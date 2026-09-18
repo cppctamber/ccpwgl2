@@ -182,6 +182,30 @@ export class EveObject extends WglTransform
     }
 
     /**
+     * Collects lighting overrides from this object's effect children.
+     *
+     * The walk stands in for Carbon's component registry, for the same reason
+     * `GetLights` walks: Carbon collects `IEveLightingOverride` components from
+     * the registry (`EveSpaceScene.cpp:1338`), and ccpwgl declares the
+     * component type but wires no registry.
+     *
+     * @param {Array} [out=[]]
+     * @returns {Array}
+     */
+    GetLightingOverrides(out = [])
+    {
+        if (this.effectChildren && !(this.visible && this.visible.effectChildren === false))
+        {
+            for (let i = 0; i < this.effectChildren.length; i++)
+            {
+                this.effectChildren[i]?.GetLightingOverrides?.(out);
+            }
+        }
+
+        return out;
+    }
+
+    /**
      * Finds planeSets with names that include billboard
      * TODO: why is this here, this looks like a specific helper function.
      * @param out

@@ -901,6 +901,26 @@ export class EveChildContainer extends EveChild
     }
 
     /**
+     * Collects lighting overrides from this container's children.
+     *
+     * A scene-settings container holds its override as an ordinary child, so
+     * the descent is the same one `GetLights` makes - and for the same reason:
+     * it stands in for the component registry Carbon collects from.
+     *
+     * @param {Array} [out=[]]
+     * @returns {Array}
+     */
+    GetLightingOverrides(out = [])
+    {
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i]?.GetLightingOverrides?.(out);
+        }
+
+        return out;
+    }
+
+    /**
      * Applies a resolved faction colour set to this container's inherit properties
      * and cascades it to child containers.
      * Port of CarbonEngine EveChildContainer::SetInheritProperties.
