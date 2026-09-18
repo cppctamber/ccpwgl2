@@ -1175,13 +1175,17 @@ export class Tw2Effect extends meta.Model
             layers.push(parameter);
         }
 
-        const key = `${definition.name}:${definition.arrayLayers.map(x => x.name).join(",")}`;
+        const key = `${definition.name}:${definition.viewDimension || "2d-array"}:`
+            + definition.arrayLayers.map(x => x.name).join(",");
         this._textureArrayBridges = this._textureArrayBridges || {};
 
         let bridge = this._textureArrayBridges[key];
         if (!bridge)
         {
-            bridge = this._textureArrayBridges[key] = new Tw2TextureArrayBridge(definition.name);
+            bridge = this._textureArrayBridges[key] = new Tw2TextureArrayBridge(
+                definition.name,
+                definition.viewDimension
+            );
         }
         bridge.SetLayers(layers);
         return bridge;

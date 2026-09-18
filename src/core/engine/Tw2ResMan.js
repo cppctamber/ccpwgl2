@@ -8,6 +8,7 @@ import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2ColorTextureRes } from "../resource/Tw2ColorTextureRes";
 import { Tw2DepthTextureRes } from "../resource/Tw2DepthTextureRes";
 import { Tw2TextureArrayRes } from "../resource/Tw2TextureArrayRes";
+import { Tw2TexturePackRes } from "../resource/Tw2TexturePackRes";
 import { Tw2TextureAtlasArrayRes } from "../resource/Tw2TextureAtlasArrayRes";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
@@ -282,6 +283,14 @@ export class Tw2ResMan extends Tw2EventEmitter
         // naming the same detail maps resolve to the same array.
         this.RegisterResourceConstructor("texturearray", {
             GetResource: query => Tw2TextureArrayRes.FromQuery(query)
+        });
+
+        // Ordered scalar sources -> one shared RGBA texture, each source in one
+        // channel. Same cache reasoning as the array: the key is the ordered
+        // path list, so every shader naming the same four maps shares one
+        // texture. See Tw2TexturePackRes for why this is not an array.
+        this.RegisterResourceConstructor("texturepack", {
+            GetResource: query => Tw2TexturePackRes.FromQuery(query)
         });
 
         // One strip of tiles -> one shared 2D array texture. Same cache

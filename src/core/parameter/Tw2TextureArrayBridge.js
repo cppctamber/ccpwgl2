@@ -2,8 +2,14 @@ import { device, tw2 } from "global";
 
 
 /**
- * Private bridge from named layer texture parameters to one shared 2D array
- * texture.
+ * Private bridge from named member texture parameters to one shared merged
+ * texture - a 2D array, or a channel-packed 2D texture.
+ *
+ * Both kinds share every word of the reasoning below; they differ only in what
+ * the aggregate IS, which `viewDimension` carries. An array keeps its members
+ * as layers of a stack; a pack puts each member's scalar in one channel of one
+ * texel. See Tw2TexturePackRes for why that distinction is about the data
+ * rather than about saving a binding.
  *
  * The Carbon WebGL emitter merges a recognised detail-map family
  * (Detail1Map/Detail2Map/Detail3Map) into a single `sampler2DArray` binding,
@@ -51,12 +57,28 @@ export class Tw2TextureArrayBridge
     _lastKey = null;
 
     /**
+     * "2d-array" for a layered aggregate, "2d" for a channel-packed one
+     * @type {String}
+     */
+    viewDimension = "2d-array";
+
+    /**
      * Constructor
      * @param {String} name
      */
-    constructor(name)
+    constructor(name, viewDimension)
     {
         if (name) this.name = name;
+        if (viewDimension) this.viewDimension = viewDimension;
+    }
+
+    /**
+     * Whether this bridge carries a channel pack rather than an array
+     * @returns {Boolean}
+     */
+    get isPacked()
+    {
+        return this.viewDimension === "2d";
     }
 
     /**
@@ -101,7 +123,7 @@ export class Tw2TextureArrayBridge
         {
             this._lastKey = key;
             this.textureRes = key
-                ? tw2.GetResource("dynamic:/texturearray/" + key)
+                ? tw2.GetResource((this.isPacked ? "dynamic:/texturepack/" : "dynamic:/texturearray/") + key)
                 : null;
         }
 
@@ -112,6 +134,13 @@ export class Tw2TextureArrayBridge
             // array to the fallback array texture, so a missing layer costs
             // the detail layers, never the draw.
             this.textureRes.Bind(sampler, slices);
+        }
+        else if (this.isPacked)
+        {
+            // A sampler2D may bind the ordinary fallback; only the array
+            // sampler is fussy about seeing a texture of its own dimension.
+            gl.activeTexture(gl.TEXTURE0 + stage);
+            gl.bindTexture(gl.TEXTURE_2D, device.GetFallbackTexture());
         }
         else
         {

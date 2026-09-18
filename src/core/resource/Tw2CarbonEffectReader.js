@@ -590,7 +590,15 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord, stageType,
 
         // A merged binding stands for its ordered logical layers; Tw2Effect
         // keeps the named parameters public and bridges them to one aggregate.
-        if (resource.arrayLayers) texture.arrayLayers = resource.arrayLayers;
+        if (resource.arrayLayers)
+        {
+            texture.arrayLayers = resource.arrayLayers;
+            // "2d" for a channel pack, "2d-array" for a layered array. The
+            // bridge resolves a different dynamic path and binds a different
+            // target for each, so guessing here would bind an array texture to
+            // a sampler2D and lose the draw.
+            texture.viewDimension = resource.viewDimension || "2d-array";
+        }
 
         // Most emitted sampler uniforms are positional (s#/vs#) and the
         // program's own setup loops find them. A merged array is declared under
@@ -685,19 +693,32 @@ function applyTextureArrayTransforms(resources, transforms, emittedResourcesByRe
 {
     for (const transform of transforms || [])
     {
-        if (transform.kind !== "texture-2d-array") continue;
+        const packed = transform.kind === "texture-2d-packed";
 
-        // The array's physical register is wherever the emitter declared it -
-        // the first merged member seen. A transform whose registers carry no
-        // array declaration was never sampled in this body, so there is
+        if (transform.kind !== "texture-2d-array" && !packed) continue;
+
+        // The aggregate's physical register is wherever the emitter declared
+        // it - the first merged member seen. A transform whose registers carry
+        // no merged declaration was never sampled in this body, so there is
         // nothing to bind and the members are left as the harmless unsampled
         // textures they already were.
+        //
+        // An array is found by sampler TYPE, which only a merge produces. A
+        // pack declares an ordinary sampler2D, indistinguishable from any other
+        // 2D texture by type, so it is found by the emitted SYMBOL instead -
+        // `s` plus the transform's own output name, which is the one thing only
+        // this transform's declaration carries.
+        const packedSymbol = `s${transform.output?.name || ""}`;
         const outputRegister = (transform.inputs || [])
             .map((input) => input.registerIndex)
             .find((register) =>
             {
-                const samplerType = emittedResourcesByRegister.get(register)?.samplerType;
-                return samplerType === "sampler2DArray" || samplerType === "sampler2DArrayShadow";
+                const emitted = emittedResourcesByRegister.get(register);
+
+                if (packed) return emitted?.name === packedSymbol;
+
+                return emitted?.samplerType === "sampler2DArray"
+                    || emitted?.samplerType === "sampler2DArrayShadow";
             });
         if (outputRegister === undefined) continue;
 
@@ -711,7 +732,7 @@ function applyTextureArrayTransforms(resources, transforms, emittedResourcesByRe
             if (record && recordName && recordName !== input.parameter)
             {
                 console.warn(
-                    `Tw2CarbonEffectReader: detail-array layer ${input.layer} is `
+                    `Tw2CarbonEffectReader: ${transform.family || "merged"} member ${input.layer} is `
                     + `'${input.parameter}' in the transform but '${recordName}' in the description`
                 );
             }
@@ -748,6 +769,7 @@ function applyTextureArrayTransforms(resources, transforms, emittedResourcesByRe
             kind: "resource",
             registerIndex: outputRegister,
             name: transform.output?.name || "DetailArrayMap",
+            viewDimension: packed ? "2d" : "2d-array",
             carbon: {
                 type: TEXTURE_2D,
                 isSRGB: false,
