@@ -327849,6 +327849,26 @@
 	        values = _objectWithoutProperties(_yield$TnySpaceObject, _excluded2$3);
 	      var source = dna || resPath;
 	      var wrapped = yield tw2.Fetch(source, awaitResources);
+
+	      // A RESOURCE IS NOT NECESSARILY AN OBJECT.
+	      //
+	      // `tw2.Fetch` returns whatever the file's root happens to be, and a
+	      // `res:` path can name something that is not drawable at all:
+	      // `res:/dx9/model/spaceobjectfactory/hulls/jita.black` holds an
+	      // `EveSOFDataHull`, which is SOF data describing a hull rather than a
+	      // built one. `getTnyClass` finds no entry for it and falls back to
+	      // `TnySpaceObject`, so it wrapped and attached cleanly, and the first
+	      // thing to notice was `EveSpaceScene.PrepareLod` calling
+	      // `UpdateViewDependentData` on it - every frame, from inside the render
+	      // loop, with nothing left saying which resource was at fault.
+	      //
+	      // Refused here instead, naming the class and the path. The two methods
+	      // are what the scene's LOD pass calls on everything it holds, so they
+	      // are the interface being asserted rather than a guess at one.
+	      if (typeof (wrapped === null || wrapped === void 0 ? void 0 : wrapped.UpdateViewDependentData) !== "function" || typeof (wrapped === null || wrapped === void 0 ? void 0 : wrapped.UpdateLod) !== "function") {
+	        var _wrapped$constructor$, _wrapped$constructor;
+	        throw new TypeError("Not a scene object: ".concat(source, " built ").concat((_wrapped$constructor$ = wrapped === null || wrapped === void 0 || (_wrapped$constructor = wrapped.constructor) === null || _wrapped$constructor === void 0 ? void 0 : _wrapped$constructor.name) != null ? _wrapped$constructor$ : typeof wrapped));
+	      }
 	      wrapped._resPath = source;
 
 	      // Carbon compiles the blend mode in as a permutation, so it cannot ride
