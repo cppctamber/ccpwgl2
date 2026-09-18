@@ -11,8 +11,8 @@ import { TextureFormatDDS } from "./formats/TextureFormatDDS";
 
 
 /**
- * One RGBA texture assembled from ordered single-channel sources, addressed as
- * `dynamic:/texturepack/<source0>;<source1>[;...]`.
+ * One RG or RGBA texture assembled from ordered single-channel sources,
+ * addressed as `dynamic:/texturepack/<source0>;<source1>[;...]`.
  *
  * This is the other half of the texture-array contract, and it exists because
  * merging is not one idea. An ARRAY carries the same kind of data in several
@@ -40,13 +40,23 @@ import { TextureFormatDDS } from "./formats/TextureFormatDDS";
  * value replicated across RGB, and as BC4 with it in red alone. Red is the one
  * component both spellings agree on.
  *
+ * ## Width follows the member count
+ *
+ * Two members are RG8, three or four are RGBA8. This is not tidiness: a pair
+ * packed into RGBA8 would cost four bytes a texel to carry two, which is more
+ * than the two compressed sources cost separately - so packing a pair would buy
+ * one texture unit and pay for it in memory. At RG8 a pair costs what a
+ * two-layer array would and still reads in one fetch.
+ *
+ * Three members take RGBA8 rather than RGB8: three-channel textures are padded
+ * to four by most drivers anyway, and RGB8 is not colour-renderable, so the
+ * narrower format would cost the same and constrain later use.
+ *
  * ## Size
  *
- * Up, to the largest source. Unlike the array case there is no cheaper option
- * to weigh it against: a pack is RGBA by construction, so the whole aggregate
- * costs one RGBA texture whatever it is built from - about what the four
- * compressed sources cost separately - and going down would discard detail
- * without buying anything back.
+ * Up, to the largest source. Unlike the array case there is little to weigh it
+ * against: the aggregate is one texture of a fixed width whatever it is built
+ * from, so going down would discard detail without buying the width back.
  */
 @meta.define("Tw2TexturePackRes")
 export class Tw2TexturePackRes extends Tw2TextureRes
@@ -160,9 +170,13 @@ export class Tw2TexturePackRes extends Tw2TextureRes
         this._isPowerOfTwo = (levels[0].width & (levels[0].width - 1)) === 0
             && (levels[0].height & (levels[0].height - 1)) === 0;
         this._isSRGB = false;
+        // Two channels are RG8, more are RGBA8. See the class comment: an
+        // RGBA8 pair would cost twice what it carries.
+        const packWidth = sources.length <= 2 ? 2 : 4;
+
         this._type = gl.UNSIGNED_BYTE;
-        this._format = gl.RGBA;
-        this._internalFormat = gl.RGBA8;
+        this._format = packWidth === 2 ? gl.RG : gl.RGBA;
+        this._internalFormat = packWidth === 2 ? gl.RG8 : gl.RGBA8;
 
         this.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
@@ -177,7 +191,7 @@ export class Tw2TexturePackRes extends Tw2TextureRes
             for (let mip = 0; mip < levels.length; mip++)
             {
                 const { width, height } = levels[mip];
-                const packed = new Uint8Array(width * height * 4);
+                const packed = new Uint8Array(width * height * packWidth);
 
                 // Unwritten channels stay 0 rather than being left undefined: a
                 // pack of two or three sources has real channels a shader must
@@ -187,7 +201,7 @@ export class Tw2TexturePackRes extends Tw2TextureRes
                 {
                     const rgba = this._SourceRgbaAt(source, caches[channel], width, height);
 
-                    for (let texel = 0, at = channel; texel < width * height; texel++, at += 4)
+                    for (let texel = 0, at = channel; texel < width * height; texel++, at += packWidth)
                     {
                         // RED of the source, whatever it spelled its scalar as.
                         packed[at] = rgba[texel * 4];
@@ -195,9 +209,9 @@ export class Tw2TexturePackRes extends Tw2TextureRes
                 }
 
                 gl.texImage2D(
-                    gl.TEXTURE_2D, mip, gl.RGBA8,
+                    gl.TEXTURE_2D, mip, this._internalFormat,
                     width, height, 0,
-                    gl.RGBA, gl.UNSIGNED_BYTE,
+                    this._format, gl.UNSIGNED_BYTE,
                     packed
                 );
             }
