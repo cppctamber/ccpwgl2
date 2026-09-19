@@ -7,6 +7,7 @@ import { Tw2CarbonShadowRenderer } from "core/carbon/Tw2CarbonShadowRenderer";
 import { Tw2GpuParticleRenderer } from "particle/gpu/Tw2GpuParticleRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
+import { EvePlanet } from "./object/EvePlanet";
 import { EveUpdateContext } from "./EveUpdateContext";
 import { ComputeAutoNearFar, GetSceneBoundingSphere } from "./EveSceneNearFar";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
@@ -21,6 +22,7 @@ import {
     Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
+    RS_COLORWRITEENABLE,
     RM_DECAL,
     RM_DEPTH,
     RM_DISTORTION,
@@ -900,12 +902,24 @@ export class EveSpaceScene extends meta.Model
      */
     PerChildObject(funcName, ...args)
     {
-        for (let i = 0; i < this.planets.length; i++)
+        const updatePlanets = funcName === "Update" && this.planets.length;
+        const savedView = updatePlanets ? mat4.copy(EveSpaceScene.global.planetUpdateView, device.view) : null;
+        if (updatePlanets) device.SetView(this.CreatePlanetViewMatrix(EveSpaceScene.global.planetView, savedView), true);
+        try
         {
-            if (funcName in this.planets[i])
+            for (let i = 0; i < this.planets.length; i++)
             {
-                this.planets[i][funcName](...args);
+                if (updatePlanets) this.planets[i].SetRenderScale(EvePlanet.SCALE);
+                if (funcName in this.planets[i])
+                {
+                    this.planets[i][funcName](...args);
+                }
             }
+
+        }
+        finally
+        {
+            if (savedView) device.SetView(savedView, true);
         }
 
         for (let i = 0; i < this.backgroundObjects.length; i++)
@@ -1296,9 +1310,19 @@ export class EveSpaceScene extends meta.Model
         if (show.gizmoObjects) prepare(this.gizmoObjects);
         if (show.planets)
         {
-            for (let i = 0; i < this.planets.length; i++)
+            const savedView = mat4.copy(EveSpaceScene.global.planetUpdateView, d.view);
+            d.SetView(this.CreatePlanetViewMatrix(EveSpaceScene.global.planetView, savedView), true);
+            try
             {
-                this.planets[i].UpdateViewDependentData(this._localTransform, dt);
+                for (let i = 0; i < this.planets.length; i++)
+                {
+                    this.planets[i].SetRenderScale(EvePlanet.SCALE);
+                    this.planets[i].UpdateViewDependentData(this._localTransform, dt);
+                }
+            }
+            finally
+            {
+                d.SetView(savedView, true);
             }
         }
     }
@@ -1432,11 +1456,48 @@ export class EveSpaceScene extends meta.Model
         }
     }
 
-    /**
-     * Renders planets
-     * @param {Number} dt
-     * @param {Tw2BatchAccumulator} [accumulator=this._accumulator]
-     */
+    /** Creates Carbon's planet-space view without changing its orientation. */
+    CreatePlanetViewMatrix(out, original)
+    {
+        // Carbon EveSpaceScene.cpp:3907: preserve rotation, scale view translation.
+        mat4.copy(out, original);
+        out[12] /= EvePlanet.SCALE;
+        out[13] /= EvePlanet.SCALE;
+        out[14] /= EvePlanet.SCALE;
+        return out;
+    }
+
+    /** Carbon renders authored Depth techniques before the transparent planet surfaces. */
+    RenderPlanetDepth()
+    {
+        const batches = this._planetDepthAccumulator || (this._planetDepthAccumulator = new Tw2BatchAccumulator());
+        batches.Clear();
+        for (const planet of this.planets)
+        {
+            // Carbon selects depthAreas, not every shader exposing a Depth technique.
+            planet.GetBatches(device.RM_DEPTH, batches);
+        }
+        try
+        {
+            for (const batch of batches.batches)
+            {
+                if (!batch.HasTechnique || !batch.HasTechnique("Depth")) continue;
+                device.SetStandardStates(device.RM_DEPTH);
+                device.SetRenderState(RS_COLORWRITEENABLE, 0);
+                device.perObjectData = batch.perObjectData;
+                batch.Commit("Depth");
+                device.InvalidateStandardStates();
+            }
+        }
+        finally
+        {
+            device.SetRenderState(RS_COLORWRITEENABLE, 15);
+            device.InvalidateStandardStates();
+            batches.Clear();
+        }
+    }
+
+    /** Renders planets in Carbon's scaled camera space, then restores the scene camera. */
     RenderPlanets(_dt, accumulator = this._accumulator)
     {
         if (!this.planets.length) return;
@@ -1445,8 +1506,11 @@ export class EveSpaceScene extends meta.Model
             g = EveSpaceScene.global,
             tempProj = mat4.copy(g.mat4_0, device.projection),
             newProj = mat4.copy(g.mat4_1, device.projection),
-            zn = 10000,
-            zf = 1e11;
+            savedView = mat4.copy(g.planetRenderView, device.view),
+            zn = 0.01,
+            zf = 1e5;
+
+        device.SetView(this.CreatePlanetViewMatrix(g.planetView, savedView));
 
         newProj[10] = zf / (zn - zf);
         newProj[14] = (zf * zn) / (zn - zf);
@@ -1456,45 +1520,54 @@ export class EveSpaceScene extends meta.Model
         // planes and then CLEARS depth before the scene (EveSpaceScene.cpp:2068);
         // the planet z-only batches in the main pass restore planet occlusion.
         const reversed = device.reversedDepthBuffer;
-        device.SetProjection(newProj, true);
-        this.UpdateViewProjectionFrameData();
-        if (!reversed) device.gl.depthRange(0.9, 1);
-
-        this._frustum.Initialize(
-            device.view,
-            device.projection,
-            device.viewportWidth,
-            device.viewInverse,
-            device.viewProjection
-        );
-        this._updateContext.SetFrustum(this._frustum);
-
-        for (let i = 0; i < this.planets.length; ++i)
+        try
         {
-            this.planets[i].UpdateLod(this._updateContext);
-            this.CollectObjectBatches(this.planets[i], device.RM_OPAQUE, accumulator);
-            this.CollectObjectBatches(this.planets[i], device.RM_DECAL, accumulator);
-            this.CollectObjectBatches(this.planets[i], device.RM_TRANSPARENT, accumulator);
-            this.CollectObjectBatches(this.planets[i], device.RM_ADDITIVE, accumulator);
-        }
+            device.SetProjection(newProj, true);
+            this.UpdateViewProjectionFrameData();
+            if (!reversed) device.gl.depthRange(0.9, 1);
 
-        accumulator.Render();
-        if (accumulator instanceof Tw2RenderBatchContext)
-        {
-            accumulator.Clear();
+            this._frustum.Initialize(
+                device.view,
+                device.projection,
+                device.viewportWidth,
+                device.viewInverse,
+                device.viewProjection
+            );
+            this._updateContext.SetFrustum(this._frustum);
+
+            for (let i = 0; i < this.planets.length; ++i)
+            {
+                this.planets[i].UpdateLod(this._updateContext);
+                this.CollectObjectBatches(this.planets[i], device.RM_OPAQUE, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_DECAL, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_TRANSPARENT, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_ADDITIVE, accumulator);
+            }
+
+            this.RenderPlanetDepth();
+            accumulator.Render();
+            if (accumulator instanceof Tw2RenderBatchContext)
+            {
+                accumulator.Clear();
+            }
         }
-        device.SetProjection(tempProj, true);
-        this.UpdateViewProjectionFrameData();
-        if (reversed) tw2.ClearBufferBits(false, true, false);
-        else device.gl.depthRange(0, 0.9);
-        this._frustum.Initialize(
-            device.view,
-            device.projection,
-            device.viewportWidth,
-            device.viewInverse,
-            device.viewProjection
-        );
-        this._updateContext.SetFrustum(this._frustum);
+        finally
+        {
+            device.SetView(savedView);
+            device.SetProjection(tempProj, true);
+            this.UpdateViewProjectionFrameData();
+            if (reversed) tw2.ClearBufferBits(false, true, false);
+            else device.gl.depthRange(0, 0.9);
+            this._frustum.Initialize(
+                device.view,
+                device.projection,
+                device.viewportWidth,
+                device.viewInverse,
+                device.viewProjection
+            );
+            this._updateContext.SetFrustum(this._frustum);
+
+        }
 
         for (let i = 0; i < this.planets.length; i++)
         {
@@ -3613,6 +3686,9 @@ export class EveSpaceScene extends meta.Model
     static global = {
         // Never written to - a scene light has no parent, and passing a shared
         // identity keeps that explicit rather than special-casing it downstream.
+        planetUpdateView: mat4.create(),
+        planetRenderView: mat4.create(),
+        planetView: mat4.create(),
         mat4_identity: mat4.create(),
         vec3_ZERO: vec3.create(),
         vec3_0: vec3.create(),

@@ -202,10 +202,16 @@ export class EveChildContainer extends EveChild
         this.ReplayControllerVariables();
     }
 
-    /**
-     * Adds and initializes a controller owned by this container.
-     * @param {Tr2Controller|Tr2ControllerReference} controller
-     */
+    /** Starts this container and its attached children after variable propagation. */
+    StartControllers()
+    {
+        // Carbon EveChildContainer.cpp:950-961; called after attachment replay.
+        if (!this._controllersLinked) this.Initialize();
+        for (const controller of this.controllers) controller?.Start?.();
+        for (const child of this.objects) child?.StartControllers?.();
+    }
+
+    /** Adds and initializes a controller owned by this container. */
     AddController(controller)
     {
         if (this.controllers.includes(controller)) return;
@@ -657,6 +663,7 @@ export class EveChildContainer extends EveChild
      */
     Update(dt, params = EveChildUpdateParams.DEFAULT)
     {
+        if (!this.IsUpdating()) return;
         const
             parentTransform = params.localToWorldTransform,
             perObjectData = params.perObjectData,
@@ -867,7 +874,7 @@ export class EveChildContainer extends EveChild
      */
     GetLights(collector, parentContext = {})
     {
-        if (!collector) return;
+        if (!collector || !this.display || !this.IsRendering()) return;
 
         const dt = parentContext.dt || 0;
         const bones = parentContext.bones || null;
@@ -953,12 +960,8 @@ export class EveChildContainer extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        // ccpwgl has no reflection pass, so ONLY_REFLECTIONS containers never draw.
-        // Divergence: Carbon gates on IsRendering(), i.e. the shader-quality filters
-        // too. Enforcing SHADER_MED etc. hid layout geometry ("MediumOnly") at
-        // quality=depth whose high-quality counterpart ccpwgl does not build yet, so
-        // only ONLY_REFLECTIONS is enforced until that path exists.
-        if (!this.display || this.displayFilter === EveChildContainer.DisplayFilter.ONLY_REFLECTIONS) return false;
+        // Carbon gates renderables by shader quality (EveChildContainer.cpp:412).
+        if (!this.display || !this.IsRendering()) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const c = accumulator.length;

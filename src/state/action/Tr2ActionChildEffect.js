@@ -186,6 +186,14 @@ export class Tr2ActionChildEffect extends Tw2Action
         }
 
         children.push(child);
+        // Carbon EveChildContainer.cpp:975-987 replays variables on attachment.
+        if (owner.GetControllerVariables && child.SetControllerVariable)
+        {
+            for (const [ name, value ] of owner.GetControllerVariables())
+            {
+                child.SetControllerVariable(name, value);
+            }
+        }
         if ("_boundsDirty" in owner) owner._boundsDirty = true;
         return true;
     }

@@ -20,6 +20,8 @@ export class Tr2ControllerReference extends meta.Model
 
     _requestedPath = null;
 
+    _requestId = 0;
+
     /**
      * Initializes the reference, optionally linking and starting against an owner
      * @param {*} [owner]
@@ -32,7 +34,9 @@ export class Tr2ControllerReference extends meta.Model
             this.Start();
         }
 
-        this.FetchController();
+        // Deserialization and owner attachment both call Initialize. Reuse the
+        // same pending/loaded controller when only its owner has changed.
+        if (this.path !== this._requestedPath) this.FetchController();
     }
 
     /**
@@ -54,7 +58,10 @@ export class Tr2ControllerReference extends meta.Model
     async FetchController()
     {
         const path = this.path;
+        const requestId = ++this._requestId;
         this._requestedPath = path;
+        // Retire the previous controller before replacing it and its effects.
+        if (this._controller?.Unlink) this._controller.Unlink();
         this._controller = null;
 
         if (!path)
@@ -67,7 +74,7 @@ export class Tr2ControllerReference extends meta.Model
             const controller = await tw2.Fetch(path);
 
             // A newer request superseded this one while awaiting
-            if (this._requestedPath !== path)
+            if (this._requestedPath !== path || this._requestId !== requestId)
             {
                 return null;
             }
@@ -77,6 +84,15 @@ export class Tr2ControllerReference extends meta.Model
             if (controller && this._owner)
             {
                 if (controller.Link) controller.Link(this._owner);
+                // A reference can resolve after its owner received its variables.
+                // Apply them before Start executes one-shot state actions.
+                if (this._owner.GetControllerVariables)
+                {
+                    for (const [ name, value ] of this._owner.GetControllerVariables())
+                    {
+                        controller.SetVariable(name, value);
+                    }
+                }
                 if (this._isActive && controller.Start) controller.Start();
             }
 

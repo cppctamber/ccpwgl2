@@ -71,6 +71,13 @@ export class TnyPlanet extends TnySpaceObject
         return super.SetWrapped(wrapped);
     }
 
+    /** Let Tny watching discover terrain inputs and finish baking before attachment. */
+    GetResources(out = [])
+    {
+        if (this.wrapped) this.wrapped.ApplyHeightMaps();
+        return super.GetResources(out);
+    }
+
     GetLongAxis()
     {
         const worldScale = this.GetWorldScaling(TnySpaceObject.global.vec3_1);
@@ -104,6 +111,7 @@ export class TnyPlanet extends TnySpaceObject
      * @param {String} [options.heightMap2]
      * @param {String} [options.atmospherePath]
      * @param {Number} [options.radius]        - metres
+     * @param {Number} [options.populationLevel] - controller level, integer 0–10; not the SDE population boolean
      * @param {Boolean} [options.aurora]       - defaults to the class's own
      * @returns {Promise<TnyPlanet>}
      */
@@ -119,9 +127,15 @@ export class TnyPlanet extends TnySpaceObject
             heightMap1,
             heightMap2,
             atmospherePath,
+            populationLevel,
             aurora,
             ...values
         } = options;
+
+        if (populationLevel !== undefined && (!Number.isInteger(populationLevel) || populationLevel < 0 || populationLevel > 10))
+        {
+            throw new RangeError("populationLevel must be an integer from 0 to 10");
+        }
 
         // The retired TnyMoon defaulted aurora OFF and TnyPlanet ON. That was
         // the only behavioural difference between the two classes, so it
@@ -165,6 +179,10 @@ export class TnyPlanet extends TnySpaceObject
             heightMap2: ToBlack(heightMap2),
             atmospherePath: ToBlack(atmospherePath)
         });
+        // Content controllers use metres to select the authored sprite scale.
+        wrapped.SetControllerVariable("radius", wrapped.radius);
+        if (populationLevel !== undefined) wrapped.SetControllerVariable("populationLevel", populationLevel);
+        wrapped.StartControllers();
         wrapped._resPath = resPath;
         wrapped._atmospherePath = atmospherePath;
 

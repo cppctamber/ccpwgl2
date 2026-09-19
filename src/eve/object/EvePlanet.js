@@ -4,6 +4,7 @@ import { vec3, vec4, mat4, quat } from "math";
 import { GLESPerObjectDataEveSpaceObject } from "core";
 import { EveEffectRoot2 } from "./EveEffectRoot2";
 import { Tr2Lod } from "constant/ccpwgl";
+import { applyPlanetHeightMaps } from "./planetHeightMaps";
 
 
 /**
@@ -46,8 +47,8 @@ import { Tr2Lod } from "constant/ccpwgl";
  * and it is CCP's - every `*blitheight` and `*export` shader ships, confined to
  * the gles2 tree. What is true is that dx11 does not need one, which is why
  * this class binds {@link heightMap1} and {@link heightMap2} to NormalHeight1
- * and NormalHeight2 instead. gles2 still wants a baked map, and `EveOldPlanet`
- * is still the only thing that produces one.
+ * and NormalHeight2 instead. Legacy GLES shaders receive a deferred bake
+ * through planetHeightMaps, using the retained EveOldPlanet pipeline.
  */
 @meta.define("EvePlanet", true)
 @meta.stage(2)
@@ -168,17 +169,9 @@ export class EvePlanet extends EveEffectRoot2
 
 
     /**
-     * Carbon runs planets at {@link SCALE} and scales the CAMERA to match
-     * (`EveSpaceScene.cpp:3905-3913`). ccpwgl solves the same precision problem
-     * a different way - its planet pass keeps world scale and swaps in a far
-     * depth range instead, `zn 10000, zf 1e11` over depth 0.9..1
-     * (`EveSpaceScene.js:1153-1188`) - and does NOT scale the view position.
-     *
-     * So the render scale defaults to 1 here, which makes
-     * {@link CalculatePlanetScaleTransform} an exact identity. Setting it
-     * without also scaling the camera would simply put the planet in the wrong
-     * place. {@link SetRenderScale} exists for a consumer that does both.
-     *
+     * EveSpaceScene sets SCALE for its planet pass and scales the view position
+     * by the same amount. Distance-dependent effects require that shared space.
+     * Standalone consumers default to ordinary world coordinates.
      * @type {Number}
      */
     _renderScale = 1;
@@ -198,8 +191,12 @@ export class EvePlanet extends EveEffectRoot2
     // view-dependent pass is handed no clock, so one is accumulated in Update.
     _time = 0;
 
-    // Set once ApplyHeightMaps has bound them, so the walk stops.
-    _heightMapsBound = false;
+    // Per-effect state also tracks late shader loads and referenced children.
+    _heightMapBindings = new Map();
+
+    /** Height of the legacy 2:1 terrain bake; clamped to the GPU limit. */
+    @meta.uint
+    heightMapResolution = 2048;
 
     _resPath = "";
     _atmospherePath = "";
@@ -484,83 +481,14 @@ export class EvePlanet extends EveEffectRoot2
     }
 
     /**
-     * Binds the celestial's two height maps onto every effect whose shader
-     * actually asks for them.
-     *
-     * The gate is `shader.HasTexture("NormalHeight1")`, which makes this
-     * profile-correct without testing the profile: the dx11 surface shaders
-     * declare those textures and the gles2 ones do not, so a gles2 effect is
-     * skipped rather than given a texture it would misuse. It also skips the
-     * z-only, picking and atmosphere effects, which declare neither.
-     *
-     * Deferred rather than done once, because an effect has no `shader` until
-     * its resource has loaded and been prepared - which is usually after
-     * `Fetch` resolves. {@link Update} keeps calling this until it lands.
-     *
-     * @returns {Number} how many effects were bound
+     * Applies terrain inputs to every prepared surface effect. DX11 consumes
+     * the source maps directly; legacy GLES surfaces bake a HeightMap.
+     * Revisited each update because shaders and referenced children load independently.
+     * @returns {Number} number of newly bound effects
      */
     ApplyHeightMaps()
     {
-        if (!this.heightMap1 && !this.heightMap2) return 0;
-
-        const textures = {};
-        if (this.heightMap1) textures.NormalHeight1 = this.heightMap1;
-        if (this.heightMap2) textures.NormalHeight2 = this.heightMap2;
-
-        let bound = 0;
-
-        const visit = (node, seen, depth) =>
-        {
-            if (!node || typeof node !== "object" || depth > 12 || seen.has(node)) return;
-            seen.add(node);
-
-            if (Array.isArray(node))
-            {
-                for (const item of node) visit(item, seen, depth + 1);
-                return;
-            }
-
-            // An effect, loaded far enough to say what it wants.
-            if (typeof node.SetTextures === "function" && node.shader)
-            {
-                if (node.shader.HasTexture && node.shader.HasTexture("NormalHeight1"))
-                {
-                    node.SetTextures(textures);
-
-                    // The PER-PLANET SEED, and the template never supplies it.
-                    //
-                    // `earthlikeplanet` declares fourteen constants; the template
-                    // authors twelve of them plus an AtmosphereColor the shader
-                    // does not declare. The two it never authors are `Time`,
-                    // which is the engine's per-frame clock, and `Random` - the
-                    // seed every planet's terrain synthesis varies on. The old
-                    // class set it during the bake (`Random: itemID % 100`) and
-                    // this rewrite dropped it with the bake.
-                    //
-                    // Left at zero, every planet gets the same degenerate seed.
-                    //
-                    // It is also the one constant here that is a single float
-                    // (`size: 4`, `dimension: 1`) where Carbon's wire struct
-                    // stores a Vector4, so it only binds at all because
-                    // Tw2VectorParameter now packs into a narrower slot.
-                    if (this.itemID) node.SetParameters({ Random: this.itemID % 100 });
-
-                    bound++;
-                }
-                return;
-            }
-
-            for (const key of [ "effectChildren", "objects", "children", "mesh", "effect",
-                "opaqueAreas", "transparentAreas", "additiveAreas", "decalAreas", "depthAreas" ])
-            {
-                if (node[key]) visit(node[key], seen, depth + 1);
-            }
-        };
-
-        visit(this.effectChildren, new Set(), 0);
-
-        if (bound) this._heightMapsBound = true;
-        return bound;
+        return applyPlanetHeightMaps(this);
     }
 
     /**
@@ -572,6 +500,10 @@ export class EvePlanet extends EveEffectRoot2
     {
         super.GetResources(out);
         if (this.zOnlyModel && this.zOnlyModel.GetResources) this.zOnlyModel.GetResources(out);
+        for (const state of this._heightMapBindings.values())
+        {
+            if (state.bake && !state.done) state.bake.GetResources(out);
+        }
         return out;
     }
 
@@ -692,10 +624,7 @@ export class EvePlanet extends EveEffectRoot2
     {
         this._time += dt || 0;
 
-        // An effect has no `shader` until its resource has loaded and prepared,
-        // which is normally after Fetch resolved. Retried until it lands, then
-        // never again - the flag is what stops this being a per-frame walk.
-        if (!this._heightMapsBound && (this.heightMap1 || this.heightMap2)) this.ApplyHeightMaps();
+        this.ApplyHeightMaps();
 
         if (this.controllers.length)
         {
@@ -712,15 +641,27 @@ export class EvePlanet extends EveEffectRoot2
             this.curveSets[i].UpdateDelta(dt);
         }
 
+        // Carbon's planet children have no space-object parent or bones.
+        // Children consume an EveChildUpdateParams block, not positional matrices.
+        const childParams = this._childUpdateParams;
+        childParams.spaceObjectParent = null;
+        childParams.childParent = null;
+        childParams.bones = null;
+        childParams.boneCount = 0;
+        childParams.perObjectData = this._perObjectData;
+        childParams.isVisible = this.display && this.lodLevel > Tr2Lod.TR2_LOD_LOW;
+        mat4.copy(childParams.localToWorldTransform, this._scaledTransform);
+
         for (let i = 0; i < this.effectChildren.length; i++)
         {
             const child = this.effectChildren[i];
-            if (child) child.Update(dt, this._scaledTransform, this._perObjectData, this);
+            if (child) child.Update(dt, childParams);
         }
 
         if (this.zOnlyModel)
         {
-            this.zOnlyModel.Update(dt, this._planetTransform, this._perObjectData, this);
+            mat4.copy(childParams.localToWorldTransform, this._planetTransform);
+            this.zOnlyModel.Update(dt, childParams);
         }
 
         for (let i = 0; i < this.observers.length; i++)
@@ -787,16 +728,17 @@ export class EvePlanet extends EveEffectRoot2
      * worked around it by keeping both a `highDetail` transform and the adopted
      * children; there is no wrapper here to work around.
      *
-     * `heightMap1` / `heightMap2` are accepted and IGNORED. They fed the bake,
-     * which is gone: the shaders' `HeightMap` parameter is authored in the
-     * template - a dummy `res:/texture/global/black.dds` for every planet type
-     * but gas giants, which bind a real shipped .dds.
+     * The celestial height maps feed direct shader inputs on DX11 and a
+     * deferred HeightMap bake on legacy GLES. Template textures stay intact
+     * when no celestial height maps are supplied.
      *
      * @param {Object} options
      * @param {String} [options.name]
      * @param {Number} [options.itemID]
      * @param {Number} [options.radius]
      * @param {String} [options.resPath] - the TEMPLATE, which SDE calls a shaderPreset
+     * @param {String} [options.heightMap1]
+     * @param {String} [options.heightMap2]
      * @param {String} [options.atmospherePath]
      * @returns {Promise<EvePlanet>}
      */
@@ -817,7 +759,6 @@ export class EvePlanet extends EveEffectRoot2
         if (radius) this.radius = radius;
         this.heightMap1 = heightMap1;
         this.heightMap2 = heightMap2;
-        this._heightMapsBound = false;
         this._resPath = resPath;
         this._atmospherePath = atmospherePath;
 
@@ -867,7 +808,7 @@ export class EvePlanet extends EveEffectRoot2
         this.Initialize();
 
         // Attempted here for the case where the effects are already prepared,
-        // and retried from Update until it lands - see ApplyHeightMaps.
+        // and retried from Update for effects and children that load later.
         this.ApplyHeightMaps();
 
         return this;
