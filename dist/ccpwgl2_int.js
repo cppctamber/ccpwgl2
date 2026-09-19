@@ -307059,156 +307059,6 @@
 	var _excluded$a = ["lightOverride"];
 	var _dec$2e, _dec2$1T, _dec3$1I, _dec4$1v, _dec5$1i, _dec6$19, _dec7$W, _dec8$Q, _dec9$I, _dec0$B, _dec1$u, _dec10$r, _dec11$n, _dec12$m, _dec13$h, _class$2e, _class2$1S, _descriptor$1R, _descriptor2$1B, _descriptor3$1m, _descriptor4$1b, _descriptor5$12, _descriptor6$P, _descriptor7$F, _descriptor8$A, _descriptor9$u, _descriptor0$q, _descriptor1$k, _EveSOFData;
 	var EveSOFData = (_dec$2e = define("EveSOFData", true), _dec2$1T = boolean, _dec3$1I = uiDescription("Custom property for debugging"), _dec4$1v = boolean, _dec5$1i = uiDescription("Custom property for debugging"), _dec6$19 = float, _dec7$W = string, _dec8$Q = uiDescription("Custom property for debugging"), _dec9$I = list("EveSOFDataFaction"), _dec0$B = struct("EveSOFDataGeneric"), _dec1$u = list("EveSOFDataHull"), _dec10$r = list("EveSOFDataLayout"), _dec11$n = list("EveSOFDataMaterial"), _dec12$m = list("EveSOFDataPattern"), _dec13$h = list("EveSOFDataRace"), _dec$2e(_class$2e = (_class2$1S = (_EveSOFData = class EveSOFData extends Model$1 {
-	  constructor() {
-	    super(...arguments);
-	    _initializerDefineProperty(this, "enableChildren", _descriptor$1R, this);
-	    _initializerDefineProperty(this, "enableSof6", _descriptor2$1B, this);
-	    /**
-	     * Application adjustment for SOF video-plane RGB, applied during setup.
-	     * Deliberate ccpwgl extension: Carbon uses the authored faction colour.
-	     * Alpha is preserved; rebuild existing objects after changing this value.
-	     */
-	    _initializerDefineProperty(this, "globalVideoBrightnessModifier", _descriptor3$1m, this);
-	    /**
-	     * The material used when a named one is not in the data.
-	     *
-	     * Not a debugging aid any more, and not empty. Some materials genuinely are
-	     * not published for live ships, so a hull that exists and is meant to be
-	     * seen can name a material nothing can supply — and with no fallback that
-	     * threw, which loses the whole ship over one of its four material slots.
-	     *
-	     * `grey_iron_matt` is a real published material rather than an invented
-	     * one, so a substituted slot looks like a plausible unpainted surface
-	     * instead of announcing itself.
-	     */
-	    _initializerDefineProperty(this, "fallbackMaterialName", _descriptor4$1b, this);
-	    _initializerDefineProperty(this, "faction", _descriptor5$12, this);
-	    _initializerDefineProperty(this, "generic", _descriptor6$P, this);
-	    _initializerDefineProperty(this, "hull", _descriptor7$F, this);
-	    _initializerDefineProperty(this, "layout", _descriptor8$A, this);
-	    _initializerDefineProperty(this, "material", _descriptor9$u, this);
-	    _initializerDefineProperty(this, "pattern", _descriptor0$q, this);
-	    _initializerDefineProperty(this, "race", _descriptor1$k, this);
-	    /**
-	     * Temporary build options
-	     * @type {*}
-	     * @private
-	     */
-	    this._options = {
-	      // Simplifies mesh parameters
-	      simplifyParameters: true,
-	      // Allow reverting to old spotlight sets
-	      useSpotlightPool: true,
-	      // Allow reverting to the first generation booster set.
-	      //
-	      // Set 2 is the Carbon shape: one instanced draw for the whole set, the
-	      // per booster point lights, and the volumetric trails, which only it
-	      // can drive because the trail ribbon is swept from the five spline
-	      // control points it writes into the per object constants.
-	      useBoosterSet2: true,
-	      devColor: [0, 0, 0, 0],
-	      banners: {
-	        defaultBorderMap: "res:/texture/global/white.dds",
-	        defaultImageMap: "res:/texture/global/white.dds",
-	        defaultHorizontalImageMap: "res:/texture/global/white.dds",
-	        defaultVerticalImageMap: "res:/texture/global/white.dds",
-	        Type: {
-	          SQUARE: 0,
-	          VERTICAL: 1,
-	          HORIZONTAL: 2
-	        },
-	        Usage: EveSOFDataHullBannerSetItem.Usage
-	      },
-	      wreckArea: {
-	        fallbackGeneralGlowColor: [67, 9, 0, 1],
-	        minMapScaleUV: 2,
-	        minGlowIntensity: 50,
-	        maxGlowFlicker: 0.005,
-	        minSharpness: 2.1,
-	        // Decal wreck area only
-	        maxGlowFlickerDecalAreas: 0.004,
-	        minSharpnessDecalAreas: 3.5
-	      },
-	      multiplier: {
-	        spriteScale: 0.5,
-	        // Boost lights
-	        generalGlowColor: [10, 10, 10, 1],
-	        generalHeatGlowColor: [100, 100, 100, 1],
-	        boosterGlowScale: 0.125,
-	        boosterHaloScale: 0.5,
-	        boosterSymHalo: 0.125,
-	        boosterBrightness: 1,
-	        boosterScale: [0.9, 0.9, 0.9],
-	        boosterAlpha: 0.5
-	      },
-	      effect: {
-	        sprite: null,
-	        banner: null
-	      },
-	      // Override standard materials
-	      materialOverrides: {
-	        orange_neon01: {
-	          FresnelColor: [0, 0, 0, 1]
-	        }
-	      },
-	      billboards: [],
-	      effectPath: {
-	        plane: "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
-	        planeVideo: "res:/graphics/effect/managed/space/spaceobject/fx/planehologram.fx",
-	        spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
-	        spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
-	        // TODO: Fix weird artifacts
-	        spotlightConePool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
-	        spotlightGlowPool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
-	        boosterVolumetric: "res:/graphics/effect/managed/space/booster/boostervolumetric.fx",
-	        boosterGlow: "res:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
-	        boosterTrails: "res:/graphics/effect/managed/space/booster/volumetrictrails.fx",
-	        spriteSet: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
-	        // Carbon EveSOF.cpp:141-154
-	        hazeSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx",
-	        hazeSkinnedSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/skinned_hazespherical.fx",
-	        hazeHalfSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazehalfspherical.fx",
-	        banner: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
-	      },
-	      texturePath: {
-	        noise: "res:/Texture/global/noise.dds",
-	        noise32: "res:/Texture/Global/noise32cube_volume.dds",
-	        whiteSharp: "res:/Texture/Particle/whitesharp.dds",
-	        //noise: "res:/Texture/global/noise.dds.0.png",
-	        //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-	        //whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-	        hologramNoise: "res:/texture/fx/hologram/hologram_noise.dds",
-	        hologramPulse: "res:/texture/fx/hologram/hologram_pulse.dds",
-	        hologramInterlace: "res:/texture/fx/hologram/hologram_interlace_p.dds"
-	      },
-	      decalUsage: ["decalv5.fx",
-	      // Standard
-	      "decalcounterv5.fx",
-	      // Killmark
-	      "decalholev5.fx",
-	      // Hole
-	      "decalcylindricv5.fx",
-	      // Cylindrical
-	      "decalglowcylindricv5.fx",
-	      // Glow Cylindrical
-	      "decalglowv5.fx",
-	      // Glow
-	      "decalv5.fx" // Logo
-	      ],
-	      resPathInserts: {},
-	      listHullResPathInserts: null,
-	      resolveHullResPathInserts: null,
-	      modelDirectory: "res:/dx9/model/"
-	    };
-	    /**
-	     * Whether the missing-resolver warning has already been said once.
-	     * @type {Boolean}
-	     * @private
-	     */
-	    this._warnedNoResPathInsertResolver = false;
-	    /** The substitute, built once per data set and only if it is ever needed. */
-	    this._fallbackMaterial = null;
-	  }
 	  /**
 	   * Creates a banner
 	   * Temporary
@@ -307377,24 +307227,189 @@
 	  }
 
 	  /**
-	   * Initializes the sof data
+	   * Built with the catalog rather than on Initialize: almost every hull has
+	   * sprite sets or sprite line sets, and a catalog assembled lazily (see
+	   * EveSOFDataHandler) is never initialized, which left both without an
+	   * effect and drawing nothing.
 	   */
-	  Initialize() {
-	    var _this3 = this;
+	  constructor() {
+	    super(...arguments);
+	    _initializerDefineProperty(this, "enableChildren", _descriptor$1R, this);
+	    _initializerDefineProperty(this, "enableSof6", _descriptor2$1B, this);
+	    /**
+	     * Application adjustment for SOF video-plane RGB, applied during setup.
+	     * Deliberate ccpwgl extension: Carbon uses the authored faction colour.
+	     * Alpha is preserved; rebuild existing objects after changing this value.
+	     */
+	    _initializerDefineProperty(this, "globalVideoBrightnessModifier", _descriptor3$1m, this);
+	    /**
+	     * The material used when a named one is not in the data.
+	     *
+	     * Not a debugging aid any more, and not empty. Some materials genuinely are
+	     * not published for live ships, so a hull that exists and is meant to be
+	     * seen can name a material nothing can supply — and with no fallback that
+	     * threw, which loses the whole ship over one of its four material slots.
+	     *
+	     * `grey_iron_matt` is a real published material rather than an invented
+	     * one, so a substituted slot looks like a plausible unpainted surface
+	     * instead of announcing itself.
+	     */
+	    _initializerDefineProperty(this, "fallbackMaterialName", _descriptor4$1b, this);
+	    _initializerDefineProperty(this, "faction", _descriptor5$12, this);
+	    _initializerDefineProperty(this, "generic", _descriptor6$P, this);
+	    _initializerDefineProperty(this, "hull", _descriptor7$F, this);
+	    _initializerDefineProperty(this, "layout", _descriptor8$A, this);
+	    _initializerDefineProperty(this, "material", _descriptor9$u, this);
+	    _initializerDefineProperty(this, "pattern", _descriptor0$q, this);
+	    _initializerDefineProperty(this, "race", _descriptor1$k, this);
+	    /**
+	     * Temporary build options
+	     * @type {*}
+	     * @private
+	     */
+	    this._options = {
+	      // Simplifies mesh parameters
+	      simplifyParameters: true,
+	      // Allow reverting to old spotlight sets
+	      useSpotlightPool: true,
+	      // Allow reverting to the first generation booster set.
+	      //
+	      // Set 2 is the Carbon shape: one instanced draw for the whole set, the
+	      // per booster point lights, and the volumetric trails, which only it
+	      // can drive because the trail ribbon is swept from the five spline
+	      // control points it writes into the per object constants.
+	      useBoosterSet2: true,
+	      devColor: [0, 0, 0, 0],
+	      banners: {
+	        defaultBorderMap: "res:/texture/global/white.dds",
+	        defaultImageMap: "res:/texture/global/white.dds",
+	        defaultHorizontalImageMap: "res:/texture/global/white.dds",
+	        defaultVerticalImageMap: "res:/texture/global/white.dds",
+	        Type: {
+	          SQUARE: 0,
+	          VERTICAL: 1,
+	          HORIZONTAL: 2
+	        },
+	        Usage: EveSOFDataHullBannerSetItem.Usage
+	      },
+	      wreckArea: {
+	        fallbackGeneralGlowColor: [67, 9, 0, 1],
+	        minMapScaleUV: 2,
+	        minGlowIntensity: 50,
+	        maxGlowFlicker: 0.005,
+	        minSharpness: 2.1,
+	        // Decal wreck area only
+	        maxGlowFlickerDecalAreas: 0.004,
+	        minSharpnessDecalAreas: 3.5
+	      },
+	      multiplier: {
+	        spriteScale: 0.5,
+	        // Boost lights
+	        generalGlowColor: [10, 10, 10, 1],
+	        generalHeatGlowColor: [100, 100, 100, 1],
+	        boosterGlowScale: 0.125,
+	        boosterHaloScale: 0.5,
+	        boosterSymHalo: 0.125,
+	        boosterBrightness: 1,
+	        boosterScale: [0.9, 0.9, 0.9],
+	        boosterAlpha: 0.5
+	      },
+	      effect: {
+	        sprite: null,
+	        banner: null
+	      },
+	      // Override standard materials
+	      materialOverrides: {
+	        orange_neon01: {
+	          FresnelColor: [0, 0, 0, 1]
+	        }
+	      },
+	      billboards: [],
+	      effectPath: {
+	        plane: "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
+	        planeVideo: "res:/graphics/effect/managed/space/spaceobject/fx/planehologram.fx",
+	        spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
+	        spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
+	        // TODO: Fix weird artifacts
+	        spotlightConePool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
+	        spotlightGlowPool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
+	        boosterVolumetric: "res:/graphics/effect/managed/space/booster/boostervolumetric.fx",
+	        boosterGlow: "res:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
+	        boosterTrails: "res:/graphics/effect/managed/space/booster/volumetrictrails.fx",
+	        spriteSet: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+	        // Carbon EveSOF.cpp:141-154
+	        hazeSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx",
+	        hazeSkinnedSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/skinned_hazespherical.fx",
+	        hazeHalfSpherical: "res:/graphics/effect/managed/space/spaceobject/fx/hazehalfspherical.fx",
+	        banner: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
+	      },
+	      texturePath: {
+	        noise: "res:/Texture/global/noise.dds",
+	        noise32: "res:/Texture/Global/noise32cube_volume.dds",
+	        whiteSharp: "res:/Texture/Particle/whitesharp.dds",
+	        //noise: "res:/Texture/global/noise.dds.0.png",
+	        //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+	        //whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+	        hologramNoise: "res:/texture/fx/hologram/hologram_noise.dds",
+	        hologramPulse: "res:/texture/fx/hologram/hologram_pulse.dds",
+	        hologramInterlace: "res:/texture/fx/hologram/hologram_interlace_p.dds"
+	      },
+	      decalUsage: ["decalv5.fx",
+	      // Standard
+	      "decalcounterv5.fx",
+	      // Killmark
+	      "decalholev5.fx",
+	      // Hole
+	      "decalcylindricv5.fx",
+	      // Cylindrical
+	      "decalglowcylindricv5.fx",
+	      // Glow Cylindrical
+	      "decalglowv5.fx",
+	      // Glow
+	      "decalv5.fx" // Logo
+	      ],
+	      resPathInserts: {},
+	      listHullResPathInserts: null,
+	      resolveHullResPathInserts: null,
+	      modelDirectory: "res:/dx9/model/"
+	    };
+	    /**
+	     * Whether the missing-resolver warning has already been said once.
+	     * @type {Boolean}
+	     * @private
+	     */
+	    this._warnedNoResPathInsertResolver = false;
+	    /** The substitute, built once per data set and only if it is ever needed. */
+	    this._fallbackMaterial = null;
+	    this.CreateSpriteEffect();
+	  }
+
+	  /**
+	   * Creates the shared sprite effect used by sprite sets and sprite line
+	   * sets (Carbon's m_spriteSetEffect), unless one is already registered.
+	   */
+	  CreateSpriteEffect() {
 	    var _this$_options = this._options,
 	      effect = _this$_options.effect,
 	      effectPath = _this$_options.effectPath,
 	      texturePath = _this$_options.texturePath;
-	    if (!effect.sprite) {
-	      effect.sprite = Tw2Effect.from({
-	        name: "Shared sprite set effect",
-	        effectFilePath: effectPath.spriteSet,
-	        parameters: {
-	          MainIntensity: 1,
-	          GradientMap: texturePath.whiteSharp
-	        }
-	      });
-	    }
+	    if (effect.sprite) return;
+	    effect.sprite = Tw2Effect.from({
+	      name: "Shared sprite set effect",
+	      effectFilePath: effectPath.spriteSet,
+	      parameters: {
+	        MainIntensity: 1,
+	        GradientMap: texturePath.whiteSharp
+	      }
+	    });
+	  }
+
+	  /**
+	   * Initializes the sof data
+	   */
+	  Initialize() {
+	    var _this3 = this;
+	    this.CreateSpriteEffect();
 
 	    // Fix any provided materials
 	    var materialOverrides = this._options.materialOverrides;

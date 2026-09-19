@@ -560,23 +560,42 @@ export class EveSOFData extends meta.Model
     }
 
     /**
+     * Built with the catalog rather than on Initialize: almost every hull has
+     * sprite sets or sprite line sets, and a catalog assembled lazily (see
+     * EveSOFDataHandler) is never initialized, which left both without an
+     * effect and drawing nothing.
+     */
+    constructor(...args)
+    {
+        super(...args);
+        this.CreateSpriteEffect();
+    }
+
+    /**
+     * Creates the shared sprite effect used by sprite sets and sprite line
+     * sets (Carbon's m_spriteSetEffect), unless one is already registered.
+     */
+    CreateSpriteEffect()
+    {
+        const { effect, effectPath, texturePath } = this._options;
+        if (effect.sprite) return;
+
+        effect.sprite = Tw2Effect.from({
+            name: "Shared sprite set effect",
+            effectFilePath: effectPath.spriteSet,
+            parameters: {
+                MainIntensity: 1,
+                GradientMap: texturePath.whiteSharp
+            }
+        });
+    }
+
+    /**
      * Initializes the sof data
      */
     Initialize()
     {
-        const { effect, effectPath, texturePath } = this._options;
-
-        if (!effect.sprite)
-        {
-            effect.sprite = Tw2Effect.from({
-                name: "Shared sprite set effect",
-                effectFilePath: effectPath.spriteSet,
-                parameters: {
-                    MainIntensity: 1,
-                    GradientMap: texturePath.whiteSharp
-                }
-            });
-        }
+        this.CreateSpriteEffect();
 
         // Fix any provided materials
         const { materialOverrides } = this._options;
