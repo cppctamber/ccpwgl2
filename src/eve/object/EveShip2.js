@@ -68,7 +68,9 @@ export class EveShip2 extends EveMobile
             }
 
             this.boosters.Update(dt, this._worldTransform, {
-                gain: Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0)
+                gain: Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
+                speed: this.speed,
+                acceleration: this.acceleration || null
             });
 
             if (this.boosters._boundsDirty)

@@ -5,4 +5,5 @@ export * from "./api";
 export * from "./cameras";
 export * from "./debug";
 export * from "./gizmo";
+export * from "./helpers";
 export * from "./objects";

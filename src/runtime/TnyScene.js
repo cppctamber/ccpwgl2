@@ -5,11 +5,13 @@ import { EveSpaceScene } from "eve/EveSpaceScene";
 import { TnyClient } from "./TnyClient";
 import { TnyLensflare } from "./objects/TnyLensflare";
 import { TnyMobile } from "./objects/TnyMobile";
+import { TnyMultiEffect } from "./objects/TnyMultiEffect";
 import { TnyPlanet } from "./objects/TnyPlanet";
 import { TnyShip } from "./objects/TnyShip";
 import { TnySpaceObject } from "./objects/TnySpaceObject";
 import { TnyStationary } from "./objects/TnyStationary";
 import { TnyStrategicCruiser } from "./objects/TnyStrategicCruiser";
+import { TnySceneCinematicReveal } from "./helpers/TnySceneCinematicReveal";
 
 
 /**
@@ -37,6 +39,9 @@ export class TnyScene extends meta.Model
     @meta.list()
     lensflares = [];
 
+    @meta.list()
+    backgroundObjects = [];
+
     /**
      * Picking, carried over from WrappedScene when that tree was retired.
      * A scene that can be rendered but not clicked is only half a scene: any
@@ -55,6 +60,8 @@ export class TnyScene extends meta.Model
      * hull can still be grabbed - see `IntersectFromEvent`.
      */
     gizmoObjects = [];
+
+    _cinematicReveal = null;
 
     /**
      * Planets normally go in the scene's planet list, which renders in a
@@ -129,11 +136,12 @@ export class TnyScene extends meta.Model
 
         if (!object) throw new TypeError("Invalid runtime object");
 
-        const target = object.isLensflare ? this.lensflares : this.objects;
+        const target = object.isLensflare ? this.lensflares : object.isBackgroundObject ? this.backgroundObjects : this.objects;
         if (!target.includes(object))
         {
             target.push(object);
             this.Rebuild();
+            if (object.isBackgroundObject) this._AddWrappedBackgroundObject(object);
             this.EmitEvent("object_added", this, object);
         }
         return this;
@@ -145,11 +153,12 @@ export class TnyScene extends meta.Model
      */
     RemoveObject(object)
     {
-        const target = object && object.isLensflare ? this.lensflares : this.objects;
+        const target = object && object.isLensflare ? this.lensflares : object && object.isBackgroundObject ? this.backgroundObjects : this.objects;
         const index = target.indexOf(object);
         if (index !== -1)
         {
             target.splice(index, 1);
+            if (object.isBackgroundObject) this._RemoveWrappedBackgroundObject(object);
             this.Rebuild();
             this.EmitEvent("object_removed", this, object);
         }
@@ -242,13 +251,19 @@ export class TnyScene extends meta.Model
     RemoveAllObjects(spaceObjects, planets)
     {
         const keep = this.objects.filter(x => (x.isPlanet ? !planets : !spaceObjects));
-        if (keep.length === this.objects.length) return this;
+        const keepBackground = spaceObjects ? [] : this.backgroundObjects.slice();
+        if (keep.length === this.objects.length && keepBackground.length === this.backgroundObjects.length) return this;
 
         const removed = this.objects.filter(x => keep.indexOf(x) === -1);
+        const removedBackground = this.backgroundObjects.filter(x => keepBackground.indexOf(x) === -1);
         this.objects.length = 0;
         this.objects.push(...keep);
+        for (let i = 0; i < removedBackground.length; i++) this._RemoveWrappedBackgroundObject(removedBackground[i]);
+        this.backgroundObjects.length = 0;
+        this.backgroundObjects.push(...keepBackground);
         this.Rebuild();
         removed.forEach(x => this.EmitEvent("object_removed", this, x));
+        removedBackground.forEach(x => this.EmitEvent("object_removed", this, x));
         return this;
     }
 
@@ -259,12 +274,18 @@ export class TnyScene extends meta.Model
     GetObjects(out = [])
     {
         out.push(...this.objects);
+        out.push(...this.backgroundObjects);
         return out;
     }
 
     ClearObjects()
     {
+        for (let i = 0; i < this.backgroundObjects.length; i++)
+        {
+            this._RemoveWrappedBackgroundObject(this.backgroundObjects[i]);
+        }
         this.objects.splice(0);
+        this.backgroundObjects.splice(0);
         this.lensflares.splice(0);
         this.Rebuild();
         return this;
@@ -290,6 +311,11 @@ export class TnyScene extends meta.Model
             if (Array.isArray(lensflares)) lensflares.push(this.lensflares[i].wrapped || this.lensflares[i]);
         }
 
+        for (let i = 0; i < this.backgroundObjects.length; i++)
+        {
+            this._AddWrappedBackgroundObject(this.backgroundObjects[i]);
+        }
+
         for (let i = 0; i < this.objects.length; i++)
         {
             const object = this.objects[i];
@@ -307,6 +333,31 @@ export class TnyScene extends meta.Model
 
         this.EmitEvent("rebuilt", this);
         return this;
+    }
+
+    _AddWrappedBackgroundObject(object)
+    {
+        const list = this.wrapped && this.wrapped.backgroundObjects;
+        if (!Array.isArray(list) || !object) return false;
+
+        const raw = object.wrapped || object;
+        if (!raw || list.includes(raw)) return false;
+
+        list.push(raw);
+        return true;
+    }
+
+    _RemoveWrappedBackgroundObject(object)
+    {
+        const list = this.wrapped && this.wrapped.backgroundObjects;
+        if (!Array.isArray(list) || !object) return false;
+
+        const raw = object.wrapped || object;
+        const index = list.indexOf(raw);
+        if (index === -1) return false;
+
+        list.splice(index, 1);
+        return true;
     }
 
     /**
@@ -346,6 +397,10 @@ export class TnyScene extends meta.Model
         for (let i = 0; i < this.objects.length; i++)
         {
             if (this.objects[i].GetResources) this.objects[i].GetResources(out);
+        }
+        for (let i = 0; i < this.backgroundObjects.length; i++)
+        {
+            if (this.backgroundObjects[i].GetResources) this.backgroundObjects[i].GetResources(out);
         }
         return out;
     }
@@ -544,6 +599,7 @@ export class TnyScene extends meta.Model
     static EVE_CLASS = {
         EvePlanet: TnyPlanet,
         EveOldPlanet: TnyPlanet,
+        EveMultiEffect: TnyMultiEffect,
         EveLensflare: TnyLensflare,
         EveStation2: TnyStationary,
         EveShip2: TnyShip,
@@ -692,6 +748,52 @@ export class TnyScene extends meta.Model
         // failing is the NORMAL case. Letting a Watch rejection through would
         // mean never returning a flare at all.
         return this.constructor._fetch(this, TnyLensflare, options, onProgress, doNotAdd);
+    }
+
+    /**
+     * Fetches an invisible Carbon multi-effect and, unless told not to, adds it
+     * to this scene's background object roots so rebuilds do not discard it.
+     * @param {String|Object} options - a res path, or values carrying `resPath`
+     * @param {Function} [onProgress]
+     * @param {Boolean} [doNotAdd]
+     * @returns {Promise<TnyMultiEffect>}
+     */
+    async FetchMultiEffect(options, onProgress, doNotAdd)
+    {
+        return this.constructor._fetch(this, TnyMultiEffect, options, onProgress, doNotAdd);
+    }
+
+    /**
+     * Sets up the single active cinematic reveal helper for a target ship.
+     *
+     * A scene may only have one reveal controller because the authored boarding
+     * multieffect binds to one `playerShip` root and writes shared ship fields
+     * such as activation strength and booster intensity. Repeated setup calls
+     * retarget the existing helper unless a different multieffect is requested.
+     *
+     * @param {*} target - Tny wrapper or raw Eve ship
+     * @param {Object} [options]
+     * @returns {Promise<TnySceneCinematicReveal>}
+     */
+    async SetupCinematicReveal(target, options = {})
+    {
+        const resPath = options.resPath || (this._cinematicReveal && this._cinematicReveal.resPath);
+        if (this._cinematicReveal && this._cinematicReveal.resPath === resPath)
+        {
+            this._cinematicReveal.Retarget(target);
+            this.EmitEvent("cinematic_reveal_setup", this, this._cinematicReveal);
+            return this._cinematicReveal;
+        }
+
+        if (this._cinematicReveal)
+        {
+            this._cinematicReveal.Dispose();
+        }
+
+        const reveal = await TnySceneCinematicReveal.Create(this, target, options);
+        this._cinematicReveal = reveal;
+        this.EmitEvent("cinematic_reveal_setup", this, reveal);
+        return reveal;
     }
 
     /**

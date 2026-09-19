@@ -57,8 +57,10 @@ export class EveBoosterSet2Renderable extends meta.Model
      * Carbon has destiny, so a parked ship really does have its boosters off.
      * ccpwgl does not, and `EveShip2.boosterGain` is the value a caller already
      * uses to say how hard the boosters are burning - the same slot Carbon
-     * fills with the averaged renderable intensity - so it is taken as a floor
-     * rather than replacing the speed derived value, which may exceed it.
+     * fills with the averaged renderable intensity - so non always-on boosters
+     * take it as a floor rather than replacing the speed derived value, which
+     * may exceed it. Always-on sequences use their authored intensity directly,
+     * matching Carbon's `EveBoosterSet2Renderable::CalculateIntensity`.
      */
     @meta.float
     intensityFloor = 0;
@@ -116,7 +118,7 @@ export class EveBoosterSet2Renderable extends meta.Model
     {
         const boosterSet = this._boosterSet;
         if (!boosterSet) return 0;
-        if (boosterSet.alwaysOn) return Math.max(boosterSet.alwaysOnIntensity, this.intensityFloor);
+        if (boosterSet.alwaysOn) return Math.max(0, boosterSet.alwaysOnIntensity);
 
         const backward = vec3.transformQuat(vec3_0, Z_AXIS, this.parentRotation);
         const speedRatio = boosterSet.maxVel ? this.parentSpeed / boosterSet.maxVel : 0;
@@ -136,7 +138,7 @@ export class EveBoosterSet2Renderable extends meta.Model
     /**
      * Takes the parent transform, speed and rotation for the frame, deriving
      * speed from the transform delta when the set is not destiny driven, and
-     * recomputes the overall intensity
+     * recomputes the overall intensity.
      * @param {Number} dt
      * @param {mat4} parentTransform
      * @param {Number} [parentSpeed=0]

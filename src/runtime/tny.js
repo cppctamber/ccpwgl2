@@ -10,7 +10,7 @@ import {
 import { TnyCameraAdapter, TnyCameraTest } from "./cameras";
 import { TnyRotationGizmo, TnyScalingGizmo, TnyTransformGizmo, TnyTranslationGizmo } from "./gizmo";
 import {
-    TnyLensflare, TnyMobile, TnyPlanet, TnyShip, TnySpaceObject, TnyStationary, TnyStrategicCruiser, TnySwarm
+    TnyLensflare, TnyMobile, TnyMultiEffect, TnyPlanet, TnyShip, TnySpaceObject, TnyStationary, TnyStrategicCruiser, TnySwarm
 } from "./objects";
 import { TnyClient } from "./TnyClient";
 import { TnyScene } from "./TnyScene";
@@ -26,6 +26,7 @@ export const tnyConstructors = {
     // Objects
     TnyLensflare,
     TnyMobile,
+    TnyMultiEffect,
     TnyPlanet,
     TnyShip,
     TnySpaceObject,

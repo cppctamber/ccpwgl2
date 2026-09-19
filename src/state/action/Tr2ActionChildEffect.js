@@ -109,7 +109,17 @@ export class Tr2ActionChildEffect extends Tw2Action
             return owner;
         }
 
-        return Tr2ActionChildEffect.FindChildByName(owner, this.targetAnotherOwner);
+        const child = Tr2ActionChildEffect.FindChildByName(owner, this.targetAnotherOwner);
+        if (child) return child;
+
+        if (owner.GetParameterByName)
+        {
+            const parameter = owner.GetParameterByName(this.targetAnotherOwner);
+            const object = parameter && parameter.GetParameterObject ? parameter.GetParameterObject() : parameter && parameter.object;
+            if (object) return object;
+        }
+
+        return null;
     }
 
     /**
@@ -179,6 +189,12 @@ export class Tr2ActionChildEffect extends Tw2Action
      */
     static AddChild(owner, child)
     {
+        if (owner && owner.AddToEffectChildrenList)
+        {
+            owner.AddToEffectChildrenList(child);
+            return true;
+        }
+
         const children = Tr2ActionChildEffect.GetEffectChildren(owner);
         if (!children || children.includes(child))
         {
@@ -206,6 +222,11 @@ export class Tr2ActionChildEffect extends Tw2Action
      */
     static RemoveChild(owner, child)
     {
+        if (owner && owner.RemoveFromEffectChildrenList)
+        {
+            return owner.RemoveFromEffectChildrenList(child);
+        }
+
         const children = Tr2ActionChildEffect.GetEffectChildren(owner);
         const index = children ? children.indexOf(child) : -1;
         if (index === -1)

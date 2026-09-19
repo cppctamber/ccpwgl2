@@ -1,4 +1,5 @@
 export { TnyLensflare } from "./TnyLensflare";
+export { TnyMultiEffect } from "./TnyMultiEffect";
 export { TnySlot } from "./TnySlot";
 export { TnyPlanet } from "./TnyPlanet";
 export { TnySpaceObject } from "./TnySpaceObject";
