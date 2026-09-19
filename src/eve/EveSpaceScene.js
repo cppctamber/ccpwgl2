@@ -1,3 +1,4 @@
+import { Tw2DofLayerRenderer } from "../core/post/Tw2DofLayerRenderer";
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
@@ -1865,7 +1866,21 @@ export class EveSpaceScene extends meta.Model
             for (const planet of this.planets) planet.GetZOnlyBatches(d.RM_OPAQUE, proxies);
             proxies.Render();
         }
-        this.RenderCollectedBatches(mainAccumulator);
+        this._dofLayersActive = false;
+        let restoreDofBatches = null;
+        if (this.depthOfFieldTransparentDepth && sceneTarget && this.visible.post && this.postProcess2?.GetIfAvailable("depthOfField")
+            && this.GetDepthHandler(false)?.rendered && device.shaderModel === "depth")
+        {
+            this._dofLayerRenderer ??= new Tw2DofLayerRenderer();
+            this._depthOfFieldRenderer ??= new Tw2DepthOfFieldRenderer();
+            if (this._depthOfFieldRenderer.EnsureEffects())
+            {
+                restoreDofBatches = this._dofLayerRenderer.Extract(this, mainAccumulator);
+                this._dofLayersActive = true;
+            }
+        }
+        try { this.RenderCollectedBatches(mainAccumulator); }
+        finally { if (restoreDofBatches) restoreDofBatches(); }
 
         // GPU PARTICLES, drawn after the collected batches and before the
         // scene is resolved, so they land on the scene image the way any other
@@ -2379,6 +2394,8 @@ export class EveSpaceScene extends meta.Model
      * @param {Tw2RenderTarget|null} sceneTarget
      * @returns {Boolean}
      */
+    depthOfFieldTransparentDepth = false;
+
     RenderDepthOfField(sceneTarget)
     {
         if (!sceneTarget || !this.visible.post || !this.postProcess2) return false;
@@ -2393,7 +2410,12 @@ export class EveSpaceScene extends meta.Model
 
         try
         {
-            return this._depthOfFieldRenderer.Render(depthOfField, depth, sceneTarget);
+            const rendered = this._depthOfFieldRenderer.Render(depthOfField, depth, sceneTarget);
+            if (this._dofLayersActive)
+            {
+                this._dofLayerRenderer.RenderLayers(this, depthHandler, depthOfField, sceneTarget);
+            }
+            return rendered;
         }
         catch (err)
         {

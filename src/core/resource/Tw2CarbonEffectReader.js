@@ -263,6 +263,8 @@ export class Tw2CarbonShaderFactory
 
         const pass = new Tw2ShaderPass();
         pass.isCarbon = true;
+        // Preserve material metadata even when applying its render states is gated.
+        pass.authoredStates = (group.states || []).map(({ state, value }) => ({ state, value }));
         // The D3D render states the pass was authored with. Nothing in the
         // GLSL implies them, so without this a Carbon effect draws under
         // whatever state the previous batch left set. The decal family is the

@@ -135429,6 +135429,15 @@
 	    }
 	    var pass = new Tw2ShaderPass();
 	    pass.isCarbon = true;
+	    // Preserve material metadata even when applying its render states is gated.
+	    pass.authoredStates = (group.states || []).map(_ref => {
+	      var state = _ref.state,
+	        value = _ref.value;
+	      return {
+	        state,
+	        value
+	      };
+	    });
 	    // The D3D render states the pass was authored with. Nothing in the
 	    // GLSL implies them, so without this a Carbon effect draws under
 	    // whatever state the previous batch left set. The decal family is the
@@ -268466,8 +268475,8 @@
 	    _initializerDefineProperty(this, "translationCurve", _descriptor15$o, this);
 	    _initializerDefineProperty(this, "meshIndex", _descriptor16$j, this);
 	    /*
-	          CCPWGL only
-	       */
+	         CCPWGL only
+	      */
 	    _initializerDefineProperty(this, "clipSphereCenter", _descriptor17$h, this);
 	    _initializerDefineProperty(this, "clipSphereFactor", _descriptor18$h, this);
 	    _initializerDefineProperty(this, "clipSphereFactor2", _descriptor19$d, this);
@@ -268754,12 +268763,12 @@
 	    return out;
 	  }
 	  /*
-	        Eve engine doesn't rebuild bounds like we do here
+	       Eve engine doesn't rebuild bounds like we do here
 	      If we need to rebuild bounds for a hull, for using in something like Intersection tests
 	      We should be storing it separately to the actual hull's bounds
 	      This will remove confusion when we're comparing behavior
 	      TODO: Change all bound calculations to be separate from the base hull bounds
-	     */
+	    */
 
 	  /**
 	   * Fires when bounds need rebuilding
@@ -283201,6 +283210,413 @@
 	  }
 	}
 
+	/** Retain the material's clipping/animation, then reject invisible output. */
+	function DofCoverageSource(source, additive) {
+	  var alphaWeighted = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	  var outputs = [...source.matchAll(/(?:layout\s*\(\s*location\s*=\s*(\d+)\s*\)\s*)?out\s+(?:(?:lowp|mediump|highp)\s+)?vec4\s+(\w+)\s*;/g)];
+	  var output = outputs.find(x => x[1] === "0") || (outputs.length === 1 ? outputs[0] : null);
+	  if (!output || !/void\s+main\s*\(/.test(source)) return null;
+	  var name = output[2];
+	  var coverage = additive ? "max(max(abs(".concat(name, ".r), abs(").concat(name, ".g)), abs(").concat(name, ".b))") : "".concat(name, ".a");
+	  var contribution = additive && alphaWeighted ? "(".concat(coverage, ") * clamp(").concat(name, ".a, 0.0, 1.0)") : coverage;
+	  return source.replace(/void\s+main\s*\(/, "void dofMaterialMain(") + "\nvoid main() {\n    dofMaterialMain();\n    if (!(".concat(contribution, " > 0.001)) discard;\n}\n");
+	}
+
+	/** Experimental nearest-contributing-surface depth, consumed ONLY by DOF. */
+	class Tw2DofDepthRenderer {
+	  constructor() {
+	    this._programs = new WeakMap();
+	    this._context = null;
+	    this.target = null;
+	    this.report = null;
+	  }
+	  GetProgram(pass, additive, alphaWeighted) {
+	    var gl = device.gl,
+	      original = pass.shaderProgram;
+	    var variants = this._programs.get(original);
+	    if (!variants) this._programs.set(original, variants = new Map());
+	    var key = "".concat(additive, ":").concat(alphaWeighted);
+	    if (variants.has(key)) return variants.get(key);
+	    var shaders = gl.getAttachedShaders(original.program) || [];
+	    var vertex = shaders.find(s => gl.getShaderParameter(s, gl.SHADER_TYPE) === gl.VERTEX_SHADER);
+	    var fragment = shaders.find(s => gl.getShaderParameter(s, gl.SHADER_TYPE) === gl.FRAGMENT_SHADER);
+	    var source = fragment && DofCoverageSource(gl.getShaderSource(fragment), additive, alphaWeighted);
+	    if (!vertex || !source) {
+	      variants.set(key, null);
+	      return null;
+	    }
+	    var shader = gl.createShader(gl.FRAGMENT_SHADER);
+	    gl.shaderSource(shader, source);
+	    gl.compileShader(shader);
+	    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+	      this.report.error = gl.getShaderInfoLog(shader);
+	      gl.deleteShader(shader);
+	      variants.set(key, null);
+	      return null;
+	    }
+	    var program = Tw2ShaderProgram.create(vertex, shader, pass, {
+	      path: "DOF coverage"
+	    }, true);
+	    gl.deleteShader(shader);
+	    variants.set(key, program);
+	    return program;
+	  }
+	  DrawBatch(batch, accumulator) {
+	    var _effect$IsGood, _effect$shader;
+	    var effect = batch.effect,
+	      technique = batch._techniqueOverride || "Main";
+	    if (!(effect !== null && effect !== void 0 && (_effect$IsGood = effect.IsGood) !== null && _effect$IsGood !== void 0 && _effect$IsGood.call(effect)) || !((_effect$shader = effect.shader) !== null && _effect$shader !== void 0 && (_effect$shader = _effect$shader.techniques) !== null && _effect$shader !== void 0 && _effect$shader[technique])) {
+	      this.report.skipped++;
+	      return;
+	    }
+	    var passes = effect.shader.techniques[technique].passes;
+	    var programs = passes.map((pass, i) => {
+	      var _authored$filter$pop, _authored$filter$pop$, _authored$filter$pop2;
+	      var state = effect.techniques[technique][i].state;
+	      var authored = [...(pass.authoredStates || pass.states), ...(Array.isArray(state) ? state : Object.entries(state || {}).map(_ref => {
+	        var _ref2 = _slicedToArray(_ref, 2),
+	          state = _ref2[0],
+	          value = _ref2[1];
+	        return {
+	          state: Number(state),
+	          value
+	        };
+	      }))];
+	      var sourceBlend = (_authored$filter$pop = authored.filter(x => x.state === RS_SRCBLEND$1).pop()) === null || _authored$filter$pop === void 0 ? void 0 : _authored$filter$pop.value;
+	      var destinationBlend = (_authored$filter$pop$ = (_authored$filter$pop2 = authored.filter(x => x.state === RS_DESTBLEND$1).pop()) === null || _authored$filter$pop2 === void 0 ? void 0 : _authored$filter$pop2.value) != null ? _authored$filter$pop$ : batch.renderMode === device.RM_ADDITIVE ? BLEND_ONE : BLEND_INVSRCALPHA;
+	      // An additive batch may carry a premultiplied-alpha material (e.g.
+	      // 2LayerMask). Its RGB alone is not a coverage mask.
+	      return this.GetProgram(pass, destinationBlend === BLEND_ONE, sourceBlend === BLEND_SRCALPHA);
+	    });
+	    if (programs.some(p => !p)) {
+	      this.report.skipped++;
+	      return;
+	    }
+	    var saved = passes.map((pass, i) => [pass.shaderProgram, pass.shadowShaderProgram, effect.techniques[technique][i].state]);
+	    try {
+	      for (var i = 0; i < passes.length; i++) {
+	        passes[i].shaderProgram = passes[i].shadowShaderProgram = programs[i];
+	        var states = saved[i][2];
+	        var overrides = Array.isArray(states) ? states.slice() : Object.entries(states || {}).map(_ref3 => {
+	          var _ref4 = _slicedToArray(_ref3, 2),
+	            state = _ref4[0],
+	            value = _ref4[1];
+	          return {
+	            state: Number(state),
+	            value
+	          };
+	        });
+	        overrides.push({
+	          state: RS_ZENABLE$1,
+	          value: 1
+	        }, {
+	          state: RS_ZWRITEENABLE$1,
+	          value: 1
+	        }, {
+	          state: RS_ZFUNC$1,
+	          value: CMP_LEQUAL
+	        }, {
+	          state: RS_ALPHABLENDENABLE$1,
+	          value: 0
+	        }, {
+	          state: RS_COLORWRITEENABLE$1,
+	          value: 0
+	        });
+	        effect.techniques[technique][i].state = overrides;
+	      }
+	      device.InvalidateStandardStates();
+	      device.SetStandardStates(batch.renderMode);
+	      device.perObjectData = this._context.ResolvePerObjectData(batch, {
+	        accumulator,
+	        technique,
+	        renderMode: batch.renderMode
+	      });
+	      if (batch.Commit(technique) !== false) this.report.rendered++;
+	    } finally {
+	      for (var _i = 0; _i < passes.length; _i++) {
+	        var _saved$_i = _slicedToArray(saved[_i], 3);
+	        passes[_i].shaderProgram = _saved$_i[0];
+	        passes[_i].shadowShaderProgram = _saved$_i[1];
+	        effect.techniques[technique][_i].state = _saved$_i[2];
+	      }
+	    }
+	  }
+	  Render(scene, depthHandler) {
+	    var _this$target, _this$_context;
+	    var gl = device.gl,
+	      source = depthHandler === null || depthHandler === void 0 ? void 0 : depthHandler._target;
+	    this.report = {
+	      rendered: 0,
+	      skipped: 0,
+	      error: null
+	    };
+	    if (!gl.blitFramebuffer || !(depthHandler !== null && depthHandler !== void 0 && depthHandler.rendered) || !(source !== null && source !== void 0 && source.IsGood())) return null;
+	    (_this$target = this.target) != null ? _this$target : this.target = new Tw2DepthRenderTarget("DofSurfaceDepth");
+	    if (this.target.width !== source.width || this.target.height !== source.height || !this.target.IsGood()) this.target.Create(source.width, source.height, source.precision);
+	    if (!this.target.IsGood()) return null;
+	    (_this$_context = this._context) != null ? _this$_context : this._context = new Tw2RenderBatchContext();
+	    this._context.Clear();
+	    // Context writers preserve Carbon per-object constants for child batches.
+	    if (!this._writer) {
+	      this._writer = scene.GetBatchContextWriter();
+	      this._context.AddWriter(this._writer);
+	    }
+	    var objects = [...(scene.visible.objects ? scene.objects : []), ...(scene.visible.backgroundObjects ? scene.backgroundObjects : [])];
+	    for (var mode of [device.RM_TRANSPARENT, device.RM_ADDITIVE]) this._context.CollectObjectArrayBatches(objects, mode, {
+	      renderReason: "DofSurfaceDepth"
+	    });
+	    var read = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING),
+	      draw = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
+	    var viewport = gl.getParameter(gl.VIEWPORT),
+	      scissor = gl.isEnabled(gl.SCISSOR_TEST);
+	    var colorMask = gl.getParameter(gl.COLOR_WRITEMASK),
+	      depthMask = gl.getParameter(gl.DEPTH_WRITEMASK);
+	    var perObjectData = device.perObjectData;
+	    try {
+	      gl.disable(gl.SCISSOR_TEST);
+	      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, source._frameBuffer);
+	      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this.target._frameBuffer);
+	      gl.blitFramebuffer(0, 0, source.width, source.height, 0, 0, source.width, source.height, gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+	      gl.bindFramebuffer(gl.FRAMEBUFFER, this.target._frameBuffer);
+	      gl.viewport(0, 0, source.width, source.height);
+	      for (var accumulator of this._context.accumulators.values()) for (var batch of accumulator.batches) this.DrawBatch(batch, accumulator);
+	      return this.target.depthTexture;
+	    } finally {
+	      device.perObjectData = perObjectData;
+	      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, read);
+	      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, draw);
+	      gl.viewport(...viewport);
+	      gl.colorMask(...colorMask);
+	      gl.depthMask(depthMask);
+	      if (scissor) gl.enable(gl.SCISSOR_TEST);
+	      device.InvalidateStandardStates();
+	    }
+	  }
+	}
+
+	/** Experimental separated colour/coverage DOF. The opaque depth is never modified. */
+	class Tw2DofLayerRenderer extends Tw2DofDepthRenderer {
+	  constructor() {
+	    super(...arguments);
+	    this.layers = [];
+	    this.batches = [];
+	  }
+	  Extract(scene, root) {
+	    var _this$_context,
+	      _this = this;
+	    this.batches = [];
+	    this.report = {
+	      rendered: 0,
+	      skipped: 0,
+	      error: null
+	    };
+	    (_this$_context = this._context) != null ? _this$_context : this._context = new Tw2RenderBatchContext();
+	    this._context.Clear();
+	    if (!this._writer) {
+	      this._writer = scene.GetBatchContextWriter();
+	      this._context.AddWriter(this._writer);
+	    }
+	    var removed = [];
+	    var walk = accumulator => {
+	      if (accumulator.accumulators) {
+	        for (var a of accumulator.accumulators.values()) walk(a);
+	        return;
+	      }
+	      var kept = [];
+	      var _loop = function (batch) {
+	        var _batch$effect, _batch$effect2;
+	        if (batch.batches) {
+	          walk(batch);
+	          kept.push(batch);
+	          return 1; // continue
+	        }
+	        var passes = (_batch$effect = batch.effect) === null || _batch$effect === void 0 || (_batch$effect = _batch$effect.shader) === null || _batch$effect === void 0 || (_batch$effect = _batch$effect.techniques) === null || _batch$effect === void 0 || (_batch$effect = _batch$effect.Main) === null || _batch$effect === void 0 ? void 0 : _batch$effect.passes;
+	        if ((batch.renderMode === device.RM_ADDITIVE || batch.renderMode === device.RM_TRANSPARENT) && (_batch$effect2 = batch.effect) !== null && _batch$effect2 !== void 0 && _batch$effect2.IsGood() && passes !== null && passes !== void 0 && passes.length && passes.every(pass => _this.GetProgram(pass, batch.renderMode === device.RM_ADDITIVE, false))) {
+	          _this.batches.push({
+	            batch,
+	            accumulator
+	          });
+	        } else kept.push(batch);
+	      };
+	      for (var batch of accumulator.batches) {
+	        if (_loop(batch)) continue;
+	      }
+	      removed.push([accumulator, accumulator.batches]);
+	      accumulator.batches = kept;
+	    };
+	    walk(root);
+	    return () => {
+	      for (var _ref3 of removed) {
+	        var _ref2 = _slicedToArray(_ref3, 2);
+	        var accumulator = _ref2[0];
+	        var batches = _ref2[1];
+	        accumulator.batches = batches;
+	      }
+	    };
+	  }
+	  Fullscreen(target, texture) {
+	    var mask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : texture;
+	    var mode = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+	    var additive = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+	    var gl = device.gl;
+	    if (!this._composite) {
+	      var shader = (type, source) => {
+	        var s = gl.createShader(type);
+	        gl.shaderSource(s, source);
+	        gl.compileShader(s);
+	        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+	        return s;
+	      };
+	      var v = shader(gl.VERTEX_SHADER, "#version 300 es\nout vec2 uv; void main(){ uv=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2)); gl_Position=vec4(uv*2.0-1.0,0,1); }");
+	      var f = shader(gl.FRAGMENT_SHADER, "#version 300 es\nprecision highp float; in vec2 uv; uniform sampler2D colour; uniform sampler2D coverage; uniform int mode; out vec4 result;\nvoid main(){vec4 c=texture(colour,uv);result=mode==0?vec4(c.aaa,1):vec4(c.rgb,clamp(texture(coverage,uv).r,0.0,1.0));}");
+	      var p = gl.createProgram();
+	      gl.attachShader(p, v);
+	      gl.attachShader(p, f);
+	      gl.linkProgram(p);
+	      gl.deleteShader(v);
+	      gl.deleteShader(f);
+	      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+	      this._composite = p;
+	      this._vao = gl.createVertexArray();
+	    }
+	    target.SetCallUnset(() => {
+	      device.InvalidateStandardStates();
+	      device.SetStandardStates(RM_FULLSCREEN);
+	      gl.disable(gl.DEPTH_TEST);
+	      gl.depthMask(false);
+	      gl.colorMask(true, true, true, true);
+	      if (mode === 1) {
+	        gl.enable(gl.BLEND);
+	        gl.blendEquation(gl.FUNC_ADD);
+	        gl.blendFunc(gl.ONE, additive ? gl.ONE : gl.ONE_MINUS_SRC_ALPHA);
+	      } else gl.disable(gl.BLEND);
+	      var vao = gl.getParameter(gl.VERTEX_ARRAY_BINDING);
+	      gl.bindVertexArray(this._vao);
+	      gl.useProgram(this._composite);
+	      gl.activeTexture(gl.TEXTURE0);
+	      gl.bindTexture(gl.TEXTURE_2D, texture.texture);
+	      gl.activeTexture(gl.TEXTURE1);
+	      gl.bindTexture(gl.TEXTURE_2D, mask.texture);
+	      gl.uniform1i(gl.getUniformLocation(this._composite, "colour"), 0);
+	      gl.uniform1i(gl.getUniformLocation(this._composite, "coverage"), 1);
+	      gl.uniform1i(gl.getUniformLocation(this._composite, "mode"), mode);
+	      gl.drawArrays(gl.TRIANGLES, 0, 3);
+	      gl.bindVertexArray(vao);
+	      device.InvalidateStandardStates();
+	    });
+	  }
+	  RenderLayers(scene, depthHandler, effect, destination) {
+	    var _this2 = this;
+	    var gl = device.gl,
+	      source = depthHandler._target;
+	    var perObjectData = device.perObjectData;
+	    var framebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING),
+	      viewport = gl.getParameter(gl.VIEWPORT);
+	    try {
+	      var _loop2 = function () {
+	        var _this2$layers, _index, _this2$layers$_index;
+	        var additive = index === 1;
+	        var batches = _this2.batches.filter(_ref4 => {
+	          var batch = _ref4.batch;
+	          return batch.renderMode === device.RM_ADDITIVE === additive;
+	        });
+	        if (!batches.length) return 1; // continue
+	        var layer = (_this2$layers$_index = (_this2$layers = _this2.layers)[_index = index]) != null ? _this2$layers$_index : _this2$layers[_index] = {
+	          target: new Tw2DepthRenderTarget("DofEffectLayer"),
+	          dof: new Tw2DepthOfFieldRenderer(),
+	          maskDof: new Tw2DepthOfFieldRenderer()
+	        };
+	        var target = layer.target;
+	        target.Update(source.width, source.height, source.precision, destination.colorFormat);
+	        // Copy occluders, but clear colour to transparent black.
+	        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, source._frameBuffer);
+	        gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, target._frameBuffer);
+	        gl.disable(gl.SCISSOR_TEST);
+	        gl.blitFramebuffer(0, 0, source.width, source.height, 0, 0, source.width, source.height, gl.DEPTH_BUFFER_BIT, gl.NEAREST);
+	        gl.bindFramebuffer(gl.FRAMEBUFFER, target._frameBuffer);
+	        gl.viewport(0, 0, source.width, source.height);
+	        gl.colorMask(true, true, true, true);
+	        gl.clearColor(0, 0, 0, 0);
+	        gl.clear(gl.COLOR_BUFFER_BIT);
+	        var _loop3 = function () {
+	          var batch = _ref6.batch;
+	          var accumulator = _ref6.accumulator;
+	          var overrides = batch.effect.techniques.Main.map(pass => pass.state);
+	          try {
+	            batch.effect.techniques.Main.forEach((pass, i) => {
+	              var s = overrides[i];
+	              pass.state = [...(Array.isArray(s) ? s : Object.entries(s || {}).map(_ref9 => {
+	                var _ref0 = _slicedToArray(_ref9, 2),
+	                  state = _ref0[0],
+	                  value = _ref0[1];
+	                return {
+	                  state: Number(state),
+	                  value
+	                };
+	              })), {
+	                state: RS_ZWRITEENABLE$1,
+	                value: 0
+	              }, {
+	                state: RS_SEPARATEALPHABLENDENABLE$1,
+	                value: 1
+	              }, {
+	                state: RS_SRCBLENDALPHA$1,
+	                value: BLEND_ONE
+	              }, {
+	                state: RS_DESTBLENDALPHA$1,
+	                value: BLEND_INVSRCALPHA
+	              }];
+	            });
+	            device.InvalidateStandardStates();
+	            device.SetStandardStates(batch.renderMode);
+	            device.perObjectData = _this2._context.ResolvePerObjectData(batch, {
+	              accumulator,
+	              technique: "Main",
+	              renderMode: batch.renderMode
+	            });
+	            batch.Commit("Main");
+	          } finally {
+	            batch.effect.techniques.Main.forEach((pass, i) => {
+	              pass.state = overrides[i];
+	            });
+	          }
+	        };
+	        for (var _ref6 of batches) {
+	          _loop3();
+	        }
+	        // Same geometry, depth only. The background colour is absent here.
+	        for (var _ref8 of batches) {
+	          var batch = _ref8.batch;
+	          var accumulator = _ref8.accumulator;
+	          _this2.DrawBatch(batch, accumulator);
+	        }
+	        gl.colorMask(true, true, true, true);
+	        device.InvalidateStandardStates();
+	        if (!additive) {
+	          var _layer$mask;
+	          (_layer$mask = layer.mask) != null ? _layer$mask : layer.mask = new Tw2RenderTarget("DofEffectCoverage", source.width, source.height, false, destination.colorFormat);
+	          layer.mask.Update(source.width, source.height, false, destination.colorFormat);
+	          _this2.Fullscreen(layer.mask, target.texture);
+	          layer.maskDof.Render(effect, target.depthTexture, layer.mask);
+	        }
+	        layer.dof.Render(effect, target.depthTexture, target);
+	        _this2.Fullscreen(destination, target.texture, additive ? target.texture : layer.mask.texture, 1, additive);
+	      };
+	      for (var index = 0; index < 2; index++) {
+	        if (_loop2()) continue;
+	      }
+	    } finally {
+	      device.perObjectData = perObjectData;
+	      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+	      gl.viewport(...viewport);
+	      gl.colorMask(true, true, true, true);
+	      gl.depthMask(true);
+	      gl.enable(gl.DEPTH_TEST);
+	      device.InvalidateStandardStates();
+	    }
+	  }
+	}
+
 	var DEFAULT_SHADOW_EFFECT_PATH = "res:/graphics/effect.gles2/managed/space/spaceobject/shadow/shadow.sm_hi";
 	var DEFAULT_SKINNED_SHADOW_EFFECT_PATH = "res:/graphics/effect.gles2/managed/space/spaceobject/shadow/skinned_shadow.sm_hi";
 	class EveSpaceSceneShadowHandler {
@@ -286135,6 +286551,16 @@
 	     * @type {Array<Function>}
 	     */
 	    this._pendingTasks = [];
+	    /**
+	     * Renders Carbon's depth of field over the scene image.
+	     *
+	     * Needs an offscreen scene target (it reads and writes the image), the
+	     * Carbon depth prepass, the `postprocessDofEnabled` setting and an active
+	     * `postProcess2.depthOfField`. Self-disables on error like god rays.
+	     * @param {Tw2RenderTarget|null} sceneTarget
+	     * @returns {Boolean}
+	     */
+	    this.depthOfFieldTransparentDepth = false;
 	    Object.defineProperty(this.visible, "environment", {
 	      get: () => this.backgroundRenderingEnabled,
 	      set: bool => this.backgroundRenderingEnabled = bool ? 1 : 0,
@@ -286878,6 +287304,7 @@
 	   * @param {Number} dt - deltaTime
 	   */
 	  Render(dt) {
+	    var _this$postProcess, _this$GetDepthHandler;
 	    var d = device,
 	      show = this.visible;
 	    this.PrepareLod(dt, show);
@@ -287067,7 +287494,22 @@
 	      for (var planet of this.planets) planet.GetZOnlyBatches(d.RM_OPAQUE, proxies);
 	      proxies.Render();
 	    }
-	    this.RenderCollectedBatches(mainAccumulator);
+	    this._dofLayersActive = false;
+	    var restoreDofBatches = null;
+	    if (this.depthOfFieldTransparentDepth && sceneTarget && this.visible.post && (_this$postProcess = this.postProcess2) !== null && _this$postProcess !== void 0 && _this$postProcess.GetIfAvailable("depthOfField") && (_this$GetDepthHandler = this.GetDepthHandler(false)) !== null && _this$GetDepthHandler !== void 0 && _this$GetDepthHandler.rendered && device.shaderModel === "depth") {
+	      var _this$_dofLayerRender, _this$_depthOfFieldRe;
+	      (_this$_dofLayerRender = this._dofLayerRenderer) != null ? _this$_dofLayerRender : this._dofLayerRenderer = new Tw2DofLayerRenderer();
+	      (_this$_depthOfFieldRe = this._depthOfFieldRenderer) != null ? _this$_depthOfFieldRe : this._depthOfFieldRenderer = new Tw2DepthOfFieldRenderer();
+	      if (this._depthOfFieldRenderer.EnsureEffects()) {
+	        restoreDofBatches = this._dofLayerRenderer.Extract(this, mainAccumulator);
+	        this._dofLayersActive = true;
+	      }
+	    }
+	    try {
+	      this.RenderCollectedBatches(mainAccumulator);
+	    } finally {
+	      if (restoreDofBatches) restoreDofBatches();
+	    }
 
 	    // GPU PARTICLES, drawn after the collected batches and before the
 	    // scene is resolved, so they land on the scene image the way any other
@@ -287483,16 +287925,6 @@
 	      return false;
 	    }
 	  }
-
-	  /**
-	   * Renders Carbon's depth of field over the scene image.
-	   *
-	   * Needs an offscreen scene target (it reads and writes the image), the
-	   * Carbon depth prepass, the `postprocessDofEnabled` setting and an active
-	   * `postProcess2.depthOfField`. Self-disables on error like god rays.
-	   * @param {Tw2RenderTarget|null} sceneTarget
-	   * @returns {Boolean}
-	   */
 	  RenderDepthOfField(sceneTarget) {
 	    if (!sceneTarget || !this.visible.post || !this.postProcess2) return false;
 	    var depthOfField = this.postProcess2.GetIfAvailable("depthOfField");
@@ -287501,7 +287933,11 @@
 	    var depthHandler = this.GetDepthHandler(false);
 	    var depth = depthHandler && depthHandler.rendered ? depthHandler.depthTextureRes : null;
 	    try {
-	      return this._depthOfFieldRenderer.Render(depthOfField, depth, sceneTarget);
+	      var rendered = this._depthOfFieldRenderer.Render(depthOfField, depth, sceneTarget);
+	      if (this._dofLayersActive) {
+	        this._dofLayerRenderer.RenderLayers(this, depthHandler, depthOfField, sceneTarget);
+	      }
+	      return rendered;
 	    } catch (err) {
 	      this.visible.post = false;
 	      if (tw2.Warning) tw2.Warning({
