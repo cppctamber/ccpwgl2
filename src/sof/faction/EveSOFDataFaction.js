@@ -47,11 +47,11 @@ export class EveSOFDataFaction extends meta.Model
      * These four say which of the PARENT's materials each of a turret's four
      * takes, and the unset answer is "the matching one" - Mtl1 from Mtl1,
      * Mtl2 from Mtl2 - which is 0, 1, 2, 3. Carbon's own constructor is
-     * exactly that (EveSOFData.cpp:224-227), and so is the fallback
-     * EveSOFData.SetupTurretMaterial destructures with.
+     * exactly that (EveSOFData.cpp:224-227); EveSOFData's turret lookups
+     * remap every material slot through them.
      *
-     * Zeroing them made that fallback dead code: a declared field is never
-     * undefined, so the destructuring default could not fire, and every
+     * Zeroing them once made the old turret painter's fallback dead code:
+     * a declared field is never undefined, and every
      * faction that did not spell all four out sent Mtl2, Mtl3 and Mtl4 to
      * the parent's Mtl1. Most factions spell out one or two - gallentebase
      * carries materialUsageMtl1 and materialUsageMtl2 and nothing else - so

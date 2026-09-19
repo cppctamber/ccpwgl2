@@ -40,6 +40,7 @@ import { ReflectionMode } from "../eve/EveComponentTypes";
 import { EveBoosterSet2, EveTrailsSet, EveHazeSet, EveSpriteLineSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
+import { EveSOFDataArea } from "sof/shared/EveSOFDataArea";
 import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
 import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
 import { EveSOFDataPointLightAttachment } from "sof/shared/EveSOFDataPointLightAttachment";
@@ -4815,157 +4816,280 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Sets up a turret's materials
-     * @param turretSet
-     * @param pFactionName
-     * @param tFactionName
-     * @param parentParameters
-     * @param rerouteMaterials
-     * @returns {Promise<void>}
+     * Paints a turret with the materials of a named faction.
+     *
+     * Carbon: `EveSOF::SetupTurretMaterialFromFaction` (EveSOF.cpp:4185-4244).
+     * Every material parameter the turret's own effect declares is looked up
+     * by name, remapped through the faction's material usage, in the faction's
+     * PRIMARY area; the names are the effect's, so EVE turrets
+     * (`Mtl1DiffuseColor`) and Frontier PBR turrets (`Mtl1BaseColor`) resolve
+     * alike. Anything not found keeps its authored value.
+     * @param {EveTurretSet} turretSet
+     * @param {String} factionName
+     * @returns {Boolean} true when any parameter changed
      */
-    async SetupTurretMaterial(turretSet, pFactionName, tFactionName, parentParameters, rerouteMaterials)
+    SetupTurretMaterialFromFaction(turretSet, factionName)
     {
-        const
-            pFaction = pFactionName ? this.GetFaction(pFactionName) : null,
-            tFaction = tFactionName ? this.GetFaction(tFactionName) : null;
+        const effect = turretSet && turretSet.turretEffect;
+        if (!effect || !factionName || !this.HasFaction(factionName)) return false;
 
-        if (!pFaction || !tFaction) return;
+        const faction = this.GetFaction(factionName);
 
-        const
-            pAreaType = pFaction ? pFaction.GetAreaType(0) : null,
-            tAreaType = tFaction ? tFaction.GetAreaType(0) : null,
-            pGlowColor = pFaction ? pFaction.GetColorType(pAreaType.colorType, [ 0, 0, 0, 1 ]) : null,
-            tGlowColor = tFaction ? tFaction.GetColorType(tAreaType.colorType, [ 0, 0, 0, 1 ]) : null;
+        return EveSOFData.applyTurretParameters(effect, name =>
+        {
+            const param = this.RemapTurretParameterName(faction, name);
+            return this.SearchAreaParameter(faction, faction, EveSOFDataArea.AreaType.TYPE_PRIMARY, param);
+        });
+    }
 
-        const
-            { turretEffect: effect } = turretSet,
-            { name } = effect;
+    /**
+     * Paints a turret with its owner's SOF DNA.
+     *
+     * Carbon: `EveSOF::SetupTurretMaterialFromDNA` (EveSOF.cpp:4253-4295) through
+     * `EveSOFDNA::GetFactionTurretParameters` (EveSOFDNA.cpp:1370-1382): the
+     * owner's faction remaps the material slot, then `GetMeshAreaParameter`
+     * resolves it in the generic `turretAreaType` area.
+     * @param {EveTurretSet} turretSet
+     * @param {String} dna - DNA of the owner space object
+     * @returns {Boolean} true when any parameter changed
+     */
+    SetupTurretMaterialFromDNA(turretSet, dna)
+    {
+        const effect = turretSet && turretSet.turretEffect;
+        if (!effect || !dna) return false;
 
-        const temp = {
-            glowColor: null,
-            material1: null,
-            material2: null,
-            material3: null,
-            material4: null
+        const { parts, commands } = this.constructor.ParseDNACommands(dna);
+        const hull = this.HasHull(parts[0].split(";")[0]) ? this.GetHull(parts[0].split(";")[0]) : null;
+        if (!this.HasFaction(parts[1]) || !this.HasRace(parts[2])) return false;
+
+        const owner = {
+            faction: this.GetFaction(parts[1]),
+            race: this.GetRace(parts[2]),
+            sof6: !!(hull && hull.sof6),
+            commands
         };
 
-        function set(key, first, second)
+        return EveSOFData.applyTurretParameters(effect, name =>
         {
-            if (first && first[key] !== undefined && first[key] !== "none")
-            {
-                temp[key] = first[key];
-            }
-            else if (second && second[key] !== undefined && second[key] !== "none")
-            {
-                temp[key] = second[key];
-            }
+            const param = this.RemapTurretParameterName(owner.faction, name);
+            return this.GetMeshAreaParameter(owner, this.generic.turretAreaType, param.full);
+        });
+    }
 
-            if (temp[key] === "none")
+    /**
+     * `EveSOFDNA::GetMeshAreaParameter` (EveSOFDNA.cpp:1254-1363) for a parsed
+     * owner: DNA mesh materials, DNA pattern materials, the faction's default
+     * pattern layers, generic wreck data, race (PRIMARY and REACTOR only), then
+     * the faction. Turrets pass no hull parameters and no blocked materials.
+     * @param {{faction: Object, race: Object, sof6: Boolean, commands: Object}} owner
+     * @param {Number} areaType
+     * @param {String} parameterName
+     * @returns {null|Array<Number>}
+     */
+    GetMeshAreaParameter(owner, areaType, parameterName)
+    {
+        const
+            { AreaType } = EveSOFDataArea,
+            prefixes = this.generic.GetMaterialPrefixes(),
+            patternPrefixes = this.generic.GetPatternMaterialPrefixes(),
+            mesh = owner.commands.MESH || owner.commands.MATERIAL,
+            pattern = owner.commands.PATTERN;
+
+        if (mesh)
+        {
+            const param = EveSOFData.parseParameterName(prefixes, parameterName);
+            if (param.index !== -1 && param.index < mesh.length)
             {
-                temp[key] = null;
+                const value = this.GetMaterialParameter(mesh[param.index], param.short);
+                if (value) return value;
             }
         }
 
-        let useParent = false;
-
-        switch (name)
+        if (pattern)
         {
-            case "overridable":
-            case "half_overridable":
-                set("material1", pAreaType, tAreaType);
-                set("material2", pAreaType, tAreaType);
-                set("material3", pAreaType, tAreaType);
-                set("material4", pAreaType, tAreaType);
-                temp.glowColor = tGlowColor;
-                if (name === "overrideable" && pGlowColor) temp.glowColor = pGlowColor;
-                if (parentParameters) useParent = true;
-                break;
-
-            case "not_overridable":
-            case "half_overridable_2":
-                set("material1", tAreaType);
-                set("material2", tAreaType);
-                set("material3", tAreaType);
-                set("material4", tAreaType);
-                temp.glowColor = tGlowColor;
-                break;
-        }
-
-        let {
-            materialUsageMtl1 = 0,
-            materialUsageMtl2 = 1,
-            materialUsageMtl3 = 2,
-            materialUsageMtl4 = 3
-        } = pFaction || {};
-
-        if (rerouteMaterials)
-        {
-            if (rerouteMaterials[0] !== -1) materialUsageMtl1 = rerouteMaterials[0];
-            if (rerouteMaterials[1] !== -1) materialUsageMtl2 = rerouteMaterials[1];
-            if (rerouteMaterials[2] !== -1) materialUsageMtl3 = rerouteMaterials[2];
-            if (rerouteMaterials[3] !== -1) materialUsageMtl4 = rerouteMaterials[3];
-        }
-
-        if (!useParent)
-        {
-            const parameters = effect.GetParameters();
-
-            if (temp.glowColor)
+            const param = EveSOFData.parseParameterName(patternPrefixes, parameterName);
+            if (param.index !== -1 && 1 + param.index < pattern.length)
             {
-                vec4.multiply(temp.glowColor, temp.glowColor, this._options.multiplier.generalGlowColor);
-
-                // Lower the brightness slightly
-                vec4.multiply(temp.glowColor, temp.glowColor, [ 0.5, 0.5, 0.5, 1 ]);
-
-                parameters.GeneralGlowColor = temp.glowColor;
+                const value = this.GetMaterialParameter(pattern[1 + param.index], param.short);
+                if (value) return value;
             }
+        }
 
-            const mats = {
-                material1: temp[`material${[ materialUsageMtl1 + 1 ]}`],
-                material2: temp[`material${[ materialUsageMtl2 + 1 ]}`],
-                material3: temp[`material${[ materialUsageMtl3 + 1 ]}`],
-                material4: temp[`material${[ materialUsageMtl4 + 1 ]}`]
-            };
+        {
+            const param = EveSOFData.parseParameterName(patternPrefixes, parameterName);
+            if (param.index === 0)
+            {
+                const value = this.GetMaterialParameter(owner.faction.defaultPatternLayer1MaterialName, param.short);
+                if (value) return value;
+            }
+            else if (owner.sof6 && param.index === 1)
+            {
+                const value = this.GetMaterialParameter(owner.faction.defaultPatternLayer2MaterialName, param.short);
+                if (value) return value;
+            }
+        }
 
-            this.AssignMaterialParameters(mats, parameters);
-            effect.SetParameters(parameters);
+        const param = EveSOFData.parseParameterName(prefixes, parameterName);
+
+        if (areaType === AreaType.TYPE_WRECK && this.generic.genericWreckMaterial)
+        {
+            const value = this.SearchAreaParameter(owner.faction, { wreck: this.generic.genericWreckMaterial }, areaType, param);
+            if (value) return value;
+        }
+
+        if (areaType === AreaType.TYPE_PRIMARY || areaType === AreaType.TYPE_REACTOR)
+        {
+            const value = this.SearchAreaParameter(owner.faction, { race: owner.race }, areaType, param);
+            if (value) return value;
+        }
+
+        return this.SearchAreaParameter(owner.faction, owner.faction, areaType, param);
+    }
+
+    /**
+     * `EveSOFUtils::SearchForParameterData` over one source's area materials
+     * (EveSOFUtils.cpp:188-216). A material-slot parameter reads the area's
+     * material; an unprefixed one reads the area's glow colour from the
+     * faction's colour set. Nothing found falls back to the PRIMARY area.
+     *
+     * The three sources carry their area data differently, as Carbon's data
+     * manager builds them (EveSOFDataMgr.cpp:1365-1382, 1473-1476, 2063-2069):
+     * a faction has every area, the race only its heat glow colours for
+     * PRIMARY and REACTOR, the generic wreck material only TYPE_WRECK.
+     * @param {Object} faction - owns the colour set
+     * @param {Object} source - a faction, `{ race }` or `{ wreck }`
+     * @param {Number} areaType
+     * @param {{index: Number, short: String, full: String}} param
+     * @returns {null|Array<Number>}
+     */
+    SearchAreaParameter(faction, source, areaType, param)
+    {
+        const { AreaType } = EveSOFDataArea;
+        let value = null;
+
+        if (source.race)
+        {
+            if (param.index === -1 && param.full === "GeneralHeatGlowColor")
+            {
+                const colorType = areaType === AreaType.TYPE_PRIMARY ? source.race.hullPrimaryHeatColorType
+                    : areaType === AreaType.TYPE_REACTOR ? source.race.hullReactorHeatColorType
+                        : null;
+                if (colorType !== null) value = (faction.HasColorType(colorType) ? faction.GetColorType(colorType, vec4.create()) : null);
+            }
         }
         else
         {
-            const
-                Mtl1 = `Mtl${materialUsageMtl1 + 1}`,
-                Mtl2 = `Mtl${materialUsageMtl2 + 1}`,
-                Mtl3 = `Mtl${materialUsageMtl3 + 1}`,
-                Mtl4 = `Mtl${materialUsageMtl4 + 1}`;
+            const area = source.wreck
+                ? (areaType === AreaType.TYPE_WRECK ? source.wreck : null)
+                : (source.HasAreaType(areaType) ? source.GetAreaType(areaType) : null);
 
-            effect.parameters.GeneralGlowColor = parentParameters.GeneralGlowColor;
-
-            effect.parameters.Mtl1DiffuseColor = parentParameters[`${Mtl1}DiffuseColor`];
-            effect.parameters.Mtl1FresnelColor = parentParameters[`${Mtl1}FresnelColor`];
-            effect.parameters.Mtl1DustDiffuseColor = parentParameters[`${Mtl1}DustDiffuseColor`];
-            effect.parameters.Mtl1Gloss = parentParameters[`${Mtl1}Gloss`];
-
-            effect.parameters.Mtl2DiffuseColor = parentParameters[`${Mtl2}DiffuseColor`];
-            effect.parameters.Mtl2FresnelColor = parentParameters[`${Mtl2}FresnelColor`];
-            effect.parameters.Mtl2DustDiffuseColor = parentParameters[`${Mtl2}DustDiffuseColor`];
-            effect.parameters.Mtl2Gloss = parentParameters[`${Mtl2}Gloss`];
-
-            effect.parameters.Mtl3DiffuseColor = parentParameters[`${Mtl3}DiffuseColor`];
-            effect.parameters.Mtl3FresnelColor = parentParameters[`${Mtl3}FresnelColor`];
-            effect.parameters.Mtl3DustDiffuseColor = parentParameters[`${Mtl3}DustDiffuseColor`];
-            effect.parameters.Mtl3Gloss = parentParameters[`${Mtl3}Gloss`];
-
-            effect.parameters.Mtl4DiffuseColor = parentParameters[`${Mtl4}DiffuseColor`];
-            effect.parameters.Mtl4FresnelColor = parentParameters[`${Mtl4}FresnelColor`];
-            effect.parameters.Mtl4DustDiffuseColor = parentParameters[`${Mtl4}DustDiffuseColor`];
-            effect.parameters.Mtl4Gloss = parentParameters[`${Mtl4}Gloss`];
-
-            effect.BindParameters();
+            if (area)
+            {
+                if (param.index !== -1)
+                {
+                    const materialName = area[`material${param.index + 1}`];
+                    if (materialName) return this.GetMaterialParameter(materialName, param.short);
+                }
+                else if (param.full === "GeneralGlowColor")
+                {
+                    value = faction.HasColorType(area.colorType) ? faction.GetColorType(area.colorType, vec4.create()) : null;
+                }
+            }
         }
 
-        // Override the shader if one exists
-        effect.SetValue(effect.effectFilePath);
+        if (value) return value;
 
+        return areaType !== AreaType.TYPE_PRIMARY
+            ? this.SearchAreaParameter(faction, source, AreaType.TYPE_PRIMARY, param)
+            : null;
+    }
+
+    /**
+     * `EveSOFUtils::SearchForParameterData` by material name
+     * (EveSOFUtils.cpp:172-186): the material's own parameter, or null.
+     * @param {String} materialName
+     * @param {String} shortName
+     * @returns {null|Array<Number>}
+     */
+    GetMaterialParameter(materialName, shortName)
+    {
+        if (!materialName || !this.HasMaterial(materialName)) return null;
+
+        const { parameters } = this.GetMaterial(materialName);
+        for (let i = 0; i < parameters.length; i++)
+        {
+            if (parameters[i].name === shortName) return Array.from(parameters[i].value);
+        }
+        return null;
+    }
+
+    /**
+     * A turret parameter name with its material slot remapped through the
+     * faction's material usage (`materialUsageMtl1`..`4`, Carbon's
+     * `materialUsageList`), as both turret entry points do.
+     * @param {Object} faction
+     * @param {String} name
+     * @returns {{index: Number, short: String, full: String}}
+     */
+    RemapTurretParameterName(faction, name)
+    {
+        const prefixes = this.generic.GetMaterialPrefixes();
+        const param = EveSOFData.parseParameterName(prefixes, name);
+        if (param.index === -1) return param;
+
+        const index = faction[`materialUsageMtl${param.index + 1}`];
+        if (!prefixes[index]) return param;
+
+        return { index, short: param.short, full: prefixes[index] + param.short };
+    }
+
+    /**
+     * `EveSOFUtilsParameterName` (EveSOFUtils.cpp:12-73): splits a
+     * case-insensitive material prefix off a parameter name.
+     * @param {Array<String>} prefixes
+     * @param {String} name
+     * @returns {{index: Number, short: String, full: String}}
+     */
+    static parseParameterName(prefixes, name)
+    {
+        const lower = name.toLowerCase();
+        for (let i = 0; i < prefixes.length; i++)
+        {
+            if (lower.startsWith(prefixes[i].toLowerCase()))
+            {
+                return { index: i, short: name.substring(prefixes[i].length), full: name };
+            }
+        }
+        return { index: -1, short: name, full: name };
+    }
+
+    /**
+     * Carbon walks the turret effect's constant parameters, or its vector
+     * parameters when it has no constants (EveSOF.cpp:4199-4243). ccpwgl keeps
+     * both in `effect.parameters`, constants marked `isConstant`.
+     * @param {Tw2Effect} effect
+     * @param {Function} resolve - (name) => null|Array<Number>
+     * @returns {Boolean} true when any parameter changed
+     */
+    static applyTurretParameters(effect, resolve)
+    {
+        const
+            candidates = Object.keys(effect.parameters).filter(name =>
+            {
+                const value = effect.parameters[name] && effect.parameters[name].value;
+                return value && value.length === 4 && typeof value[0] === "number";
+            }),
+            constants = candidates.filter(name => effect.parameters[name].isConstant),
+            names = constants.length ? constants : candidates,
+            values = {};
+
+        for (let i = 0; i < names.length; i++)
+        {
+            const value = resolve(names[i]);
+            if (value) values[names[i]] = value;
+        }
+
+        return Object.keys(values).length ? effect.SetParameters(values) : false;
     }
 
     /*

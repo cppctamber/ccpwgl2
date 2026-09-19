@@ -18,9 +18,6 @@ export class TnySlot extends Tw2EventEmitter
 
     name = "";
 
-    /** Reuse the parent hull's mesh materials on the turret */
-    lockParentMaterials = true;
-
     /** @type {String} locator group this slot binds, e.g. "locator_turret_1" */
     locatorName = "";
 
@@ -34,7 +31,6 @@ export class TnySlot extends Tw2EventEmitter
     _target = vec3.create();
     _targetObject = null;
     _state = EveTurretSet.State.INACTIVE;
-    _materialUsage = [ -1, -1, -1, -1 ];
 
     /**
      * @param {*} parent          - the Tny object owning the slot
@@ -48,7 +44,6 @@ export class TnySlot extends Tw2EventEmitter
         this._parent = parent;
         this._wrapped = wrapped;
         this._locators = locators;
-        this._faction = this._ParentFaction();
         Reflect.defineProperty(this, "locatorName", { value: locatorName });
     }
 
@@ -58,17 +53,14 @@ export class TnySlot extends Tw2EventEmitter
         return this._resPathValue;
     }
 
-    get materialUsageMtl1() { return this._materialUsage[0]; }
-    set materialUsageMtl1(x) { this._SetMaterialUsage(0, x); }
-
-    get materialUsageMtl2() { return this._materialUsage[1]; }
-    set materialUsageMtl2(x) { this._SetMaterialUsage(1, x); }
-
-    get materialUsageMtl3() { return this._materialUsage[2]; }
-    set materialUsageMtl3(x) { this._SetMaterialUsage(2, x); }
-
-    get materialUsageMtl4() { return this._materialUsage[3]; }
-    set materialUsageMtl4(x) { this._SetMaterialUsage(3, x); }
+    /**
+     * @type {String} the SOF faction painting the turret, or "" to paint it
+     * from the owner's DNA
+     */
+    get faction()
+    {
+        return this._faction;
+    }
 
     /**
      * Gets the mounted turret set
@@ -82,10 +74,19 @@ export class TnySlot extends Tw2EventEmitter
     /**
      * Mounts a turret set from a res path
      * @param {String} resPath
+     * @param {String} [faction] - the weapon graphic's SOF faction
+     *        (`sofFactionName`); "" paints the turret from the owner's DNA.
+     *        Omitted, the slot keeps its current faction.
      * @returns {Promise<Boolean>} true when this mount is the active one
      */
-    async Mount(resPath)
+    async Mount(resPath, faction = this._faction)
     {
+        if (this._faction !== faction)
+        {
+            this._faction = faction;
+            if (this._resPathValue === resPath) this.UpdateFaction();
+        }
+
         if (this._resPathValue !== resPath)
         {
             this.Unmount();
@@ -220,8 +221,8 @@ export class TnySlot extends Tw2EventEmitter
     }
 
     /**
-     * Sets the turret's faction
-     * @param {String} [faction] - defaults to the current faction
+     * Sets the SOF faction the turret is painted with
+     * @param {String} [faction] - a SOF faction name; "" paints from the owner's DNA
      * @param {Boolean} [force]
      * @returns {Promise<void>}
      */
@@ -233,19 +234,26 @@ export class TnySlot extends Tw2EventEmitter
     }
 
     /**
-     * Reapplies faction materials to the mounted turret
+     * Repaints the mounted turret.
+     *
+     * Carbon exposes both entry points to the game, which picks per turret:
+     * `EveSOF.SetupTurretMaterialFromFaction(turretSet, faction)` for a named
+     * faction - the SDE gives every weapon graphic one - and
+     * `SetupTurretMaterialFromDNA(turretSet, dna)` for the owner's look.
      * @returns {Promise<void>}
      */
     async UpdateFaction()
     {
         if (!this._turretSet || !tw2.eveSof) return;
-        tw2.eveSof.SetupTurretMaterial(
-            this._turretSet,
-            this._ParentFaction(),
-            this._faction,
-            this.lockParentMaterials ? this._parent.wrapped.mesh.opaqueAreas[0].effect.parameters : null,
-            this._materialUsage
-        );
+
+        if (this._faction)
+        {
+            tw2.eveSof.SetupTurretMaterialFromFaction(this._turretSet, this._faction);
+        }
+        else if (this._parent.wrapped.dna)
+        {
+            tw2.eveSof.SetupTurretMaterialFromDNA(this._turretSet, this._parent.wrapped.dna);
+        }
     }
 
     /** Fires the turret */
@@ -494,20 +502,6 @@ export class TnySlot extends Tw2EventEmitter
     _AttachmentArray()
     {
         return this._wrapped.attachments || this._wrapped.turretSets || null;
-    }
-
-    _ParentFaction()
-    {
-        return (this._parent.wrapped.dna || "").split(":")[1] || "";
-    }
-
-    _SetMaterialUsage(index, value)
-    {
-        if (this._materialUsage[index] !== value)
-        {
-            this._materialUsage[index] = value;
-            this.UpdateFaction();
-        }
     }
 
     _SetState(state)
