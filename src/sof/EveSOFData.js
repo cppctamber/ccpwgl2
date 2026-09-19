@@ -37,7 +37,8 @@ import {
 import { EveStation2 } from "../eve/object/EveStation2";
 import { EveMobile } from "../eve/object/EveMobile";
 import { ReflectionMode } from "../eve/EveComponentTypes";
-import { EveBoosterSet2, EveTrailsSet, EveHazeSet, EveSpriteLineSet } from "../unsupported/eve/item";
+import { EveBoosterSet2, EveTrailsSet, EveHazeSet } from "../unsupported/eve/item";
+import { EveSpriteLineSet } from "eve/item/EveSpriteLineSet";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
 import { EveSOFDataArea } from "sof/shared/EveSOFDataArea";
@@ -4404,11 +4405,16 @@ export class EveSOFData extends meta.Model
      */
     static SetupSpriteLineSets(data, obj, sof, options)
     {
-        const arr = obj.attachments;
-        const toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpriteLineSet);
+        // Carbon EveSOF::SetupSpriteLineSets (EveSOF.cpp:1332-1420).
+        const
+            sof6 = sof.hull.sof6 && data.enableSof6,
+            arr = obj.attachments,
+            toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpriteLineSet);
+
         for (const srcSet of sof.hull.spriteLineSets)
         {
             if (!sof.faction.visibilityGroupSet.IsObjectVisible(srcSet)) continue;
+
             let set = arr.find(item => item.constructor === EveSpriteLineSet && item.name === srcSet.name);
             if (!set)
             {
@@ -4417,20 +4423,47 @@ export class EveSOFData extends meta.Model
                 arr.push(set);
             }
             else toRemove.splice(toRemove.indexOf(set), 1);
+
             set.ClearItems();
             set.lights = [];
+            // Carbon gives sprite lines the sprite-set effect.
+            set.Setup(options.effect.sprite, !!srcSet.skinned);
+
             for (let index = 0; index < srcSet.items.length; index++)
             {
                 const src = srcSet.items[index];
-                const item = set.CreateItem(src);
-                if (!(sof.hull.sof6 && data.enableSof6) || !src.light) continue;
-                const light = src.light.AsLightData ? src.light : EveSOFDataPointLightAttachment.from(src.light);
+
+                // m_color = intensity * colorSet[colorType]; saturated on sof6 hulls.
                 const color = vec4.create();
                 sof.faction.GetColorType(src.colorType, color, 0);
                 vec4.scale(color, color, src.intensity);
-                Saturate(color, color, src.saturation);
-                Saturate(color, color, light.saturation);
-                const lightData = light.AsLightData(color, 1);
+                if (sof6) Saturate(color, color, src.saturation);
+
+                const item = set.CreateItem({
+                    name: src.name,
+                    isCircle: src.isCircle,
+                    position: src.position,
+                    rotation: src.rotation,
+                    scaling: src.scaling,
+                    spacing: src.spacing,
+                    blinkRate: src.blinkRate,
+                    blinkPhase: src.blinkPhase,
+                    blinkPhaseShift: src.blinkPhaseShift,
+                    // ccpwgl display scale, applied as to EveSpriteSet items;
+                    // both draw with the same sprite effect.
+                    minScale: src.minScale * options.multiplier.spriteScale,
+                    maxScale: src.maxScale * options.multiplier.spriteScale,
+                    falloff: src.falloff,
+                    color,
+                    boneIndex: src.boneIndex
+                });
+
+                if (!sof6 || !src.light) continue;
+
+                const light = src.light.AsLightData ? src.light : EveSOFDataPointLightAttachment.from(src.light);
+                const lightColor = vec4.clone(color);
+                Saturate(lightColor, lightColor, light.saturation);
+                const lightData = light.AsLightData(lightColor, 1);
                 lightData.boneIndex = src.boneIndex;
                 let sample = 0;
                 for (const position of item.GetPositions())
@@ -4446,7 +4479,10 @@ export class EveSOFData extends meta.Model
                         minScale: src.minScale, maxScale: src.maxScale });
                 }
             }
+
+            set.Initialize();
         }
+
         for (const set of toRemove)
         {
             set.Destroy();

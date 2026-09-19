@@ -7,7 +7,8 @@ import { GLESPerObjectDataEveSpaceObject } from "core/data";
 import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
-import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
+import { EveHazeSet } from "unsupported/eve/item";
+import { EveSpriteLineSet } from "eve/item/EveSpriteLineSet";
 import { Tr2Lod, CustomMaskBlendMode } from "constant/ccpwgl";
 import { tw2 } from "global";
 import { EveLODHelper } from "../EveLODHelper";
@@ -162,6 +163,7 @@ export class EveSpaceObject2 extends EveObject
         overlayEffects: true,
         planeSets: true,
         spotlightSets: true,
+        spriteLineSets: true,
         spriteSets: true,
         turretSets: true
     };
@@ -1928,7 +1930,7 @@ export class EveSpaceObject2 extends EveObject
                     case EveSpriteLineSet:
                         if (show.spriteLineSets)
                         {
-                            item.GetBatches(mode, accumulator, this._perObjectData);
+                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
                         }
                         break;
 
