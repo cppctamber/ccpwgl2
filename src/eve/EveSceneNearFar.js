@@ -139,6 +139,20 @@ function resolveSphere(object, out)
 }
 
 /**
+ * Selects receivers for shadow fitting, without removing off-screen casters.
+ * Bounds crossing a frustum edge remain included. The optional predicate can
+ * restrict the fit to a subject or exclude scene furniture independently of
+ * whether those objects are rendered.
+ */
+export function GetShadowFitObjects(objects, frustum, predicate = null)
+{
+    return objects.filter(object => object && object.display !== false
+        && (!predicate || predicate(object))
+        && resolveSphere(object, _sphere)
+        && (!frustum || frustum.IntersectsSph3(_sphere)));
+}
+
+/**
  * The world-space sphere enclosing a set of objects.
  *
  * Independent of the camera, unlike {@link ComputeAutoNearFar} - a shadow

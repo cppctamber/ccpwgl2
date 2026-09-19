@@ -351,12 +351,20 @@ export class Tw2CarbonShadowRenderer
 
         if (!width || !height) return false;
 
+        const subject = this.fitToSubject && scene.GetShadowSubject ? scene.GetShadowSubject() : null;
+        // No visible receiver: do not fall back to a system-sized frustum fit.
+        if (this.fitToSubject && scene.GetShadowSubject && !subject)
+        {
+            this.Uninstall();
+            return false;
+        }
+
         const built = this.producer.Update({
             view: device.view,
             projection: device.projection,
             sunDirection: scene.sunDirection || (scene.sunData && scene.sunData.dirWorld),
             near: this.producer.shadowNear,
-            subject: this.fitToSubject && scene.GetShadowSubject ? scene.GetShadowSubject() : null
+            subject
         });
 
         if (!built || !this._EnsureTargets(width, height)) return false;

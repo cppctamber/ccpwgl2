@@ -55,6 +55,18 @@ import { applyPlanetHeightMaps } from "./planetHeightMaps";
 export class EvePlanet extends EveEffectRoot2
 {
 
+    RegisterSecondaryLightSource(manager)
+    {
+        const planet = this;
+        this._secondaryLightSource ??= {
+            get position() { return planet._worldTransform.subarray(12, 15); },
+            get radius() { return planet.radius; },
+            get albedo() { return planet.albedoColor; },
+            get emissive() { return planet.emissiveColor; }
+        };
+        manager.RegisterSecondaryLightSource(this._secondaryLightSource);
+    }
+
     /**
      * Carbon default 1 (`cpp:25`), not 0. It is the planet's TRUE radius in
      * metres and is used unscaled for secondary lighting, so it must not be

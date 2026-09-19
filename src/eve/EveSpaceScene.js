@@ -9,7 +9,7 @@ import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
 import { EvePlanet } from "./object/EvePlanet";
 import { EveUpdateContext } from "./EveUpdateContext";
-import { ComputeAutoNearFar, GetSceneBoundingSphere } from "./EveSceneNearFar";
+import { ComputeAutoNearFar, GetSceneBoundingSphere, GetShadowFitObjects } from "./EveSceneNearFar";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
 import {
     Tw2BatchAccumulator,
@@ -187,6 +187,14 @@ export class EveSpaceScene extends meta.Model
      */
     @meta.plain
     carbonShadowNearFarOverride = null;
+
+    /** Optional (object) => Boolean predicate for shadow fitting only. */
+    carbonShadowObjectFilter = null;
+
+    /** Exclude receivers outside the current camera frustum from the fit. */
+    carbonShadowVisibleOnly = true;
+
+    _shadowFitFrustum = new Tw2Frustum();
 
     @meta.path
     @meta.isPrivate
@@ -430,7 +438,6 @@ export class EveSpaceScene extends meta.Model
     @meta.todo("Identify ps/vs frame data")
     shadowThreshold = 50000;
 
-    @meta.notImplemented
     @meta.struct("Tr2ShLightingManager")
     shLightingManager = null;
 
@@ -1222,7 +1229,21 @@ export class EveSpaceScene extends meta.Model
     UpdateShLighting()
     {
         const manager = this.shLightingManager;
+        // Carbon tracks manager replacement and root-list changes. Reconcile
+        // membership here because JS callers can mutate these arrays directly.
+        this._shSources ??= new Set();
+        if (this._shSourceManager !== manager)
+        {
+            for (const source of this._shSources) source.UnregisterSecondaryLightSource(this._shSourceManager);
+            this._shSources.clear();
+            this._shSourceManager = manager;
+            this.PerChildObject("ClearShLighting");
+        }
         if (!manager) return 0;
+        const sources = new Set([ ...this.planets, ...this.objects ].filter(object => typeof object.RegisterSecondaryLightSource === "function"));
+        for (const source of this._shSources) if (!sources.has(source)) source.UnregisterSecondaryLightSource(manager);
+        for (const source of sources) if (!this._shSources.has(source)) source.RegisterSecondaryLightSource(manager);
+        this._shSources = sources;
 
         // Clear rather than skip: a receiver holds its coefficients between
         // frames, so simply not updating would freeze the last lit result on
@@ -1504,8 +1525,8 @@ export class EveSpaceScene extends meta.Model
 
         const
             g = EveSpaceScene.global,
-            tempProj = mat4.copy(g.mat4_0, device.projection),
-            newProj = mat4.copy(g.mat4_1, device.projection),
+            tempProj = mat4.copy(g.planetRenderProjection, device.projection),
+            newProj = mat4.copy(g.planetProjection, device.projection),
             savedView = mat4.copy(g.planetRenderView, device.view),
             zn = 0.01,
             zf = 1e5;
@@ -1707,13 +1728,6 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
-        if (show.planets)
-        {
-            for (let i = 0; i < this.planets.length; ++i)
-            {
-                this.planets[i].GetZOnlyBatches(d.RM_OPAQUE, mainAccumulator);
-            }
-        }
 
         if (show.lensflares)
         {
@@ -1842,6 +1856,15 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
+        // Planet proxies must write ordinary-world depth before any station
+        // colour. Sorting them alongside opaque objects can draw them too late.
+        if (show.planets)
+        {
+            const proxies = this._planetOcclusionAccumulator || (this._planetOcclusionAccumulator = new Tw2BatchAccumulator());
+            proxies.Clear();
+            for (const planet of this.planets) planet.GetZOnlyBatches(d.RM_OPAQUE, proxies);
+            proxies.Render();
+        }
         this.RenderCollectedBatches(mainAccumulator);
 
         // GPU PARTICLES, drawn after the collected batches and before the
@@ -2087,8 +2110,11 @@ export class EveSpaceScene extends meta.Model
         }
         else if (this.carbonShadowAutoDistance)
         {
-            const bounds = this.GetAutoNearFar({ minNear: 1, margin: 0.25 });
-            if (bounds) producer.shadowDistance = Math.max(bounds.far, this.carbonShadowNear * 8);
+            const cameraPosition = vec3.alloc();
+            mat4.getTranslation(cameraPosition, device.viewInverse);
+            const bounds = ComputeAutoNearFar(this.GetShadowFitObjects(), cameraPosition, { minNear: 1, margin: 0.25 });
+            vec3.unalloc(cameraPosition);
+            producer.shadowDistance = bounds ? Math.max(bounds.far, this.carbonShadowNear * 8) : this.carbonShadowDistance;
         }
         else
         {
@@ -2173,7 +2199,8 @@ export class EveSpaceScene extends meta.Model
         const cameraPosition = vec3.alloc();
         mat4.getTranslation(cameraPosition, device.viewInverse);
 
-        const objects = this.visible.objects ? this.objects : [];
+        // Callers may provide a measured subset without changing scene membership.
+        const objects = this.visible.objects ? (options?.objects || this.objects) : [];
         const result = ComputeAutoNearFar(objects, cameraPosition, options || this.autoNearFarOptions);
 
         vec3.unalloc(cameraPosition);
@@ -2396,9 +2423,17 @@ export class EveSpaceScene extends meta.Model
      * size instead of on how far the camera is standing back.
      * @returns {?{center: vec3, radius: Number, far: Number}}
      */
+    GetShadowFitObjects()
+    {
+        if (!this.visible.objects) return [];
+        const frustum = this.carbonShadowVisibleOnly ? this._shadowFitFrustum : null;
+        if (frustum) frustum.Initialize(device.view, device.projection, device.viewportWidth, device.viewInverse, device.viewProjection);
+        return GetShadowFitObjects(this.objects, frustum, this.carbonShadowObjectFilter);
+    }
+
     GetShadowSubject()
     {
-        const objects = this.visible.objects ? this.objects : [];
+        const objects = this.GetShadowFitObjects();
         if (!objects.length) return null;
 
         const bounds = GetSceneBoundingSphere(objects);
@@ -3688,6 +3723,9 @@ export class EveSpaceScene extends meta.Model
         // identity keeps that explicit rather than special-casing it downstream.
         planetUpdateView: mat4.create(),
         planetRenderView: mat4.create(),
+        // Frame-data shadow updates reuse mat4_0/1 while the planet pass is active.
+        planetRenderProjection: mat4.create(),
+        planetProjection: mat4.create(),
         planetView: mat4.create(),
         mat4_identity: mat4.create(),
         vec3_ZERO: vec3.create(),

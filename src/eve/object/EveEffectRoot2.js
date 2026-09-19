@@ -40,6 +40,24 @@ import { EveChildUpdateParams } from "../EveChildUpdateParams";
 export class EveEffectRoot2 extends EveObject
 {
 
+    /** Carbon registers live world-space source data; transforms may be rebased. */
+    RegisterSecondaryLightSource(manager)
+    {
+        const object = this;
+        this._secondaryLightSource ??= {
+            get position() { return object._worldTransform.subarray(12, 15); },
+            get radius() { return object.secondaryLightingSphereRadius * GetAverageAxisScale(object._worldTransform); },
+            albedo: [ 0, 0, 0 ],
+            get emissive() { return object.secondaryLightingEmissiveColor; }
+        };
+        manager.RegisterSecondaryLightSource(this._secondaryLightSource);
+    }
+
+    UnregisterSecondaryLightSource(manager)
+    {
+        if (this._secondaryLightSource) manager.UnregisterSecondaryLightSource(this._secondaryLightSource);
+    }
+
     /**
      * The root block for this object's child update chain, refilled each
      * frame. See EveChildUpdateParams.
