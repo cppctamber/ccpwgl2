@@ -4893,7 +4893,7 @@ export class EveSOFData extends meta.Model
         return EveSOFData.applyTurretParameters(effect, name =>
         {
             const param = this.RemapTurretParameterName(faction, name);
-            return this.SearchAreaParameter(faction, faction, EveSOFDataArea.AreaType.TYPE_PRIMARY, param);
+            return this.TurretDisplayValue(name, this.SearchAreaParameter(faction, faction, EveSOFDataArea.AreaType.TYPE_PRIMARY, param), 0.5);
         });
     }
 
@@ -4927,8 +4927,26 @@ export class EveSOFData extends meta.Model
         return EveSOFData.applyTurretParameters(effect, name =>
         {
             const param = this.RemapTurretParameterName(owner.faction, name);
-            return this.GetMeshAreaParameter(owner, this.generic.turretAreaType, param.full);
+            return this.TurretDisplayValue(name, this.GetMeshAreaParameter(owner, this.generic.turretAreaType, param.full), 1);
         });
+    }
+
+    /**
+     * ccpwgl display tuning, not Carbon: its shaders take hull glow scaled by
+     * `multiplier.generalGlowColor`. The painter these lookups replaced gave
+     * a turret wearing its owner's look the hull's glow as it was, and one
+     * wearing its own faction half of it; both are kept so turrets keep the
+     * brightness they had beside the hull.
+     * @param {String} name
+     * @param {null|Array<Number>} value
+     * @param {Number} share - 1 for the owner's look, 0.5 for the turret's faction
+     * @returns {null|Array<Number>}
+     */
+    TurretDisplayValue(name, value, share)
+    {
+        if (!value || name !== "GeneralGlowColor") return value;
+        const glow = vec4.multiply(vec4.create(), value, this._options.multiplier.generalGlowColor);
+        return vec4.multiply(glow, glow, [ share, share, share, 1 ]);
     }
 
     /**
@@ -5144,7 +5162,14 @@ export class EveSOFData extends meta.Model
             if (value) values[names[i]] = value;
         }
 
-        return Object.keys(values).length ? effect.SetParameters(values) : false;
+        if (!Object.keys(values).length || !effect.SetParameters(values)) return false;
+
+        // A vector parameter binds to one stage's constant buffer; the others
+        // took a copy when bound, so a new value reaches the pixel shader -
+        // where the material colours are read - only by rebinding. An effect
+        // still loading binds the current values when it is ready.
+        if (effect.IsGood && effect.IsGood()) effect.BindParameters();
+        return true;
     }
 
     /*

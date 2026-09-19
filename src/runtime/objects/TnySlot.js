@@ -244,16 +244,32 @@ export class TnySlot extends Tw2EventEmitter
      */
     async UpdateFaction()
     {
-        if (!this._turretSet || !tw2.eveSof) return;
+        const
+            turretSet = this._turretSet,
+            faction = this._faction,
+            dna = this._parent.wrapped.dna;
 
-        if (this._faction)
-        {
-            tw2.eveSof.SetupTurretMaterialFromFaction(this._turretSet, this._faction);
-        }
-        else if (this._parent.wrapped.dna)
-        {
-            tw2.eveSof.SetupTurretMaterialFromDNA(this._turretSet, this._parent.wrapped.dna);
-        }
+        if (!turretSet || !dna) return;
+
+        // Which of Carbon's two calls applies is the game's choice, and the
+        // turret's authored effect name records it: an "overridable" or
+        // "half_overridable" turret wears its owner's look, any other its own
+        // faction. Every EVE and Frontier turret measured is "overridable".
+        const effectName = turretSet.turretEffect ? turretSet.turretEffect.name : "";
+        const ownFaction = faction && effectName !== "overridable" && effectName !== "half_overridable" ? faction : "";
+
+        // Carbon's data manager holds every faction; a lazily assembled one
+        // holds only what the ship's own DNA needed. Asking for the ship's
+        // DNA with the turret's faction in it fetches that faction and the
+        // materials its areas name before painting from it.
+        const [ hull, , race ] = dna.split(":");
+        const sof = await tw2.GetEveSof(ownFaction ? `${hull}:${ownFaction}:${race}` : dna);
+
+        // A remount or faction change while that loaded has its own update.
+        if (!sof || this._turretSet !== turretSet || this._faction !== faction) return;
+
+        if (ownFaction) sof.SetupTurretMaterialFromFaction(turretSet, ownFaction);
+        else sof.SetupTurretMaterialFromDNA(turretSet, dna);
     }
 
     /** Fires the turret */
