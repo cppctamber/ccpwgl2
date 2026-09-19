@@ -28,3 +28,5 @@ export * from "./Tw2EventEmitter";
 export * from "./Tw2RayCaster";
 export * from "./WglTransform";
 export * from "./Tw2Picker";
+
+export * from "./view";

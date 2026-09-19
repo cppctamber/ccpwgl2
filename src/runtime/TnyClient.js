@@ -407,24 +407,21 @@ export class TnyClient extends meta.Model
 
     /**
      * True for a constructed camera, false for the config that describes one.
-     * The class flag is what the runtime cameras actually carry; the instance
-     * getter and the wrapped form are both checked because a camera can arrive
-     * as any of the three.
+     * A camera only needs GetView and GetProjection. Updates, input controllers
+     * and near/far accessors are optional runtime hooks.
      * @param {*} value
      * @returns {Boolean}
      */
     static isCamera(value)
     {
         if (!value || typeof value !== "object") return false;
-        return !!(value.isCamera ||
-            value.constructor && value.constructor.isCamera ||
-            value.wrapped && value.wrapped.isCamera);
+        return typeof value.GetView === "function" && typeof value.GetProjection === "function";
     }
 
     /**
      * Builds a camera from config.
      *
-     * `type` selects the class and defaults to the only camera the runtime
+     * `type` selects the class and defaults to the test camera the runtime
      * ships. It is a registered-constructor lookup rather than a switch so a
      * consumer can register its own camera and name it here.
      *

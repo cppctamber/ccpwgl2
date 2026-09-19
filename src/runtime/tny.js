@@ -1,3 +1,4 @@
+import { EveCamera } from "eve/camera/EveCamera";
 import {
     TnyApiService,
     TnyCharacterApiProvider,
@@ -6,7 +7,7 @@ import {
     TnySkinApiProvider,
     TnyToolsApiProvider
 } from "./api";
-import { TnyCameraTest } from "./cameras";
+import { TnyCameraAdapter, TnyCameraTest } from "./cameras";
 import { TnyRotationGizmo, TnyScalingGizmo, TnyTransformGizmo, TnyTranslationGizmo } from "./gizmo";
 import {
     TnyLensflare, TnyMobile, TnyPlanet, TnyShip, TnySpaceObject, TnyStationary, TnyStrategicCruiser, TnySwarm
@@ -32,6 +33,8 @@ export const tnyConstructors = {
     TnyStrategicCruiser,
     TnySwarm,
     // Cameras
+    EveCamera,
+    TnyCameraAdapter,
     TnyCameraTest,
     TnyScene,
     // Debug

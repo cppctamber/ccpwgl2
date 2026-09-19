@@ -1,3 +1,5 @@
+export * from "./virtualCamera";
+export * from "./camera";
 export * from "./child";
 export * from "./effect";
 export * from "./item";
