@@ -15,6 +15,7 @@ export class TnySceneCinematicReveal
     _boosterLocatorCount = 0;
     _playback = null;
     _cameraControl = null;
+    _prepared = false;
 
     constructor(scene, target, effect, options = {})
     {
@@ -44,11 +45,12 @@ export class TnySceneCinematicReveal
         return this;
     }
 
-    Retarget(target)
+    Retarget(target, options = {})
     {
         this.Stop();
         this.SetTarget(target);
         this.ResetBoosters();
+        if (options.prepare !== false) this.Prepare(options.prepare);
         return this;
     }
 
@@ -83,6 +85,26 @@ export class TnySceneCinematicReveal
         this.effect.StopControllers();
         this.effect.StartControllers();
         this.effect.SetControllerVariable("board", 1);
+        this._prepared = true;
+        return this;
+    }
+
+    Prepare(options = {})
+    {
+        if (options === true) options = {};
+        if (!this.effect) return this;
+
+        const { lights = true, boosters = false } = options || {};
+        const mode = lights && !boosters ? "lights" : boosters && !lights ? "boosters" : "all";
+
+        this.SetBindingMode(mode);
+        this.effect.SetControllerVariable("board", 0);
+        this.effect.SetControllerVariable("_onShipFX", 0);
+        this.effect.StopControllers();
+        this.ResetBoosters();
+        this.effect.StartControllers();
+        if (lights) this.effect.SetControllerVariable("board", 1);
+        this._prepared = true;
         return this;
     }
 
@@ -221,6 +243,7 @@ export class TnySceneCinematicReveal
             this.effect.StopControllers();
         }
         this.ResetBoosters();
+        this._prepared = false;
         return this;
     }
 
@@ -389,6 +412,7 @@ export class TnySceneCinematicReveal
         scene.AddObject(effect);
         const reveal = new this(scene, target, effect, { ...options, resPath });
         reveal.ResetBoosters();
+        if (options.prepare !== false) reveal.Prepare(options.prepare);
         return reveal;
     }
 

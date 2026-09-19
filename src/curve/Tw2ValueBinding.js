@@ -220,6 +220,11 @@ export class Tw2ValueBinding extends meta.Model
      */
     CopyValue(controller = this)
     {
+        if (!this.sourceObject || !this.destinationObject)
+        {
+            return false;
+        }
+
         if (this._copyFunc)
         {
             this._copyFunc(this);
@@ -232,7 +237,9 @@ export class Tw2ValueBinding extends meta.Model
             {
                 this.destinationObject.OnValueChanged({ controller });
             }
+            return true;
         }
+        return false;
     }
 
     /**
@@ -284,6 +291,19 @@ export class Tw2ValueBinding extends meta.Model
     }
 
     /**
+     * Sets source object directly, matching Carbon's value-binding API.
+     * @param {*} object
+     */
+    SetSourceObject(object)
+    {
+        this.sourceObject = object || null;
+        this._copyFunc = null;
+        this._sourceElement = null;
+        this._sourceIsArray = null;
+        this._sourceIsRGBA = null;
+    }
+
+    /**
      * Sets destination object and attribute
      * @param {*} obj
      * @param {String} attr
@@ -297,6 +317,55 @@ export class Tw2ValueBinding extends meta.Model
         this.destinationAttribute = attribute;
         this._copyFunc = null;
         //this.UpdateValues();
+    }
+
+    /**
+     * Sets destination object directly, matching Carbon's value-binding API.
+     * @param {*} object
+     */
+    SetDestinationObject(object)
+    {
+        this.destinationObject = object || null;
+        this._copyFunc = null;
+        this._destinationElement = null;
+        this._destinationIsArray = null;
+        this._destinationIsRGBA = null;
+    }
+
+    /**
+     * Carbon creates a weak binding here; ccpwgl keeps direct references for
+     * the hot copy path and relies on Unlink/Set*Object(null) to release them.
+     *
+     * @param {*} source
+     * @param {String} sourceAttribute
+     * @param {*} destination
+     * @param {String} destinationAttribute
+     * @param {Number} [scale=1]
+     * @param {Array|Number} [offset]
+     */
+    CreateWeakBinding(source, sourceAttribute, destination, destinationAttribute, scale = 1, offset)
+    {
+        this.SetSourceObject(source);
+        this.sourceAttribute = sourceAttribute || "";
+        this.SetDestinationObject(destination);
+        this.destinationAttribute = destinationAttribute || "";
+        this.scale = scale;
+        if (offset !== undefined)
+        {
+            if (isArrayLike(offset))
+            {
+                for (let i = 0; i < this.offset.length; i++)
+                {
+                    this.offset[i] = offset[i] || 0;
+                }
+            }
+            else
+            {
+                this.offset[0] = offset || 0;
+            }
+        }
+        this.OnValueChanged();
+        return !!this._copyFunc;
     }
 
     /**

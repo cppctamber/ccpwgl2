@@ -780,7 +780,7 @@ export class TnyScene extends meta.Model
         const resPath = options.resPath || (this._cinematicReveal && this._cinematicReveal.resPath);
         if (this._cinematicReveal && this._cinematicReveal.resPath === resPath)
         {
-            this._cinematicReveal.Retarget(target);
+            this._cinematicReveal.Retarget(target, options);
             this.EmitEvent("cinematic_reveal_setup", this, this._cinematicReveal);
             return this._cinematicReveal;
         }

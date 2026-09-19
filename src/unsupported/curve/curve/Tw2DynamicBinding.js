@@ -42,6 +42,8 @@ export class Tr2DynamicBinding extends meta.Model
     binding = null;
 
     _bindingTime = 0;
+    _currentTime = 0;
+    _lastLinkSignature = "";
     _owner = null;
 
     destinationAttribute = "";
@@ -61,6 +63,12 @@ export class Tr2DynamicBinding extends meta.Model
 
     OnModified()
     {
+        const signature = this.GetLinkSignature();
+        if (signature === this._lastLinkSignature)
+        {
+            return true;
+        }
+
         if (this._owner)
         {
             this.Link();
@@ -68,13 +76,16 @@ export class Tr2DynamicBinding extends meta.Model
         else
         {
             this.Unlink();
+            this._lastLinkSignature = signature;
         }
         return true;
     }
 
     OnSimClockRebase(oldTime, newTime)
     {
-        this._bindingTime += newTime - oldTime;
+        const adjustment = newTime - oldTime;
+        this._bindingTime += adjustment;
+        this._currentTime += adjustment;
     }
 
     IsSourceValid()
@@ -87,43 +98,59 @@ export class Tr2DynamicBinding extends meta.Model
         return !!this.destination;
     }
 
-    Update()
+    Update(dt = 0)
     {
-        if (this.binding && typeof this.binding.CopyValue === "function")
+        this._currentTime += Math.max(0, Number(dt) || 0);
+        if (this.binding && this._bindingTime <= this._currentTime && typeof this.binding.CopyValue === "function")
         {
-            this.binding.CopyValue();
+            const copied = this.binding.CopyValue();
             this.ApplyCompatibilityCopy();
+            return copied;
         }
+        return false;
     }
 
     Link()
     {
-        const roots = this._owner && this._owner.GetParameterMap ? this._owner.GetParameterMap() : null;
+        this.Unlink();
+        this._lastLinkSignature = this.GetLinkSignature();
 
-        this.source = this.sourceObject || this.constructor.ResolvePath(roots, this.sourceObjectPath);
-        this.destination = this.destination || this.constructor.ResolvePath(roots, this.destinationObjectPath);
-
-        if (!this.source || !this.destination || !this.sourceObjectAttribute || !this.destinationObjectAttribute)
+        if (!this._owner)
         {
-            this.binding = null;
             return false;
         }
 
-        const binding = this.binding || new Tw2ValueBinding();
+        const roots = this._owner && this._owner.GetParameterMap ? this._owner.GetParameterMap() : null;
+
+        this.source = this.sourceObject || this.constructor.ResolvePath(roots, this.sourceObjectPath);
+        this.destination = this.constructor.ResolvePath(roots, this.destinationObjectPath);
+
+        if (!this.source || !this.destination || !this.sourceObjectAttribute || !this.destinationObjectAttribute)
+        {
+            return false;
+        }
+
+        const binding = new Tw2ValueBinding();
         binding.name = this.name;
-        binding.sourceObject = this.source;
-        binding.sourceAttribute = this.sourceObjectAttribute;
-        binding.destinationObject = this.destination;
-        binding.destinationAttribute = this.destinationObjectAttribute;
-        binding.scale = this.scale;
-        binding.OnValueChanged();
+        binding.CreateWeakBinding(
+            this.source,
+            this.sourceObjectAttribute,
+            this.destination,
+            this.destinationObjectAttribute,
+            this.scale
+        );
         this.binding = binding;
-        this.ApplyCompatibilityCopy();
-        return !!binding._copyFunc;
+        this._bindingTime = this._currentTime + Math.max(0, Number(this.bindingDelay) || 0) / 1000;
+        return !!this.binding._copyFunc;
     }
 
     Unlink()
     {
+        if (this.binding)
+        {
+            this.binding.SetSourceObject?.(null);
+            this.binding.SetDestinationObject?.(null);
+        }
         this.binding = null;
         this.source = null;
         this.destination = null;
@@ -133,6 +160,17 @@ export class Tr2DynamicBinding extends meta.Model
     SetOwner(owner)
     {
         this._owner = owner || null;
+    }
+
+    GetLinkSignature()
+    {
+        return JSON.stringify([
+            this.destinationObjectPath,
+            this.destinationObjectAttribute,
+            this.sourceObjectPath,
+            this.sourceObjectAttribute,
+            this.scale
+        ]);
     }
 
     ApplyCompatibilityCopy()
@@ -166,15 +204,44 @@ export class Tr2DynamicBinding extends meta.Model
     {
         if (!roots || !path) return null;
 
-        const parts = this.SplitPath(path);
-        let object = this.GetRoot(roots, parts.shift());
+        const value = String(path);
+        const root = /^([A-Za-z_][A-Za-z_0-9]*)/.exec(value);
+        if (!root) return null;
 
-        for (let i = 0; object && i < parts.length; i++)
+        let object = this.GetRoot(roots, root[1]);
+        let offset = root[1].length;
+
+        while (object && offset < value.length)
         {
-            object = this.ResolvePart(object, parts[i]);
+            const remainder = value.slice(offset);
+            const attribute = /^\.([A-Za-z_][A-Za-z_0-9]*)/.exec(remainder);
+            if (attribute)
+            {
+                object = this.ResolveAttribute(object, attribute[1]);
+                offset += attribute[0].length;
+                continue;
+            }
+
+            const index = /^\[(-?[0-9]+)\]/.exec(remainder);
+            if (index)
+            {
+                object = this.GetListElement(object, Number(index[1]));
+                offset += index[0].length;
+                continue;
+            }
+
+            const name = /^\["([^"]*)"\]/.exec(remainder);
+            if (name)
+            {
+                object = this.GetListElement(object, name[1]);
+                offset += name[0].length;
+                continue;
+            }
+
+            return null;
         }
 
-        return object || null;
+        return offset === value.length && this.IsReference(object) ? object : null;
     }
 
     /**
@@ -186,68 +253,52 @@ export class Tr2DynamicBinding extends meta.Model
     {
         if (!name) return null;
         if (roots instanceof Map) return roots.get(name) || null;
-        return roots[name] || null;
+        return Object.prototype.hasOwnProperty.call(roots, name) ? roots[name] : null;
     }
 
-    /**
-     * Splits a dotted path without splitting inside bracket selectors.
-     * @param {String} path
-     * @returns {String[]}
-     */
-    static SplitPath(path)
+    static ResolveAttribute(object, key)
     {
-        const parts = [];
-        let current = "", depth = 0;
-
-        for (let i = 0; i < path.length; i++)
-        {
-            const c = path[i];
-            if (c === "[") depth++;
-            else if (c === "]") depth--;
-
-            if (c === "." && depth === 0)
-            {
-                if (current) parts.push(current);
-                current = "";
-            }
-            else
-            {
-                current += c;
-            }
-        }
-
-        if (current) parts.push(current);
-        return parts;
-    }
-
-    /**
-     * @param {*} object
-     * @param {String} part
-     * @returns {*}
-     */
-    static ResolvePart(object, part)
-    {
-        const match = /^([^[]+)(?:\["([^"]+)"])?$/.exec(part);
-        if (!match) return null;
-
-        let key = match[1];
-        const name = match[2];
-
         // ccpwgl's SOF path stores Carbon's modelRotationCurve as rotationCurve.
         if (!(key in object) && key === "modelRotationCurve" && "rotationCurve" in object)
         {
             key = "rotationCurve";
         }
 
-        let value = object[key];
-        if (name === undefined) return value || null;
+        return object && typeof object === "object" ? object[key] || null : null;
+    }
 
-        if (Array.isArray(value))
+    static GetListElement(value, selector)
+    {
+        const isArray = Array.isArray(value);
+        const size = isArray ? value.length : Number(value?.GetSize?.());
+        const isList = Number.isInteger(size) && size >= 0;
+
+        if (isList)
         {
-            return value.find(item => item && (item.name === name || item.GetName && item.GetName() === name)) || null;
+            const at = index => isArray ? value[index] : value.GetAt(index);
+            if (typeof selector === "number")
+            {
+                const index = selector < 0 ? selector + size : selector;
+                return index >= 0 && index < size ? at(index) || null : null;
+            }
+
+            for (let i = 0; i < size; i++)
+            {
+                const item = at(i);
+                if (item && (item.name === selector || item.GetName && item.GetName() === selector))
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
-        return value && value[name] || null;
+        return typeof selector === "string" && value && typeof value === "object" ? value[selector] || null : null;
+    }
+
+    static IsReference(value)
+    {
+        return value !== null && (typeof value === "object" || typeof value === "function");
     }
 
 }
