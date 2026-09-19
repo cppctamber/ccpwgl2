@@ -268466,8 +268466,8 @@
 	    _initializerDefineProperty(this, "translationCurve", _descriptor15$o, this);
 	    _initializerDefineProperty(this, "meshIndex", _descriptor16$j, this);
 	    /*
-	         CCPWGL only
-	      */
+	          CCPWGL only
+	       */
 	    _initializerDefineProperty(this, "clipSphereCenter", _descriptor17$h, this);
 	    _initializerDefineProperty(this, "clipSphereFactor", _descriptor18$h, this);
 	    _initializerDefineProperty(this, "clipSphereFactor2", _descriptor19$d, this);
@@ -268754,12 +268754,12 @@
 	    return out;
 	  }
 	  /*
-	       Eve engine doesn't rebuild bounds like we do here
+	        Eve engine doesn't rebuild bounds like we do here
 	      If we need to rebuild bounds for a hull, for using in something like Intersection tests
 	      We should be storing it separately to the actual hull's bounds
 	      This will remove confusion when we're comparing behavior
 	      TODO: Change all bound calculations to be separate from the base hull bounds
-	    */
+	     */
 
 	  /**
 	   * Fires when bounds need rebuilding
@@ -311073,7 +311073,7 @@
 	    var faction = this.GetFaction(factionName);
 	    return EveSOFData.applyTurretParameters(effect, name => {
 	      var param = this.RemapTurretParameterName(faction, name);
-	      return this.SearchAreaParameter(faction, faction, EveSOFDataArea.AreaType.TYPE_PRIMARY, param);
+	      return this.TurretDisplayValue(name, this.SearchAreaParameter(faction, faction, EveSOFDataArea.AreaType.TYPE_PRIMARY, param), 0.5);
 	    });
 	  }
 
@@ -311104,8 +311104,25 @@
 	    };
 	    return EveSOFData.applyTurretParameters(effect, name => {
 	      var param = this.RemapTurretParameterName(owner.faction, name);
-	      return this.GetMeshAreaParameter(owner, this.generic.turretAreaType, param.full);
+	      return this.TurretDisplayValue(name, this.GetMeshAreaParameter(owner, this.generic.turretAreaType, param.full), 1);
 	    });
+	  }
+
+	  /**
+	   * ccpwgl display tuning, not Carbon: its shaders take hull glow scaled by
+	   * `multiplier.generalGlowColor`. The painter these lookups replaced gave
+	   * a turret wearing its owner's look the hull's glow as it was, and one
+	   * wearing its own faction half of it; both are kept so turrets keep the
+	   * brightness they had beside the hull.
+	   * @param {String} name
+	   * @param {null|Array<Number>} value
+	   * @param {Number} share - 1 for the owner's look, 0.5 for the turret's faction
+	   * @returns {null|Array<Number>}
+	   */
+	  TurretDisplayValue(name, value, share) {
+	    if (!value || name !== "GeneralGlowColor") return value;
+	    var glow = vec4$2.multiply(vec4$2.create(), value, this._options.multiplier.generalGlowColor);
+	    return vec4$2.multiply(glow, glow, [share, share, share, 1]);
 	  }
 
 	  /**
@@ -311286,7 +311303,14 @@
 	      var value = resolve(names[i]);
 	      if (value) values[names[i]] = value;
 	    }
-	    return Object.keys(values).length ? effect.SetParameters(values) : false;
+	    if (!Object.keys(values).length || !effect.SetParameters(values)) return false;
+
+	    // A vector parameter binds to one stage's constant buffer; the others
+	    // took a copy when bound, so a new value reaches the pixel shader -
+	    // where the material colours are read - only by rebinding. An effect
+	    // still loading binds the current values when it is ready.
+	    if (effect.IsGood && effect.IsGood()) effect.BindParameters();
+	    return true;
 	  }
 
 	  /*
@@ -335351,12 +335375,31 @@
 	  UpdateFaction() {
 	    var _this3 = this;
 	    return _asyncToGenerator(function* () {
-	      if (!_this3._turretSet || !tw2.eveSof) return;
-	      if (_this3._faction) {
-	        tw2.eveSof.SetupTurretMaterialFromFaction(_this3._turretSet, _this3._faction);
-	      } else if (_this3._parent.wrapped.dna) {
-	        tw2.eveSof.SetupTurretMaterialFromDNA(_this3._turretSet, _this3._parent.wrapped.dna);
-	      }
+	      var turretSet = _this3._turretSet,
+	        faction = _this3._faction,
+	        dna = _this3._parent.wrapped.dna;
+	      if (!turretSet || !dna) return;
+
+	      // Which of Carbon's two calls applies is the game's choice, and the
+	      // turret's authored effect name records it: an "overridable" or
+	      // "half_overridable" turret wears its owner's look, any other its own
+	      // faction. Every EVE and Frontier turret measured is "overridable".
+	      var effectName = turretSet.turretEffect ? turretSet.turretEffect.name : "";
+	      var ownFaction = faction && effectName !== "overridable" && effectName !== "half_overridable" ? faction : "";
+
+	      // Carbon's data manager holds every faction; a lazily assembled one
+	      // holds only what the ship's own DNA needed. Asking for the ship's
+	      // DNA with the turret's faction in it fetches that faction and the
+	      // materials its areas name before painting from it.
+	      var _dna$split = dna.split(":"),
+	        _dna$split2 = _slicedToArray(_dna$split, 3),
+	        hull = _dna$split2[0],
+	        race = _dna$split2[2];
+	      var sof = yield tw2.GetEveSof(ownFaction ? "".concat(hull, ":").concat(ownFaction, ":").concat(race) : dna);
+
+	      // A remount or faction change while that loaded has its own update.
+	      if (!sof || _this3._turretSet !== turretSet || _this3._faction !== faction) return;
+	      if (ownFaction) sof.SetupTurretMaterialFromFaction(turretSet, ownFaction);else sof.SetupTurretMaterialFromDNA(turretSet, dna);
 	    })();
 	  }
 
