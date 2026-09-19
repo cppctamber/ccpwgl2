@@ -67,15 +67,15 @@ public/carbon/
 
 # Scratch build and tooling output, plus artifacts/notes - the working notes and
 # findings for whatever is in flight. Notes expire when their work lands: promote
-# verified durable content to the org /docs repository, then delete the local
-# copy. ccpwgl has no docs/ tree of its own.
+# verified durable CCPWGL content to the local docs/ tree, then delete the
+# scratch copy.
 artifacts/
 
 # test fixtures containing real extracted CCP/EVE game assets (.black, .sm_hi,
 # and the webgl effect packages built from them) - not safe to commit
 test/fixtures/
 
-# Working notes stay local - durable content belongs in the org /docs tree
+# Working notes stay local - durable CCPWGL content belongs in docs/
 NOTES-*.md
 src/**/README.md
 
@@ -87,13 +87,7 @@ src/**/README.md
 AGENT-*.md
 PLAN-*.md
 
-# docs/ is NOT tracked. It was, briefly, as a home for knowledge owned by this
-# repository - but we are not publishing any documentation yet, so the tree was
-# removed rather than left half-written in public. The content is recoverable
-# from commit ee3a909b if that decision is revisited.
-#
-# Until then durable knowledge belongs in the organisation /docs repository, and
-# working notes in artifacts/notes/ - which expire when their work lands.
+# CCPWGL documentation stays local; do not commit or push it.
 docs/
 
 # Local test and tooling scripts. Untracked deliberately: package.json still
