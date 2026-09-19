@@ -62,6 +62,8 @@ export class TnyScene extends meta.Model
     gizmoObjects = [];
 
     _cinematicReveal = null;
+    _cinematicRevealSetupId = 0;
+    _cinematicRevealSetup = null;
 
     /**
      * Planets normally go in the scene's planet list, which renders in a
@@ -162,6 +164,12 @@ export class TnyScene extends meta.Model
             this.Rebuild();
             this.EmitEvent("object_removed", this, object);
         }
+        if (index !== -1 && this._cinematicReveal && this._cinematicReveal.effect === object)
+        {
+            this._cinematicRevealSetupId++;
+            this._cinematicRevealSetup = null;
+            this._cinematicReveal.Dispose();
+        }
         return this;
     }
 
@@ -250,6 +258,16 @@ export class TnyScene extends meta.Model
      */
     RemoveAllObjects(spaceObjects, planets)
     {
+        if (spaceObjects && this._cinematicReveal)
+        {
+            this._cinematicReveal.Dispose();
+        }
+        if (spaceObjects)
+        {
+            this._cinematicRevealSetupId++;
+            this._cinematicRevealSetup = null;
+        }
+
         const keep = this.objects.filter(x => (x.isPlanet ? !planets : !spaceObjects));
         const keepBackground = spaceObjects ? [] : this.backgroundObjects.slice();
         if (keep.length === this.objects.length && keepBackground.length === this.backgroundObjects.length) return this;
@@ -280,6 +298,13 @@ export class TnyScene extends meta.Model
 
     ClearObjects()
     {
+        if (this._cinematicReveal)
+        {
+            this._cinematicReveal.Dispose();
+        }
+        this._cinematicRevealSetupId++;
+        this._cinematicRevealSetup = null;
+
         for (let i = 0; i < this.backgroundObjects.length; i++)
         {
             this._RemoveWrappedBackgroundObject(this.backgroundObjects[i]);
@@ -769,7 +794,8 @@ export class TnyScene extends meta.Model
      * A scene may only have one reveal controller because the authored boarding
      * multieffect binds to one `playerShip` root and writes shared ship fields
      * such as activation strength and booster intensity. Repeated setup calls
-     * retarget the existing helper unless a different multieffect is requested.
+     * replace the previous helper with a fresh multieffect/controller instance
+     * so authored controller state cannot leak across target ships.
      *
      * @param {*} target - Tny wrapper or raw Eve ship
      * @param {Object} [options]
@@ -777,23 +803,83 @@ export class TnyScene extends meta.Model
      */
     async SetupCinematicReveal(target, options = {})
     {
+        const setupId = ++this._cinematicRevealSetupId;
         const resPath = options.resPath || (this._cinematicReveal && this._cinematicReveal.resPath);
-        if (this._cinematicReveal && this._cinematicReveal.resPath === resPath)
-        {
-            this._cinematicReveal.Retarget(target, options);
-            this.EmitEvent("cinematic_reveal_setup", this, this._cinematicReveal);
-            return this._cinematicReveal;
-        }
+        const setupOptions = resPath ? { ...options, resPath } : options;
 
-        if (this._cinematicReveal)
-        {
-            this._cinematicReveal.Dispose();
-        }
+        const previousReveal = this._cinematicReveal;
 
-        const reveal = await TnySceneCinematicReveal.Create(this, target, options);
-        this._cinematicReveal = reveal;
-        this.EmitEvent("cinematic_reveal_setup", this, reveal);
-        return reveal;
+        let setup;
+        const getActiveReveal = () => this._cinematicRevealSetup && this._cinematicRevealSetup !== setup
+            ? this._cinematicRevealSetup
+            : this._cinematicReveal;
+
+        setup = TnySceneCinematicReveal.Create(this, target, {
+            ...setupOptions,
+            prepare: false,
+            resetBoosters: false,
+            isCancelled: () => setupId !== this._cinematicRevealSetupId
+        })
+            .then(reveal =>
+            {
+                if (!reveal)
+                {
+                    return getActiveReveal();
+                }
+
+                if (setupId !== this._cinematicRevealSetupId)
+                {
+                    reveal.Dispose();
+                    return getActiveReveal();
+                }
+
+                try
+                {
+                    reveal.ResetBoosters();
+                    if (options.prepare !== false) reveal.Prepare(options.prepare);
+                    this._cinematicReveal = reveal;
+                    this.EmitEvent("cinematic_reveal_setup", this, reveal);
+                }
+                catch (err)
+                {
+                    if (this._cinematicReveal === reveal)
+                    {
+                        reveal.Dispose();
+                        if (setupId === this._cinematicRevealSetupId && previousReveal && previousReveal !== reveal)
+                        {
+                            this._cinematicReveal = previousReveal;
+                        }
+                    }
+                    throw err;
+                }
+                if (previousReveal && previousReveal !== reveal)
+                {
+                    previousReveal.Dispose();
+                }
+                return reveal;
+            })
+            .catch(err =>
+            {
+                if (setupId === this._cinematicRevealSetupId)
+                {
+                    this._cinematicReveal = previousReveal;
+                }
+                throw err;
+            });
+
+        this._cinematicRevealSetup = setup;
+
+        try
+        {
+            return await setup;
+        }
+        finally
+        {
+            if (this._cinematicRevealSetup === setup)
+            {
+                this._cinematicRevealSetup = null;
+            }
+        }
     }
 
     /**

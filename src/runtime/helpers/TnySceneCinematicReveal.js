@@ -22,7 +22,7 @@ export class TnySceneCinematicReveal
         this.scene = scene || null;
         this.effect = effect || null;
         this.resPath = options.resPath || CINEMATIC_REVEAL_PATH;
-        this.SetTarget(target);
+        this._SetTarget(target);
 
         const wrapped = this.effect && this.effect.wrapped;
         this._bindings = wrapped && wrapped.bindings ? wrapped.bindings.slice() : [];
@@ -34,23 +34,14 @@ export class TnySceneCinematicReveal
         return this.effect && this.effect.wrapped || null;
     }
 
-    SetTarget(target)
+    _SetTarget(target)
     {
         this.target = target || null;
-        if (this.effect && target)
+        if (this.effect)
         {
             this.effect.SetParameter("playerShip", this.GetWrappedTarget());
         }
         this.RefreshTargetMetrics();
-        return this;
-    }
-
-    Retarget(target, options = {})
-    {
-        this.Stop();
-        this.SetTarget(target);
-        this.ResetBoosters();
-        if (options.prepare !== false) this.Prepare(options.prepare);
         return this;
     }
 
@@ -64,11 +55,9 @@ export class TnySceneCinematicReveal
         const wrapped = this.wrapped;
         if (!wrapped || !wrapped.bindings || !this._bindings) return this;
 
-        const bindings = mode === "boosters"
-            ? this._bindings.filter(TnySceneCinematicReveal.IsBoosterBinding)
-            : mode === "lights"
-                ? this._bindings.filter(x => !TnySceneCinematicReveal.IsBoosterBinding(x))
-                : this._bindings;
+        const bindings = mode === "lights"
+            ? this._bindings.filter(x => !TnySceneCinematicReveal.IsBoosterOnlyBinding(x))
+            : this._bindings;
 
         wrapped.bindings.splice(0, wrapped.bindings.length, ...bindings);
         this._bindingMode = mode;
@@ -79,12 +68,17 @@ export class TnySceneCinematicReveal
     Start(mode = "all")
     {
         if (!this.effect) return this;
+
+        const boosters = mode === "boosters" || mode === "all";
+        const lights = mode === "lights" || mode === "all";
+
         this.SetBindingMode(mode);
         this.effect.SetControllerVariable("board", 0);
         this.effect.SetControllerVariable("_onShipFX", 0);
         this.effect.StopControllers();
         this.effect.StartControllers();
-        this.effect.SetControllerVariable("board", 1);
+        if (lights || boosters) this.effect.SetControllerVariable("board", 1);
+        if (boosters) this.effect.SetControllerVariable("_onShipFX", 1);
         this._prepared = true;
         return this;
     }
@@ -103,7 +97,8 @@ export class TnySceneCinematicReveal
         this.effect.StopControllers();
         this.ResetBoosters();
         this.effect.StartControllers();
-        if (lights) this.effect.SetControllerVariable("board", 1);
+        if (lights || boosters) this.effect.SetControllerVariable("board", 1);
+        if (boosters) this.effect.SetControllerVariable("_onShipFX", 1);
         this._prepared = true;
         return this;
     }
@@ -173,7 +168,15 @@ export class TnySceneCinematicReveal
 
         if (control && control.client && typeof control.client.SetCamera === "function")
         {
-            control.client.SetCamera(control.previous || null);
+            const ownsCamera = control.camera && (
+                typeof control.client.GetCamera !== "function" ||
+                control.client.GetCamera() === control.camera
+            );
+
+            if (ownsCamera)
+            {
+                control.client.SetCamera(control.previous || null);
+            }
         }
 
         return this;
@@ -242,7 +245,7 @@ export class TnySceneCinematicReveal
             this.effect.SetControllerVariable("_onShipFX", 0);
             this.effect.StopControllers();
         }
-        this.ResetBoosters();
+        if (this._prepared) this.ResetBoosters();
         this._prepared = false;
         return this;
     }
@@ -260,19 +263,24 @@ export class TnySceneCinematicReveal
 
     Dispose()
     {
+        const scene = this.scene;
+        const effect = this.effect;
+
         this.ReleaseCameraControl();
         this.Stop();
-        if (this.scene && this.effect)
-        {
-            this.scene.RemoveObject(this.effect);
-        }
-        if (this.scene && this.scene._cinematicReveal === this)
-        {
-            this.scene._cinematicReveal = null;
-        }
+
         this.scene = null;
         this.target = null;
         this.effect = null;
+
+        if (scene && effect)
+        {
+            scene.RemoveObject(effect);
+        }
+        if (scene && scene._cinematicReveal === this)
+        {
+            scene._cinematicReveal = null;
+        }
         return true;
     }
 
@@ -402,23 +410,48 @@ export class TnySceneCinematicReveal
         if (!target) throw new TypeError("Invalid cinematic reveal target");
 
         const resPath = options.resPath || CINEMATIC_REVEAL_PATH;
+        const isCancelled = typeof options.isCancelled === "function" ? options.isCancelled : null;
         const effect = await scene.FetchMultiEffect({
             resPath,
-            parameters: { playerShip: target },
+            parameters: { playerShip: null },
             controllerVariables: { board: 0, _onShipFX: 0 },
             autoStart: false
         }, options.onProgress, true);
 
+        if (isCancelled && isCancelled())
+        {
+            return null;
+        }
+
         scene.AddObject(effect);
+        if (isCancelled && isCancelled())
+        {
+            scene.RemoveObject(effect);
+            return null;
+        }
+
         const reveal = new this(scene, target, effect, { ...options, resPath });
-        reveal.ResetBoosters();
+        if (options.resetBoosters !== false) reveal.ResetBoosters();
         if (options.prepare !== false) reveal.Prepare(options.prepare);
         return reveal;
     }
 
-    static IsBoosterBinding(binding)
+    static IsBoosterOnlyBinding(binding)
     {
         return /^ShipBoosters?_/.test(binding && binding.name || "");
+    }
+
+    static IsActivationBinding(binding)
+    {
+        return binding &&
+            binding.destinationObjectPath === "playerShip" &&
+            binding.destinationObjectAttribute === "activationStrength";
+    }
+
+    static IsBoosterBinding(binding)
+    {
+        return TnySceneCinematicReveal.IsBoosterOnlyBinding(binding) ||
+            TnySceneCinematicReveal.IsActivationBinding(binding);
     }
 
     static global = {
