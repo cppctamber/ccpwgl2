@@ -22,7 +22,7 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
      * it to 0 - so switching it on without also changing the default to -1 would
      * have made every dynamic emitter in the engine stop emitting entirely.
      */
-    @meta.float
+    @meta.int32
     maxParticles = -1;
 
     @meta.struct("Tw2ParticleSystem")
