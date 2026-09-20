@@ -2,7 +2,9 @@
   "blinkinglightspool": {
     "r0.xy=r0.xx*c[0+a0.x].xy;": "if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}",
     "texcoord=r3.zzww*c[0+a0.x].zwzz;": "if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}",
-    "v0=color": "v0=color;v0.w=0.5"
+    "v0=color": "v0=color;v0.w=0.5",
+    "r3.xy=r0.xx*c[0+a0.x].xy;": "if(a0.x==0){r3.xy=r0.xx*c[0].xy;}else if(a0.x==1){r3.xy=r0.xx*c[1].xy;}else if(a0.x==2){r3.xy=r0.xx*c[2].xy;}else if(a0.x==3){r3.xy=r0.xx*c[3].xy;}",
+    "texcoord.xy=c[0+a0.x].zw;": "if(a0.x==0){texcoord.xy=c[0].zw;}else if(a0.x==1){texcoord.xy=c[1].zw;}else if(a0.x==2){texcoord.xy=c[2].zw;}else if(a0.x==3){texcoord.xy=c[3].zw;}"
   },
   "aurora.fragment": {
     "r0.z=dFdy(v0.y);": "r0.z=0.0;"
@@ -38,68 +40,57 @@
   "projectile.vertex": {
     "c[0+a0.x]": "(a0.x==0?c[0]:(a0.x==1?c[1]:(a0.x==2?c[2]:c[3])))"
   },
-  "motionfx":  {
+  "motionfx": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<8;++i){"
   },
-  "ubershaderquad" : {
-    "r0.xyz=c[0+a0.x].xyx*r0.zzw+r0.wwz;" : "if(a0.x==0){r0.xyz=c[0].xyx*r0.zzw+r0.wwz;texcoord.xy=c[0].zw;}else if(a0.x==1){r0.xyz=c[1].xyx*r0.zzw+r0.wwz;texcoord.xy=c[1].zw;}else if(a0.x==2){r0.xyz=c[2].xyx*r0.zzw+r0.wwz;}else if(a0.x==3){r0.xyz=c[3].xyx*r0.zzw+r0.wwz;}",
+  "ubershaderquad": {
+    "r0.xyz=c[0+a0.x].xyx*r0.zzw+r0.wwz;": "if(a0.x==0){r0.xyz=c[0].xyx*r0.zzw+r0.wwz;texcoord.xy=c[0].zw;}else if(a0.x==1){r0.xyz=c[1].xyx*r0.zzw+r0.wwz;texcoord.xy=c[1].zw;}else if(a0.x==2){r0.xyz=c[2].xyx*r0.zzw+r0.wwz;}else if(a0.x==3){r0.xyz=c[3].xyx*r0.zzw+r0.wwz;}",
     "texcoord.xy=c[0+a0.x].zw;": "if(a0.x==0){texcoord.xy=c[0].zw;}else if(a0.x==1){texcoord.xy=c[1].zw;}else if(a0.x==2){texcoord.xy=c[2].zw;}else if(a0.x==3){texcoord.xy=c[3].zw;}"
   },
-  "avatarcombined.vertex" : {
-    "uniform vec4 cb0[204];" : "uniform vec4 cb0[204];\nuniform vec4 cb3[26];\n"
+  "avatarcombined.vertex": {
+    "uniform vec4 cb0[204];": "uniform vec4 cb0[204];\nuniform vec4 cb3[26];\n"
   },
-  "avatarcombined.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<0;++i){"
+  "avatarcombined.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<0;++i){"
   },
-
-  "managed/interior/avatar/simple.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  "managed/interior/avatar/simple.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){"
   },
-
-  "managed/interior/avatar/skinnedsimple.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  "managed/interior/avatar/skinnedsimple.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){"
   },
-
-  "managed/interior/avatar/skinnedavatar.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
-    "r0.x=r5.y;" : "r0.x=c11.y;"
+  "managed/interior/avatar/skinnedavatar.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;": "r0.x=c11.y;"
   },
-
-  "managed/interior/avatar/skinnedavatarbrdf.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
-    "r0.x=r5.y;" : "r0.x=c11.y;"
+  "managed/interior/avatar/skinnedavatarbrdf.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;": "r0.x=c11.y;"
   },
-
-  "managed/interior/avatar/clothavatar.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
-    "r0.x=r5.y;" : "r0.x=c11.y;"
+  "managed/interior/avatar/clothavatar.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;": "r0.x=c11.y;"
   },
-
-  "managed/interior/avatar/skinnedavatarhair.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
-    "r0.x=r5.y;" : "r0.x=c11.y;"
+  "managed/interior/avatar/skinnedavatarhair.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;": "r0.x=c11.y;"
   },
-
-  "managed/interior/avatar/eyeshader.fragment" : {
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  "managed/interior/avatar/eyeshader.fragment": {
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){"
   },
-
-  "managed/interior/avatar/glassshader.fragment" : {
-    "for(int i=0;i<i0.x;++i){" : "for(int i=0;i<5;++i){",
-    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
-    "gl_FragData[0].w=r4.w;" : "gl_FragData[0].w=0.0;"
+  "managed/interior/avatar/glassshader.fragment": {
+    "for(int i=0;i<i0.x;++i){": "for(int i=0;i<5;++i){",
+    "for(int i=0;i<i15.x;++i){": "for(int i=0;i<10;++i){",
+    "gl_FragData[0].w=r4.w;": "gl_FragData[0].w=0.0;"
   },
-
-  "fxshieldimpactv5.fragment" : {
+  "fxshieldimpactv5.fragment": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
   },
-
-  "distortion.fragment" : {
-    "r0.z=r0.z*c1.z;" : "r0.z=r0.z/c1.z;",
-    "r0.z=1.0/r0.z;" : "r0.z=1.0*r0.z;"
+  "distortion.fragment": {
+    "r0.z=r0.z*c1.z;": "r0.z=r0.z/c1.z;",
+    "r0.z=1.0/r0.z;": "r0.z=1.0*r0.z;"
   },
-  "atmosphere" : {
+  "atmosphere": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<2;++i){"
   }
-
 }

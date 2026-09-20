@@ -113807,7 +113807,9 @@
 	var blinkinglightspool$1 = {
 		"r0.xy=r0.xx*c[0+a0.x].xy;": "if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}",
 		"texcoord=r3.zzww*c[0+a0.x].zwzz;": "if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}",
-		"v0=color": "v0=color;v0.w=0.5"
+		"v0=color": "v0=color;v0.w=0.5",
+		"r3.xy=r0.xx*c[0+a0.x].xy;": "if(a0.x==0){r3.xy=r0.xx*c[0].xy;}else if(a0.x==1){r3.xy=r0.xx*c[1].xy;}else if(a0.x==2){r3.xy=r0.xx*c[2].xy;}else if(a0.x==3){r3.xy=r0.xx*c[3].xy;}",
+		"texcoord.xy=c[0+a0.x].zw;": "if(a0.x==0){texcoord.xy=c[0].zw;}else if(a0.x==1){texcoord.xy=c[1].zw;}else if(a0.x==2){texcoord.xy=c[2].zw;}else if(a0.x==3){texcoord.xy=c[3].zw;}"
 	};
 	var boostervolumetric$1 = {
 		"for(int i=0;i<i0.x;++i){": "for(int i=0;i<12;++i){"
