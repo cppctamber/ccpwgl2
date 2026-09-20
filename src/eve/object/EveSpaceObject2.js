@@ -1274,6 +1274,30 @@ export class EveSpaceObject2 extends EveObject
     }
 
     /**
+     * Starts every controller this object owns, and its children's.
+     *
+     * Carbon `EveSpaceObject2::StartControllers` (cpp:4285-4300): its own
+     * controllers, then each effect child's, then each overlay effect's.
+     *
+     * NOT called by the factory, in Carbon either - it is exposed to Blue and
+     * invoked by the application once an object is placed, and by the actions
+     * that attach things later (`Tr2ActionChildEffect`, `Tr2ActionOverlay`).
+     * ccpwgl had `EveChildContainer::StartControllers` but nothing at the top of
+     * the tree to reach it from, so a hull's own controllers - the loops a
+     * station idles on - were never started by anything.
+     *
+     * `overlayEffects` is walked when it is there. Carbon has the collection;
+     * here it is only a visibility flag today, so this is written for the shape
+     * rather than against what happens to exist.
+     */
+    StartControllers()
+    {
+        for (const controller of this.controllers) controller?.Start?.();
+        for (const child of this.effectChildren) child?.StartControllers?.();
+        for (const overlay of this.overlayEffects || []) overlay?.StartControllers?.();
+    }
+
+    /**
      * Sets a controller variable across this ship: every controller it owns, and
      * every effect child, recursively.
      *
