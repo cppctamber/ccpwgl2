@@ -311868,31 +311868,31 @@
 	  DEFAULT: 0xffffffff
 	}, _EveSOFData.MIN_MESH_SCREEN_SIZE = 2.5, _EveSOFData.LayoutInstanceDeclarations = [{
 	  usage: "TEXCOORD",
-	  usageIndex: 8,
+	  usageIndex: 0,
 	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
-	  usageIndex: 9,
+	  usageIndex: 1,
 	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
-	  usageIndex: 10,
+	  usageIndex: 2,
 	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
-	  usageIndex: 11,
+	  usageIndex: 3,
 	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
-	  usageIndex: 12,
+	  usageIndex: 4,
 	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
-	  usageIndex: 13,
+	  usageIndex: 5,
 	  elements: 4
 	}, {
 	  usage: "TEXCOORD",
-	  usageIndex: 14,
+	  usageIndex: 6,
 	  elements: 4
 	}], _EveSOFData.LayoutInstanceFloats = 28, _EveSOFData), _descriptor$1R = _applyDecoratedDescriptor(_class2$1S.prototype, "enableChildren", [_dec2$1T, _dec3$1I], {
 	  configurable: true,

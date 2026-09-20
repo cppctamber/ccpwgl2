@@ -5256,14 +5256,29 @@ export class EveSOFData extends meta.Model
     static MIN_MESH_SCREEN_SIZE = 2.5;
 
     /** Instance stream used by modular hull base meshes. */
+    /**
+     * Declared from TEXCOORD 0, NOT from 8.
+     *
+     * Carbon's `Tr2InstancedMesh::MergeVertexDeclarations` shifts an instance
+     * declaration up by 8 as it merges it with the base geometry's, and
+     * `Tw2InstancedMesh.RenderAreas` passes that same shift as `usageOffset`.
+     * So the semantics the SHADER sees are these plus 8 - TEXCOORD 8..14,
+     * which is what `quadinstancedv5` declares.
+     *
+     * Authoring them at 8 here shifted them twice, to 16..22, and the shader
+     * has no such inputs: `SetPartialDeclaration` matched nothing, bound no
+     * attributes, and every instance drew with an unset transform. The draw
+     * calls all still happened, which is why this looked like geometry that
+     * had stopped existing rather than geometry that had stopped binding.
+     */
     static LayoutInstanceDeclarations = [
-        { usage: "TEXCOORD", usageIndex: 8, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 9, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 10, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 11, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 12, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 13, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 14, elements: 4 }
+        { usage: "TEXCOORD", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 2, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 3, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 4, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 5, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 6, elements: 4 }
     ];
 
     /** Floats per modular layout instance. */
