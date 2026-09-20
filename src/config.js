@@ -333,8 +333,21 @@ export const config = {
         // If set to false resources must be manually removed when no longer required
         "autoPurgeResources": true,
 
-        // The amount of time to wait before purging an unused resource
-        "purgeTime": 60,
+        // The amount of time to wait before purging an unused resource, in
+        // seconds.
+        //
+        // FIVE MINUTES, not one. A minute is shorter than the things a scene
+        // cycles through: a station's billboards rotate, so an advert that is
+        // not showing stops being touched, is purged for inactivity, and is
+        // fetched and decoded again the next time it comes round. The loop is
+        // pure cost - the same bytes, repeatedly, for something the scene never
+        // stopped needing.
+        //
+        // The bound this trades against is memory, and it is the whole resource
+        // tree that is held for longer rather than only the ones worth holding.
+        // Five minutes is long enough to cover a rotation and short enough that
+        // a scene somebody has navigated away from still goes.
+        "purgeTime": 300,
 
         // Keeps a loading object after it prepares, so the next consumer of the
         // same file constructs from memory instead of re-fetching and
