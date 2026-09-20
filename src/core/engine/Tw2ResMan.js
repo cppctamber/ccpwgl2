@@ -866,6 +866,21 @@ export class Tw2ResMan extends Tw2EventEmitter
             }
 
             res.path = path;
+
+            // A DYNAMIC RESOURCE IS NEVER PURGED.
+            //
+            // These are declared, not discovered: a playlist named in the
+            // application's config, a handful of them, constructed on demand and
+            // shared by path. Purging one throws away a decoded video and the
+            // element playing it, and the next request rebuilds both - so the
+            // sweep produced a loop of loading, unloading and loading the same
+            // file, which is the opposite of what retention is for.
+            //
+            // There is no memory argument on the other side either. The set is
+            // fixed by the config and small, unlike the resource tree behind a
+            // hull, which is why this is the one kind that can say never.
+            res.Lock();
+
             res.RegisterCallbacks(onResolved, onRejected);
             return this.LoadResource(res);
         }
