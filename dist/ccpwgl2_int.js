@@ -71610,6 +71610,20 @@
 	        return null;
 	      }
 	      res.path = path;
+
+	      // A DYNAMIC RESOURCE IS NEVER PURGED.
+	      //
+	      // These are declared, not discovered: a playlist named in the
+	      // application's config, a handful of them, constructed on demand and
+	      // shared by path. Purging one throws away a decoded video and the
+	      // element playing it, and the next request rebuilds both - so the
+	      // sweep produced a loop of loading, unloading and loading the same
+	      // file, which is the opposite of what retention is for.
+	      //
+	      // There is no memory argument on the other side either. The set is
+	      // fixed by the config and small, unlike the resource tree behind a
+	      // hull, which is why this is the one kind that can say never.
+	      res.Lock();
 	      res.RegisterCallbacks(onResolved, onRejected);
 	      return this.LoadResource(res);
 	    }
@@ -332076,8 +332090,21 @@
 	    // Enables auto purging of resources that aren't used
 	    // If set to false resources must be manually removed when no longer required
 	    "autoPurgeResources": true,
-	    // The amount of time to wait before purging an unused resource
-	    "purgeTime": 60,
+	    // The amount of time to wait before purging an unused resource, in
+	    // seconds.
+	    //
+	    // FIVE MINUTES, not one. A minute is shorter than the things a scene
+	    // cycles through: a station's billboards rotate, so an advert that is
+	    // not showing stops being touched, is purged for inactivity, and is
+	    // fetched and decoded again the next time it comes round. The loop is
+	    // pure cost - the same bytes, repeatedly, for something the scene never
+	    // stopped needing.
+	    //
+	    // The bound this trades against is memory, and it is the whole resource
+	    // tree that is held for longer rather than only the ones worth holding.
+	    // Five minutes is long enough to cover a rotation and short enough that
+	    // a scene somebody has navigated away from still goes.
+	    "purgeTime": 300,
 	    // Keeps a loading object after it prepares, so the next consumer of the
 	    // same file constructs from memory instead of re-fetching and
 	    // re-parsing it. Nothing binds a loading object, so the purge above
