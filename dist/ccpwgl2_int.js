@@ -226726,7 +226726,15 @@
 	    var data = this._data;
 	    var stride = this._stride;
 	    if (!data || !stride || index < 0 || index >= this._count) return null;
-	    var o = index * stride;
+
+	    // `_stride` is in BYTES, because that is what `vertexAttribPointer`
+	    // wants, but `_data` is a Float32Array and indexes in FLOATS. Stepping
+	    // by the byte stride walked four times too far: instance 0 decoded
+	    // correctly, instance 1 read past the end and answered null, and the
+	    // bounds walk in `Tw2InstancedMesh.GetBoundingBox` stopped there - so
+	    // an instanced mesh was bounded by its FIRST instance alone, and the
+	    // rest of it was frustum- and screen-size-culled while on screen.
+	    var o = index * (stride / 4);
 	    if (o + 11 >= data.length) return null;
 	    out[0] = data[o];
 	    out[4] = data[o + 1];
