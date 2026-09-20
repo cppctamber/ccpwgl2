@@ -195,29 +195,7 @@ export class EveSpaceScene extends meta.Model
     /** Exclude receivers outside the current camera frustum from the fit. */
     carbonShadowVisibleOnly = true;
 
-    /**
-     * How much wider than the camera the fit frustum is, as a multiplier.
-     *
-     * A receiver sitting on the edge of the view crosses in and out of an exact
-     * frustum as the camera moves, and each crossing changes which objects the
-     * cascade is fitted to - so the shadow distance and the split jump from one
-     * frame to the next while nothing in the scene has moved. It shows up worst
-     * as a camera settles onto a target, which is when the fit starts being
-     * consulted and the camera is still easing.
-     *
-     * Padding does not stop that happening, it moves it somewhere it matters
-     * less: an object has to be a fifth of the view outside the edge before it
-     * leaves the fit, by which point it is contributing nothing anybody can see.
-     * The near and far planes are left alone - this is about the SIDES, which is
-     * where a camera turning sweeps objects across.
-     *
-     * 1 disables the padding and fits to exactly what is on screen.
-     */
-    carbonShadowFitPadding = 1.2;
-
     _shadowFitFrustum = new Tw2Frustum();
-
-    _shadowFitProjection = mat4.create();
 
     @meta.path
     @meta.isPrivate
@@ -2470,42 +2448,8 @@ export class EveSpaceScene extends meta.Model
     GetShadowFitObjects()
     {
         if (!this.visible.objects) return [];
-
         const frustum = this.carbonShadowVisibleOnly ? this._shadowFitFrustum : null;
-
-        if (frustum)
-        {
-            // THIS FRUSTUM IS THE SHADOW FIT'S ALONE. `_shadowFitFrustum` is not
-            // the one the scene culls or draws with, so widening it changes
-            // which objects the cascade is fitted to and nothing else - no
-            // object is drawn, or kept, that would not have been.
-            const pad = this.carbonShadowFitPadding;
-            const wide = pad > 1;
-
-            let projection = device.projection;
-
-            if (wide)
-            {
-                // A wider field of view is a smaller x and y scale. Only those
-                // two: the depth terms carry near and far, and an object
-                // crossing those is not what makes a turning camera flicker.
-                projection = mat4.copy(this._shadowFitProjection, device.projection);
-                projection[0] /= pad;
-                projection[5] /= pad;
-            }
-
-            // `viewProjection` is left out when padding, so it is recomputed
-            // from the widened projection rather than taken from the device -
-            // that one still describes the camera and would undo the padding.
-            frustum.Initialize(
-                device.view,
-                projection,
-                device.viewportWidth,
-                device.viewInverse,
-                wide ? undefined : device.viewProjection
-            );
-        }
-
+        if (frustum) frustum.Initialize(device.view, device.projection, device.viewportWidth, device.viewInverse, device.viewProjection);
         return GetShadowFitObjects(this.objects, frustum, this.carbonShadowObjectFilter);
     }
 
