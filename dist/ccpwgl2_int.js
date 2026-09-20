@@ -279942,43 +279942,43 @@
 	  BILLBOARD_WITH_Z_LOCKED: 2
 	}), _EveSmartLightMesh.instanceDeclarations = [{
 	  usage: "TEXCOORD",
-	  usageIndex: 8,
+	  usageIndex: 0,
 	  elements: 4
 	},
 	// transform0
 	{
 	  usage: "TEXCOORD",
-	  usageIndex: 9,
+	  usageIndex: 1,
 	  elements: 4
 	},
 	// transform1
 	{
 	  usage: "TEXCOORD",
-	  usageIndex: 10,
+	  usageIndex: 2,
 	  elements: 4
 	},
 	// transform2
 	{
 	  usage: "TEXCOORD",
-	  usageIndex: 11,
+	  usageIndex: 3,
 	  elements: 4
 	},
 	// lastTransform0
 	{
 	  usage: "TEXCOORD",
-	  usageIndex: 12,
+	  usageIndex: 4,
 	  elements: 4
 	},
 	// lastTransform1
 	{
 	  usage: "TEXCOORD",
-	  usageIndex: 13,
+	  usageIndex: 5,
 	  elements: 4
 	},
 	// lastTransform2
 	{
 	  usage: "TEXCOORD",
-	  usageIndex: 14,
+	  usageIndex: 6,
 	  elements: 4
 	} // boneIndex in x
 	], _EveSmartLightMesh.INSTANCE_FLOATS = 28, _EveSmartLightMesh._identity = mat4$2.create(), _EveSmartLightMesh._matrix = mat4$2.create(), _EveSmartLightMesh._matrixLast = mat4$2.create(), _EveSmartLightMesh._rotationMatrix = mat4$2.create(), _EveSmartLightMesh._rotation = quat$2.create(), _EveSmartLightMesh._originRotation = quat$2.create(), _EveSmartLightMesh._objectUpToCamera = quat$2.create(), _EveSmartLightMesh._modification = quat$2.create(), _EveSmartLightMesh._roll = quat$2.create(), _EveSmartLightMesh._position = vec3$3.create(), _EveSmartLightMesh._lastPosition = vec3$3.create(), _EveSmartLightMesh._worldPosition = vec3$3.create(), _EveSmartLightMesh._scaling = vec3$3.create(), _EveSmartLightMesh._direction = vec3$3.create(), _EveSmartLightMesh._normalized = vec3$3.create(), _EveSmartLightMesh._toCamera = vec3$3.create(), _EveSmartLightMesh._objectDirection = vec3$3.create(), _EveSmartLightMesh._objectUp = vec3$3.create(), _EveSmartLightMesh._right = vec3$3.create(), _EveSmartLightMesh._up = vec3$3.fromValues(0, 1, 0), _EveSmartLightMesh._colorValues = vec3$3.create(), _EveSmartLightMesh.AREA_LISTS = Object.freeze(["transparentAreas", "pickableAreas", "opaqueAreas", "distortionAreas", "depthAreas", "additiveAreas", "opaquePrepassAreas", "depthNormalAreas"]), _EveSmartLightMesh._color = vec4$2.create(), _EveSmartLightMesh), _descriptor$3W = _applyDecoratedDescriptor(_class2$3_.prototype, "castShadows", [_dec2$3$], {

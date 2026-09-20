@@ -794,34 +794,42 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
     });
 
     /**
-     * The per-instance stream, at TEXCOORD 8..14.
+     * The per-instance stream, declared from TEXCOORD 0 - which the SHADER sees
+     * as TEXCOORD 8..14, because the bind adds 8.
      *
-     * NOT `EveChildInstanceMeshRenderer.cpp:338-345`, which declares TEXCOORD
-     * 0..6. That layout does not match the shader: `ubershaderinstanced`'s
-     * vertex input signature is POSITION0, TEXCOORD0, NORMAL0, TANGENT0,
-     * BITANGENT0, TEXCOORD8, TEXCOORD9, TEXCOORD10 - measured off the pass
-     * input on a loaded hull. Every OTHER Carbon instanced consumer agrees with
-     * the shader rather than with that function: EveChildInstancedMeshes
-     * (cpp:613-619), EveChildLineSet (cpp:348), BehaviorGroup (cpp:848) and
-     * EvePlaneSet (cpp:166) all declare TEXCOORD 8 upwards on stream 1 with
-     * step rate 1.
+     * This agrees with `EveChildInstanceMeshRenderer.cpp:338-345` after all.
+     * The shader's vertex input signature really is POSITION0, TEXCOORD0,
+     * NORMAL0, TANGENT0, BITANGENT0, TEXCOORD8, TEXCOORD9, TEXCOORD10, and the
+     * other Carbon consumers really do speak of TEXCOORD 8 upwards - but that
+     * is the MERGED declaration, after `Tr2InstancedMesh::MergeVertexDeclarations`
+     * has shifted the instance stream up by 8. `Tw2InstancedMesh.RenderAreas`
+     * applies that same shift as `usageOffset`, so declaring 8 here asked for
+     * TEXCOORD 16..22, which no shader has.
      *
-     * Declaring 0..6 bound NOTHING the shader asked for, so every instance drew
-     * with a zero transform - collapsed to a point, invisible, no error. It was
-     * also actively harmful: the instance stream binds AFTER the geometry, so
-     * TEXCOORD0 was overwriting the mesh's own uvs.
+     * A previous comment here recorded the opposite - that 0..6 "bound NOTHING"
+     * - and was measured honestly. It predates this consumer going through
+     * `RenderAreas`, which is where the +8 comes from; with no shift, 0..6
+     * really would have missed and really would have landed on the mesh's own
+     * uvs. Both observations are true of their own moment, which is exactly why
+     * this one carries the number rather than the conclusion: on `cde3_t3`,
+     * declaring 8 bound 0 of 3 attributes on 696 of 1740 instanced binds
+     * (2026-09-20).
+     *
+     * The uv-collision worry does not apply either: instance TEXCOORD0 is
+     * shifted to 8 before it is matched, so it cannot land on the geometry's
+     * TEXCOORD0, which binds separately with no offset.
      *
      * Carbon's last element is BYTE_4/UINT32_1; a float4 here carries the same
      * value without the normalisation question.
      */
     static instanceDeclarations = [
-        { usage: "TEXCOORD", usageIndex: 8, elements: 4 },  // transform0
-        { usage: "TEXCOORD", usageIndex: 9, elements: 4 },  // transform1
-        { usage: "TEXCOORD", usageIndex: 10, elements: 4 }, // transform2
-        { usage: "TEXCOORD", usageIndex: 11, elements: 4 }, // lastTransform0
-        { usage: "TEXCOORD", usageIndex: 12, elements: 4 }, // lastTransform1
-        { usage: "TEXCOORD", usageIndex: 13, elements: 4 }, // lastTransform2
-        { usage: "TEXCOORD", usageIndex: 14, elements: 4 }  // boneIndex in x
+        { usage: "TEXCOORD", usageIndex: 0, elements: 4 },  // transform0
+        { usage: "TEXCOORD", usageIndex: 1, elements: 4 },  // transform1
+        { usage: "TEXCOORD", usageIndex: 2, elements: 4 },  // transform2
+        { usage: "TEXCOORD", usageIndex: 3, elements: 4 },  // lastTransform0
+        { usage: "TEXCOORD", usageIndex: 4, elements: 4 },  // lastTransform1
+        { usage: "TEXCOORD", usageIndex: 5, elements: 4 },  // lastTransform2
+        { usage: "TEXCOORD", usageIndex: 6, elements: 4 }   // boneIndex in x
     ];
 
     /** Floats per instance - must agree with instanceDeclarations. */
