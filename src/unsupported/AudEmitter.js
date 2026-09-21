@@ -28,6 +28,32 @@ export class AudEmitter extends meta.Model
     @meta.float
     minNormalizedScalingFactor
 
+    // Declared so the binary reads, with no behaviour behind them.
+    //
+    // A property the reader does not know is a hard failure: the whole
+    // object is abandoned and the caller is handed
+    // "Unknown property X for AudEmitter", so an audio field nothing
+    // consumes still has to be declared or it takes the model down with it.
+    //
+    // `scalingFactor` is not in Carbon's own AudEmitter exposure, which
+    // carries `SetAttenuationScalingFactor` as a method only; Frontier's
+    // suns author it as an attribute. The four below ARE Carbon's, and
+    // would have failed the same way the first time a file used them.
+    @meta.float
+    scalingFactor = 1;
+
+    @meta.quaternion
+    rotation = [ 0, 0, 0, 1 ];
+
+    @meta.float
+    minNormalizedValue = 0;
+
+    @meta.float
+    maxNormalizedValue = 1;
+
+    @meta.float
+    visualizationRadius = 0;
+
     _backing = null;
 
     /**
