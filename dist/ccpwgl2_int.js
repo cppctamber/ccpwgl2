@@ -315043,7 +315043,39 @@
 	  }
 	}), _class2$1G)) || _class$21);
 
-	var _dec$20, _dec2$1G, _dec3$1x, _dec4$1m, _dec5$1a, _class$20, _class2$1F, _descriptor$1E, _descriptor2$1q, _descriptor3$1d;
+	var _dec$20, _dec2$1G, _dec3$1x, _dec4$1m, _dec5$1a, _class$20, _class2$1F, _descriptor$1E, _descriptor2$1q, _descriptor3$1d, _Tr2ActionPython;
+
+	/**
+	 * Carbon's custom binary block, which the type system has no word for.
+	 *
+	 * `Tr2ActionPython` maps `state` with `MAP_ATTRIBUTE_AS_CUSTOM_BINARY_BLOCK`
+	 * and reads it through `ICustomPersist`: an int32 length followed by that many
+	 * raw bytes, with no element size and no object graph. Declared as a plain
+	 * object - which it was - the reader parses a graph out of the blob and runs
+	 * off the end of the file.
+	 *
+	 * A reader on the class rather than a new property type, because that is what
+	 * the black reader looks for first and what `Tw2Effect` already does for the
+	 * shapes its own properties do not share with anything else.
+	 *
+	 * Seen only on Frontier: Tranquility ships no controller carrying one.
+	 */
+	class Tw2PythonStateBlock {
+	  /**
+	   * Black reader
+	   * @param {Tw2BlackBinaryReader} r
+	   * @returns {Uint8Array}
+	   */
+	  static blackStruct(r) {
+	    var byteLength = r.ReadI32();
+
+	    // COPIED out of the view. The reader's buffer is the whole black, so a
+	    // window onto it would hold the entire resource alive for as long as
+	    // anything kept the property.
+	    var view = r.ReadDataView(byteLength);
+	    return new Uint8Array(view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength));
+	  }
+	}
 	function CopyStateBytes(value) {
 	  if (!value) return null;
 	  if (value instanceof Uint8Array) return new Uint8Array(value);
@@ -315052,7 +315084,7 @@
 	  if (Array.isArray(value)) return new Uint8Array(value);
 	  return value;
 	}
-	var Tr2ActionPython = (_dec$20 = notImplemented, _dec2$1G = define("Tr2ActionPython", true), _dec3$1x = string, _dec4$1m = string, _dec5$1a = plain, _dec$20(_class$20 = _dec2$1G(_class$20 = (_class2$1F = class Tr2ActionPython extends Tw2Action {
+	var Tr2ActionPython = (_dec$20 = notImplemented, _dec2$1G = define("Tr2ActionPython", true), _dec3$1x = string, _dec4$1m = string, _dec5$1a = plain, _dec$20(_class$20 = _dec2$1G(_class$20 = (_class2$1F = (_Tr2ActionPython = class Tr2ActionPython extends Tw2Action {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "module", _descriptor$1E, this);
@@ -315136,7 +315168,9 @@
 	  IsPlaying() {
 	    return this._isPlaying;
 	  }
-	}, _descriptor$1E = _applyDecoratedDescriptor(_class2$1F.prototype, "module", [_dec3$1x], {
+	}, _Tr2ActionPython.blackReaders = {
+	  state: Tw2PythonStateBlock
+	}, _Tr2ActionPython), _descriptor$1E = _applyDecoratedDescriptor(_class2$1F.prototype, "module", [_dec3$1x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
