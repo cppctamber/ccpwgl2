@@ -5,7 +5,6 @@ export * from "./EveChildBehaviorSystem";
 export * from "./EveChildBulletStorm";
 export * from "./EveChildCloud";
 export * from "./EveChildCloud2";
-export * from "./EveChildExplosion";
 export * from "./EveChildFogVolume";
 export * from "./EveChildInheritProperties";
 export * from "./EveChildInstanceMeshRenderer";
