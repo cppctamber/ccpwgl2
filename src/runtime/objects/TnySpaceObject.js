@@ -1,5 +1,5 @@
 import { isNumber, isString, meta } from "utils";
-import { box3, mat4, sph3, vec3 } from "math";
+import { box3, mat4, num, sph3, vec3 } from "math";
 import { tw2 } from "global";
 import { WglTransform } from "core/WglTransform";
 import { getApiService } from "../api";
@@ -18,6 +18,49 @@ export class TnySpaceObject extends WglTransform
 
     @meta.plain
     custom = {};
+
+    /** Remaining shield, armor and hull fractions used by impact targeting. */
+    @meta.vector3
+    damageState = vec3.fromValues(1, 1, 1);
+
+    /** Remaining shield fraction, from empty (0) to full (1). */
+    @meta.float
+    @meta.ui({ group: "Damage", minValue: 0, maxValue: 1, step: 0.01 })
+    get shield()
+    {
+        return this.damageState[0];
+    }
+
+    set shield(value)
+    {
+        this.SetDamageState(value, this.armor, this.hull);
+    }
+
+    /** Remaining armor fraction, from empty (0) to full (1). */
+    @meta.float
+    @meta.ui({ group: "Damage", minValue: 0, maxValue: 1, step: 0.01 })
+    get armor()
+    {
+        return this.damageState[1];
+    }
+
+    set armor(value)
+    {
+        this.SetDamageState(this.shield, value, this.hull);
+    }
+
+    /** Remaining hull fraction, from empty (0) to full (1). */
+    @meta.float
+    @meta.ui({ group: "Damage", minValue: 0, maxValue: 1, step: 0.01 })
+    get hull()
+    {
+        return this.damageState[2];
+    }
+
+    set hull(value)
+    {
+        this.SetDamageState(this.shield, this.armor, value);
+    }
 
     get display()
     {
@@ -45,13 +88,53 @@ export class TnySpaceObject extends WglTransform
         {
             this.SetValues(values);
         }
+
+        this.ApplyDamageState();
     }
 
     SetWrapped(wrapped)
     {
         this.wrapped = wrapped || null;
+        this.ApplyDamageState();
         this._boundsDirty = true;
         this.RebuildTransforms({ force: true, skipUpdate: true });
+        return this;
+    }
+
+    /**
+     * Sets the normalized shield, armor and hull state used by hit effects.
+     * @param {Array|Number} shield
+     * @param {Number} [armor]
+     * @param {Number} [hull]
+     * @param {Boolean} [createArmorImpacts=false]
+     * @returns {TnySpaceObject}
+     */
+    SetDamageState(shield, armor, hull, createArmorImpacts = false)
+    {
+        if (shield && typeof shield !== "number")
+        {
+            createArmorImpacts = !!armor;
+            [ shield, armor, hull ] = shield;
+        }
+        vec3.set(
+            this.damageState,
+            num.clamp(Number(shield) || 0, 0, 1),
+            num.clamp(Number(armor) || 0, 0, 1),
+            num.clamp(Number(hull) || 0, 0, 1)
+        );
+        this.ApplyDamageState(createArmorImpacts);
+        return this;
+    }
+
+    /** Applies the stored damage state to the wrapped Carbon object. */
+    ApplyDamageState(createArmorImpacts = false)
+    {
+        this.wrapped?.SetImpactDamageState?.(
+            this.damageState[0],
+            this.damageState[1],
+            this.damageState[2],
+            createArmorImpacts
+        );
         return this;
     }
 
