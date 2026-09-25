@@ -30,7 +30,13 @@ export class TnySlot extends Tw2EventEmitter
     _turretSet = null;
     _target = vec3.create();
     _targetObject = null;
-    _state = EveTurretSet.State.INACTIVE;
+    // Carbon and a freshly deserialised EveTurretSet both begin IDLE. Keep the
+    // wrapper in the same state so mounting does not first pack the turret and
+    // then immediately ask that asynchronous transition to reverse into fire.
+    _state = EveTurretSet.State.IDLE;
+    _continuousFire = false;
+    _continuousFireEffect = null;
+    _authoredLoopFiring = false;
 
     /**
      * @param {*} parent          - the Tny object owning the slot
@@ -92,8 +98,10 @@ export class TnySlot extends Tw2EventEmitter
             this.Unmount();
             this._resPathValue = resPath;
             this._promise = tw2.Fetch(resPath)
-                .then(turretSet =>
+                .then(async turretSet =>
                 {
+                    if (this._resPathValue !== resPath) return false;
+                    await turretSet.GetFiringEffectPromise?.();
                     if (this._resPathValue !== resPath) return false;
                     turretSet._resPath = resPath;
                     turretSet.locatorName = this.locatorName;
@@ -119,6 +127,7 @@ export class TnySlot extends Tw2EventEmitter
      */
     Unmount()
     {
+        this._RestoreContinuousFire();
         if (this._turretSet)
         {
             const array = this._AttachmentArray();
@@ -284,10 +293,85 @@ export class TnySlot extends Tw2EventEmitter
         this._SetState(EveTurretSet.State.IDLE);
     }
 
+    /** Reloads the turret */
+    Reload()
+    {
+        this._SetState(EveTurretSet.State.RELOADING);
+    }
+
     /** Packs the turret */
     Deactivate()
     {
         this._SetState(EveTurretSet.State.INACTIVE);
+    }
+
+    /**
+     * Gets the slot state as a stable configuration name.
+     * @returns {String} "inactive" | "idle" | "firing" | "reloading"
+     */
+    GetState()
+    {
+        switch (this._state)
+        {
+            case EveTurretSet.State.FIRING:
+                return "firing";
+            case EveTurretSet.State.IDLE:
+                return "idle";
+            case EveTurretSet.State.RELOADING:
+                return "reloading";
+            default:
+                return "inactive";
+        }
+    }
+
+    /**
+     * Sets the slot state from a stable configuration name.
+     * @param {String} state
+     * @returns {TnySlot}
+     */
+    SetState(state)
+    {
+        switch (String(state).toLowerCase())
+        {
+            case "firing":
+            case "fire":
+                this.Fire();
+                break;
+            case "idle":
+                this.Idle();
+                break;
+            case "reloading":
+            case "reload":
+                this.Reload();
+                break;
+            case "inactive":
+            case "deactivated":
+            case "deactivate":
+                this.Deactivate();
+                break;
+            default:
+                throw new TypeError(`Invalid weapon state: ${state}`);
+        }
+        return this;
+    }
+
+    /**
+     * Keeps an authored firing effect looping until explicitly disabled.
+     * The effect's original flag is restored on disable or unmount.
+     * @param {Boolean} enabled
+     * @returns {TnySlot}
+     */
+    SetContinuousFire(enabled)
+    {
+        this._continuousFire = !!enabled;
+        this._ApplyContinuousFire();
+        return this;
+    }
+
+    /** @returns {Boolean} */
+    GetContinuousFire()
+    {
+        return this._continuousFire;
     }
 
     /**
@@ -311,7 +395,42 @@ export class TnySlot extends Tw2EventEmitter
         if (this._targetObject) this._turretSet.SetTargetObject?.(this._targetObject);
         else this._turretSet.SetTargetPosition(this._target);
 
+        this._ApplyContinuousFire();
+        this._SetState(this._state);
         this.UpdateFaction();
+    }
+
+    _RestoreContinuousFire()
+    {
+        if (this._continuousFireEffect)
+        {
+            this._continuousFireEffect.isLoopFiring = this._authoredLoopFiring;
+            this._continuousFireEffect.SetLoopFiringForced?.(false);
+        }
+        this._continuousFireEffect = null;
+        this._authoredLoopFiring = false;
+    }
+
+    _ApplyContinuousFire()
+    {
+        const effect = this._turretSet && this._turretSet.firingEffect || null;
+        if (this._continuousFireEffect !== effect)
+        {
+            this._RestoreContinuousFire();
+        }
+        if (!this._continuousFire)
+        {
+            this._RestoreContinuousFire();
+            return;
+        }
+        if (!effect) return;
+        if (!this._continuousFireEffect)
+        {
+            this._continuousFireEffect = effect;
+            this._authoredLoopFiring = !!effect.isLoopFiring;
+        }
+        effect.isLoopFiring = true;
+        effect.SetLoopFiringForced?.(!this._authoredLoopFiring);
     }
 
     /**
@@ -533,6 +652,10 @@ export class TnySlot extends Tw2EventEmitter
 
             case EveTurretSet.State.IDLE:
                 this._turretSet.EnterStateIdle();
+                break;
+
+            case EveTurretSet.State.RELOADING:
+                this._turretSet.EnterStateReloading();
                 break;
 
             case EveTurretSet.State.INACTIVE:
