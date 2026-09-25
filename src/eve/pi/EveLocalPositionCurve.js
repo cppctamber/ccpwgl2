@@ -10,16 +10,15 @@ import { EveConnector } from "./EveConnector";
  * ship, a spot on the plane a planet sits in.
  *
  * Carbon calls it a curve because of the interface it satisfies
- * (`ITriVectorFunction`, i.e. `GetValueAt(out, time)`), not because it
+ * (`ITriVectorFunction`; exposed with ccpwgl's `GetValueAt(time, out)`), not because it
  * interpolates: it COMPUTES a position each time it is asked, from a behaviour
  * and whatever it is attached to. {@link EveConnector} takes its endpoints
  * through this interface, which is how a link follows a moving ship.
  *
- * NOT ALL BEHAVIOURS ARE PORTED, and the ones that are missing are missing for
- * a reason rather than by omission - see {@link EveLocalPositionCurve.Behavior}.
- * An unported behaviour leaves {@link value} untouched rather than guessing, so
- * a connector using one draws from wherever it last was instead of snapping to
- * the origin.
+ * All Carbon behaviours are represented. Behaviours that depend on an absent
+ * parent API leave the caller with the authored {@link value} fallback. The damage-impact behaviour can
+ * drive the complete CreateImpact/UpdateImpact lifecycle; displaying the
+ * overlay still depends on the target object's implementation of those calls.
  */
 @meta.define("EveLocalPositionCurve", true)
 export class EveLocalPositionCurve extends meta.Model
@@ -29,8 +28,8 @@ export class EveLocalPositionCurve extends meta.Model
     behavior = 0;
 
     /**
-     * The last computed position, and the value returned when a behaviour
-     * cannot be evaluated.
+     * The authored fallback copied into each evaluation output before a
+     * behaviour attempts to replace it.
      * @type {vec3}
      */
     @meta.vector3
@@ -99,47 +98,69 @@ export class EveLocalPositionCurve extends meta.Model
     impactSize = 1;
 
     /**
+     * Carbon's handle for the impact overlay created by
+     * {@link _DamageLocatorImpact}. A failed creation remains -1 so the next
+     * evaluation can retry once the target's impact system is ready.
+     * @type {Number}
+     * @private
+     */
+    _impactEffectIndex = -1;
+
+    /**
      * Computes the position for the current behaviour.
      *
-     * @param {vec3} [out] - written and returned; {@link value} is updated too
      * @param {Number} [time]
+     * @param {vec3} [out] - written and returned
      * @returns {vec3} out
      */
-    GetValueAt(out = vec3.create(), time = 0)
+    GetValueAt(time = 0, out = vec3.create())
     {
         const Behavior = EveLocalPositionCurve.Behavior;
+        vec3.copy(out, this.value);
 
         switch (this.behavior)
         {
             case Behavior.OFFSET_POSITION:
-                this._OffsetPosition(this.value, time);
+                this._OffsetPosition(out, time);
                 break;
 
             case Behavior.OFFSET_PLANE_ROTATION:
-                this._OffsetPlaneRotation(this.value, time);
+                this._OffsetPlaneRotation(out, time);
                 break;
 
             case Behavior.CENTER_BOUNDS:
-                this._CenterBounds(this.value);
+                this._CenterBounds(out);
                 break;
 
             case Behavior.NEAREST_BOUNDS:
-                this._NearestBounds(this.value, time);
+                this._NearestBounds(out, time);
+                break;
+
+            case Behavior.DAMAGE_LOCATOR:
+                this._DamageLocator(out, time);
+                break;
+
+            case Behavior.DAMAGE_LOCATOR_IMPACT:
+                this._DamageLocatorImpact(out, time);
+                break;
+
+            case Behavior.NEAREST_FIRING_LOCATOR:
+                this._NearestFiringLocator(out);
+                break;
+
+            case Behavior.ACTIVE_TURRET:
+                this._ActiveTurret(out);
                 break;
 
             // NONE keeps whatever was last written, which is Carbon's behaviour
             // too: its default case falls through to copying the incoming value
             // into m_value rather than computing anything.
             //
-            // DAMAGE_LOCATOR, DAMAGE_LOCATOR_IMPACT, NEAREST_FIRING_LOCATOR and
-            // ACTIVE_TURRET are unported - see the Behavior enum for why - and
-            // deliberately leave `value` alone rather than returning a position
-            // that is wrong in a way nothing would notice.
             default:
                 break;
         }
 
-        return vec3.copy(out, this.value);
+        return out;
     }
 
     /**
@@ -155,7 +176,7 @@ export class EveLocalPositionCurve extends meta.Model
 
         if (this.parentRotationCurve?.GetValueAt)
         {
-            this.parentRotationCurve.GetValueAt(g.quat_0, time);
+            this.parentRotationCurve.GetValueAt(time, g.quat_0);
             vec3.transformQuat(g.vec3_offset, g.vec3_offset, g.quat_0);
         }
 
@@ -164,7 +185,7 @@ export class EveLocalPositionCurve extends meta.Model
             return vec3.copy(out, g.vec3_offset);
         }
 
-        this.parentPositionCurve.GetValueAt(g.vec3_parent, time);
+        this.parentPositionCurve.GetValueAt(time, g.vec3_parent);
         return vec3.add(out, g.vec3_parent, g.vec3_offset);
     }
 
@@ -178,11 +199,11 @@ export class EveLocalPositionCurve extends meta.Model
         const g = EveLocalPositionCurve.global;
 
         vec3.set(g.vec3_parent, 0, 0, 0);
-        this.parentPositionCurve?.GetValueAt?.(g.vec3_parent, time);
+        this.parentPositionCurve?.GetValueAt?.(time, g.vec3_parent);
 
         if (this.alignPositionCurve?.GetValueAt)
         {
-            this.alignPositionCurve.GetValueAt(g.vec3_offset, time);
+            this.alignPositionCurve.GetValueAt(time, g.vec3_offset);
         }
         else
         {
@@ -238,13 +259,13 @@ export class EveLocalPositionCurve extends meta.Model
         if (!hasAll)
         {
             // Carbon falls back to the parent's centre rather than to nothing.
-            this.parentPositionCurve?.GetValueAt?.(out, time);
+            this.parentPositionCurve?.GetValueAt?.(time, out);
             return out;
         }
 
-        this.parentPositionCurve.GetValueAt(g.vec3_parent, time);
-        this.alignPositionCurve.GetValueAt(g.vec3_align, time);
-        this.parentRotationCurve.GetValueAt(g.quat_0, time);
+        this.parentPositionCurve.GetValueAt(time, g.vec3_parent);
+        this.alignPositionCurve.GetValueAt(time, g.vec3_align);
+        this.parentRotationCurve.GetValueAt(time, g.quat_0);
 
         const direction = vec3.subtract(g.vec3_direction, g.vec3_align, g.vec3_parent);
         vec3.normalize(direction, direction);
@@ -285,23 +306,135 @@ export class EveLocalPositionCurve extends meta.Model
     }
 
     /**
+     * Picks the damage locator nearest the aligned point once, then follows
+     * that locator in world space. Carbon deliberately latches the index: a
+     * moving shooter does not make an in-flight stretch jump between locators.
+     *
+     * @param {vec3} out
+     * @param {Number} time
+     * @returns {vec3}
+     * @private
+     */
+    _DamageLocator(out, time)
+    {
+        const parent = this.parent;
+        if (!this.alignPositionCurve?.GetValueAt ||
+            typeof parent?.GetGoodDamageLocatorIndex !== "function" ||
+            typeof parent?.GetDamageLocatorPosition !== "function")
+        {
+            return out;
+        }
+
+        if (this.damageLocatorIndex === -1)
+        {
+            this.alignPositionCurve.GetValueAt(time, EveLocalPositionCurve.global.vec3_align);
+            const index = Number(parent.GetGoodDamageLocatorIndex(
+                EveLocalPositionCurve.global.vec3_align
+            ));
+            if (!Number.isFinite(index)) return out;
+            this.damageLocatorIndex = index | 0;
+        }
+
+        parent.GetDamageLocatorPosition(out, this.damageLocatorIndex, true);
+        return out;
+    }
+
+    /**
+     * Damage-locator tracking with Carbon's impact-overlay lifecycle. The
+     * target receives the unnormalised vector from the locator towards the
+     * shooter. Creation is retried while it returns -1; a valid handle is then
+     * reused and updated on every evaluation.
+     *
+     * @param {vec3} out
+     * @param {Number} time
+     * @returns {vec3}
+     * @private
+     */
+    _DamageLocatorImpact(out, time)
+    {
+        const parent = this.parent;
+        if (!this.alignPositionCurve?.GetValueAt ||
+            typeof parent?.GetGoodDamageLocatorIndex !== "function" ||
+            typeof parent?.GetDamageLocatorPosition !== "function")
+        {
+            return out;
+        }
+
+        const g = EveLocalPositionCurve.global;
+        this.alignPositionCurve.GetValueAt(time, g.vec3_align);
+
+        if (this.damageLocatorIndex === -1)
+        {
+            const index = Number(parent.GetGoodDamageLocatorIndex(g.vec3_align));
+            if (!Number.isFinite(index)) return out;
+            this.damageLocatorIndex = index | 0;
+        }
+
+        parent.GetDamageLocatorPosition(out, this.damageLocatorIndex, true);
+        vec3.subtract(g.vec3_direction, g.vec3_align, out);
+
+        if (this._impactEffectIndex === -1 && typeof parent.CreateImpact === "function")
+        {
+            const impactEffectIndex = Number(parent.CreateImpact(
+                this.damageLocatorIndex,
+                g.vec3_direction,
+                2,
+                this.impactSize
+            ));
+            if (Number.isFinite(impactEffectIndex)) this._impactEffectIndex = impactEffectIndex | 0;
+        }
+
+        if (typeof parent.UpdateImpact === "function")
+        {
+            parent.UpdateImpact(out, g.vec3_direction, this._impactEffectIndex);
+        }
+
+        return out;
+    }
+
+    /**
+     * Resolves a locator in a named set. Missing configuration or parent API
+     * leaves the previous value untouched.
+     *
+     * @param {vec3} out
+     * @returns {vec3}
+     * @private
+     */
+    _NearestFiringLocator(out)
+    {
+        if (this.locatorIndex !== -1 && this.locatorSetName &&
+            typeof this.parent?.GetLocatorPosition === "function")
+        {
+            this.parent.GetLocatorPosition(out, this.locatorIndex, true, this.locatorSetName);
+        }
+        return out;
+    }
+
+    /**
+     * Reads the active turret muzzle's firing-bone world transform and returns
+     * its translation. When no active turret or firing bone is available, the
+     * turret API supplies its authored parent-transform fallback.
+     *
+     * @param {vec3} out
+     * @returns {vec3}
+     * @private
+     */
+    _ActiveTurret(out)
+    {
+        const turretSet = this.turretSetObject;
+        if (typeof turretSet?.GetFiringBoneWorldTransform !== "function") return out;
+
+        const transform = EveLocalPositionCurve.global.mat4_turret;
+        if (turretSet.GetFiringBoneWorldTransform(transform, this.muzzleIndex) !== false)
+        {
+            mat4.getTranslation(out, transform);
+        }
+        return out;
+    }
+
+    /**
      * Carbon's `LocalPositionBehavior` (EveLocalPositionCurve.h:27-38), in
      * Carbon's order - the value is persisted, so the ordinals are the contract.
-     *
-     * Four are UNPORTED, and they share a cause: each needs client-side combat
-     * state that ccpwgl has no equivalent for.
-     *
-     *   DAMAGE_LOCATOR, DAMAGE_LOCATOR_IMPACT - need `ITriTargetable`, which
-     *     picks a damage locator for an incoming shot and can CREATE and update
-     *     an impact effect on the target. That is a game-client concern; there
-     *     is no targetable interface here to port it onto.
-     *
-     *   NEAREST_FIRING_LOCATOR - needs the parent to resolve a locator by SET
-     *     NAME and index. ccpwgl has locator sets, so this one is reachable; it
-     *     is unported because nothing yet asks for it.
-     *
-     *   ACTIVE_TURRET - needs a turret set's firing-bone world transform for a
-     *     given muzzle, which ccpwgl's turret sets do not expose.
      *
      * @type {Object}
      */
@@ -334,6 +467,7 @@ export class EveLocalPositionCurve extends meta.Model
         vec3_local: vec3.create(),
         quat_0: quat.create(),
         mat4_0: mat4.create(),
+        mat4_turret: mat4.create(),
         sph3_0: new Float32Array(4)
     };
 

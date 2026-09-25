@@ -117,8 +117,8 @@ export class EveConnector extends meta.Model
      */
     Update(time)
     {
-        this.sourceObject?.GetValueAt?.(this.sourcePosition, time);
-        this.destObject?.GetValueAt?.(this.destPosition, time);
+        this.sourceObject?.GetValueAt?.(time, this.sourcePosition);
+        this.destObject?.GetValueAt?.(time, this.destPosition);
     }
 
     /**
