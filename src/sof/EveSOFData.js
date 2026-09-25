@@ -53,6 +53,9 @@ import { EveSOFDataHullLocatorSet } from "sof/hull/EveSOFDataHullLocatorSet";
 import { EveSOFDataHullLocatorSetGroup } from "sof/hull/EveSOFDataHullLocatorSetGroup";
 import { EveSOFDataHullPlaneSet } from "sof/hull/EveSOFDataHullPlaneSet";
 import { planSofLayouts } from "sof/layout/planSofLayouts";
+import { EveImpactOverlay } from "eve/effect";
+import { Tw2PerlinCurve } from "curve";
+import { Tr2GpuUniqueEmitter } from "particle/gpu/emitter";
 
 
 @meta.define("EveSOFData", true)
@@ -1287,6 +1290,7 @@ export class EveSOFData extends meta.Model
     static async Build(data, obj, sof, options)
     {
         const args = [ data, obj, sof, options ];
+        const armorDamageEffectCache = new Map();
 
         // Supported
         this.SetupCustomMasks(...args);
@@ -1301,6 +1305,7 @@ export class EveSOFData extends meta.Model
         this.SetupLocators(...args);
         this.SetupInstancedMesh(...args);
         this.SetupLocatorSets(...args);
+        await this.SetupImpactEffects(...args, armorDamageEffectCache);
         // partial support
         await this.SetupChildren(...args);
         this.SetupAudio(...args);
@@ -1311,7 +1316,7 @@ export class EveSOFData extends meta.Model
         this.SetupLights(...args);
         this.SetupObservers(...args);
         await this.SetupControllers(...args);
-        await this.SetupLayout(...args);
+        await this.SetupLayout(...args, armorDamageEffectCache);
 
         // Triglavian balls used to be added here for any hull whose name starts
         // "tg", because the authored data did not carry them. It does now, so
@@ -1340,9 +1345,10 @@ export class EveSOFData extends meta.Model
      * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} options
+     * @param {Map<String, Tw2Effect>} armorDamageEffectCache
      * @returns {Promise<Object>} detached placement plan
      */
-    static async SetupLayout(data, obj, sof, options)
+    static async SetupLayout(data, obj, sof, options, armorDamageEffectCache = new Map())
     {
         const layoutOptions = { ...(options.layout || {}) };
         if (layoutOptions.shaderModel === undefined && layoutOptions.graphicsQuality === undefined)
@@ -1419,7 +1425,13 @@ export class EveSOFData extends meta.Model
                 plan.emission.planned.authoredInstancedMeshes += plannedAuthoredMeshes;
                 plan.emission.planned.authoredInstanceRows += plannedAuthoredRows;
 
-                const built = await this.BuildLayoutPlacementMeshes(data, placements, selection, options);
+                const built = await this.BuildLayoutPlacementMeshes(
+                    data,
+                    placements,
+                    selection,
+                    options,
+                    armorDamageEffectCache
+                );
                 if (!built.meshes.length)
                 {
                     plan.emission.skipped.placements += placements.length;
@@ -1517,9 +1529,16 @@ export class EveSOFData extends meta.Model
      * @param {Array<Object>} placements
      * @param {Object} sof
      * @param {Object} options
+     * @param {Map<String, Tw2Effect>} armorDamageEffectCache
      * @returns {Promise<{meshes: Array<EveChildMesh>, error: Error|null}>}
      */
-    static async BuildLayoutPlacementMeshes(data, placements, sof, options)
+    static async BuildLayoutPlacementMeshes(
+        data,
+        placements,
+        sof,
+        options,
+        armorDamageEffectCache = new Map()
+    )
     {
         try
         {
@@ -1533,7 +1552,13 @@ export class EveSOFData extends meta.Model
 
             return {
                 meshes: await Promise.all(placements.map(placement =>
-                    this.BuildLayoutChildMesh(data, placement, sof, options))),
+                    this.BuildLayoutChildMesh(
+                        data,
+                        placement,
+                        sof,
+                        options,
+                        armorDamageEffectCache
+                    ))),
                 error: null
             };
         }
@@ -1880,16 +1905,35 @@ export class EveSOFData extends meta.Model
      * @param {Object} placement
      * @param {Object} sof
      * @param {Object} options
+     * @param {Map<String, Tw2Effect>} armorDamageEffectCache
      * @returns {Promise<EveChildMesh>}
      */
-    static async BuildLayoutChildMesh(data, placement, sof, options)
+    static async BuildLayoutChildMesh(
+        data,
+        placement,
+        sof,
+        options,
+        armorDamageEffectCache = new Map()
+    )
     {
         const child = new EveChildMesh();
         child.name = placement.name || sof.hull.name;
+        child.partTag = (Number(placement.id) + 1) >>> 0;
         child.customMasks = [];
         child.useSRT = false;
         mat4.copy(child.localTransform, placement.transform);
         this.SetupLayoutMeshPolicy(data, child, sof);
+
+        const locatorSets = this.BuildHullLocalLocatorSets(sof);
+        child.SetOwnedLocatorSets(locatorSets);
+        if (this.GetLocatorCount(locatorSets, "damage"))
+        {
+            child.SetArmorDamageShaderEffect(this.CreateArmorDamageEffect(
+                data,
+                sof,
+                armorDamageEffectCache
+            ));
+        }
 
         this.SetupCustomMasks(data, child, sof, options);
         await this.SetupMesh(data, child, sof, options);
@@ -2063,7 +2107,6 @@ export class EveSOFData extends meta.Model
                 resultIndex++;
             }
         }
-
         return result;
     }
 
@@ -2420,7 +2463,9 @@ export class EveSOFData extends meta.Model
 
     /**
      * Flattens one hull's polymorphic locator-set tree by authored set name.
-     * Unknown entries violate the owned SOF schema contract and throw.
+     * Reader-created schema instances and equivalent plain decoded objects are
+     * both accepted. Unknown entries still violate the owned SOF schema
+     * contract and throw.
      * @param {EveSOFDataHull} hull
      * @param {Map<String, Array>} [out]
      * @returns {Map<String, Array>}
@@ -2431,13 +2476,18 @@ export class EveSOFData extends meta.Model
         {
             for (const entry of entries)
             {
-                if (entry instanceof EveSOFDataHullLocatorSet)
+                const isSet = entry instanceof EveSOFDataHullLocatorSet
+                    || (entry && Array.isArray(entry.locators));
+                const isGroup = entry instanceof EveSOFDataHullLocatorSetGroup
+                    || (entry && Array.isArray(entry.locatorSets));
+
+                if (isSet)
                 {
                     if (!out.has(entry.name)) out.set(entry.name, []);
                     const locators = out.get(entry.name);
                     for (const locator of entry.locators) locators.push(locator);
                 }
-                else if (entry instanceof EveSOFDataHullLocatorSetGroup)
+                else if (isGroup)
                 {
                     flatten(entry.locatorSets);
                 }
@@ -2450,6 +2500,61 @@ export class EveSOFData extends meta.Model
 
         flatten(hull.locatorSets);
         return out;
+    }
+
+    /**
+     * Builds the local locator-set objects owned by a child hull mesh.
+     * Multi-hull selections retain the cumulative next-subsystem offset used
+     * by the root SOF locator builder, but do not include the child's placement
+     * transform; EveChildMesh applies that transform when it publishes them.
+     *
+     * Carbon: `EveSOF::BuildHullLocalLocatorSets`.
+     * @param {Object} sof
+     * @returns {Array<EveLocatorSets>}
+     */
+    static BuildHullLocalLocatorSets(sof)
+    {
+        const byName = new Map();
+        const hulls = sof.hulls || [ sof.hull ];
+        const offsets = this.GetSelectionHullOffsets(sof);
+
+        for (let hullIndex = 0; hullIndex < hulls.length; hullIndex++)
+        {
+            for (const [ name, sourceLocators ] of this.GetHullLocatorSets(hulls[hullIndex]))
+            {
+                let set = byName.get(name);
+                if (!set)
+                {
+                    set = new EveLocatorSets();
+                    set.name = name;
+                    byName.set(name, set);
+                }
+
+                for (const source of sourceLocators)
+                {
+                    const locator = new EveLocatorSetItem();
+                    locator.boneIndex = source.boneIndex;
+                    vec3.copy(locator.scaling, source.scaling);
+                    vec3.add(locator.position, source.position, offsets[hullIndex]);
+                    quat.copy(locator.rotation, source.rotation);
+                    set.locators.push(locator);
+                }
+            }
+        }
+
+        return Array.from(byName.values());
+    }
+
+    /**
+     * Counts the locators in the first owned set with a matching name.
+     * @param {Array<EveLocatorSets>} locatorSets
+     * @param {String} name
+     * @returns {Number}
+     */
+    static GetLocatorCount(locatorSets, name)
+    {
+        const set = locatorSets.find(value => value.HasName?.(name) || value.name === name);
+        return set ? set.locators.length : 0;
     }
 
     /**
@@ -4227,12 +4332,141 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     *
+     * Builds Carbon's shield, armour and hull impact presentation from SOF.
+     * Hull data selects the presentation shape, generic data supplies shared
+     * effects and particle behavior, and race data supplies material values.
      * @param {EveSOFData} data
      * @param {EveSpaceObject2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
+     * @param {Map<String, Tw2Effect>} [armorDamageEffectCache]
+     * @returns {Promise<void>}
      */
+    static async SetupImpactEffects(
+        data,
+        obj,
+        sof,
+        options,
+        armorDamageEffectCache = new Map()
+    )
+    {
+        const impactType = Number(sof.hull.impactEffectType) >>> 0;
+        const genericDamage = data.generic?.damage;
+        const raceDamage = sof.race?.damage;
+        if (!impactType || !genericDamage || !raceDamage)
+        {
+            obj.SetImpactOverlay?.(null);
+            return;
+        }
+
+        const overlay = new EveImpactOverlay();
+        overlay.SetDamageLocatorCount(obj.GetDamageLocatorCount());
+
+        let shieldMesh = null;
+        if (impactType === EveSOFData.ImpactEffectType.ELLIPSOID)
+        {
+            const shieldEffect = new Tw2Effect();
+            const shieldConfig = raceDamage.AssignShield({
+                effectFilePath: `${data.generic.areaShaderLocation}/${genericDamage.shieldShaderEllipsoid}`,
+                autoParameter: true
+            });
+            shieldEffect.SetValues(shieldConfig, { controller: data });
+            shieldEffect.Initialize();
+
+            const area = new Tw2MeshArea();
+            area.effect = shieldEffect;
+            shieldMesh = new Tw2Mesh();
+            shieldMesh.additiveAreas.push(area);
+            await shieldMesh.FetchGeometryResPath(genericDamage.shieldGeometryResFilePath);
+        }
+
+        const armorDamageShader = this.CreateArmorDamageEffect(
+            data, sof, armorDamageEffectCache);
+        const armorImpactEmitter = this.CreateDamageEmitter(genericDamage, "armor");
+        const hullImpactEmitter = data.generic.hullDamage
+            ? this.CreateDamageEmitter(data.generic.hullDamage, "hull")
+            : null;
+
+        const flicker = new Tw2PerlinCurve();
+        flicker.alpha = genericDamage.flickerPerlinAlpha;
+        flicker.beta = genericDamage.flickerPerlinBeta;
+        flicker.N = genericDamage.flickerPerlinN;
+        flicker.speed = genericDamage.flickerPerlinSpeed;
+        flicker.offset = 1;
+        flicker.scale = 0;
+
+        overlay.Set(
+            flicker,
+            armorImpactEmitter,
+            hullImpactEmitter,
+            armorDamageShader,
+            shieldMesh,
+            impactType === EveSOFData.ImpactEffectType.ELLIPSOID
+        );
+        overlay.Initialize();
+        obj.SetImpactOverlay(overlay);
+    }
+
+    /**
+     * Creates or reuses the race and animation-specific armour damage shader.
+     * @param {EveSOFData} data
+     * @param {Object} sof
+     * @param {Map<String, Tw2Effect>} [cache]
+     * @returns {Tw2Effect}
+     */
+    static CreateArmorDamageEffect(data, sof, cache = new Map())
+    {
+        const key = `${sof.race.name}:${!!sof.hull.isSkinned}`;
+        if (cache.has(key)) return cache.get(key);
+
+        const config = sof.race.damage.AssignArmor({
+            effectFilePath: data.generic.GetAreaShaderPath(
+                data.generic.damage.armorShader, sof.hull.isSkinned),
+            autoParameter: true
+        });
+        const effect = new Tw2Effect();
+        effect.SetValues(config, { controller: data });
+        effect.Initialize();
+        cache.set(key, effect);
+        return effect;
+    }
+
+    /**
+     * Maps generic SOF particle fields onto a Carbon GPU unique emitter.
+     * @param {EveSOFDataGenericDamage|EveSOFDataGenericHullDamage} source
+     * @param {String} prefix
+     * @returns {Tr2GpuUniqueEmitter}
+     */
+    static CreateDamageEmitter(source, prefix)
+    {
+        const field = prefix === "armor" ? "armorParticle" : "hullParticle";
+        const emitter = new Tr2GpuUniqueEmitter();
+        emitter.Setup(source[`${field}Rate`], {
+            angle: source[`${field}Angle`],
+            innerAngle: source[`${field}InnerAngle`] || 0,
+            minSpeed: source[`${field}MinMaxSpeed`][0],
+            maxSpeed: source[`${field}MinMaxSpeed`][1]
+        }, {
+            minLifeTime: source[`${field}MinMaxLifeTime`][0],
+            maxLifeTime: source[`${field}MinMaxLifeTime`][1],
+            sizes: source[`${field}Sizes`],
+            sizeVariance: source[`${field}Sizes`][3],
+            colors: [
+                source[`${field}Color0`],
+                source[`${field}Color1`],
+                source[`${field}Color2`],
+                source[`${field}Color3`]
+            ],
+            textureIndex: source[`${field}TextureIndex`],
+            velocityStretchRotation: source[`${field}VelocityStretchRotation`],
+            drag: source[`${field}Drag`],
+            turbulenceAmplitude: source[`${field}TurbulenceAmplitude`],
+            turbulenceFrequency: source[`${field}TurbulenceFrequency`],
+            colorMidpoint: source[`${field}ColorMidpoint`]
+        });
+        return emitter;
+    }
+
     static SetupLocatorSets(data, obj, sof, options)
     {
         const byName = new Map();
@@ -4876,7 +5110,7 @@ export class EveSOFData extends meta.Model
      * Carbon: `EveSOF::SetupTurretMaterialFromFaction` (EveSOF.cpp:4185-4244).
      * Every material parameter the turret's own effect declares is looked up
      * by name, remapped through the faction's material usage, in the faction's
-     * PRIMARY area; the names are the effect's, so EVE turrets
+     * configured turret area; the names are the effect's, so EVE turrets
      * (`Mtl1DiffuseColor`) and Frontier PBR turrets (`Mtl1BaseColor`) resolve
      * alike. Anything not found keeps its authored value.
      * @param {EveTurretSet} turretSet
@@ -4887,14 +5121,47 @@ export class EveSOFData extends meta.Model
     {
         const effect = turretSet && turretSet.turretEffect;
         if (!effect || !factionName || !this.HasFaction(factionName)) return false;
+        return this.ApplyFactionToTurretShader(effect, this.GetFaction(factionName));
+    }
 
-        const faction = this.GetFaction(factionName);
-
+    /**
+     * Applies a faction's configured turret-area materials to one shader.
+     * Carbon: `EveSOF::ApplyFactionToTurretShader`.
+     * @param {Tw2Effect} effect
+     * @param {EveSOFDataFaction} faction
+     * @returns {Boolean} true when any parameter changed
+     */
+    ApplyFactionToTurretShader(effect, faction)
+    {
+        if (!effect || !faction) return false;
         return EveSOFData.applyTurretParameters(effect, name =>
         {
             const param = this.RemapTurretParameterName(faction, name);
-            return this.TurretDisplayValue(name, this.SearchAreaParameter(faction, faction, EveSOFDataArea.AreaType.TYPE_PRIMARY, param), 0.5);
+            return this.TurretDisplayValue(name, this.SearchAreaParameter(faction, faction, this.generic.turretAreaType, param), 0.5);
         });
+    }
+
+    /**
+     * Paints every opaque mesh area on a child turret from a named faction.
+     * Carbon: `EveSOF::SetupChildTurretMaterialFromFaction`.
+     * @param {EveChildTurret} childTurret
+     * @param {String} factionName
+     * @returns {Boolean} true when any parameter changed
+     */
+    SetupChildTurretMaterialFromFaction(childTurret, factionName)
+    {
+        if (!childTurret || !factionName || !this.HasFaction(factionName)) return false;
+        const mesh = childTurret.mesh;
+        if (!mesh || !mesh.opaqueAreas) return false;
+
+        const faction = this.GetFaction(factionName);
+        let changed = false;
+        for (let i = 0; i < mesh.opaqueAreas.length; i++)
+        {
+            const area = mesh.opaqueAreas[i];
+            if (area && this.ApplyFactionToTurretShader(area.effect, faction)) changed = true;
+        }
+        return changed;
     }
 
     /**
@@ -5194,6 +5461,12 @@ export class EveSOFData extends meta.Model
      * Builds classes
      * @type {Object<Number:String>}
      */
+    static ImpactEffectType = Object.freeze({
+        NONE: 0,
+        ELLIPSOID: 1,
+        HULL: 2
+    });
+
     static BuildClass = {
         0: "EveShip2",
         1: "EveMobile",

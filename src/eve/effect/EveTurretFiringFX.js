@@ -8,7 +8,7 @@ class EvePerMuzzleData
     constantDelay = 0;
     currentStartDelay = 0;
     elapsedTime = 0;
-    muzzlePositionBone = null;
+    muzzlePositionBoneID = 0xffffffff;
     muzzleTransform = mat4.create();
     readyToStart = false;
     started = false;
@@ -25,7 +25,7 @@ export class EveTurretFiringFX extends meta.Model
     name = "";
 
     @meta.string
-    boneName = "";
+    boneName = "Pos_Fire";
 
     @meta.boolean
     display = true;
@@ -47,20 +47,28 @@ export class EveTurretFiringFX extends meta.Model
     firingDelay4 = 0;
 
     @meta.float
-    @meta.todo("Deprecated?")
     firingDelay5 = 0;
 
     @meta.float
-    @meta.todo("Deprecated?")
     firingDelay6 = 0;
 
     @meta.float
-    @meta.todo("Deprecated?")
     firingDelay7 = 0;
 
     @meta.float
-    @meta.todo("Deprecated?")
     firingDelay8 = 0;
+
+    @meta.float
+    firingDelay9 = 0;
+
+    @meta.float
+    firingDelay10 = 0;
+
+    @meta.float
+    firingDelay11 = 0;
+
+    @meta.float
+    firingDelay12 = 0;
 
     @meta.float
     firingDurationOverride = -1;
@@ -72,16 +80,16 @@ export class EveTurretFiringFX extends meta.Model
     isLoopFiring = false;
 
     @meta.float
-    maxRadius = 0;
+    maxRadius = 3000;
 
     @meta.float
-    maxScale = 0;
+    maxScale = 10;
 
     @meta.float
-    minRadius = 0;
+    minRadius = 30;
 
     @meta.float
-    minScale = 0;
+    minScale = 1;
 
     @meta.boolean
     scaleEffectTarget = false;
@@ -90,11 +98,9 @@ export class EveTurretFiringFX extends meta.Model
     @meta.struct("TriObserverLocal")
     sourceObserver = null;
 
-    @meta.notImplemented
     @meta.struct("Tw2CurveSet")
     startCurveSet = null;
 
-    @meta.notImplemented
     @meta.struct("Tw2CurveSet")
     stopCurveSet = null;
 
@@ -106,11 +112,12 @@ export class EveTurretFiringFX extends meta.Model
 
 
     _endPosition = vec3.create();
-    _firingDuration = 0;
+    _firingDuration = 1000;
     _isFiring = false;
     _perMuzzleData = [];
     _displayDestObject = true;
     _impactConfiguration = 0;
+    _isLoopFiringForced = false;
 
 
     /**
@@ -118,24 +125,42 @@ export class EveTurretFiringFX extends meta.Model
      */
     Initialize()
     {
-        this._firingDuration = this.firingDurationOverride >= 0
-            ? this.firingDurationOverride
-            : this.GetCurveDuration();
-        this._perMuzzleData.length = this.stretch.length;
-        for (let i = 0; i < this.stretch.length; ++i)
+        if (this.firingDurationOverride >= 0)
         {
-            this._perMuzzleData[i] = new EvePerMuzzleData();
+            this._firingDuration = this.firingDurationOverride;
         }
+        else
+        {
+            const duration = this.GetCurveDuration();
+            if (duration > 0) this._firingDuration = duration;
+        }
+        this._EnsurePerMuzzleData(true);
+        return true;
+    }
 
-        const data = this._perMuzzleData;
-        if (data.length > 0) data[0].constantDelay = this.firingDelay1;
-        if (data.length > 1) data[1].constantDelay = this.firingDelay2;
-        if (data.length > 2) data[2].constantDelay = this.firingDelay3;
-        if (data.length > 3) data[3].constantDelay = this.firingDelay4;
-        if (data.length > 4) data[4].constantDelay = this.firingDelay5;
-        if (data.length > 5) data[5].constantDelay = this.firingDelay6;
-        if (data.length > 6) data[6].constantDelay = this.firingDelay7;
-        if (data.length > 7) data[7].constantDelay = this.firingDelay8;
+    /**
+     * Ensures runtime data exists for every authored muzzle.
+     * @param {Boolean} [reset=false]
+     * @private
+     */
+    _EnsurePerMuzzleData(reset = false)
+    {
+        if (reset) this._perMuzzleData.length = 0;
+        while (this._perMuzzleData.length < this.stretch.length)
+        {
+            this._perMuzzleData.push(new EvePerMuzzleData());
+        }
+        this._perMuzzleData.length = this.stretch.length;
+
+        const delays = [
+            this.firingDelay1, this.firingDelay2, this.firingDelay3, this.firingDelay4,
+            this.firingDelay5, this.firingDelay6, this.firingDelay7, this.firingDelay8,
+            this.firingDelay9, this.firingDelay10, this.firingDelay11, this.firingDelay12
+        ];
+        for (let i = 0; i < this._perMuzzleData.length; i++)
+        {
+            this._perMuzzleData[i].constantDelay = delays[i] || 0;
+        }
     }
 
     /**
@@ -202,6 +227,48 @@ export class EveTurretFiringFX extends meta.Model
     }
 
     /**
+     * Gets the authored firing bone prefix.
+     * @returns {String}
+     */
+    GetFiringBoneName()
+    {
+        return this.boneName;
+    }
+
+    /**
+     * Gets the average world position of all started muzzles.
+     * @param {vec3} out
+     * @returns {Boolean}
+     */
+    GetStartPosition(out = vec3.create())
+    {
+        if (!this._isFiring) return false;
+        this._EnsurePerMuzzleData();
+
+        let count = 0;
+        const x = out[0], y = out[1], z = out[2];
+        vec3.set(out, 0, 0, 0);
+        for (let i = 0; i < this._perMuzzleData.length; i++)
+        {
+            const data = this._perMuzzleData[i];
+            if (!data.started) continue;
+            out[0] += data.muzzleTransform[12];
+            out[1] += data.muzzleTransform[13];
+            out[2] += data.muzzleTransform[14];
+            count++;
+        }
+
+        if (!count)
+        {
+            vec3.set(out, x, y, z);
+            return false;
+        }
+
+        vec3.scale(out, out, 1 / count);
+        return true;
+    }
+
+    /**
      * Scales destination effects from the live target radius
      * @param {Number} radius
      */
@@ -249,11 +316,29 @@ export class EveTurretFiringFX extends meta.Model
     /**
      * Sets muzzle bone id
      * @param {number} index
-     * @param bone
+     * @param {number} boneID
      */
-    SetMuzzleBoneID(index, bone)
+    SetMuzzleBoneID(index, boneID)
     {
-        this._perMuzzleData[index].muzzlePositionBone = bone;
+        this._EnsurePerMuzzleData();
+        if (index >= 0 && index < this._perMuzzleData.length)
+        {
+            this._perMuzzleData[index].muzzlePositionBoneID = Number(boneID) >>> 0;
+        }
+    }
+
+    /**
+     * Sets a muzzle's world transform.
+     * @param {number} index
+     * @param {mat4} transform
+     */
+    SetMuzzleTransform(index, transform)
+    {
+        this._EnsurePerMuzzleData();
+        if (index >= 0 && index < this._perMuzzleData.length)
+        {
+            mat4.copy(this._perMuzzleData[index].muzzleTransform, transform);
+        }
     }
 
     /**
@@ -263,7 +348,20 @@ export class EveTurretFiringFX extends meta.Model
      */
     GetMuzzleTransform(index)
     {
+        this._EnsurePerMuzzleData();
         return this._perMuzzleData[index].muzzleTransform;
+    }
+
+    /**
+     * Restarts the move objects used by looping firing effects.
+     */
+    PrepareFiringEffectMoveObjects()
+    {
+        for (let i = 0; i < this.stretch.length; i++)
+        {
+            this.stretch[i]?.StartMoving?.();
+        }
+        this._isFiring = true;
     }
 
     /**
@@ -274,6 +372,7 @@ export class EveTurretFiringFX extends meta.Model
      */
     PrepareFiring(delay, muzzleID = -1, muzzleCount = -1)
     {
+        this._EnsurePerMuzzleData();
         for (let i = 0; i < this.stretch.length; ++i)
         {
             if (muzzleID < 0 || (i >= muzzleID && (muzzleCount < 0 || i < muzzleID + muzzleCount)))
@@ -300,7 +399,9 @@ export class EveTurretFiringFX extends meta.Model
      */
     StartMuzzleEffect(muzzleID)
     {
+        this._EnsurePerMuzzleData();
         const stretch = this.stretch[muzzleID];
+        if (!stretch || !this._perMuzzleData[muzzleID]) return false;
         const delay = this._perMuzzleData[muzzleID].currentStartDelay;
 
         if (typeof stretch.StartFiring === "function")
@@ -327,8 +428,12 @@ export class EveTurretFiringFX extends meta.Model
             }
         }
 
+        this.startCurveSet?.PlayFrom?.(-delay);
+        this.stopCurveSet?.Stop?.();
+
         this._perMuzzleData[muzzleID].started = true;
         this._perMuzzleData[muzzleID].readyToStart = false;
+        return true;
     }
 
     /**
@@ -336,6 +441,9 @@ export class EveTurretFiringFX extends meta.Model
      */
     StopFiring()
     {
+        if (!this._isFiring) return;
+        this._EnsurePerMuzzleData();
+
         for (let j = 0; j < this.stretch.length; ++j)
         {
             const stretch = this.stretch[j];
@@ -367,7 +475,28 @@ export class EveTurretFiringFX extends meta.Model
             this._perMuzzleData[j].currentStartDelay = 0;
             this._perMuzzleData[j].elapsedTime = 0;
         }
+        this.startCurveSet?.Stop?.();
+        this.stopCurveSet?.Play?.();
         this._isFiring = false;
+    }
+
+    /**
+     * Checks whether a delayed muzzle is ready to start on the next update.
+     * @returns {Boolean}
+     */
+    ReadyToFire()
+    {
+        this._EnsurePerMuzzleData();
+        for (let i = 0; i < this._perMuzzleData.length; i++)
+        {
+            const data = this._perMuzzleData[i];
+            if ((data.elapsedTime < this._firingDuration || this.isLoopFiring) &&
+                !data.started && data.readyToStart)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -417,6 +546,7 @@ export class EveTurretFiringFX extends meta.Model
      */
     Update(dt)
     {
+        this._EnsurePerMuzzleData();
         for (let i = 0; i < this.stretch.length; ++i)
         {
             if (this._perMuzzleData[i].started)
@@ -446,13 +576,16 @@ export class EveTurretFiringFX extends meta.Model
                             this._perMuzzleData[i].readyToStart = true;
                         }
                     }
-                    else
+                    if (this._perMuzzleData[i].started)
                     {
                         const stretch = this.stretch[i];
                         if (typeof stretch.SetFiringTransform === "function")
                         {
-                            const transform = this._perMuzzleData[i].muzzleTransform;
-                            stretch.SetFiringTransform(this.useMuzzleTransform ? transform : transform.subarray(12, 15), this._endPosition);
+                            const data = this._perMuzzleData[i];
+                            const transform = data.muzzleTransform;
+                            const useTransform = this.useMuzzleTransform &&
+                                data.muzzlePositionBoneID !== EveTurretFiringFX.INVALID_BONE_INDEX;
+                            stretch.SetFiringTransform(useTransform ? transform : transform.subarray(12, 15), this._endPosition);
                             stretch.DisplayEndPoints(true, this._displayDestObject);
                         }
                         else
@@ -482,6 +615,46 @@ export class EveTurretFiringFX extends meta.Model
             // StopFiring tells each stretch directly before clearing the flag.
             if (this._isFiring) this.stretch[i].Update(dt);
         }
+
+        const curveSet = this._isFiring ? this.startCurveSet : this.stopCurveSet;
+        curveSet?.UpdateDelta?.(dt);
+    }
+
+    /**
+     * Gets the bone identifier assigned to a muzzle.
+     * @param {Number} muzzleID
+     * @returns {Number}
+     */
+    GetPerMuzzleBoneID(muzzleID)
+    {
+        this._EnsurePerMuzzleData();
+        return this._perMuzzleData[muzzleID]?.muzzlePositionBoneID ?? EveTurretFiringFX.INVALID_BONE_INDEX;
+    }
+
+    /**
+     * Checks whether the effect fires continuously.
+     * @returns {Boolean}
+     */
+    IsLooping()
+    {
+        return this.isLoopFiring;
+    }
+
+    /**
+     * Marks looping requested by a runtime controller rather than authored by
+     * the firing effect. One-shot curve sets need to be fully rearmed between
+     * shots; Carbon's looping shortcut only restarts move objects.
+     * @param {Boolean} forced
+     */
+    SetLoopFiringForced(forced)
+    {
+        this._isLoopFiringForced = !!forced;
+    }
+
+    /** @returns {Boolean} */
+    IsLoopFiringForced()
+    {
+        return this._isLoopFiringForced;
     }
 
     /**
@@ -515,5 +688,7 @@ export class EveTurretFiringFX extends meta.Model
         IMPACT_ARMOR: 2,
         IMPACT_HULL: 3
     });
+
+    static INVALID_BONE_INDEX = 0xffffffff;
 
 }

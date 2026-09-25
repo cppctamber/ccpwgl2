@@ -319,6 +319,15 @@ export class EveTurretTarget extends meta.Model
         return this._lastShotTime;
     }
 
+    /**
+     * Gets Carbon's maximum random firing delay used to group shots.
+     * @returns {Number}
+     */
+    GetShotTimeVariance()
+    {
+        return EveTurretTarget.RANDOM_DELAY_MAX;
+    }
+
     MissQueueSize()
     {
         return this._missQueue.length;
@@ -351,6 +360,8 @@ export class EveTurretTarget extends meta.Model
         IMPACT_ARMOR: 2,
         IMPACT_HULL: 3
     });
+
+    static RANDOM_DELAY_MAX = 0.6;
 
     static global = {
         zero: vec3.create(),

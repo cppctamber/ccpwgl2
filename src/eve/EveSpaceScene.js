@@ -5,6 +5,7 @@ import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2CarbonLightCollector } from "core/carbon/Tw2CarbonLightCollector";
 import { Tw2CarbonResourceBinder } from "core/carbon/Tw2CarbonResourceBinder";
 import { Tw2CarbonShadowRenderer } from "core/carbon/Tw2CarbonShadowRenderer";
+import { Tr2DataTextureManager } from "core/carbon/Tr2DataTextureManager";
 import { Tw2GpuParticleRenderer } from "particle/gpu/Tw2GpuParticleRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
@@ -581,6 +582,7 @@ export class EveSpaceScene extends meta.Model
     _emptyTexture = null;
     _frustum = new Tw2Frustum();
     _updateContext = new EveUpdateContext();
+    _dataTextureManager = new Tr2DataTextureManager();
     _perFrameSunDirection = vec3.create();
     _hasPerFrameSunDirection = false;
 
@@ -721,6 +723,7 @@ export class EveSpaceScene extends meta.Model
     constructor()
     {
         super();
+        this._updateContext.SetDataTextureManager(this._dataTextureManager);
 
         Object.defineProperty(this.visible, "environment", {
             get: () => this.backgroundRenderingEnabled,
@@ -993,6 +996,8 @@ export class EveSpaceScene extends meta.Model
         }
 
         this.PerChildObject("Update", dt);
+        this.PerChildObject("UpdateImpactOverlay", this._updateContext);
+        this._dataTextureManager.Update();
 
         // AFTER the children, because their emitters have just queued this
         // frame's emit requests and this is what expands them. Running it

@@ -260,6 +260,24 @@ export class EveChildContainer extends EveChild
     }
 
     /**
+     * Appends locator sets owned by descendants in this container's local
+     * transform. Carbon uses the same recursive walk when a modular hull is
+     * merged into its parent object's locator namespace.
+     * @param {mat4} parentTransform
+     * @param {Array<Object>} [out=[]]
+     * @returns {Array<Object>}
+     */
+    CollectOwnedLocatorSets(parentTransform, out = [])
+    {
+        const transform = mat4.multiply(mat4.create(), parentTransform, this.localTransform);
+        for (const child of this.objects)
+        {
+            child.CollectOwnedLocatorSets?.(transform, out);
+        }
+        return out;
+    }
+
+    /**
      * Applies every controller variable already set on this container, and on the
      * space object above it, to the controllers that just linked.
      *

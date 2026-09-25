@@ -18,6 +18,7 @@ export class EveUpdateContext
     lodFactor = 1;
     invLodFactor = 1;
     frustum = null;
+    dataTextureManager = null;
 
     /** @returns {Number} */
     GetTime()
@@ -115,6 +116,18 @@ export class EveUpdateContext
     GetFrustum()
     {
         return this.frustum;
+    }
+
+    /** @param {Tr2DataTextureManager|null} value */
+    SetDataTextureManager(value)
+    {
+        this.dataTextureManager = value;
+    }
+
+    /** @returns {Tr2DataTextureManager|null} */
+    GetDataTextureManager()
+    {
+        return this.dataTextureManager;
     }
 
 }

@@ -5,8 +5,18 @@ import { vec3, vec4, mat4, sph3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
 import { Tw2AnimationController } from "core/model";
-import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
-import { EveMeshOverlayEffect } from "eve/effect";
+import { Tw2PerlinCurve } from "curve";
+import {
+    EveTurretSet,
+    EveBanner,
+    EvePlaneSet,
+    EveSpriteSet,
+    EveSpotlightSet,
+    EveCurveLineSet,
+    EveLocatorSetItem
+} from "eve/item";
+import { EveImpactOverlay, EveMeshOverlayEffect } from "eve/effect";
+import { CollectOverlayAreaBlocks, EmitDamageOverlayBatches } from "eve/effect/overlayBatches";
 import { EveHazeSet } from "unsupported/eve/item";
 import { EveSpriteLineSet } from "eve/item/EveSpriteLineSet";
 import { Tr2Lod, CustomMaskBlendMode } from "constant/ccpwgl";
@@ -86,6 +96,9 @@ export class EveSpaceObject2 extends EveObject
 
     @meta.struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod")
     mesh = null;
+
+    @meta.struct("EveImpactOverlay")
+    impactOverlay = null;
 
     @meta.struct("EveCurve") // Tr2RotationAdapter
     @meta.isPrivate
@@ -214,6 +227,10 @@ export class EveSpaceObject2 extends EveObject
     _lastLodUpdateDelta = EveLODHelper.lowUpdateRate;
     _customMaskBlending = vec4.create();
     _worldTransformLast = mat4.create();
+
+    _damageState = vec3.fromValues(1, 1, 1);
+    _mergedLocatorSets = new Map();
+    _mergedDamageLocatorSources = [];
 
     /** Reused by locator resolution, which runs per hardpoint per frame */
     _locatorBinding = { type: 0, index: -1 };
@@ -1337,8 +1354,8 @@ export class EveSpaceObject2 extends EveObject
      *
      * Only changed values are published, matching Carbon, which re-publishes
      * ActivationStrength solely when it differs from the previous frame's.
-     * The three damage variables are Carbon's own constants: it publishes 1.0
-     * for each and ccpwgl models no damage state to vary them with.
+     * The three damage variables come from SetDamageState, defaulting to the
+     * undamaged Carbon state of 1.0 for each layer.
      *
      * @param {Object} bag - the per-object bag, for its CLAMPED values
      */
@@ -1348,9 +1365,9 @@ export class EveSpaceObject2 extends EveObject
 
         EveSpaceObject2.global.controllerVariableValues[0] = bag.dirtLevel;
         EveSpaceObject2.global.controllerVariableValues[1] = bag.activationStrength;
-        EveSpaceObject2.global.controllerVariableValues[2] = 1;
-        EveSpaceObject2.global.controllerVariableValues[3] = 1;
-        EveSpaceObject2.global.controllerVariableValues[4] = 1;
+        EveSpaceObject2.global.controllerVariableValues[2] = this._damageState[0];
+        EveSpaceObject2.global.controllerVariableValues[3] = this._damageState[1];
+        EveSpaceObject2.global.controllerVariableValues[4] = this._damageState[2];
         EveSpaceObject2.global.controllerVariableValues[5] = this.clipSphereFactor;
         EveSpaceObject2.global.controllerVariableValues[6] = this.clipSphereFactor2;
 
@@ -1422,11 +1439,74 @@ export class EveSpaceObject2 extends EveObject
      */
     _GetLocatorSetItems(name)
     {
-        for (let i = 0; i < this.locatorSets.length; i++)
+        this.RefreshMergedLocators();
+        return this._mergedLocatorSets.get(name) || null;
+    }
+
+    /**
+     * Rebuilds Carbon's merged locator namespace from the root hull and every
+     * child that owns local locator sets. The child list is intentionally read
+     * on demand because ccpwgl exposes effectChildren as a mutable array and
+     * therefore has no single attachment hook at which to invalidate a cache.
+     * @returns {Map<String, Array<EveLocatorSetItem>>}
+     */
+    RefreshMergedLocators()
+    {
+        const merged = this._mergedLocatorSets;
+        merged.clear();
+        this._mergedDamageLocatorSources.length = 0;
+
+        for (const set of this.locatorSets)
         {
-            if (this.locatorSets[i]?.name === name) return this.locatorSets[i].locators;
+            if (!set?.locators?.length) continue;
+            if (!merged.has(set.name)) merged.set(set.name, []);
+            merged.get(set.name).push(...set.locators);
         }
-        return null;
+
+        const sources = [];
+        const identity = mat4.create();
+        for (const child of this.effectChildren)
+        {
+            child.CollectOwnedLocatorSets?.(identity, sources);
+        }
+
+        for (const source of sources)
+        {
+            const set = source.sets;
+            if (!set?.locators?.length) continue;
+            if (!merged.has(set.name)) merged.set(set.name, []);
+            const target = merged.get(set.name);
+            const start = target.length;
+
+            for (const item of set.locators)
+            {
+                const local = mat4.fromRotationTranslationScale(
+                    mat4.create(), item.rotation, item.position, item.scaling);
+                const transform = mat4.multiply(
+                    mat4.create(), source.childToObject, local);
+                const locator = new EveLocatorSetItem();
+                locator.boneIndex = -1;
+                mat4.getTranslation(locator.position, transform);
+                mat4.getRotation(locator.rotation, transform);
+                mat4.getScaling(locator.scaling, transform);
+                target.push(locator);
+            }
+
+            if (set.HasName?.("damage") || set.name === "damage")
+            {
+                this._mergedDamageLocatorSources.push({
+                    owner: source.owner,
+                    partTag: Number(source.partTag) >>> 0,
+                    start,
+                    count: set.locators.length,
+                    childToObject: mat4.clone(source.childToObject)
+                });
+            }
+        }
+
+        this.impactOverlay?.SetDamageLocatorCount(
+            (merged.get("damage") || []).length);
+        return merged;
     }
 
     /**
@@ -1555,6 +1635,22 @@ export class EveSpaceObject2 extends EveObject
         this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
         mat4.getTranslation(out, transform);
         return true;
+    }
+
+    /** Returns a merged damage locator's object-space bind position. */
+    GetDamageLocatorBindPosition(index, out)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators || index < 0 || index >= locators.length) return false;
+        vec3.copy(out, locators[index].position);
+        return true;
+    }
+
+    /** Carbon ITriTargetable damage-locator count. */
+    GetDamageLocatorCount()
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        return locators ? locators.length : 0;
     }
 
     /**
@@ -1710,18 +1806,117 @@ export class EveSpaceObject2 extends EveObject
         return out;
     }
 
-    /**
-     * ccpwgl has no Carbon impact-overlay object, so damage locators are used
-     * @returns {Number}
-     */
+    /** Carbon impact configuration selected from the current damage state. */
     GetImpactConfiguration()
     {
-        return 0;
+        return this.impactOverlay
+            ? this.impactOverlay.GetImpactConfiguration()
+            : EveSpaceObject2.ImpactConfiguration.INVALID;
     }
 
     HasImpactConfigurationShield()
     {
-        return false;
+        return this.GetImpactConfiguration() === EveSpaceObject2.ImpactConfiguration.SHIELD;
+    }
+
+    /**
+     * Creates and wires the damage overlay owned by a modular child part.
+     * @param {Object} range
+     * @returns {EveDamageOverlay|null}
+     */
+    EnsureChildDamageOverlay(range)
+    {
+        if (!range?.owner || !this.impactOverlay) return null;
+        let overlay = range.owner.GetPartDamageOverlay?.(range.partTag) || null;
+        if (!overlay)
+        {
+            range.owner.CreatePartDamageOverlay?.(range.partTag);
+            overlay = range.owner.GetPartDamageOverlay?.(range.partTag) || null;
+            if (!overlay) return null;
+
+            overlay.SetArmorDamageShaderEffect(
+                range.owner.GetPartArmorDamageShaderEffect?.(range.partTag) || null);
+            const source = this.impactOverlay.GetHullDamageFlickerCurve();
+            if (source)
+            {
+                const curve = new Tw2PerlinCurve();
+                curve.alpha = source.alpha;
+                curve.beta = source.beta;
+                curve.N = source.N;
+                curve.speed = source.speed;
+                curve.offset = source.offset;
+                curve.scale = source.scale;
+                overlay.SetHullDamageFlickerCurve(curve);
+            }
+            overlay.SetSeed(this.impactOverlay.GetSeed() + range.partTag);
+        }
+
+        overlay.SetDamageLocatorCount(range.count);
+        overlay.SetImpactIndexSource(this.impactOverlay.GetDamageOverlay());
+        return overlay;
+    }
+
+    /** Collects live modular-part damage overlays and merged locator offsets. */
+    CollectPartDamageOverlays(out = [])
+    {
+        this.RefreshMergedLocators();
+        for (const range of this._mergedDamageLocatorSources)
+        {
+            const overlay = range.owner?.GetPartDamageOverlay?.(range.partTag);
+            if (overlay) out.push([ overlay, range.start ]);
+        }
+        return out;
+    }
+
+    /**
+     * Sets the remaining shield, armor and hull fractions. Carbon changes the
+     * active impact material at five percent and publishes all three values to
+     * child controllers.
+     */
+    SetDamageState(shield, armor, hull, doCreateArmorImpacts = false)
+    {
+        shield = Number(shield) || 0;
+        armor = Number(armor) || 0;
+        hull = Number(hull) || 0;
+        vec3.set(this._damageState, shield, armor, hull);
+
+        this.impactOverlay?.SetDamageState(shield, armor, hull, doCreateArmorImpacts);
+        if (this.impactOverlay)
+        {
+            this.RefreshMergedLocators();
+            for (const range of this._mergedDamageLocatorSources)
+            {
+                this.EnsureChildDamageOverlay(range)?.SetDamageState(
+                    shield, armor, hull, doCreateArmorImpacts);
+            }
+        }
+
+        this.SetControllerVariable("ShieldDamage", shield);
+        this.SetControllerVariable("ArmorDamage", armor);
+        this.SetControllerVariable("HullDamage", hull);
+
+    }
+
+    /** Carbon's public EveSpaceObject2 spelling. */
+    SetImpactDamageState(shield, armor, hull, doCreateArmorImpacts = false)
+    {
+        this.SetDamageState(shield, armor, hull, doCreateArmorImpacts);
+    }
+
+    /** Toggles shield, armor or hull impact presentation animations. */
+    SetImpactAnimation(name, enable, duration)
+    {
+        if (!this.impactOverlay) return false;
+        const changed = this.impactOverlay.ToggleEffect(name, enable, duration);
+        if (name !== "shieldboost" && name !== "shieldhardening")
+        {
+            this.RefreshMergedLocators();
+            for (const range of this._mergedDamageLocatorSources)
+            {
+                this.EnsureChildDamageOverlay(range)?.ToggleEffect(name, enable, duration);
+            }
+        }
+        return changed;
     }
 
     /**
@@ -1735,18 +1930,137 @@ export class EveSpaceObject2 extends EveObject
      */
     GetImpactPosition(out, locator, _positionPrevious, positionNow, epsilon)
     {
+        if (this.HasImpactConfigurationShield())
+        {
+            const g = EveSpaceObject2.global;
+            this.GetWorldInverseTransform(g.targetInverse);
+            vec3.transformMat4(g.impactPrevious, _positionPrevious, g.targetInverse);
+            vec3.transformMat4(g.impactCurrent, positionNow, g.targetInverse);
+            vec3.subtract(g.targetDirection, g.impactCurrent, g.impactPrevious);
+            this.GetShapeEllipsoid(g.impactCenter, g.impactRadii);
+
+            const t = intersectEllipsoidRay(out, g.impactCenter, g.impactRadii, g.impactPrevious, g.targetDirection);
+            if (t !== null && t >= -1 && t <= 1)
+            {
+                this.GetWorldTransform(g.targetWorldTransform);
+                vec3.transformMat4(out, out, g.targetWorldTransform);
+                return true;
+            }
+            if (isPointInsideEllipsoid(g.impactCenter, g.impactRadii, g.impactCurrent))
+            {
+                vec3.copy(out, positionNow);
+                return true;
+            }
+            return false;
+        }
+
         this.GetDamageLocatorPosition(out, locator, true);
         return vec3.squaredDistance(positionNow, out) < Number(epsilon);
     }
 
-    CreateImpact()
+    /**
+     * Creates or reuses an impact and returns its stable Carbon-style handle.
+     * Shield impacts are directional and transient; armor/hull impacts persist
+     * at their damage locator and are shared by subsequent hits there.
+     */
+    CreateImpact(damageLocatorIndex, direction, lifeTime, size)
     {
-        return -1;
+        if (!this.impactOverlay) return -1;
+        const configuration = this.GetImpactConfiguration();
+        if (configuration === EveSpaceObject2.ImpactConfiguration.ARMOR ||
+            configuration === EveSpaceObject2.ImpactConfiguration.HULL)
+        {
+            this.RefreshMergedLocators();
+            for (const range of this._mergedDamageLocatorSources)
+            {
+                if (damageLocatorIndex < range.start ||
+                    damageLocatorIndex >= range.start + range.count) continue;
+                const overlay = this.EnsureChildDamageOverlay(range);
+                return overlay
+                    ? overlay.CreateImpact(
+                        damageLocatorIndex - range.start,
+                        size,
+                        this._lod !== Tr2Lod.TR2_LOD_LOW)
+                    : -1;
+            }
+        }
+        return this.impactOverlay.CreateImpact(
+            damageLocatorIndex,
+            direction,
+            lifeTime,
+            size,
+            1,
+            this._lod,
+            this
+        );
     }
 
-    UpdateImpact()
+    /** Updates a live impact and returns its current world-space position. */
+    UpdateImpact(out, direction, impactIndex)
     {
-        return false;
+        if (!this.impactOverlay) return false;
+        if (this.impactOverlay.UpdateImpact(out, direction, impactIndex)) return true;
+        return this.CollectPartDamageOverlays([]).some(([ overlay ]) =>
+            overlay.HasImpact(impactIndex));
+    }
+
+    /** Removes every shield and armor/hull impact record. */
+    ClearImpactDamage()
+    {
+        this.impactOverlay?.Clear();
+        for (const [ overlay ] of this.CollectPartDamageOverlays([])) overlay.Clear();
+    }
+
+    /** Assigns the Carbon impact presentation owned by this object. */
+    SetImpactOverlay(overlay)
+    {
+        this.impactOverlay = overlay || null;
+        if (this.impactOverlay)
+        {
+            this.impactOverlay.SetDamageLocatorCount(this.GetDamageLocatorCount());
+            this.impactOverlay.SetDamageState(
+                this._damageState[0], this._damageState[1], this._damageState[2], false);
+        }
+    }
+
+    /** Returns the Carbon impact presentation owned by this object. */
+    GetImpactOverlay()
+    {
+        return this.impactOverlay;
+    }
+
+    /** Runs the impact overlay's scene-context update passes. */
+    UpdateImpactOverlay(updateContext)
+    {
+        if (!this.impactOverlay) return;
+        this.RefreshMergedLocators();
+        for (const range of this._mergedDamageLocatorSources)
+        {
+            const overlay = range.owner?.GetPartDamageOverlay?.(range.partTag);
+            if (!overlay) continue;
+            const sphere = sph3.create();
+            if (!range.owner.GetBoundingSphere?.(sphere)) this.GetBoundingSphere(sphere);
+            overlay.UpdateAsyncronous(updateContext, {
+                boundingSphere: sphere,
+                estimatedPixelDiameter: range.owner.currentScreenSize ??
+                    range.owner.currentInstanceScreenSize ?? this.estimatedPixelDiameter,
+                isInFrustum: range.owner._isVisible ?? this._isInFrustum ?? true,
+                getDamageLocatorPositionOS: (index, out) =>
+                {
+                    if (range.owner.GetDamageLocatorBindPositionLocal)
+                    {
+                        return range.owner.GetDamageLocatorBindPositionLocal(index, out);
+                    }
+                    const direction = EveSpaceObject2.global.targetDirection;
+                    return range.owner.GetPartDamageLocatorAnimatedLocal?.(
+                        range.partTag, index, out, direction) || false;
+                }
+            });
+            overlay.UpdateSyncronous(updateContext);
+        }
+        this.impactOverlay.UpdateAsyncronous(updateContext, this);
+        this.impactOverlay.UpdateSyncronous(updateContext, this);
+        this.impactDataOffset = this.impactOverlay.GetDataTextureOffset();
     }
 
     /**
@@ -1908,7 +2222,23 @@ export class EveSpaceObject2 extends EveObject
             if (show.mesh && this._isMeshVisible)
             {
                 this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+
+                const damageEffect = this.impactOverlay?.GetArmorDamageShader(mode);
+                if (damageEffect)
+                {
+                    EmitDamageOverlayBatches(
+                        accumulator,
+                        this._perObjectData,
+                        mode,
+                        damageEffect,
+                        CollectOverlayAreaBlocks(this.mesh),
+                        res,
+                        this.mesh.GetMeshIndex()
+                    );
+                }
             }
+
+            this.impactOverlay?.GetBatches(mode, accumulator, this._perObjectData);
         }
 
         const showFiringEffects = show.firingEffect !== undefined ? show.firingEffect : show.firingEffects;
@@ -2624,6 +2954,13 @@ export class EveSpaceObject2 extends EveObject
         targetPosition: vec3.create(),
         targetDirection: vec3.create(),
         targetOffset: vec3.create(),
+        impactCenter: vec3.create(),
+        impactRadii: vec3.create(),
+        impactPrevious: vec3.create(),
+        impactCurrent: vec3.create(),
+        impactOrigin: vec3.create(),
+        impactDirection: vec3.create(),
+        impactPoint: vec3.create(),
         controllerVariableValues: new Float64Array(7)
     };
 
@@ -2640,6 +2977,21 @@ export class EveSpaceObject2 extends EveObject
         "ClipSphereFactor",
         "ClipSphereFactor2"
     ]);
+
+    static ImpactConfiguration = Object.freeze({
+        INVALID: 0,
+        SHIELD: 1,
+        ARMOR: 2,
+        HULL: 3,
+        IMPACT_INVALID: 0,
+        IMPACT_SHIELD: 1,
+        IMPACT_ARMOR: 2,
+        IMPACT_HULL: 3
+    });
+
+    static MAX_SHIELD_IMPACTS = 8;
+
+    static ARMOR_IMPACT_LIFETIME = 10;
 
 
     /**
@@ -2701,4 +3053,55 @@ function getDirectionFit(a, b)
     return direction < 0
         ? (1 - Math.sqrt(Math.abs(direction))) * 0.5
         : (Math.sqrt(Math.abs(direction)) + 1) * 0.5;
+}
+
+
+/** Carbon BoundingSphere::IntersectEllipsoidRay (forward root). */
+function intersectEllipsoidRay(out, center, radii, origin, direction)
+{
+    let vv = 0;
+    let vs = 0;
+    let ss = 0;
+    for (let i = 0; i < 3; i++)
+    {
+        if (!(Math.abs(radii[i]) > Number.EPSILON)) return null;
+        const v = direction[i] / radii[i];
+        const s = (origin[i] - center[i]) / radii[i];
+        vv += v * v;
+        vs += v * s;
+        ss += s * s;
+    }
+    if (!(vv > Number.EPSILON)) return null;
+    const discriminant = (vs * vs) / (vv * vv) - ss / vv + 1 / vv;
+    if (discriminant < 0) return null;
+    const root = Math.sqrt(discriminant);
+    const offset = vs / vv;
+    let t = -root - offset;
+    if (t < 0) t = root - offset;
+    vec3.scaleAndAdd(out, origin, direction, t);
+    return t;
+}
+
+
+function isPointInsideEllipsoid(center, radii, point)
+{
+    let distance = 0;
+    for (let i = 0; i < 3; i++)
+    {
+        if (!(Math.abs(radii[i]) > Number.EPSILON)) return false;
+        const value = (point[i] - center[i]) / radii[i];
+        distance += value * value;
+    }
+    return distance <= 1;
+}
+
+
+/** Transforms a direction by a matrix's upper 3x3, excluding translation. */
+function transformDirection(out, direction, matrix)
+{
+    const x = direction[0], y = direction[1], z = direction[2];
+    out[0] = matrix[0] * x + matrix[4] * y + matrix[8] * z;
+    out[1] = matrix[1] * x + matrix[5] * y + matrix[9] * z;
+    out[2] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
+    return out;
 }

@@ -303,6 +303,7 @@ export class EveTurretSet extends EveObjectSet
     _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _pendingFiring = false;
+    _firingEffectPromise = Promise.resolve(null);
 
     /**
      * Attaches the Carbon packer and its buffers to both per-object data sets.
@@ -326,12 +327,29 @@ export class EveTurretSet extends EveObjectSet
             perObjectData._turretCarbonBones = new Float32Array(bones);
         }
     }
-    _state = EveTurretSet.State.IDLE;
+    __state = EveTurretSet.State.IDLE;
     _targetPosition = vec3.create();
     _trackingInfluence = 0;
     _trackingScratch = null;
     _recheckTimeLeft = 0;
     _randomFiringDelay = 0;
+    _selectionTargetPosition = vec3.create();
+    _hasSelectionTargetPosition = false;
+
+    /**
+     * Internal animation state. The public persisted state uses Carbon's enum,
+     * so every transition is translated at the point it happens.
+     */
+    get _state()
+    {
+        return this.__state;
+    }
+
+    set _state(value)
+    {
+        this.__state = value;
+        this.state = EveTurretSet.RuntimeToCarbonState[value] ?? EveTurretSet.CarbonState.INVALID;
+    }
 
 
     /**
@@ -358,6 +376,11 @@ export class EveTurretSet extends EveObjectSet
      */
     Initialize()
     {
+        // BLACK persists Carbon's public enum. Translate it once into the
+        // animation state used by this port without rewriting the authored
+        // value until an actual runtime transition occurs.
+        this.__state = EveTurretSet.CarbonToRuntimeState[this.state] ?? EveTurretSet.State.IDLE;
+
         if (!this.target) this.target = new EveTurretTarget();
         this.target.SetBehaviour(
             this.laserMissBehaviour,
@@ -373,12 +396,20 @@ export class EveTurretSet extends EveObjectSet
             this._inactiveAnimation.SetGeometryResource(this.geometryResource);
         }
 
+        if (this.firingEffect)
+        {
+            this.SetFiringEffect(this.firingEffect);
+            this._firingEffectPromise = Promise.resolve(this.firingEffect);
+        }
+
         if (this.firingEffectResPath !== "")
         {
-            tw2.Fetch(this.firingEffectResPath).then(object =>
+            const resPath = this.firingEffectResPath;
+            this._firingEffectPromise = tw2.Fetch(resPath).then(object =>
             {
-                this.firingEffect = object;
-                this.SetTargetScale();
+                if (this.firingEffectResPath !== resPath) return null;
+                this.SetFiringEffect(object);
+                return object;
             });
         }
 
@@ -397,9 +428,42 @@ export class EveTurretSet extends EveObjectSet
             const model = this.geometryResource.models[0];
             for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
             {
-                this.firingEffect.SetMuzzleBoneID(i, model.FindBoneByName(EveTurretSet.positionBoneSkeletonNames[i]));
+                const
+                    prefix = this.firingEffect.GetFiringBoneName?.() || "Pos_Fire",
+                    name = `${prefix}${String(i + 1).padStart(2, "0")}`,
+                    bone = model.FindBoneByName(name),
+                    boneID = bone && model.skeleton ? model.skeleton.bones.indexOf(bone) : -1;
+                this.firingEffect.SetMuzzleBoneID(
+                    i,
+                    boneID === -1 ? EveTurretSet.INVALID_BONE_INDEX : boneID
+                );
             }
         }
+    }
+
+    /**
+     * Assigns and initializes a firing effect.
+     * Carbon routes both embedded and asynchronously loaded effects through the
+     * same setup path so bone bindings and target scale cannot drift apart.
+     * @param {?EveTurretFiringFX} effect
+     * @returns {?EveTurretFiringFX}
+     */
+    SetFiringEffect(effect)
+    {
+        this.firingEffect = effect;
+        this.InitializeFiringEffect();
+        this.SetTargetScale();
+        return effect;
+    }
+
+    /**
+     * Resolves once the firing effect referenced by this turret set is ready.
+     * The root turret BLACK can finish before this nested resource.
+     * @returns {Promise<EveTurretFiringFX|null>}
+     */
+    GetFiringEffectPromise()
+    {
+        return this._firingEffectPromise;
     }
 
     /**
@@ -468,22 +532,22 @@ export class EveTurretSet extends EveObjectSet
 
     SetShotMissed(missed, timestamp)
     {
-        this.target?.SetShotMissed(missed, timestamp);
+        this.target.SetShotMissed(missed, timestamp);
     }
 
     GetLastShotTime()
     {
-        return this.target?.GetLastShotTime() ?? 0;
+        return this.target.GetLastShotTime();
     }
 
     MissQueueSize()
     {
-        return this.target?.MissQueueSize() ?? 0;
+        return this.target.MissQueueSize();
     }
 
     GetShotTimeVariance()
     {
-        return 0.6;
+        return this.target.GetShotTimeVariance();
     }
 
     /**
@@ -798,12 +862,25 @@ export class EveTurretSet extends EveObjectSet
      */
     GetClosestTurret()
     {
+        return this.GetClosestTurretAndLocator().turret;
+    }
+
+    /**
+     * Selects the turret and damage locator as one pair, matching Carbon. A
+     * random locator can change which turret is best aligned with the shot.
+     * @returns {{turret: Number, locator: Number}}
+     */
+    GetClosestTurretAndLocator()
+    {
         let closestTurret = -1,
+            closestLocator = -1,
             closestAngle = -2;
 
         const
             g = EveTurretSet.global,
             nrmToTarget = g.vec3_0,
+            source = g.vec3_1,
+            locatorPosition = g.vec3_2,
             nrmUp = g.vec4_0,
             turretPosition = g.vec4_1;
 
@@ -817,7 +894,12 @@ export class EveTurretSet extends EveObjectSet
             turretPosition[2] = item._localTransform[14];
             turretPosition[3] = 1;
             vec4.transformMat4(turretPosition, turretPosition, this._parentTransform);
-            vec3.subtract(nrmToTarget, this._targetPosition, turretPosition);
+            vec3.set(source, turretPosition[0], turretPosition[1], turretPosition[2]);
+
+            const locator = this.target?.FindClosestLocator(source, locatorPosition) ?? -1;
+            if (locator === -1) vec3.copy(locatorPosition, this._targetPosition);
+
+            vec3.subtract(nrmToTarget, locatorPosition, source);
             vec3.normalize(nrmToTarget, nrmToTarget);
             vec4.set(nrmUp, 0, 1, 0, 0);
             vec4.transformMat4(nrmUp, nrmUp, item._localTransform);
@@ -826,7 +908,45 @@ export class EveTurretSet extends EveObjectSet
             if (angle > closestAngle)
             {
                 closestTurret = this.items.indexOf(item);
+                closestLocator = locator;
                 closestAngle = angle;
+            }
+        }
+
+        if (closestTurret !== -1 && this.chooseRandomLocator && this.target)
+        {
+            const item = this.items[closestTurret];
+            vec3.set(source, item._localTransform[12], item._localTransform[13], item._localTransform[14]);
+            vec3.transformMat4(source, source, this._parentTransform);
+            const randomLocator = this.target.FindRandomValidLocator(source, locatorPosition);
+
+            if (randomLocator !== -1 && randomLocator !== closestLocator)
+            {
+                closestLocator = randomLocator;
+                closestAngle = -2;
+
+                for (let i = 0; i < this.items.length; ++i)
+                {
+                    const candidate = this.items[i];
+                    if (!candidate.display && !candidate.canFireWhenHidden) continue;
+
+                    vec3.set(source,
+                        candidate._localTransform[12],
+                        candidate._localTransform[13],
+                        candidate._localTransform[14]);
+                    vec3.transformMat4(source, source, this._parentTransform);
+                    vec3.subtract(nrmToTarget, locatorPosition, source);
+                    vec3.normalize(nrmToTarget, nrmToTarget);
+                    vec4.set(nrmUp, 0, 1, 0, 0);
+                    vec4.transformMat4(nrmUp, nrmUp, candidate._localTransform);
+                    vec4.transformMat4(nrmUp, nrmUp, this._parentTransform);
+                    const angle = vec3.dot(nrmUp, nrmToTarget);
+                    if (angle > closestAngle)
+                    {
+                        closestTurret = i;
+                        closestAngle = angle;
+                    }
+                }
             }
         }
 
@@ -835,7 +955,89 @@ export class EveTurretSet extends EveObjectSet
             this.items[i]._isClosest = i === closestTurret;
         }
 
-        return closestTurret;
+        return { turret: closestTurret, locator: closestLocator };
+    }
+
+    /**
+     * Gets a turret bone's current world transform.
+     * @param {mat4} out
+     * @param {Number} turretIndex
+     * @param {Object|Number|null} [bone]
+     * @returns {Boolean} true when the turret exists
+     */
+    GetTurretBoneTransform(out, turretIndex, bone = null)
+    {
+        const item = this.items[turretIndex];
+        if (!item) return false;
+
+        mat4.copy(out, item._localTransform);
+
+        const controller = turretIndex === this._activeTurret ?
+            this._activeAnimation : this._inactiveAnimation;
+        let appliedBone = false;
+
+        if (controller?.models?.length && bone !== null && bone !== undefined)
+        {
+            const model = controller.models[0];
+            if (typeof bone === "number") bone = model.bones[bone] || null;
+            else if (bone?.name) bone = model.bonesByName?.[bone.name] || bone;
+
+            if (bone)
+            {
+                const boneIndex = bone._skeletonIndex !== undefined && bone._skeletonIndex !== -1 ?
+                    bone._skeletonIndex : model.bones.indexOf(bone);
+                const trackedPose = this.UpdateTrackingPose(controller, item);
+                const transform = boneIndex !== -1 && trackedPose ?
+                    trackedPose.worldTransforms[boneIndex] : bone.worldTransform;
+                if (transform)
+                {
+                    mat4.multiply(out, out, transform);
+                    appliedBone = true;
+                }
+            }
+        }
+
+        if (!appliedBone && this.useLowLodFiringTransform)
+        {
+            const lowLodTransform = EveTurretSet.global.mat4_0;
+            mat4.fromRotationTranslationScale(
+                lowLodTransform,
+                this.lowLodFiringEffectRotation,
+                this.lowLodFiringEffectTranslation,
+                this.lowLodFiringEffectScale
+            );
+            mat4.multiply(out, out, lowLodTransform);
+        }
+
+        mat4.multiply(out, this._parentTransform, out);
+        return true;
+    }
+
+    /**
+     * Gets the active muzzle's world transform. If the set is not firing,
+     * Carbon uses the turret currently best aligned with the target.
+     * @param {mat4} out
+     * @param {Number} [muzzle=0]
+     * @returns {Boolean} true when a turret exists
+     */
+    GetFiringBoneWorldTransform(out, muzzle = 0)
+    {
+        const turretIndex = this.items[this._activeTurret] ?
+            this._activeTurret : this.GetClosestTurret();
+        if (turretIndex === -1)
+        {
+            mat4.copy(out, this._parentTransform);
+            return true;
+        }
+
+        let bone = null;
+        if (this.firingEffect)
+        {
+            bone = this.firingEffect.GetPerMuzzleBoneID?.(muzzle) ??
+                this.firingEffect._perMuzzleData?.[muzzle]?.muzzlePositionBone ?? null;
+        }
+
+        return this.GetTurretBoneTransform(out, turretIndex, bone);
     }
 
     /**
@@ -949,7 +1151,9 @@ export class EveTurretSet extends EveObjectSet
             this._activeAnimation.StopAllAnimations();
             this._inactiveAnimation.StopAllAnimations();
 
-            if (this._state === EveTurretSet.State.FIRING || this._state === EveTurretSet.State.TARGETING)
+            if (this._state === EveTurretSet.State.FIRING ||
+                this._state === EveTurretSet.State.TARGETING ||
+                this._state === EveTurretSet.State.RELOADING)
             {
                 this._activeAnimation.PlayAnimation("Active", { cycle: true });
                 this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
@@ -980,6 +1184,9 @@ export class EveTurretSet extends EveObjectSet
                 });
 
                 this._state = EveTurretSet.State.UNPACKING;
+                // UNPACKING is an implementation detail. Carbon exposes the
+                // requested IDLE state immediately while Deploy finishes.
+                this.state = EveTurretSet.CarbonState.IDLE;
             }
         }
         else
@@ -992,19 +1199,132 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Puts the set into Carbon's tracking state without starting a shot.
+     */
+    EnterStateTargeting()
+    {
+        this._pendingFiring = false;
+        if (this._state === EveTurretSet.State.FIRING)
+        {
+            this._activeTurret = -1;
+            this.DoStopFiring();
+        }
+
+        if (this.turretEffect)
+        {
+            this._activeAnimation.StopAllAnimations();
+            this._inactiveAnimation.StopAllAnimations();
+
+            if (this._state === EveTurretSet.State.INACTIVE || this._state === EveTurretSet.State.PACKING)
+            {
+                this._activeAnimation.PlayAnimation("Deploy", {
+                    cycle: false,
+                    callback: () => this._activeAnimation.PlayAnimation("Active", { cycle: true })
+                });
+                this._inactiveAnimation.PlayAnimation("Deploy", {
+                    cycle: false,
+                    callback: () => this._inactiveAnimation.PlayAnimation("Active", { cycle: true })
+                });
+            }
+            else
+            {
+                this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
+            }
+        }
+
+        this._state = EveTurretSet.State.TARGETING;
+    }
+
+    /**
+     * Stops firing, plays the authored reload animation, and remains in
+     * Carbon's reloading state until another state is requested.
+     */
+    EnterStateReloading()
+    {
+        this._pendingFiring = false;
+        this._activeTurret = -1;
+        this.DoStopFiring();
+
+        if (this.turretEffect &&
+            this._state !== EveTurretSet.State.INACTIVE &&
+            this._state !== EveTurretSet.State.PACKING)
+        {
+            this._activeAnimation.StopAllAnimations();
+            this._inactiveAnimation.StopAllAnimations();
+            this._activeAnimation.PlayAnimation("Reload", {
+                cycle: false,
+                callback: () => this._activeAnimation.PlayAnimation("Active", { cycle: true })
+            });
+            this._inactiveAnimation.PlayAnimation("Reload", {
+                cycle: false,
+                callback: () => this._inactiveAnimation.PlayAnimation("Active", { cycle: true })
+            });
+        }
+
+        this._state = EveTurretSet.State.RELOADING;
+    }
+
+    /** Immediately applies Carbon's deactivated pose. */
+    ForceStateDeactive()
+    {
+        this._pendingFiring = false;
+        this._trackingInfluence = 0;
+        this._activeTurret = -1;
+        this.DoStopFiring();
+        this._state = EveTurretSet.State.INACTIVE;
+        this.ForceIdleAnimation();
+    }
+
+    /** Immediately applies Carbon's tracking pose. */
+    ForceStateTargeting()
+    {
+        this._pendingFiring = false;
+        this._trackingInfluence = 1;
+        this._activeTurret = this.GetClosestTurret();
+        this.DoStopFiring();
+        this._state = EveTurretSet.State.TARGETING;
+        this.ForceIdleAnimation();
+    }
+
+    /** Immediately plays the authored active loop on both animation sets. */
+    ForceIdleAnimation()
+    {
+        this._activeAnimation.StopAllAnimations();
+        this._inactiveAnimation.StopAllAnimations();
+        if (this.turretEffect)
+        {
+            const animation = this._state === EveTurretSet.State.INACTIVE ? "Inactive" :
+                this._state === EveTurretSet.State.IDLE ||
+                this._state === EveTurretSet.State.TARGETING ||
+                this._state === EveTurretSet.State.FIRING ? "Active" : "";
+            if (animation)
+            {
+                this._activeAnimation.PlayAnimation(animation, { cycle: true });
+                this._inactiveAnimation.PlayAnimation(animation, { cycle: true });
+            }
+        }
+    }
+
+    /**
      * Animation helper function for putting a turret set into a firing state
      */
     EnterStateFiring()
     {
         if (!this.turretEffect)
         {
-            this.DoStartFiring();
+            const trackingDelay = this._state === EveTurretSet.State.IDLE ||
+                this._state === EveTurretSet.State.RELOADING ? this.maxTrackingTime : 0;
+            this.DoStartFiring(false, true, null, trackingDelay);
             return;
         }
 
         if (this._state === EveTurretSet.State.FIRING)
         {
-            this.DoStartFiring();
+            const looping = this.firingEffect?.IsLooping?.() ?? this.firingEffect?.isLoopFiring;
+            if (!looping) this.firingEffect?.StopFiring?.();
+            this.DoStartFiring(looping);
+            if (looping) return;
             this.PlayFireAnimation();
             return;
         }
@@ -1053,7 +1373,7 @@ export class EveTurretSet extends EveObjectSet
      */
     BeginStateTargeting(activateInactive = true)
     {
-        this._pendingFiring = true;
+        this._pendingFiring = false;
         this._state = EveTurretSet.State.TARGETING;
         this._activeTurret = -1;
         this._activeAnimation.PlayAnimation("Active", { cycle: true });
@@ -1061,7 +1381,8 @@ export class EveTurretSet extends EveObjectSet
         {
             this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
         }
-        this.StartPendingFiring();
+        this.DoStartFiring(false, true, null, this.maxTrackingTime);
+        this.PlayFireAnimation();
     }
 
     /**
@@ -1148,6 +1469,11 @@ export class EveTurretSet extends EveObjectSet
             meshes[i].declaration.RebuildHash();
         }
 
+        // Carbon initializes firing bones from both sides of the asynchronous
+        // relationship: when geometry prepares and when the firing effect is
+        // assigned. Either resource may arrive first.
+        this.InitializeFiringEffect();
+
         switch (this._state)
         {
             case EveTurretSet.State.INACTIVE:
@@ -1174,6 +1500,17 @@ export class EveTurretSet extends EveObjectSet
             case EveTurretSet.State.TARGETING:
                 active.PlayAnimation("Active", { cycle: true });
                 inactive.PlayAnimation("Active", { cycle: true });
+                break;
+
+            case EveTurretSet.State.RELOADING:
+                active.PlayAnimation("Reload", {
+                    cycle: false,
+                    callback: () => active.PlayAnimation("Active", { cycle: true })
+                });
+                inactive.PlayAnimation("Reload", {
+                    cycle: false,
+                    callback: () => inactive.PlayAnimation("Active", { cycle: true })
+                });
                 break;
 
             case EveTurretSet.State.PACKING:
@@ -1349,10 +1686,17 @@ export class EveTurretSet extends EveObjectSet
 
         const source = EveTurretSet.global.vec3_1;
         vec3.set(source, this._parentTransform[12], this._parentTransform[13], this._parentTransform[14]);
+        this.firingEffect?.GetStartPosition?.(source);
         if (this.target)
         {
             this.target.Update(dt, source);
             this.target.GetTrackingPosition(this._targetPosition);
+        }
+
+        if (this._state === EveTurretSet.State.FIRING && !this._hasSelectionTargetPosition)
+        {
+            vec3.copy(this._selectionTargetPosition, this._targetPosition);
+            this._hasSelectionTargetPosition = true;
         }
 
         this.UpdateTrackingInfluence(dt);
@@ -1364,84 +1708,108 @@ export class EveTurretSet extends EveObjectSet
             this._inactiveAnimation.Update(dt);
         }
 
-        if (this.firingEffect && this._visibleItems.length)
+        if (this.firingEffect)
         {
-            if (this._activeTurret !== -1)
+            if (this.items)
             {
-                if (this.firingEffect.isLoopFiring)
+                // A firing request can arrive before locators/items are ready. Once
+                // they appear, recover the active turret without requiring another
+                // Fire call from the caller.
+                if (this._state === EveTurretSet.State.FIRING && !this.items[this._activeTurret])
                 {
-                    if (this._state === EveTurretSet.State.FIRING)
+                    const pair = this.GetClosestTurretAndLocator();
+                    if (pair.turret !== -1) this.DoStartFiring(false, true, pair);
+                }
+
+                if (this._activeTurret !== -1)
+                {
+                    if (this.firingEffect.isLoopFiring)
                     {
-                        this._recheckTimeLeft -= dt;
-                        if (this._recheckTimeLeft <= 0)
+                        if (this._state === EveTurretSet.State.FIRING)
                         {
-                            this.DoStartFiring();
+                            this._recheckTimeLeft -= dt;
+                            if (this._recheckTimeLeft <= 0)
+                            {
+                                const targetMoved = vec3.squaredDistance(
+                                    this._selectionTargetPosition,
+                                    this._targetPosition
+                                ) > EveTurretSet.TARGET_RESELECT_EPSILON_SQUARED;
+                                const pair = targetMoved
+                                    ? this.GetClosestTurretAndLocator()
+                                    : {
+                                        turret: this._activeTurret,
+                                        locator: this.target?.GetLocator?.() ?? -1
+                                    };
+                                const forcedLoop = this.firingEffect.IsLoopFiringForced?.() ?? false;
+                                if (forcedLoop)
+                                {
+                                    // Runtime continuous fire can be applied to
+                                    // authored one-shot effects. Rearm their
+                                    // curves; StartMoving alone is a no-op for
+                                    // EveStretch2 and leaves the weapon dark.
+                                    this.DoStartFiring(false, true, pair);
+                                    this.PlayFireAnimation();
+                                }
+                                else if (pair.turret !== this._activeTurret || pair.locator !== this.target?.GetLocator?.())
+                                {
+                                    this.DoStartFiring(false, false, pair);
+                                }
+                                if (targetMoved)
+                                {
+                                    vec3.copy(this._selectionTargetPosition, this._targetPosition);
+                                }
+                                if (!forcedLoop) this._recheckTimeLeft = 2;
+                            }
                         }
                     }
-                }
 
-                const activeTurret = this.items[this._activeTurret];
+                    const activeTurret = this.items[this._activeTurret];
 
-                // The index can outlive the item it names. `items` is rebuilt
-                // whenever turrets are mounted, unmounted or the locators
-                // change, and `_activeTurret` is not revised with it - the only
-                // check here was against the -1 sentinel, which says nothing
-                // about whether the index is still in range. A stale one read
-                // `undefined._localTransform` below and threw from inside
-                // `EveSpaceScene.Update`, killing the whole update pass.
-                //
-                // Treated as "no active turret", which is what it now is: the
-                // set reselects one the next time it fires.
-                if (!activeTurret)
-                {
-                    this._activeTurret = -1;
-                }
-                else if (this._activeAnimation.models.length)
-                {
-                    const
-                        model = this._activeAnimation.models[0],
-                        bones = model.bonesByName,
-                        trackedPose = this.UpdateTrackingPose(this._activeAnimation, activeTurret);
-
-                    for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
+                    // The index can outlive the item it names. `items` is rebuilt
+                    // whenever turrets are mounted, unmounted or the locators
+                    // change, and `_activeTurret` is not revised with it - the only
+                    // check here was against the -1 sentinel, which says nothing
+                    // about whether the index is still in range. A stale one read
+                    // `undefined._localTransform` below and threw from inside
+                    // `EveSpaceScene.Update`, killing the whole update pass.
+                    //
+                    // Treated as "no active turret", which is what it now is: the
+                    // set reselects one the next time it fires.
+                    if (!activeTurret)
                     {
-                        const
-                            bone = bones[EveTurretSet.positionBoneSkeletonNames[i]],
-                            out = this.firingEffect.GetMuzzleTransform(i);
-
-                        mat4.copy(out, activeTurret._localTransform);
-                        if (bone)
+                        this._activeTurret = -1;
+                        this._fireCallbackPending = false;
+                    }
+                    else
+                    {
+                        for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
                         {
-                            const transform = trackedPose ?
-                                trackedPose.worldTransforms[bone._skeletonIndex] :
-                                bone.worldTransform;
-                            mat4.multiply(out, out, transform);
+                            this.GetFiringBoneWorldTransform(this.firingEffect.GetMuzzleTransform(i), i);
                         }
-                        mat4.multiply(out, this._parentTransform, out);
+                    }
+
+                    if (activeTurret && this._fireCallbackPending)
+                    {
+                        if (this._fireCallback)
+                        {
+                            const transforms = [];
+                            for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
+                            {
+                                transforms.push(this.firingEffect.GetMuzzleTransform(i));
+                            }
+                            this._fireCallback(this, transforms, activeTurret);
+                        }
+                        this._fireCallbackPending = false;
+
+                        this.EmitEvent("fired", { turretSet: this, turret: activeTurret });
                     }
                 }
                 else
                 {
                     for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
                     {
-                        mat4.multiply(this.firingEffect.GetMuzzleTransform(i), this._parentTransform, activeTurret._localTransform);
+                        mat4.copy(this.firingEffect.GetMuzzleTransform(i), this._parentTransform);
                     }
-                }
-
-                if (this._fireCallbackPending)
-                {
-                    if (this._fireCallback)
-                    {
-                        const transforms = [];
-                        for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
-                        {
-                            transforms.push(this.firingEffect.GetMuzzleTransform(i));
-                        }
-                        this._fireCallback(this, transforms, activeTurret);
-                    }
-                    this._fireCallbackPending = false;
-
-                    this.EmitEvent("fired", { turretSet: this, turret: activeTurret });
                 }
             }
 
@@ -1707,7 +2075,7 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Animation helper function for turret firing
      */
-    DoStartFiring()
+    DoStartFiring(continueLoop = false, prepareEffect = true, selectedPair = null, trackingDelay = 0)
     {
         if (this.maxCyclingFirePos > 1)
         {
@@ -1718,43 +2086,46 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
-        this._activeTurret = this.GetClosestTurret();
+        const pair = selectedPair || this.GetClosestTurretAndLocator();
+        this._activeTurret = pair.turret;
 
         const g = EveTurretSet.global;
         vec3.set(g.vec3_1, this._parentTransform[12], this._parentTransform[13], this._parentTransform[14]);
-        let locator = -1;
-        if (this._activeTurret !== -1 && this.target?.GetTargetable())
-        {
-            const item = this.items[this._activeTurret];
-            vec3.set(g.vec3_2, item._localTransform[12], item._localTransform[13], item._localTransform[14]);
-            vec3.transformMat4(g.vec3_2, g.vec3_2, this._parentTransform);
-            locator = this.chooseRandomLocator
-                ? this.target.FindRandomValidLocator(g.vec3_2, g.vec3_3)
-                : this.target.FindClosestLocator(g.vec3_2, g.vec3_3);
-        }
 
         this._randomFiringDelay = this.firingEffect && this.useRandomFiringDelay
             ? this.GetShotTimeVariance() * Math.random()
             : 0;
+        this._randomFiringDelay += Math.max(Number(trackingDelay) || 0, 0);
 
-        if (this.firingEffect)
+        if (this.firingEffect && prepareEffect)
         {
-            this.firingEffect.PrepareFiring(
-                this._randomFiringDelay,
-                this.maxCyclingFirePos > 1 ? this._currentCyclingFiresPos : -1,
-                this.maxCyclingFirePos > 1 ? this.cyclingFireGroupCount : -1
-            );
+            if (continueLoop && (this.firingEffect.IsLooping?.() ?? this.firingEffect.isLoopFiring))
+            {
+                this.firingEffect.PrepareFiringEffectMoveObjects?.();
+            }
+            else
+            {
+                this.firingEffect.PrepareFiring(
+                    this._randomFiringDelay,
+                    this.maxCyclingFirePos > 1 ? this._currentCyclingFiresPos : -1,
+                    this.maxCyclingFirePos > 1 ? this.cyclingFireGroupCount : -1
+                );
+            }
             this.firingEffect.SetImpactConfiguration?.(this.target?.GetImpactConfiguration?.() ?? 0);
         }
 
         const duration = Number(this.firingEffect?.GetFiringDuration?.() ?? 0);
         const peak = Number(this.firingEffect?.GetFiringPeakTime?.() ?? 0);
-        this.target?.StartFireAtLocator(locator, this._randomFiringDelay + peak, Math.max(duration - peak, 0), g.vec3_1);
+        this.target?.StartFireAtLocator(pair.locator, this._randomFiringDelay + peak, Math.max(duration - peak, 0), g.vec3_1);
 
         this._state = EveTurretSet.State.FIRING;
-        this._recheckTimeLeft = 2;
+        this._hasSelectionTargetPosition = false;
+        const forcedLoop = this.firingEffect?.IsLoopFiringForced?.() ?? false;
+        this._recheckTimeLeft = forcedLoop
+            ? Math.max(duration + this._randomFiringDelay, EveTurretSet.MIN_REPEAT_INTERVAL)
+            : 2;
 
-        this._fireCallbackPending = true;
+        this._fireCallbackPending = prepareEffect;
     }
 
     /**
@@ -1762,6 +2133,7 @@ export class EveTurretSet extends EveObjectSet
      */
     DoStopFiring()
     {
+        this._hasSelectionTargetPosition = false;
         this.target?.StopFireAtLocator();
         if (this.firingEffect)
         {
@@ -1801,7 +2173,8 @@ export class EveTurretSet extends EveObjectSet
         FIRING: 2,
         PACKING: 3,
         UNPACKING: 4,
-        TARGETING: 5
+        TARGETING: 5,
+        RELOADING: 6
     };
 
     /**
@@ -1827,14 +2200,19 @@ export class EveTurretSet extends EveObjectSet
      * no state at all and the count would sit at zero forever, looking like
      * a feature that was simply never hooked up.
      *
-     * Ported by meaning instead. We have no RELOADING, so FIRING is the whole
-     * of it; add the other arm here rather than at the call site if reloading
-     * is ever modelled.
+     * Ported by meaning instead: both FIRING and RELOADING count as active.
      * @returns {Boolean}
      */
     IsActive()
     {
-        return this._state === EveTurretSet.State.FIRING;
+        return this._state === EveTurretSet.State.FIRING ||
+            this._state === EveTurretSet.State.RELOADING;
+    }
+
+    /** @returns {Number} Carbon state ordinal */
+    GetState()
+    {
+        return this.state;
     }
 
     static CarbonState = {
@@ -1844,6 +2222,26 @@ export class EveTurretSet extends EveObjectSet
         TARGETING: 3,
         FIRING: 4,
         RELOADING: 5
+    };
+
+    /** Internal animation state to Carbon's public/persisted state. */
+    static RuntimeToCarbonState = {
+        [EveTurretSet.State.INACTIVE]: EveTurretSet.CarbonState.DEACTIVE,
+        [EveTurretSet.State.IDLE]: EveTurretSet.CarbonState.IDLE,
+        [EveTurretSet.State.FIRING]: EveTurretSet.CarbonState.FIRING,
+        [EveTurretSet.State.PACKING]: EveTurretSet.CarbonState.DEACTIVE,
+        [EveTurretSet.State.UNPACKING]: EveTurretSet.CarbonState.TARGETING,
+        [EveTurretSet.State.TARGETING]: EveTurretSet.CarbonState.TARGETING,
+        [EveTurretSet.State.RELOADING]: EveTurretSet.CarbonState.RELOADING
+    };
+
+    /** Carbon's public/persisted state to the internal animation state. */
+    static CarbonToRuntimeState = {
+        [EveTurretSet.CarbonState.DEACTIVE]: EveTurretSet.State.INACTIVE,
+        [EveTurretSet.CarbonState.IDLE]: EveTurretSet.State.IDLE,
+        [EveTurretSet.CarbonState.TARGETING]: EveTurretSet.State.TARGETING,
+        [EveTurretSet.CarbonState.FIRING]: EveTurretSet.State.FIRING,
+        [EveTurretSet.CarbonState.RELOADING]: EveTurretSet.State.RELOADING
     };
 
     /**
@@ -1937,6 +2335,13 @@ export class EveTurretSet extends EveObjectSet
 
     /** EVE_MAX_TURRETS_PER_SET (EveTurretSet.h:42). */
     static MAX_TURRETS = 24;
+
+    static TARGET_RESELECT_EPSILON_SQUARED = 1e-6;
+
+    static MIN_REPEAT_INTERVAL = 1 / 60;
+
+    /** Carbon's invalid skeleton joint sentinel. */
+    static INVALID_BONE_INDEX = 0xffffffff;
 
     /** `defaultBonesPerTurret` (EveTurretSet.cpp:2314) - the FALLBACK only. */
     static DEFAULT_BONES_PER_TURRET = 3;

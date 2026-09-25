@@ -24,6 +24,24 @@ export class EveSOFDataGenericHullDamage extends meta.Model
     @meta.float
     hullParticleColorMidpoint = 0.5;
 
+    /**
+     * Alias for the alternate midpoint spelling used by armour damage data.
+     * @returns {Number}
+     */
+    get hullParticleColorMidPoint()
+    {
+        return this.hullParticleColorMidpoint;
+    }
+
+    /**
+     * Alias for the alternate midpoint spelling used by armour damage data.
+     * @param {Number} value
+     */
+    set hullParticleColorMidPoint(value)
+    {
+        this.hullParticleColorMidpoint = value;
+    }
+
     @meta.float
     hullParticleDrag = 0;
 

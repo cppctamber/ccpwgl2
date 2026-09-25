@@ -297,6 +297,13 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
             if (paramsData.turbulenceFrequency !== undefined) this.turbulenceFrequency = paramsData.turbulenceFrequency;
             if (paramsData.gravity !== undefined) this.gravity = paramsData.gravity;
             if (paramsData.velocityStretchRotation !== undefined) this.velocityStretchRotation = paramsData.velocityStretchRotation;
+            if (paramsData.colors)
+            {
+                if (paramsData.colors[0]) vec4.copy(this.color0, paramsData.colors[0]);
+                if (paramsData.colors[1]) vec4.copy(this.color1, paramsData.colors[1]);
+                if (paramsData.colors[2]) vec4.copy(this.color2, paramsData.colors[2]);
+                if (paramsData.colors[3]) vec4.copy(this.color3, paramsData.colors[3]);
+            }
         }
 
         this.UpdateHash();

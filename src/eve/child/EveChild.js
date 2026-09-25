@@ -146,6 +146,38 @@ export class EveChild extends meta.Model
 
     }
 
+    /** Appends geometry owned by this child for merged damage/locator systems. */
+    CollectOwnedGeometry(type, parentTransform, out = [], areaPool = [])
+    {
+        return out;
+    }
+
+    /** Appends locator sets owned by this child. */
+    CollectOwnedLocatorSets(parentTransform, out = [])
+    {
+        return out;
+    }
+
+    GetPartDamageOverlay(partTag)
+    {
+        return null;
+    }
+
+    CreatePartDamageOverlay(partTag)
+    {
+
+    }
+
+    GetPartArmorDamageShaderEffect(partTag)
+    {
+        return null;
+    }
+
+    GetPartDamageLocatorAnimatedLocal(partTag, index, position, direction)
+    {
+        return false;
+    }
+
     /** Carbon's optional procedural-child variable contract. */
     SetProceduralContainerVariable(name, value)
     {

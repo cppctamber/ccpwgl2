@@ -1,4 +1,6 @@
 export * from "./EveLensflare";
+export * from "./EveDamageOverlay";
+export * from "./EveImpactOverlay";
 export * from "./EveMeshOverlayEffect";
 export * from "./EveMultiEffect";
 export * from "./EveMultiEffectParameter";
@@ -6,3 +8,4 @@ export * from "./EveOccluder";
 export * from "./EveStretch";
 export * from "./EveStretch2";
 export * from "./EveTurretFiringFX";
+export * from "./overlayBatches";

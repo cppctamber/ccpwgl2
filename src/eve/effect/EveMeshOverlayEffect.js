@@ -1,6 +1,7 @@
 import { meta, toArray, assignIfExists } from "utils";
-import { Tw2GeometryBatch, Tw2Effect } from "core";
+import { Tw2Effect } from "core";
 import { Tw2CurveSet } from "curve";
+import { CollectOverlayAreaBlocks, EmitOverlayBatches } from "./overlayBatches";
 import {
     RM_OPAQUE,
     RM_TRANSPARENT,
@@ -34,6 +35,9 @@ export class EveMeshOverlayEffect extends meta.Model
 
     @meta.list("Tw2Effect")
     additiveEffects = [];
+
+    @meta.list("Tr2Controller")
+    controllers = [];
 
     @meta.struct("Tw2CurveSet")
     curveSet = null;
@@ -77,7 +81,78 @@ export class EveMeshOverlayEffect extends meta.Model
         if (this.update && this.curveSet)
         {
             this.curveSet.UpdateDelta(dt);
+            for (const controller of this.controllers)
+            {
+                controller?.Update?.(0.5);
+            }
         }
+    }
+
+    Initialize()
+    {
+        for (const controller of this.controllers)
+        {
+            if (!controller?.IsLinked?.()) controller?.Link?.(this);
+        }
+        return true;
+    }
+
+    SetControllerVariable(name, value)
+    {
+        let handled = false;
+        for (const controller of this.controllers)
+        {
+            if (controller?.SetVariable?.(name, value)) handled = true;
+        }
+        return handled;
+    }
+
+    HandleControllerEvent(name)
+    {
+        let handled = false;
+        for (const controller of this.controllers)
+        {
+            if (controller?.HandleEvent?.(name)) handled = true;
+        }
+        return handled;
+    }
+
+    StartControllers()
+    {
+        for (const controller of this.controllers) controller?.Start?.();
+    }
+
+    PlayCurveSet(name, rangeName = "")
+    {
+        if (!this.curveSet || this.curveSet.GetName() !== name) return false;
+        if (rangeName) this.curveSet.PlayTimeRange(rangeName);
+        else
+        {
+            this.curveSet.ResetTimeRange();
+            this.curveSet.Play();
+        }
+        return true;
+    }
+
+    StopCurveSet(name)
+    {
+        if (!this.curveSet || this.curveSet.GetName() !== name) return false;
+        this.curveSet.Stop();
+        return true;
+    }
+
+    GetCurveSetDuration(name)
+    {
+        return this.curveSet && this.curveSet.GetName() === name
+            ? Math.max(0, this.curveSet.GetMaxCurveDuration())
+            : 0;
+    }
+
+    GetRangeDuration(name, rangeName)
+    {
+        return this.curveSet && this.curveSet.GetName() === name
+            ? Math.max(0, this.curveSet.GetRangeDuration(rangeName))
+            : 0;
     }
 
     /** @param {EveUpdateContext} updateContext @param {Boolean} parentVisible */
@@ -112,20 +187,15 @@ export class EveMeshOverlayEffect extends meta.Model
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (!perObjectData) return false;
 
-        const effects = this.GetEffects(mode);
-        for (let i = 0; i < effects.length; i++)
-        {
-            const batch = new Tw2GeometryBatch();
-            batch.renderMode = mode;
-            batch.perObjectData = perObjectData;
-            batch.geometryRes = mesh.geometryResource;
-            batch.meshIx = mesh.meshIndex;
-            batch.start = 0;
-            batch.count = mesh.geometryResource.meshes[mesh.meshIndex].areas.length;
-            batch.effect = effects[i];
-            accumulator.Commit(batch);
-        }
-        return effects.length > 0;
+        return EmitOverlayBatches(
+            accumulator,
+            perObjectData,
+            mode,
+            [ this ],
+            CollectOverlayAreaBlocks(mesh),
+            mesh.geometryResource,
+            mesh.meshIndex
+        );
     }
 
     /**
@@ -160,6 +230,18 @@ export class EveMeshOverlayEffect extends meta.Model
             }
         }
         return [];
+    }
+
+    GetType(mode)
+    {
+        return mode === RM_OPAQUE
+            ? EveMeshOverlayEffect.OverlayType.TYPE_OPAQUEONLY
+            : EveMeshOverlayEffect.OverlayType.TYPE_ALL;
+    }
+
+    HasTransparentArea()
+    {
+        return this.transparentEffects.length > 0;
     }
 
     /**
@@ -223,5 +305,11 @@ export class EveMeshOverlayEffect extends meta.Model
 
         return item;
     }
+
+    static OverlayType = Object.freeze({
+        TYPE_OPAQUEONLY: 0,
+        TYPE_ALL: 1,
+        TYPE_COUNT: 2
+    });
 
 }

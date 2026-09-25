@@ -4,6 +4,8 @@ import { GLESPerObjectDataEveSpaceObject, Tw2InstancedMesh, Tw2PerObjectData, Tw
 import { EveChild } from "./EveChild";
 import { EveChildUpdateParams } from "../EveChildUpdateParams";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
+import { EveDamageOverlay } from "../effect/EveDamageOverlay";
+import { CollectOverlayAreaBlocks, EmitDamageOverlayBatches } from "../effect/overlayBatches";
 
 
 @meta.define("EveChildMesh", true)
@@ -44,6 +46,18 @@ export class EveChildMesh extends EveChild
 
     @meta.list("EveMeshOverlayEffect")
     overlayEffects = [];
+
+    @meta.list("EveLocatorSets")
+    ownedLocatorSets = [];
+
+    @meta.struct("EveDamageOverlay")
+    damageOverlay = null;
+
+    @meta.struct("Tw2Effect")
+    armorDamageShader = null;
+
+    @meta.uint
+    partTag = 0;
 
     @meta.boolean
     inheritOverlayEffects = true;
@@ -293,6 +307,8 @@ export class EveChildMesh extends EveChild
     {
         if (this.mesh) this.mesh.GetResources(out);
         for (const attachment of this.attachments) attachment.GetResources(out);
+        for (const overlay of this.overlayEffects) overlay.GetResources?.(out);
+        if (this.armorDamageShader) this.armorDamageShader.GetResources(out);
         return out;
     }
 
@@ -316,6 +332,7 @@ export class EveChildMesh extends EveChild
         }
 
         this.UpdateAnimation(dt);
+        for (const overlay of this.overlayEffects) overlay.Update(dt);
 
         // The object or a modifier can set a bone
         this._hasBone = false;
@@ -461,7 +478,45 @@ export class EveChildMesh extends EveChild
     {
         if (!this.display || !this._isVisible || !this.mesh) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        perObjectData = this.PreparePerObjectData(perObjectData, accumulator);
         if (!perObjectData) return false;
+
+        let committed = this.mesh.GetBatches(mode, accumulator, perObjectData);
+
+        const damageEffect = this.damageOverlay?.GetArmorDamageShader(mode);
+        if (damageEffect && this.mesh.geometryResource)
+        {
+            committed = EmitDamageOverlayBatches(
+                accumulator,
+                perObjectData,
+                mode,
+                damageEffect,
+                CollectOverlayAreaBlocks(this.mesh),
+                this.mesh.geometryResource,
+                this.mesh.meshIndex
+            ) || committed;
+        }
+
+        for (const overlay of this.overlayEffects)
+        {
+            committed = overlay.GetBatches(mode, accumulator, perObjectData, this.mesh) || committed;
+        }
+        return committed;
+    }
+
+    /**
+     * Prepares the per-object payload supplied to this child's mesh batches.
+     * Subclasses with a different Carbon payload layout can override this hook;
+     * the default retains EveChildMesh's normal space-object/fixed-function
+     * behaviour.
+     *
+     * @param {Tw2PerObjectData} perObjectData - the parent object's payload
+     * @param {Tw2BatchAccumulator} _accumulator
+     * @returns {Tw2PerObjectData}
+     */
+    PreparePerObjectData(perObjectData, _accumulator)
+    {
+        if (!perObjectData) return null;
 
         if (this.useSpaceObjectData)
         {
@@ -523,7 +578,7 @@ export class EveChildMesh extends EveChild
             this._EnsureFixedFunctionTransforms();
         }
 
-        return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+        return this._perObjectData;
     }
 
     /**
@@ -681,6 +736,11 @@ export class EveChildMesh extends EveChild
         out.worldTransformLast = this._worldTransformLast;
         out.inverseWorldTransform = null;
         out.inverseWorldTransformTranspose = null;
+        if (this.damageOverlay && out.miscData)
+        {
+            out.miscData = Array.from(out.miscData);
+            out.miscData[1] = this.damageOverlay.GetDataTextureOffset();
+        }
 
         return out;
     }
@@ -727,6 +787,72 @@ export class EveChildMesh extends EveChild
             }
             attachment.GetLights(collector, parentContext);
         }
+    }
+
+    SetOwnedLocatorSets(sets)
+    {
+        this.ownedLocatorSets = Array.from(sets || []);
+    }
+
+    CollectOwnedLocatorSets(parentTransform, out = [])
+    {
+        if (!this.ownedLocatorSets.length) return out;
+        const childToObject = mat4.create();
+        mat4.multiply(childToObject, parentTransform, this.localTransform);
+        for (const sets of this.ownedLocatorSets)
+        {
+            out.push({ childToObject: mat4.clone(childToObject), owner: this, partTag: this.partTag, sets });
+        }
+        return out;
+    }
+
+    GetPartDamageOverlay(_partTag)
+    {
+        return this.damageOverlay;
+    }
+
+    CreatePartDamageOverlay(_partTag)
+    {
+        if (!this.damageOverlay) this.damageOverlay = new EveDamageOverlay();
+    }
+
+    SetArmorDamageShaderEffect(effect)
+    {
+        this.armorDamageShader = effect || null;
+    }
+
+    GetPartArmorDamageShaderEffect(_partTag)
+    {
+        return this.armorDamageShader;
+    }
+
+    GetOwnedDamageLocators()
+    {
+        for (const set of this.ownedLocatorSets)
+        {
+            if (set.HasName?.("damage") || set.name === "damage") return set.GetLocators?.() || set.locators;
+        }
+        return null;
+    }
+
+    GetDamageLocatorBindPositionLocal(index, out = vec3.create())
+    {
+        const locators = this.GetOwnedDamageLocators();
+        const locatorIndex = Number(index) | 0;
+        if (!locators || locatorIndex < 0 || locatorIndex >= locators.length) return null;
+        return vec3.copy(out, locators[locatorIndex].position);
+    }
+
+    GetPartDamageLocatorAnimatedLocal(_partTag, index, outPosition, outDirection)
+    {
+        const locators = this.GetOwnedDamageLocators();
+        const locatorIndex = Number(index) | 0;
+        if (!locators || locatorIndex < 0 || locatorIndex >= locators.length) return false;
+        const locator = locators[locatorIndex];
+        vec3.copy(outPosition, locator.position);
+        vec3.set(outDirection, 0, 0, 1);
+        vec3.transformQuat(outDirection, outDirection, locator.rotation);
+        return true;
     }
 
     static global = {

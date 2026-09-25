@@ -9,7 +9,6 @@ export * from "./EveChildExplosion";
 export * from "./EveChildFogVolume";
 export * from "./EveChildInheritProperties";
 export * from "./EveChildInstanceMeshRenderer";
-export * from "./EveChildInstancedMeshes";
 export * from "./EveChildLightingOverride";
 export * from "./EveChildLink";
 export * from "./EveChildParticleSphere";
