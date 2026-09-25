@@ -34,14 +34,6 @@
       });
     };
   }
-  function _classPrivateFieldLooseBase(e, t) {
-    if (!{}.hasOwnProperty.call(e, t)) throw new TypeError("attempted to use private field on non-instance");
-    return e;
-  }
-  var id = 0;
-  function _classPrivateFieldLooseKey(e) {
-    return "__private_" + id++ + "_" + e;
-  }
   function _defineProperty(e, r, t) {
     return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
       value: t,
@@ -184,9 +176,8 @@
    * Decorator-free base for every concrete format facade.
    *
    * The format subpaths must remain directly importable from authored source, so
-   * this base deliberately does not import the decorated CjsResourceProbe model.
-   * Formats return plain support reports; CjsResourceProbe.from() is the optional
-   * resource-layer normalization boundary.
+   * this base carries no decorators. Formats return plain support reports;
+   * CjsResourceProbe.from() is the optional resource-layer normalization.
    */
   class CjsFormat {
     /**
@@ -470,7 +461,7 @@
       if (Object.keys(inputs).length > 0 && defaults !== 1) {
         throw new TypeError("A format with inputs must declare exactly one default input.");
       }
-      return Object.freeze(inputs);
+      return inputs;
     }
 
     /** Freeze and validate one format's authoritative output map. */
@@ -603,9 +594,9 @@
     VIDEO: PayloadType.VIDEO
   });
   CjsFormat.id = "";
-  CjsFormat.mediaTypes = Object.freeze([]);
-  CjsFormat.extensions = Object.freeze([]);
-  CjsFormat.outputs = Object.freeze({});
+  CjsFormat.mediaTypes = [];
+  CjsFormat.extensions = [];
+  CjsFormat.outputs = {};
   /**
    * What this format can be written FROM, empty when it cannot be written.
    *
@@ -616,7 +607,7 @@
    * contract - it says nothing about what payload it takes or whether the
    * result is lossy.
    */
-  CjsFormat.inputs = Object.freeze({});
+  CjsFormat.inputs = {};
   CjsFormat.requestResponseType = "arraybuffer";
   CjsFormat.worker = null;
   function normalizeSupportReport(Format, rawReport, options) {
@@ -728,6 +719,115 @@
       } : null
     };
   }
+
+  /**
+   * The base of every geometry format (gr2, cmf, fbx, obj, stl, gltf): the
+   * geometry media type and the node-class registry that lets a caller hydrate a
+   * read into its own constructors instead of plain JSON.
+   *
+   * Not Carbon: Carbon reads geometry straight into Tr2GeometryRes and has no
+   * per-format class registry. The registry was copied into each format before
+   * this base existed (/docs/projects/geometry-format-overlap.md).
+   *
+   * A subclass supplies:
+   * - `static id` and `static classKeys`, the node keys `classes` may name;
+   * - `_classes`, the current map, which its `SetValues` merges `classes` into.
+   */
+  class CjsGeometryFormat extends CjsFormat {
+    constructor() {
+      super(...arguments);
+      /** Node key -> constructor; replaced, never mutated, so a copy handed out stays stable. */
+      this._classes = {};
+    }
+    /**
+     * Throw unless `key` is one of `classKeys`.
+     *
+     * @param {string} key Node class key.
+     * @param {readonly string[]} classKeys The keys a format accepts.
+     * @param {string} readerName Format name used in thrown errors.
+     */
+    static validateClassKey(key, classKeys, readerName) {
+      if (!classKeys.includes(key)) {
+        throw new Error("".concat(readerName, ": unknown class key ").concat(JSON.stringify(key), "; expected one of ").concat(classKeys.join(", ")));
+      }
+    }
+
+    /**
+     * Throw unless `key` is valid and `Class` is a constructor.
+     *
+     * @param {string} key Node class key.
+     * @param {Function} Class Candidate constructor.
+     * @param {readonly string[]} classKeys The keys a format accepts.
+     * @param {string} readerName Format name used in thrown errors.
+     */
+    static validateClass(key, Class, classKeys, readerName) {
+      CjsGeometryFormat.validateClassKey(key, classKeys, readerName);
+      if (typeof Class !== "function") {
+        throw new TypeError("".concat(readerName, ": class ").concat(JSON.stringify(key), " must be a constructor"));
+      }
+    }
+
+    /**
+     * Set several node-class constructors.
+     *
+     * @param {object} [classes] Node class key -> constructor.
+     * @returns {this} This format profile.
+     */
+    SetClasses() {
+      var classes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      return this.SetValues({
+        classes
+      });
+    }
+
+    /**
+     * Set one node-class constructor, or delete it with a nullish Class.
+     *
+     * @param {string} type Node class key.
+     * @param {Function|null|undefined} Class Constructor, or nullish to delete.
+     * @returns {this} This format profile.
+     */
+    SetClass(type, Class) {
+      var _this$constructor = this.constructor,
+        classKeys = _this$constructor.classKeys,
+        id = _this$constructor.id;
+      if (Class === null || Class === undefined) {
+        CjsGeometryFormat.validateClassKey(type, classKeys, id);
+        var classes = _objectSpread2({}, this._classes);
+        delete classes[type];
+        this._classes = classes;
+        return this;
+      }
+      CjsGeometryFormat.validateClass(type, Class, classKeys, id);
+      return this.SetValues({
+        classes: {
+          [type]: Class
+        }
+      });
+    }
+
+    /**
+     * The constructor registered for a node class key, if any.
+     *
+     * @param {string} type Node class key.
+     * @returns {Function|undefined} The constructor.
+     */
+    GetClass(type) {
+      CjsGeometryFormat.validateClassKey(type, this.constructor.classKeys, this.constructor.id);
+      return this._classes[type];
+    }
+
+    /**
+     * Whether a constructor is registered for a node class key.
+     *
+     * @param {string} type Node class key.
+     * @returns {boolean} True when one is.
+     */
+    HasClass(type) {
+      return !!this.GetClass(type);
+    }
+  }
+  CjsGeometryFormat.mediaTypes = ["geometry"];
 
   /**
    * Granny animation-curve decompression helpers
@@ -9126,12 +9226,6 @@
    * Every append returns the offset it wrote at, so the reserve-and-patch case is
    * just "keep the offset an append returned".
    */
-  var _bytes = /*#__PURE__*/_classPrivateFieldLooseKey("bytes");
-  var _view = /*#__PURE__*/_classPrivateFieldLooseKey("view");
-  var _length = /*#__PURE__*/_classPrivateFieldLooseKey("length");
-  var _ensure = /*#__PURE__*/_classPrivateFieldLooseKey("ensure");
-  var _advance = /*#__PURE__*/_classPrivateFieldLooseKey("advance");
-  var _requireWritten = /*#__PURE__*/_classPrivateFieldLooseKey("requireWritten");
   class CjsByteWriter {
     /**
      * Creates an empty writer with an initial capacity.
@@ -9140,47 +9234,12 @@
      */
     constructor() {
       var initialCapacity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1024;
-      /**
-       * Rejects a patch that falls outside the bytes already written.
-       *
-       * @param {number} offset Target offset.
-       * @param {number} size Patch byte count.
-       */
-      Object.defineProperty(this, _requireWritten, {
-        value: _requireWritten2
-      });
-      /**
-       * Reserves space for one append and returns the offset it starts at.
-       *
-       * @param {number} size Byte count for this append.
-       * @returns {number} Offset of the appended run.
-       */
-      Object.defineProperty(this, _advance, {
-        value: _advance2
-      });
-      /**
-       * Grows the buffer when a write would exceed capacity.
-       *
-       * @param {number} capacity Required total capacity.
-       */
-      Object.defineProperty(this, _ensure, {
-        value: _ensure2
-      });
-      Object.defineProperty(this, _bytes, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _view, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _length, {
-        writable: true,
-        value: 0
-      });
-      var _capacity = Number.isInteger(initialCapacity) && initialCapacity > 0 ? initialCapacity : 1024;
-      _classPrivateFieldLooseBase(this, _bytes)[_bytes] = new Uint8Array(_capacity);
-      _classPrivateFieldLooseBase(this, _view)[_view] = new DataView(_classPrivateFieldLooseBase(this, _bytes)[_bytes].buffer);
+      this._bytes = void 0;
+      this._view = void 0;
+      this._length = 0;
+      var capacity = Number.isInteger(initialCapacity) && initialCapacity > 0 ? initialCapacity : 1024;
+      this._bytes = new Uint8Array(capacity);
+      this._view = new DataView(this._bytes.buffer);
     }
 
     /**
@@ -9189,7 +9248,7 @@
      * @returns {number} Written byte count.
      */
     get length() {
-      return _classPrivateFieldLooseBase(this, _length)[_length];
+      return this._length;
     }
 
     /**
@@ -9199,8 +9258,8 @@
      * @returns {number} Offset the value was written at.
      */
     u8(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](1);
-      _classPrivateFieldLooseBase(this, _view)[_view].setUint8(offset, value & 0xff);
+      var offset = this._advance(1);
+      this._view.setUint8(offset, value & 0xff);
       return offset;
     }
 
@@ -9211,8 +9270,8 @@
      * @returns {number} Offset the value was written at.
      */
     u16(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](2);
-      _classPrivateFieldLooseBase(this, _view)[_view].setUint16(offset, value & 0xffff, true);
+      var offset = this._advance(2);
+      this._view.setUint16(offset, value & 0xffff, true);
       return offset;
     }
 
@@ -9223,8 +9282,8 @@
      * @returns {number} Offset the value was written at.
      */
     i16(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](2);
-      _classPrivateFieldLooseBase(this, _view)[_view].setInt16(offset, value | 0, true);
+      var offset = this._advance(2);
+      this._view.setInt16(offset, value | 0, true);
       return offset;
     }
 
@@ -9235,8 +9294,8 @@
      * @returns {number} Offset the value was written at.
      */
     u32(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](4);
-      _classPrivateFieldLooseBase(this, _view)[_view].setUint32(offset, value >>> 0, true);
+      var offset = this._advance(4);
+      this._view.setUint32(offset, value >>> 0, true);
       return offset;
     }
 
@@ -9247,8 +9306,8 @@
      * @returns {number} Offset the value was written at.
      */
     i32(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](4);
-      _classPrivateFieldLooseBase(this, _view)[_view].setInt32(offset, value | 0, true);
+      var offset = this._advance(4);
+      this._view.setInt32(offset, value | 0, true);
       return offset;
     }
 
@@ -9259,8 +9318,8 @@
      * @returns {number} Offset the value was written at.
      */
     i64(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](8);
-      _classPrivateFieldLooseBase(this, _view)[_view].setBigInt64(offset, BigInt(value), true);
+      var offset = this._advance(8);
+      this._view.setBigInt64(offset, BigInt(value), true);
       return offset;
     }
 
@@ -9271,8 +9330,8 @@
      * @returns {number} Offset the value was written at.
      */
     f32(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](4);
-      _classPrivateFieldLooseBase(this, _view)[_view].setFloat32(offset, Number(value) || 0, true);
+      var offset = this._advance(4);
+      this._view.setFloat32(offset, Number(value) || 0, true);
       return offset;
     }
 
@@ -9283,8 +9342,8 @@
      * @returns {number} Offset the value was written at.
      */
     f64(value) {
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](8);
-      _classPrivateFieldLooseBase(this, _view)[_view].setFloat64(offset, Number(value) || 0, true);
+      var offset = this._advance(8);
+      this._view.setFloat64(offset, Number(value) || 0, true);
       return offset;
     }
 
@@ -9306,8 +9365,8 @@
      */
     bytes(value) {
       var source = value instanceof Uint8Array ? value : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](source.byteLength);
-      _classPrivateFieldLooseBase(this, _bytes)[_bytes].set(source, offset);
+      var offset = this._advance(source.byteLength);
+      this._bytes.set(source, offset);
       return offset;
     }
 
@@ -9333,8 +9392,8 @@
           count
         });
       }
-      var offset = _classPrivateFieldLooseBase(this, _advance)[_advance](count);
-      _classPrivateFieldLooseBase(this, _bytes)[_bytes].fill(0, offset, offset + count);
+      var offset = this._advance(count);
+      this._bytes.fill(0, offset, offset + count);
       return offset;
     }
 
@@ -9345,8 +9404,8 @@
      * @param {number} value Integer value.
      */
     patchU8(offset, value) {
-      _classPrivateFieldLooseBase(this, _requireWritten)[_requireWritten](offset, 1);
-      _classPrivateFieldLooseBase(this, _view)[_view].setUint8(offset, value & 0xff);
+      this._requireWritten(offset, 1);
+      this._view.setUint8(offset, value & 0xff);
     }
 
     /**
@@ -9356,8 +9415,8 @@
      * @param {number} value Integer value.
      */
     patchU32(offset, value) {
-      _classPrivateFieldLooseBase(this, _requireWritten)[_requireWritten](offset, 4);
-      _classPrivateFieldLooseBase(this, _view)[_view].setUint32(offset, value >>> 0, true);
+      this._requireWritten(offset, 4);
+      this._view.setUint32(offset, value >>> 0, true);
     }
 
     /**
@@ -9368,8 +9427,8 @@
      */
     patchBytes(offset, value) {
       var source = value instanceof Uint8Array ? value : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      _classPrivateFieldLooseBase(this, _requireWritten)[_requireWritten](offset, source.byteLength);
-      _classPrivateFieldLooseBase(this, _bytes)[_bytes].set(source, offset);
+      this._requireWritten(offset, source.byteLength);
+      this._bytes.set(source, offset);
     }
 
     /**
@@ -9378,31 +9437,51 @@
      * @returns {Uint8Array} Written payload.
      */
     toBytes() {
-      return _classPrivateFieldLooseBase(this, _bytes)[_bytes].slice(0, _classPrivateFieldLooseBase(this, _length)[_length]);
+      return this._bytes.slice(0, this._length);
     }
-  }
-  function _ensure2(capacity) {
-    if (capacity <= _classPrivateFieldLooseBase(this, _bytes)[_bytes].length) return;
-    var next = _classPrivateFieldLooseBase(this, _bytes)[_bytes].length * 2;
-    while (next < capacity) next *= 2;
-    var grown = new Uint8Array(next);
-    grown.set(_classPrivateFieldLooseBase(this, _bytes)[_bytes].subarray(0, _classPrivateFieldLooseBase(this, _length)[_length]));
-    _classPrivateFieldLooseBase(this, _bytes)[_bytes] = grown;
-    _classPrivateFieldLooseBase(this, _view)[_view] = new DataView(grown.buffer);
-  }
-  function _advance2(size) {
-    var offset = _classPrivateFieldLooseBase(this, _length)[_length];
-    _classPrivateFieldLooseBase(this, _ensure)[_ensure](offset + size);
-    _classPrivateFieldLooseBase(this, _length)[_length] = offset + size;
-    return offset;
-  }
-  function _requireWritten2(offset, size) {
-    if (!Number.isInteger(offset) || offset < 0 || offset + size > _classPrivateFieldLooseBase(this, _length)[_length]) {
-      throw new CjsFormatWriteError("Patch target is outside the written range", {
-        offset,
-        size,
-        length: _classPrivateFieldLooseBase(this, _length)[_length]
-      });
+
+    /**
+     * Grows the buffer when a write would exceed capacity.
+     *
+     * @param {number} capacity Required total capacity.
+     */
+    _ensure(capacity) {
+      if (capacity <= this._bytes.length) return;
+      var next = this._bytes.length * 2;
+      while (next < capacity) next *= 2;
+      var grown = new Uint8Array(next);
+      grown.set(this._bytes.subarray(0, this._length));
+      this._bytes = grown;
+      this._view = new DataView(grown.buffer);
+    }
+
+    /**
+     * Reserves space for one append and returns the offset it starts at.
+     *
+     * @param {number} size Byte count for this append.
+     * @returns {number} Offset of the appended run.
+     */
+    _advance(size) {
+      var offset = this._length;
+      this._ensure(offset + size);
+      this._length = offset + size;
+      return offset;
+    }
+
+    /**
+     * Rejects a patch that falls outside the bytes already written.
+     *
+     * @param {number} offset Target offset.
+     * @param {number} size Patch byte count.
+     */
+    _requireWritten(offset, size) {
+      if (!Number.isInteger(offset) || offset < 0 || offset + size > this._length) {
+        throw new CjsFormatWriteError("Patch target is outside the written range", {
+          offset,
+          size,
+          length: this._length
+        });
+      }
     }
   }
 
@@ -11989,14 +12068,7 @@
    * writes pure-JavaScript GR2 geometry from CMF without pretending those
    * classes are the engine runtime itself.
    */
-  var _emit = /*#__PURE__*/_classPrivateFieldLooseKey("emit");
-  var _decompressCurves = /*#__PURE__*/_classPrivateFieldLooseKey("decompressCurves");
-  var _unpackTangents = /*#__PURE__*/_classPrivateFieldLooseKey("unpackTangents");
-  var _rebuildMissingNormals = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingNormals");
-  var _rebuildMissingTangents = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingTangents");
-  var _rebuildMissingBiNormals = /*#__PURE__*/_classPrivateFieldLooseKey("rebuildMissingBiNormals");
-  var _classes = /*#__PURE__*/_classPrivateFieldLooseKey("classes");
-  class CjsGr2Format extends CjsFormat {
+  class CjsGr2Format extends CjsGeometryFormat {
     /**
      * Create a reusable format profile.
      *
@@ -12005,34 +12077,13 @@
     constructor() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       super();
-      Object.defineProperty(this, _emit, {
-        writable: true,
-        value: DEFAULT_VALUES.emit
-      });
-      Object.defineProperty(this, _decompressCurves, {
-        writable: true,
-        value: DEFAULT_VALUES.decompressCurves
-      });
-      Object.defineProperty(this, _unpackTangents, {
-        writable: true,
-        value: DEFAULT_VALUES.unpackTangents
-      });
-      Object.defineProperty(this, _rebuildMissingNormals, {
-        writable: true,
-        value: DEFAULT_VALUES.rebuildMissingNormals
-      });
-      Object.defineProperty(this, _rebuildMissingTangents, {
-        writable: true,
-        value: DEFAULT_VALUES.rebuildMissingTangents
-      });
-      Object.defineProperty(this, _rebuildMissingBiNormals, {
-        writable: true,
-        value: DEFAULT_VALUES.rebuildMissingBiNormals
-      });
-      Object.defineProperty(this, _classes, {
-        writable: true,
-        value: {}
-      });
+      this._emit = DEFAULT_VALUES.emit;
+      this._decompressCurves = DEFAULT_VALUES.decompressCurves;
+      this._unpackTangents = DEFAULT_VALUES.unpackTangents;
+      this._rebuildMissingNormals = DEFAULT_VALUES.rebuildMissingNormals;
+      this._rebuildMissingTangents = DEFAULT_VALUES.rebuildMissingTangents;
+      this._rebuildMissingBiNormals = DEFAULT_VALUES.rebuildMissingBiNormals;
+      this._classes = {};
       this.SetValues(options);
     }
 
@@ -12045,13 +12096,13 @@
     SetValues() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var values = normalizeValues(this.GetValues(), options);
-      _classPrivateFieldLooseBase(this, _emit)[_emit] = values.emit;
-      _classPrivateFieldLooseBase(this, _decompressCurves)[_decompressCurves] = values.decompressCurves;
-      _classPrivateFieldLooseBase(this, _unpackTangents)[_unpackTangents] = values.unpackTangents;
-      _classPrivateFieldLooseBase(this, _rebuildMissingNormals)[_rebuildMissingNormals] = values.rebuildMissingNormals;
-      _classPrivateFieldLooseBase(this, _rebuildMissingTangents)[_rebuildMissingTangents] = values.rebuildMissingTangents;
-      _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals)[_rebuildMissingBiNormals] = values.rebuildMissingBiNormals;
-      _classPrivateFieldLooseBase(this, _classes)[_classes] = values.classes;
+      this._emit = values.emit;
+      this._decompressCurves = values.decompressCurves;
+      this._unpackTangents = values.unpackTangents;
+      this._rebuildMissingNormals = values.rebuildMissingNormals;
+      this._rebuildMissingTangents = values.rebuildMissingTangents;
+      this._rebuildMissingBiNormals = values.rebuildMissingBiNormals;
+      this._classes = values.classes;
       return this;
     }
 
@@ -12064,68 +12115,14 @@
     GetValues() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       return normalizeValues({
-        emit: _classPrivateFieldLooseBase(this, _emit)[_emit],
-        decompressCurves: _classPrivateFieldLooseBase(this, _decompressCurves)[_decompressCurves],
-        unpackTangents: _classPrivateFieldLooseBase(this, _unpackTangents)[_unpackTangents],
-        rebuildMissingNormals: _classPrivateFieldLooseBase(this, _rebuildMissingNormals)[_rebuildMissingNormals],
-        rebuildMissingTangents: _classPrivateFieldLooseBase(this, _rebuildMissingTangents)[_rebuildMissingTangents],
-        rebuildMissingBiNormals: _classPrivateFieldLooseBase(this, _rebuildMissingBiNormals)[_rebuildMissingBiNormals],
-        classes: _classPrivateFieldLooseBase(this, _classes)[_classes]
+        emit: this._emit,
+        decompressCurves: this._decompressCurves,
+        unpackTangents: this._unpackTangents,
+        rebuildMissingNormals: this._rebuildMissingNormals,
+        rebuildMissingTangents: this._rebuildMissingTangents,
+        rebuildMissingBiNormals: this._rebuildMissingBiNormals,
+        classes: this._classes
       }, options);
-    }
-
-    /**
-     * Set multiple GR2 JSON node constructors for this profile.
-     *
-     * @param {object} [classes] Map of node class keys to constructors.
-     * @returns {CjsGr2Format} This format profile.
-     */
-    SetClasses() {
-      var classes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      return this.SetValues({
-        classes
-      });
-    }
-
-    /**
-     * Set a GR2 JSON node constructor for this profile.
-     *
-     * @param {string} type Node class key.
-     * @param {Function|null|undefined} Class Constructor to use, or nullish to delete.
-     * @returns {CjsGr2Format} This format profile.
-     */
-    SetClass(type, Class) {
-      validateClassKey(type);
-      if (Class === null || Class === undefined) {
-        delete _classPrivateFieldLooseBase(this, _classes)[_classes][type];
-        return this;
-      }
-      validateClass(type, Class);
-      _classPrivateFieldLooseBase(this, _classes)[_classes] = _objectSpread2(_objectSpread2({}, _classPrivateFieldLooseBase(this, _classes)[_classes]), {}, {
-        [type]: Class
-      });
-      return this;
-    }
-
-    /**
-     * Get a configured GR2 JSON node constructor.
-     *
-     * @param {string} type Node class key.
-     * @returns {Function|undefined}
-     */
-    GetClass(type) {
-      validateClassKey(type);
-      return _classPrivateFieldLooseBase(this, _classes)[_classes][type];
-    }
-
-    /**
-     * Whether this reader has a constructor for a GR2 JSON node key.
-     *
-     * @param {string} type Node class key.
-     * @returns {boolean}
-     */
-    HasClass(type) {
-      return !!this.GetClass(type);
     }
 
     /**
@@ -12330,14 +12327,8 @@
       })();
     }
   }
-  CjsGr2Format.OUTPUT_JSON = OUTPUT_JSON;
-  CjsGr2Format.OUTPUT_GR2 = OUTPUT_GR2;
-  CjsGr2Format.OUTPUT_GR2_JSON = OUTPUT_GR2_JSON;
-  CjsGr2Format.OUTPUT_CMF = OUTPUT_CMF;
-  CjsGr2Format.OUTPUT_RAW = OUTPUT_RAW;
-  CjsGr2Format.CLASS_KEYS = CLASS_KEYS;
-  CjsGr2Format.id = "gr2";
-  CjsGr2Format.mediaTypes = Object.freeze(["geometry"]);
+  CjsGr2Format.classKeys = CLASS_KEYS;
+  CjsGr2Format.id = "CjsGr2Format";
   // Same shape as the other geometry writers: a native CMF v1 graph is the
   // default input, and `writeShared` adapts a shared or GR2-shaped root.
   CjsGr2Format.inputs = CjsFormat.defineInputs({
@@ -12372,20 +12363,15 @@
       decoded: true
     }
   });
-  CjsGr2Format.extensions = Object.freeze([".gr2", ".gsf"]);
+  CjsGr2Format.extensions = [".gr2", ".gsf"];
   CjsGr2Format.curves = curves;
   CjsGr2Format.tangents = tangents;
-  CjsGr2Format.gsf = Object.freeze({
-    isRaw: isGsfRaw,
-    project: projectGsf,
-    inspectRaw: inspectGsfRaw
-  });
 
   /** Pure data preparation shared by the worker and main-thread fallback. */
   function prepareGr2(data) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var raw = CjsGr2Format.readRaw(data);
-    if (CjsGr2Format.gsf.isRaw(raw)) throw Object.assign(new Error("Granny State files are not render geometry"), {
+    if (CjsGr2Format.isGsf(raw)) throw Object.assign(new Error("Granny State files are not render geometry"), {
       name: "ErrGr2GeometryExpected"
     });
     var json = CjsGr2Format.read(raw, {
