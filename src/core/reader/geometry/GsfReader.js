@@ -53,7 +53,7 @@ export class GsfReader
             ? input
             : CjsGr2Format.readRaw(input);
 
-        if (!CjsGr2Format.gsf.isRaw(raw))
+        if (!CjsGr2Format.isGsf(raw))
         {
             throw new TypeError("GsfReader expected Granny State data");
         }
@@ -71,7 +71,7 @@ export class GsfReader
         return !!value &&
             typeof value === "object" &&
             typeof value.version === "number" &&
-            CjsGr2Format.gsf.isRaw(value);
+            CjsGr2Format.isGsf(value);
     }
 
     /**

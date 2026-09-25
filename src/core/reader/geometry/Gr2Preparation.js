@@ -4,7 +4,7 @@ import { CjsGr2Format } from "@carbonenginejs/runtime/resource/formats/gr2";
 export function prepareGr2(data, options = {})
 {
     const raw = CjsGr2Format.readRaw(data);
-    if (CjsGr2Format.gsf.isRaw(raw)) throw Object.assign(new Error("Granny State files are not render geometry"), { name: "ErrGr2GeometryExpected" });
+    if (CjsGr2Format.isGsf(raw)) throw Object.assign(new Error("Granny State files are not render geometry"), { name: "ErrGr2GeometryExpected" });
     const json = CjsGr2Format.read(raw, { emit: "json", unpackTangents: !!options.unpackTangents, decompressCurves: true });
     restoreGr2VertexChannels(raw, json);
     return prepareGr2JSON(json, options);

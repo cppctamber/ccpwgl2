@@ -43,11 +43,11 @@ export class AudioFormatWem
     /**
      * Content-verified codec resolution
      * @param {Uint8Array} bytes
-     * @return {Promise<*>}
+     * @return {Object}
      */
     static resolveType(bytes)
     {
-        return CjsWemFormat.resolveType(bytes);
+        return CjsWemFormat.inspect(bytes);
     }
 
     /**
