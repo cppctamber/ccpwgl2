@@ -1,7 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
-import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 
 
 const WIDTH = 256;
@@ -29,6 +28,17 @@ export class Tr2DataTextureManager extends meta.Model
     _nextBlockID = 1;
     _initialized = false;
 
+    /** Publishes Carbon's shared sampler before effects bind auto parameters. */
+    constructor()
+    {
+        super();
+        this.textureRes = new Tw2TextureRes();
+        this.textureParameter = tw2.HasVariable("ImpactShieldDataMap")
+            ? tw2.GetVariable("ImpactShieldDataMap")
+            : tw2.SetVariable("ImpactShieldDataMap", "");
+        this.textureParameter.AttachTextureRes(this.textureRes);
+    }
+
     /** Creates and publishes the RGBA32F texture used by impact shaders. */
     Initialize()
     {
@@ -55,7 +65,6 @@ export class Tr2DataTextureManager extends meta.Model
         );
         gl.bindTexture(gl.TEXTURE_2D, null);
 
-        this.textureRes = new Tw2TextureRes();
         this.textureRes.Attach(texture, "dynamic:/impactshielddatamap");
         this.textureRes._target = gl.TEXTURE_2D;
         this.textureRes._width = WIDTH;
@@ -69,10 +78,6 @@ export class Tr2DataTextureManager extends meta.Model
         this.textureRes._mipCount = 1;
         this.textureRes._isPowerOfTwo = true;
 
-        this.textureParameter = tw2.HasVariable("ImpactShieldDataMap")
-            ? tw2.GetVariable("ImpactShieldDataMap")
-            : tw2.CreateVariable("ImpactShieldDataMap", "", Tw2TextureParameter);
-        this.textureParameter.AttachTextureRes(this.textureRes);
         this._initialized = true;
         return true;
     }
