@@ -123,13 +123,18 @@ export class TnyPlanet extends TnySpaceObject
         return this;
     }
 
-    /** @returns {TnyPlanetaryColony|null} The currently rendered PI colony. */
+    /**
+     * @returns {TnyPlanetaryColony|null} The currently rendered PI colony
+     */
     GetColony()
     {
         return this._planetaryColony;
     }
 
-    /** Removes the currently rendered PI colony. @returns {TnyPlanet} */
+    /**
+     * Removes the currently rendered PI colony.
+     * @returns {TnyPlanet}
+     */
     ClearColony()
     {
         if (this._planetaryColony)

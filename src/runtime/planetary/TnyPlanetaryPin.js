@@ -60,25 +60,33 @@ export class TnyPlanetaryPin extends meta.Model
             : source;
     }
 
-    /** @returns {String} Stable facility id, or the synthetic extractor-head id. */
+    /**
+     * @returns {String} Stable facility id, or the synthetic extractor-head id
+     */
     get id()
     {
         return this.point.id;
     }
 
-    /** @returns {Number} EVE type id inherited from the facility record. */
+    /**
+     * @returns {Number} EVE type id inherited from the facility record
+     */
     get typeId()
     {
         return this.point.typeId;
     }
 
-    /** @returns {String|Number|null} Parent facility id for an extractor head. */
+    /**
+     * @returns {String|Number|null} Parent facility id for an extractor head
+     */
     get parentId()
     {
         return this.point.parentId;
     }
 
-    /** @returns {Boolean} Whether this point is an ECU extractor head. */
+    /**
+     * @returns {Boolean} Whether this point is an ECU extractor head
+     */
     get isExtractorHead()
     {
         return !!this.point.isHead;
@@ -99,20 +107,29 @@ export class TnyPlanetaryPin extends meta.Model
         return this;
     }
 
-    /** @param {String} role @returns {EveChildSpherePin|null} */
+    /**
+     * @param {String} role
+     * @returns {EveChildSpherePin|null}
+     */
     GetLayer(role)
     {
         return this.layers.get(role) || null;
     }
 
-    /** @param {Array} [out=[]] @returns {Array<EveChildSpherePin>} */
+    /**
+     * @param {Array} [out=[]]
+     * @returns {Array<EveChildSpherePin>}
+     */
     GetLayers(out = [])
     {
         out.push(...this.layers.values());
         return out;
     }
 
-    /** @param {Boolean} value @returns {TnyPlanetaryPin} */
+    /**
+     * @param {Boolean} value
+     * @returns {TnyPlanetaryPin}
+     */
     SetVisible(value)
     {
         value = !!value;
@@ -150,7 +167,9 @@ export class TnyPlanetaryPin extends meta.Model
         return this;
     }
 
-    /** @returns {Number} Current normalized circular gauge fill. */
+    /**
+     * @returns {Number} Current normalized circular gauge fill
+     */
     GetProgress()
     {
         return this.progress;
@@ -242,13 +261,19 @@ export class TnyPlanetaryPin extends meta.Model
         return this;
     }
 
-    /** @param {Array} [out=[]] @returns {Array<Object>} Connected facility links. */
+    /**
+     * @param {Array} [out=[]]
+     * @returns {Array<Object>} Connected facility links
+     */
     GetLinks(out = [])
     {
         return this.colony ? this.colony.GetLinksForPin(this.id, out) : out;
     }
 
-    /** @param {Array} [out=[]] @returns {Array<Object>} Commodity routes using this pin. */
+    /**
+     * @param {Array} [out=[]]
+     * @returns {Array<Object>} Commodity routes using this pin
+     */
     GetRoutes(out = [])
     {
         return this.colony ? this.colony.GetRoutesForPin(this.id, out) : out;
@@ -290,7 +315,10 @@ export class TnyPlanetaryPin extends meta.Model
         return this;
     }
 
-    /** Detaches and forgets the optional 3D presentation. @returns {TnyPlanetaryPin} */
+    /**
+     * Detaches and forgets the optional 3D presentation.
+     * @returns {TnyPlanetaryPin}
+     */
     ClearGeometry()
     {
         this._CancelGeometryAnimation();
@@ -318,7 +346,10 @@ export class TnyPlanetaryPin extends meta.Model
         return this;
     }
 
-    /** @param {Object} [options] @returns {Promise<TnyPlanetaryPin>} */
+    /**
+     * @param {Object} [options]
+     * @returns {Promise<TnyPlanetaryPin>}
+     */
     ShowGeometry(options = {})
     {
         if (!this.geometry) return Promise.resolve(this);
@@ -333,7 +364,10 @@ export class TnyPlanetaryPin extends meta.Model
         return this.AnimateGeometry({ scaling: target }, { duration, easing });
     }
 
-    /** @param {Object} [options] @returns {Promise<TnyPlanetaryPin>} */
+    /**
+     * @param {Object} [options]
+     * @returns {Promise<TnyPlanetaryPin>}
+     */
     HideGeometry(options = {})
     {
         if (!this.geometry) return Promise.resolve(this);
@@ -437,7 +471,10 @@ export class TnyPlanetaryPin extends meta.Model
         return true;
     }
 
-    /** Releases layers, geometry and pending animations. @returns {TnyPlanetaryPin} */
+    /**
+     * Releases layers, geometry and pending animations.
+     * @returns {TnyPlanetaryPin}
+     */
     Dispose()
     {
         this._CancelProgressAnimation();

@@ -89,20 +89,30 @@ export class TnyPlanetaryColony extends meta.Model
         return this;
     }
 
-    /** @param {String|Number} id @returns {TnyPlanetaryPin|null} */
+    /**
+     * @param {String|Number} id
+     * @returns {TnyPlanetaryPin|null}
+     */
     GetPin(id)
     {
         return this.pins.get(String(id)) || null;
     }
 
-    /** @param {Array} [out=[]] @returns {Array<TnyPlanetaryPin>} */
+    /**
+     * @param {Array} [out=[]]
+     * @returns {Array<TnyPlanetaryPin>}
+     */
     GetPins(out = [])
     {
         out.push(...this.items);
         return out;
     }
 
-    /** @param {String|Number} id @param {Array} [out=[]] @returns {Array<Object>} */
+    /**
+     * @param {String|Number} id
+     * @param {Array} [out=[]]
+     * @returns {Array<Object>}
+     */
     GetLinksForPin(id, out = [])
     {
         id = String(id);
@@ -113,7 +123,11 @@ export class TnyPlanetaryColony extends meta.Model
         return out;
     }
 
-    /** @param {String|Number} id @param {Array} [out=[]] @returns {Array<Object>} */
+    /**
+     * @param {String|Number} id
+     * @param {Array} [out=[]]
+     * @returns {Array<Object>}
+     */
     GetRoutesForPin(id, out = [])
     {
         id = String(id);
@@ -144,7 +158,10 @@ export class TnyPlanetaryColony extends meta.Model
         return options.duration ? pin.AnimateProgress(value, options) : pin.SetProgress(value);
     }
 
-    /** @param {Object} record @returns {Promise<TnyPlanetaryPin>} */
+    /**
+     * @param {Object} record
+     * @returns {Promise<TnyPlanetaryPin>}
+     */
     async AddPin(record)
     {
         if (!record || record.pin_id === undefined) throw new TypeError("A PI pin requires pin_id");
@@ -183,7 +200,10 @@ export class TnyPlanetaryColony extends meta.Model
         return this.GetPin(id);
     }
 
-    /** @param {String|Number} id @returns {Boolean} Whether the pin existed. */
+    /**
+     * @param {String|Number} id
+     * @returns {Boolean} Whether the pin existed
+     */
     RemovePin(id)
     {
         id = String(id);
@@ -258,7 +278,10 @@ export class TnyPlanetaryColony extends meta.Model
         return true;
     }
 
-    /** @param {Object} route @returns {Object} Stored route record. */
+    /**
+     * @param {Object} route
+     * @returns {Object} Stored route record
+     */
     AddRoute(route)
     {
         if (!route || route.route_id === undefined) throw new TypeError("A PI route requires route_id");
@@ -270,7 +293,10 @@ export class TnyPlanetaryColony extends meta.Model
         return this.routes.get(String(route.route_id));
     }
 
-    /** @param {String|Number} routeId @returns {Boolean} Whether a route was removed. */
+    /**
+     * @param {String|Number} routeId
+     * @returns {Boolean} Whether a route was removed
+     */
     RemoveRoute(routeId)
     {
         const before = this.data.routes.length;
@@ -281,7 +307,10 @@ export class TnyPlanetaryColony extends meta.Model
         return true;
     }
 
-    /** @param {Boolean} value @returns {TnyPlanetaryColony} */
+    /**
+     * @param {Boolean} value
+     * @returns {TnyPlanetaryColony}
+     */
     SetRoutesVisible(value)
     {
         this.options.showRoutes = !!value;
@@ -289,7 +318,9 @@ export class TnyPlanetaryColony extends meta.Model
         return this;
     }
 
-    /** @returns {Object} A detached copy of the editable colony JSON. */
+    /**
+     * @returns {Object} A detached copy of the editable colony JSON
+     */
     ToJSON()
     {
         return CloneData(this.data);
@@ -307,7 +338,10 @@ export class TnyPlanetaryColony extends meta.Model
         return updated;
     }
 
-    /** Rebuilds shared facility, extractor and route line sets. @returns {TnyPlanetaryColony} */
+    /**
+     * Rebuilds shared facility, extractor and route line sets.
+     * @returns {TnyPlanetaryColony}
+     */
     RebuildLines()
     {
         if (!this.planet?.wrapped) return this;
@@ -379,7 +413,10 @@ export class TnyPlanetaryColony extends meta.Model
         return this;
     }
 
-    /** Removes all rendered children while retaining the colony owner. @returns {TnyPlanetaryColony} */
+    /**
+     * Removes all rendered children while retaining the colony owner.
+     * @returns {TnyPlanetaryColony}
+     */
     Clear()
     {
         this._generation++;
@@ -405,7 +442,10 @@ export class TnyPlanetaryColony extends meta.Model
         return this;
     }
 
-    /** Releases the rendered colony and its owners. @returns {TnyPlanetaryColony} */
+    /**
+     * Releases the rendered colony and its owners.
+     * @returns {TnyPlanetaryColony}
+     */
     Dispose()
     {
         this.Clear();

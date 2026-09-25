@@ -17,13 +17,18 @@ export class TnyPlanetaryService
     colonies = new Map();
     pinMeshes = new Map();
 
-    /** @param {TnyClient|null} [client=null] */
+    /**
+     * @param {TnyClient|null} [client=null]
+     */
     constructor(client = null)
     {
         this.client = client;
     }
 
-    /** @param {TnyClient|null} client @returns {TnyPlanetaryService} */
+    /**
+     * @param {TnyClient|null} client
+     * @returns {TnyPlanetaryService}
+     */
     SetClient(client)
     {
         this.client = client || null;
@@ -60,13 +65,19 @@ export class TnyPlanetaryService
         return colony;
     }
 
-    /** @param {TnyPlanet} planet @returns {TnyPlanetaryColony|null} */
+    /**
+     * @param {TnyPlanet} planet
+     * @returns {TnyPlanetaryColony|null}
+     */
     Get(planet)
     {
         return this.colonies.get(planet) || null;
     }
 
-    /** @param {TnyPlanet} planet @returns {Boolean} Whether a colony was removed. */
+    /**
+     * @param {TnyPlanet} planet
+     * @returns {Boolean} Whether a colony was removed
+     */
     Remove(planet)
     {
         const colony = this.colonies.get(planet);
@@ -78,7 +89,10 @@ export class TnyPlanetaryService
         return true;
     }
 
-    /** Removes every managed colony. @returns {TnyPlanetaryService} */
+    /**
+     * Removes every managed colony.
+     * @returns {TnyPlanetaryService}
+     */
     Clear()
     {
         for (const planet of [ ...this.colonies.keys() ]) this.Remove(planet);
@@ -101,7 +115,10 @@ export class TnyPlanetaryService
         return this.pinMeshes.get(key);
     }
 
-    /** Releases managed colonies and cached meshes. @returns {TnyPlanetaryService} */
+    /**
+     * Releases managed colonies and cached meshes.
+     * @returns {TnyPlanetaryService}
+     */
     Dispose()
     {
         this.Clear();
