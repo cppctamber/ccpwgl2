@@ -1,9 +1,10 @@
 // Ported from CarbonEngine (MIT, (c) 2026 CCP Games) - https://github.com/carbonengine/trinity
 //   trinity/trinity/Eve/SpaceObject/Children/EveChildSpherePin.{h,cpp,_Blue.cpp}
 import { meta } from "utils";
-import { vec3, vec4 } from "math";
+import { mat4, vec3, vec4 } from "math";
 import { EveChildMesh } from "eve/child/EveChildMesh";
 import { color as colorReader } from "core/reader/Tw2BlackPropertyReaders";
+import { EveChildSpherePinPerObjectData } from "./EveChildSpherePinPerObjectData";
 
 
 /**
@@ -133,6 +134,9 @@ export class EveChildSpherePin extends EveChildMesh
      */
     GetPinPerObjectData(out = {})
     {
+        out.worldTransformTranspose = out.worldTransformTranspose || new Float32Array(16);
+        mat4.transpose(out.worldTransformTranspose, this._worldTransform);
+
         out.pinPosition = vec4.set(
             out.pinPosition || vec4.create(),
             this.centerNormal[0], this.centerNormal[1], this.centerNormal[2],
@@ -155,6 +159,21 @@ export class EveChildSpherePin extends EveChildMesh
         out.pinUV = vec4.set(out.pinUV || vec4.create(), 1, 1, 0, 0);
 
         return out;
+    }
+
+    /**
+     * Replaces the ordinary child-mesh space-object payload with Carbon's
+     * sphere-pin payload before mesh batches are committed.
+     * @returns {EveChildSpherePinPerObjectData}
+     */
+    PreparePerObjectData()
+    {
+        if (!(this._perObjectData instanceof EveChildSpherePinPerObjectData))
+        {
+            this._perObjectData = new EveChildSpherePinPerObjectData();
+        }
+
+        return this._perObjectData.Pack(this.GetPinPerObjectData(this._perObjectDataBagOfStuff));
     }
 
     /**

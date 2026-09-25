@@ -3,6 +3,7 @@ import { vec3 } from "math";
 import { EvePlanet } from "eve/object";
 import { TnySpaceObject } from "./TnySpaceObject";
 import { getApiService } from "../api";
+import { TnyPlanetaryColony } from "../planetary/TnyPlanetaryColony";
 
 
 /**
@@ -36,6 +37,12 @@ import { getApiService } from "../api";
 export class TnyPlanet extends TnySpaceObject
 {
 
+    /** The editable planetary colony currently displayed by this planet. */
+    @meta.struct("TnyPlanetaryColony")
+    colony = null;
+
+    _planetaryColony = null;
+
     /** The id option a bare number is read as. */
     static celestialKey = "planetID";
 
@@ -68,6 +75,11 @@ export class TnyPlanet extends TnySpaceObject
             throw new TypeError("Invalid wrapped celestial");
         }
 
+        if (wrapped !== this.wrapped && this._planetaryColony)
+        {
+            this.ClearColony();
+        }
+
         return super.SetWrapped(wrapped);
     }
 
@@ -87,6 +99,57 @@ export class TnyPlanet extends TnySpaceObject
     GetSize(out = vec3.create())
     {
         return this.GetScale(out);
+    }
+
+    /**
+     * Replaces the planetary-interaction overlay built from an ESI colony.
+     *
+     * ESI coordinates stay in radians. Pins and links are authored against a
+     * unit sphere and inherit the planet's scaled transform, so this works for
+     * every planet radius without rewriting the colony payload.
+     *
+     * @param {Object} colony - ESI colony layout (`pins`, `links`, `routes`)
+     * @param {Object} [options]
+     * @returns {Promise<TnyPlanet>}
+     */
+    async ConfigureColony(data, options = {})
+    {
+        if (!this._planetaryColony)
+        {
+            this._planetaryColony = new TnyPlanetaryColony(this, options);
+        }
+        await this._planetaryColony.SetData(data, options);
+        this.colony = this._planetaryColony;
+        return this;
+    }
+
+    /** @returns {TnyPlanetaryColony|null} The currently rendered PI colony. */
+    GetColony()
+    {
+        return this._planetaryColony;
+    }
+
+    /** Removes the currently rendered PI colony. @returns {TnyPlanet} */
+    ClearColony()
+    {
+        if (this._planetaryColony)
+        {
+            this._planetaryColony.Dispose();
+            this._planetaryColony = null;
+        }
+        this.colony = null;
+        return this;
+    }
+
+    /**
+     * Advances planet-wrapper state; EvePlanet itself is updated by EveSpaceScene.
+     * @param {Number} dt - Elapsed seconds
+     * @returns {Boolean}
+     */
+    Update(dt)
+    {
+        this._planetaryColony?.Update(dt);
+        return super.Update(dt);
     }
 
     /**

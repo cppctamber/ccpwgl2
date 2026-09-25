@@ -395,6 +395,15 @@ export class TnyScene extends meta.Model
     Update(dt)
     {
         if (!this.wrapped) return false;
+
+        // Tny wrappers get their own pass. EveSpaceScene.Update below owns the
+        // raw Eve objects, so wrapper Update methods must not forward to them.
+        const children = new Set([ ...this.objects, ...this.backgroundObjects, ...this.lensflares ]);
+        for (const child of children)
+        {
+            child?.Update?.(dt);
+        }
+
         this.wrapped.Update(dt);
         this.EmitEvent("update", this, dt);
         return true;
@@ -514,7 +523,7 @@ export class TnyScene extends meta.Model
     {
         if (Array.isArray(options))
         {
-            return Promise.all(options.map(x => this.Fetch(x, onProgress, doNotAdd)));
+            return this.LoadObjects(options, onProgress, doNotAdd);
         }
 
         // A named type skips inference entirely and uses that class's own
@@ -565,6 +574,94 @@ export class TnyScene extends meta.Model
         if (object.RebuildSlots) await object.RebuildSlots();
 
         return this.constructor._attach(this, object, onProgress, doNotAdd);
+    }
+
+    /**
+     * Loads a scene object batch in two phases so ids, cross-object targets and
+     * weapon state are deterministic regardless of fetch completion order.
+     *
+     * @param {Array} specs
+     * @param {Function} [onProgress]
+     * @param {Boolean} [doNotAdd]
+     * @returns {Promise<Array>}
+     */
+    async LoadObjects(specs, onProgress, doNotAdd)
+    {
+        if (!Array.isArray(specs)) throw new TypeError("Scene objects must be an array");
+
+        const ids = new Set();
+        const prepared = specs.map(spec =>
+        {
+            if (!spec || typeof spec !== "object" || Array.isArray(spec))
+            {
+                return { id: "", weapons: null, colony: null, colonyOptions: null, fetch: spec };
+            }
+
+            const { id = "", weapons = null, colony = null, colonyOptions = null, ...fetch } = spec;
+            if (id)
+            {
+                if (ids.has(id) || this.GetObjectById(id))
+                {
+                    throw new TypeError(`Duplicate scene object id: ${id}`);
+                }
+                ids.add(id);
+            }
+            return { id, weapons, colony, colonyOptions, fetch };
+        });
+
+        const objects = await Promise.all(prepared.map(x => this.Fetch(x.fetch, onProgress, true)));
+        const references = new Map();
+        this.GetObjects().forEach(object =>
+        {
+            if (object.id) references.set(object.id, object);
+        });
+        prepared.forEach((entry, index) =>
+        {
+            if (entry.id)
+            {
+                objects[index].id = entry.id;
+                references.set(entry.id, objects[index]);
+            }
+        });
+
+        await Promise.all(prepared.map((entry, index) =>
+        {
+            if (!entry.weapons) return null;
+            const object = objects[index];
+            if (!object || typeof object.ConfigureWeapons !== "function")
+            {
+                throw new TypeError(`Scene object ${entry.id || index} does not support weapons`);
+            }
+            return object.ConfigureWeapons(entry.weapons, ref => references.get(ref) || null);
+        }));
+
+        await Promise.all(prepared.map((entry, index) =>
+        {
+            if (!entry.colony) return null;
+            const object = objects[index];
+            if (!object || typeof object.ConfigureColony !== "function")
+            {
+                throw new TypeError(`Scene object ${entry.id || index} does not support a PI colony`);
+            }
+            return object.ConfigureColony(entry.colony, {
+                ...(entry.colonyOptions || {}),
+                scene: this
+            });
+        }));
+
+        if (!doNotAdd) this.AddObject(objects);
+        return objects;
+    }
+
+    /**
+     * Finds a runtime scene object by its stable declarative id.
+     * @param {String} id
+     * @returns {*|null}
+     */
+    GetObjectById(id)
+    {
+        if (!id) return null;
+        return this.GetObjects().find(x => x && x.id === id) || null;
     }
 
     /**

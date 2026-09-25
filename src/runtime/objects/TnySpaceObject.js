@@ -9,6 +9,10 @@ import { getApiService } from "../api";
 export class TnySpaceObject extends WglTransform
 {
 
+    /** Stable identity used by declarative scene references. */
+    @meta.string
+    id = "";
+
     @meta.struct()
     wrapped = null;
 
@@ -305,11 +309,6 @@ export class TnySpaceObject extends WglTransform
 
     Update(dt)
     {
-        if (this.wrapped && this.wrapped.Update)
-        {
-            this.wrapped.Update(dt);
-        }
-
         this.EmitEvent("update", this, dt);
         return true;
     }

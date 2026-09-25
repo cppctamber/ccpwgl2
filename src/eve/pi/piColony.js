@@ -271,6 +271,7 @@ export function SurfacePosition(out, point, radius, center, convention)
  * @param {String} [options.convention]
  * @param {Number} [options.width=1]
  * @param {vec4} [options.color]
+ * @param {Number} [options.endpointTrim=0] - angular gap at both pin centres, in radians
  * @returns {Number} how many lines were added
  */
 export function AddColonyLinks(lineSet, colony, options = {})
@@ -280,12 +281,18 @@ export function AddColonyLinks(lineSet, colony, options = {})
     const
         center = options.center || [ 0, 0, 0 ],
         width = options.width === undefined ? 1 : options.width,
-        color = options.color || [ 1, 1, 1, 1 ];
+        color = options.color || [ 1, 1, 1, 1 ],
+        endpointTrim = Math.max(0, options.endpointTrim || 0);
 
     let added = 0;
 
     for (const link of CollectColonyLinks(colony, options))
     {
+        if (endpointTrim)
+        {
+            TrimSphericalEndpoints(link.source, link.destination, center, endpointTrim);
+        }
+
         // The planet's centre is the arc's centre, which is what makes the line
         // follow the surface instead of cutting under it.
         lineSet.AddSpheredLineCrt(link.source, link.destination, center, width, color, color);
@@ -293,4 +300,39 @@ export function AddColonyLinks(lineSet, colony, options = {})
     }
 
     return added;
+}
+
+/**
+ * Shortens a great-circle arc without pulling either endpoint off its sphere.
+ * PI links stop at the outer marker rim; otherwise a later additive pass draws
+ * the route across the icon in the centre of the pin.
+ *
+ * @param {vec3} source
+ * @param {vec3} destination
+ * @param {vec3|Array} center
+ * @param {Number} trim - radians removed from each end
+ */
+function TrimSphericalEndpoints(source, destination, center, trim)
+{
+    const a = vec3.subtract(vec3.create(), source, center);
+    const b = vec3.subtract(vec3.create(), destination, center);
+    const radiusA = vec3.length(a);
+    const radiusB = vec3.length(b);
+    if (!radiusA || !radiusB) return;
+
+    vec3.scale(a, a, 1 / radiusA);
+    vec3.scale(b, b, 1 / radiusB);
+
+    const angle = Math.acos(Math.max(-1, Math.min(1, vec3.dot(a, b))));
+    if (!angle || angle <= trim * 2) return;
+
+    const t = trim / angle;
+    const sinAngle = Math.sin(angle);
+    const aWeight = Math.sin((1 - t) * angle) / sinAngle;
+    const bWeight = Math.sin(t * angle) / sinAngle;
+    const nextSource = vec3.scaleAndAdd(vec3.create(), vec3.scale(vec3.create(), a, aWeight), b, bWeight);
+    const nextDestination = vec3.scaleAndAdd(vec3.create(), vec3.scale(vec3.create(), b, aWeight), a, bWeight);
+
+    vec3.scaleAndAdd(source, center, nextSource, radiusA);
+    vec3.scaleAndAdd(destination, center, nextDestination, radiusB);
 }

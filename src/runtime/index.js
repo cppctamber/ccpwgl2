@@ -7,3 +7,4 @@ export * from "./debug";
 export * from "./gizmo";
 export * from "./helpers";
 export * from "./objects";
+export * from "./planetary";

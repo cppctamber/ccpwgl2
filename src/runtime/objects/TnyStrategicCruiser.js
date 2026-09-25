@@ -506,12 +506,6 @@ export class TnyStrategicCruiser extends TnyShip
     Update(dt)
     {
         super.Update(dt);
-
-        for (let i = 0; i < this.subsystems.length; i++)
-        {
-            this.subsystems[i].Update(dt);
-        }
-
         return true;
     }
 

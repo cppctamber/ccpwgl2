@@ -4,6 +4,7 @@ import { vec3, vec4, quat, box3, mat4, ray3, sph3 } from "math";
 import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { RM_PICKABLE, RS_ZENABLE } from "constant/d3d";
+import { Tr2Lod } from "constant/ccpwgl";
 
 
 const LineType = {
@@ -101,10 +102,28 @@ export class EveCurveLineSetItem extends EveObjectSetItem
      * Gets the item's bounding box
      * @param {box3} out
      */
-    @meta.notImplemented
     GetBoundingBox(out)
     {
+        const radius = Math.max(0, this.width || 0);
 
+        if (this.type === EveCurveLineSetItem.Type.SPHERED)
+        {
+            // The whole arc lies on this sphere. This is conservative for a
+            // short arc, but it is stable and keeps line sets visible while a
+            // camera moves around the parent planet.
+            const r = Math.max(
+                vec3.distance(this.position1, this.intermediatePosition),
+                vec3.distance(this.position2, this.intermediatePosition)
+            ) + radius;
+            return box3.fromPositionRadius(out, this.intermediatePosition, r);
+        }
+
+        box3.fromBounds(out, this.position1, this.position2);
+        if (this.type === EveCurveLineSetItem.Type.CURVED)
+        {
+            box3.expandVec3(out, out, this.intermediatePosition);
+        }
+        return box3.expandScalar(out, out, radius);
     }
 
     /**
@@ -297,6 +316,9 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 export class EveCurveLineSet extends EveObjectSet
 {
 
+    /** Logical LOD inherited when the set is used as a direct effect child. */
+    lodLevel = Tr2Lod.TR2_LOD_HIGH;
+
     @meta.boolean
     additive = false;
 
@@ -366,6 +388,19 @@ export class EveCurveLineSet extends EveObjectSet
     {
         super();
         EveCurveLineSet.init();
+    }
+
+    /** Satisfies the effect-child LOD contract used by EvePlanet. */
+    ChangeLOD(lodLevel)
+    {
+        this.lodLevel = lodLevel;
+        this.isVisible = lodLevel !== Tr2Lod.TR2_LOD_LOW;
+    }
+
+    ResetLod()
+    {
+        super.ResetLod();
+        this.lodLevel = Tr2Lod.TR2_LOD_HIGH;
     }
 
     /**

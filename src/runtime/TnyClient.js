@@ -194,6 +194,12 @@ export class TnyClient extends meta.Model
             throw new TypeError("Invalid service name");
         }
 
+        const previous = this.services.get(name) || null;
+        if (previous && previous !== service)
+        {
+            previous.SetClient?.(null);
+        }
+
         if (!service)
         {
             this.services.delete(name);
@@ -201,6 +207,7 @@ export class TnyClient extends meta.Model
         else
         {
             this.services.set(name, service);
+            service.SetClient?.(this);
         }
 
         return this;

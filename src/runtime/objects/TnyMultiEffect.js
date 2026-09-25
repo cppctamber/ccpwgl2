@@ -97,7 +97,6 @@ export class TnyMultiEffect extends meta.Model
 
     Update(dt)
     {
-        this.wrapped?.Update?.(dt);
         this.EmitEvent("update", this, dt);
         return true;
     }

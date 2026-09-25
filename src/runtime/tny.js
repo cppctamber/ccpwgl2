@@ -14,6 +14,7 @@ import {
 } from "./objects";
 import { TnyClient } from "./TnyClient";
 import { TnyScene } from "./TnyScene";
+import { TnyPlanetaryService } from "./planetary";
 
 
 /**
@@ -58,6 +59,7 @@ export const tnyConstructors = {
  * constructing another client or discovering one through a global.
  */
 export const tny = new TnyClient();
+tny.SetService(TnyPlanetaryService.serviceName, new TnyPlanetaryService(tny));
 
 // Registered on the class, not the instance: scenes fetch their own objects
 // and resolve a `type` name through `TnyClient.GetClass` without needing one.
