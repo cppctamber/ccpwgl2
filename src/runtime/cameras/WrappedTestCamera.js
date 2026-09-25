@@ -202,6 +202,21 @@ export class WrappedTestCamera extends meta.Model
         this.distance = distance;
     }
 
+    /** Clears transient orbit, pan and wheel input without changing the pose. */
+    ResetMotion()
+    {
+        const names = [
+            "_distance", "_rotationX", "_rotationY",
+            "_additionalRotationX", "_additionalRotationY",
+            "_translationX", "_translationY", "_translationZ",
+            "_rotationSpeedX", "_rotationSpeedY", "_resetTimeDone",
+            "shift", "shiftStage"
+        ];
+        for (const name of names) this[name] = 0;
+        this._doReset = false;
+        return this;
+    }
+
     /**
      * Gets the world direction
      * @param out

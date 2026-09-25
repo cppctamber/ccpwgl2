@@ -422,6 +422,13 @@ export class TnyCameraTest extends meta.Model
         return this;
     }
 
+    /** Clears transient input accumulated by the wrapped orbit camera. */
+    ResetMotion()
+    {
+        this.wrapped?.ResetMotion?.();
+        return this;
+    }
+
     GetWorldDirection(out = vec3.create())
     {
         if (this.wrapped)
