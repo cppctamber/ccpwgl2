@@ -2033,6 +2033,10 @@ export class EveSpaceObject2 extends EveObject
     UpdateImpactOverlay(updateContext)
     {
         if (!this.impactOverlay) return;
+
+        // Carbon derives shipData.y from the damage overlay every frame. Hull
+        // damage uses this to flicker the hull, lights and effect children.
+        this.activationStrength = this.impactOverlay.GetActivationStrength(updateContext);
         this.RefreshMergedLocators();
         for (const range of this._mergedDamageLocatorSources)
         {

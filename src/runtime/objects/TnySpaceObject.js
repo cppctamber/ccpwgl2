@@ -33,7 +33,7 @@ export class TnySpaceObject extends WglTransform
 
     set shield(value)
     {
-        this.SetDamageState(value, this.armor, this.hull);
+        this.SetDamageState(value, this.armor, this.hull, true);
     }
 
     /** Remaining armor fraction, from empty (0) to full (1). */
@@ -46,7 +46,7 @@ export class TnySpaceObject extends WglTransform
 
     set armor(value)
     {
-        this.SetDamageState(this.shield, value, this.hull);
+        this.SetDamageState(this.shield, value, this.hull, true);
     }
 
     /** Remaining hull fraction, from empty (0) to full (1). */
@@ -59,7 +59,7 @@ export class TnySpaceObject extends WglTransform
 
     set hull(value)
     {
-        this.SetDamageState(this.shield, this.armor, value);
+        this.SetDamageState(this.shield, this.armor, value, true);
     }
 
     get display()
@@ -89,7 +89,9 @@ export class TnySpaceObject extends WglTransform
             this.SetValues(values);
         }
 
-        this.ApplyDamageState();
+        // A declaratively loaded damaged ship should immediately display its
+        // authored damage marks rather than waiting for another weapon hit.
+        this.ApplyDamageState(true);
     }
 
     SetWrapped(wrapped)
@@ -136,6 +138,18 @@ export class TnySpaceObject extends WglTransform
             createArmorImpacts
         );
         return this;
+    }
+
+    /**
+     * Applies schema and inspector edits after the model value pass completes.
+     * This is needed for in-place `damageState` vector edits, which do not use
+     * the individual shield, armor or hull accessors.
+     * @param {Object} [opt]
+     */
+    OnValueChanged(opt)
+    {
+        super.OnValueChanged(opt);
+        this.ApplyDamageState(true);
     }
 
     GetVisibility(name, fallback = true)
