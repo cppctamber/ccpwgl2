@@ -28,7 +28,7 @@ export class TnySpaceObject extends WglTransform
     @meta.ui({ group: "Damage", minValue: 0, maxValue: 1, step: 0.01 })
     get shield()
     {
-        return this.damageState[0];
+        return this.damageState ? this.damageState[0] : 1;
     }
 
     set shield(value)
@@ -41,7 +41,7 @@ export class TnySpaceObject extends WglTransform
     @meta.ui({ group: "Damage", minValue: 0, maxValue: 1, step: 0.01 })
     get armor()
     {
-        return this.damageState[1];
+        return this.damageState ? this.damageState[1] : 1;
     }
 
     set armor(value)
@@ -54,7 +54,7 @@ export class TnySpaceObject extends WglTransform
     @meta.ui({ group: "Damage", minValue: 0, maxValue: 1, step: 0.01 })
     get hull()
     {
-        return this.damageState[2];
+        return this.damageState ? this.damageState[2] : 1;
     }
 
     set hull(value)
