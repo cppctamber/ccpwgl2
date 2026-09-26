@@ -528,6 +528,10 @@ export class Tw2ShaderProgram
                         registerIndex: binding.registerIndex,
                         strideBytes: binding.strideBytes || 0,
                         width: binding.width || 0,
+                        // The data texture's GL format. A bufferTexture is
+                        // RGBA32F unless the runtime names the Carbon view it
+                        // emulates (R32F, or R32UI read through a usampler2D).
+                        format: binding.format || null,
                         // Two spellings of the same fact. The emitter names the
                         // lowering `cjsSemantic` in memory, but the container
                         // wire format deliberately does not carry that name -

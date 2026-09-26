@@ -23,10 +23,11 @@ function fitConstantBuffer(data, registerCount)
  *   stride discriminates which buffer a register wants: stride 4 is
  *   Buffer A (tile headers + list nodes), stride 48 is Buffer B (light
  *   data rows).
- * - bufferTexture (bt<r>) — post-processing Buffer<> emulation textures
- *   (RGBA32F). Sources are registered per register index by the post-fx
- *   chain; unset registers bind a 1x1 zero texture so sampling is
- *   complete and deterministic.
+ * - bufferTexture (bt<r>) — post-processing Buffer<> emulation textures,
+ *   RGBA32F unless the runtime names the Carbon view (R32F, or R32UI read
+ *   through a usampler2D). Sources are registered per register index by the
+ *   post-fx chain; unset registers bind a 1x1 zero texture of the binding's
+ *   own format, because a float texture bound to a usampler2D is a GL error.
  *
  * If no scene-owned light list has been provided, a fallback list sized
  * to the device viewport is maintained with an empty draw list: every
@@ -66,7 +67,7 @@ class Tw2CarbonResourceBinder
 
         // Post-fx buffer textures by register index
         this._bufferTextureSources = {};
-        this._zeroFloatTexture = null;
+        this._zeroBufferTextures = {};
 
         // Dedicated scratch unit for texture creation/upload binds, so
         // uploading (which happens mid-ApplyPass, after material textures
@@ -300,7 +301,7 @@ class Tw2CarbonResourceBinder
                 {
                     gl.activeTexture(gl.TEXTURE0 + entry.unit);
                     gl.bindTexture(gl.TEXTURE_2D,
-                        this._bufferTextureSources[entry.registerIndex] || this._GetZeroFloatTexture());
+                        this._bufferTextureSources[entry.registerIndex] || this._GetZeroBufferTexture(entry.format));
                 }
             }
             gl.activeTexture(gl.TEXTURE0);
@@ -594,27 +595,44 @@ class Tw2CarbonResourceBinder
         }
     }
     /**
-     * Gets the 1x1 zero RGBA32F placeholder for unset bt<r> registers
+     * Gets the 1x1 zero placeholder for an unset bt<r> register, in the
+     * binding's own format: an R32UI register is a usampler2D, and binding a
+     * float texture to it is a GL error, not a zero read.
+     * @param {String|null} format RGBA32F (default), R32F or R32UI
      * @returns {WebGLTexture}
      * @private
      */
-    _GetZeroFloatTexture()
+    _GetZeroBufferTexture(format)
     {
-        if (!this._zeroFloatTexture)
+        const key = format || "RGBA32F";
+
+        if (!this._zeroBufferTextures[key])
         {
             const gl = this.gl;
-            this._zeroFloatTexture = gl.createTexture();
+            const texture = gl.createTexture();
             // Create on the scratch unit so lazy creation mid-ApplyPass
             // can't clobber an already-applied material sampler unit.
             gl.activeTexture(gl.TEXTURE0 + this._scratchUnit);
-            gl.bindTexture(gl.TEXTURE_2D, this._zeroFloatTexture);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, 1, 1, 0, gl.RGBA, gl.FLOAT, new Float32Array(4));
+            if (key === "R32UI")
+            {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32UI, 1, 1, 0, gl.RED_INTEGER, gl.UNSIGNED_INT, new Uint32Array(1));
+            }
+            else if (key === "R32F")
+            {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, 1, 1, 0, gl.RED, gl.FLOAT, new Float32Array(1));
+            }
+            else
+            {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, 1, 1, 0, gl.RGBA, gl.FLOAT, new Float32Array(4));
+            }
+            this._zeroBufferTextures[key] = texture;
         }
-        return this._zeroFloatTexture;
+        return this._zeroBufferTextures[key];
     }
 
 }
