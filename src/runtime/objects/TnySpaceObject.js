@@ -62,6 +62,50 @@ export class TnySpaceObject extends WglTransform
         this.SetDamageState(this.shield, this.armor, value, true);
     }
 
+    /** Shield booster presentation strength, independent of shield health. */
+    @meta.float
+    @meta.ui({ group: "Impact effects", minValue: 0, maxValue: 1, step: 0.01 })
+    get shieldBoost() { return this.GetImpactEffectStrength("shieldboost"); }
+    set shieldBoost(value) { this.SetImpactEffectStrength("shieldboost", value); }
+
+    /** Shield hardener presentation strength, independent of shield health. */
+    @meta.float
+    @meta.ui({ group: "Impact effects", minValue: 0, maxValue: 1, step: 0.01 })
+    get shieldHardening() { return this.GetImpactEffectStrength("shieldhardening"); }
+    set shieldHardening(value) { this.SetImpactEffectStrength("shieldhardening", value); }
+
+    /** Armor repair presentation strength, independent of armor health. */
+    @meta.float
+    @meta.ui({ group: "Impact effects", minValue: 0, maxValue: 1, step: 0.01 })
+    get armorRepair() { return this.GetImpactEffectStrength("armorrepair"); }
+    set armorRepair(value) { this.SetImpactEffectStrength("armorrepair", value); }
+
+    /** Armor hardener presentation strength, independent of armor health. */
+    @meta.float
+    @meta.ui({ group: "Impact effects", minValue: 0, maxValue: 1, step: 0.01 })
+    get armorHardening() { return this.GetImpactEffectStrength("armorhardening"); }
+    set armorHardening(value) { this.SetImpactEffectStrength("armorhardening", value); }
+
+    /** Hull repair presentation strength, independent of hull health. */
+    @meta.float
+    @meta.ui({ group: "Impact effects", minValue: 0, maxValue: 1, step: 0.01 })
+    get hullRepair() { return this.GetImpactEffectStrength("hullrepair"); }
+    set hullRepair(value) { this.SetImpactEffectStrength("hullrepair", value); }
+
+    /** Whole-shield impact strength, independent of shield health. */
+    @meta.float
+    @meta.ui({ group: "Impact effects", minValue: -1, maxValue: 1, step: 0.01 })
+    get overallShieldImpact()
+    {
+        return num.clamp(this.wrapped?.GetImpactOverlay?.()?.overallShieldImpact ?? -1, -1, 1);
+    }
+
+    set overallShieldImpact(value)
+    {
+        const overlay = this.wrapped?.GetImpactOverlay?.();
+        if (overlay) overlay.overallShieldImpact = num.clamp(Number(value) || 0, -1, 1);
+    }
+
     get display()
     {
         return this.wrapped && "display" in this.wrapped ? this.wrapped.display : true;
@@ -128,6 +172,33 @@ export class TnySpaceObject extends WglTransform
         return this;
     }
 
+    /** Sets one repair, hardening or boost presentation strength. */
+    SetImpactEffectStrength(name, value)
+    {
+        this.wrapped?.SetImpactEffectStrength?.(name, num.clamp(Number(value) || 0, 0, 1));
+        return this;
+    }
+
+    /** Returns one repair, hardening or boost presentation strength. */
+    GetImpactEffectStrength(name)
+    {
+        return this.wrapped?.GetImpactEffectStrength?.(name) ?? 0;
+    }
+
+    /**
+     * Starts or stops one authored impact presentation animation.
+     * Hardening effects use the fader's kick-in channel as well as its steady
+     * strength, so this is the appropriate entry point for module activation.
+     * @param {String} name
+     * @param {Boolean} enable
+     * @param {Number} [duration=1]
+     * @returns {Boolean}
+     */
+    SetImpactAnimation(name, enable, duration = 1)
+    {
+        return !!this.wrapped?.SetImpactAnimation?.(name, !!enable, Math.max(0, Number(duration) || 0));
+    }
+
     /** Applies the stored damage state to the wrapped Carbon object. */
     ApplyDamageState(createArmorImpacts = false)
     {
@@ -137,6 +208,10 @@ export class TnySpaceObject extends WglTransform
             this.damageState[2],
             createArmorImpacts
         );
+        if (this.damageState[0] >= 1 && this.damageState[1] >= 1 && this.damageState[2] >= 1)
+        {
+            this.wrapped?.ClearImpactDamage?.();
+        }
         return this;
     }
 

@@ -1920,6 +1920,53 @@ export class EveSpaceObject2 extends EveObject
     }
 
     /**
+     * Sets one impact presentation fader without changing damage state.
+     * @param {String} name
+     * @param {Number} value
+     * @returns {Boolean}
+     */
+    SetImpactEffectStrength(name, value)
+    {
+        if (!this.impactOverlay) return false;
+        let fader = null;
+        if (name === "shieldboost") fader = this.impactOverlay.shieldBoosting;
+        else if (name === "shieldhardening") fader = this.impactOverlay.shieldHardening;
+        else if (name === "armorrepair") fader = this.impactOverlay.GetArmorRepairing();
+        else if (name === "armorhardening") fader = this.impactOverlay.GetArmorHardening();
+        else if (name === "hullrepair") fader = this.impactOverlay.GetHullRepairing();
+        if (!fader) return false;
+        const strength = Math.max(0, Math.min(1, Number(value) || 0));
+        SetFaderStrength(fader, strength);
+        if (name !== "shieldboost" && name !== "shieldhardening")
+        {
+            this.RefreshMergedLocators();
+            for (const range of this._mergedDamageLocatorSources)
+            {
+                const overlay = this.EnsureChildDamageOverlay(range);
+                let childFader = null;
+                if (name === "armorrepair") childFader = overlay?.GetArmorRepairing();
+                else if (name === "armorhardening") childFader = overlay?.GetArmorHardening();
+                else if (name === "hullrepair") childFader = overlay?.GetHullRepairing();
+                if (childFader) SetFaderStrength(childFader, strength);
+            }
+        }
+        return true;
+    }
+
+    /** Returns one impact presentation fader strength. */
+    GetImpactEffectStrength(name)
+    {
+        if (!this.impactOverlay) return 0;
+        let fader = null;
+        if (name === "shieldboost") fader = this.impactOverlay.shieldBoosting;
+        else if (name === "shieldhardening") fader = this.impactOverlay.shieldHardening;
+        else if (name === "armorrepair") fader = this.impactOverlay.GetArmorRepairing();
+        else if (name === "armorhardening") fader = this.impactOverlay.GetArmorHardening();
+        else if (name === "hullrepair") fader = this.impactOverlay.GetHullRepairing();
+        return fader ? fader.GetFaderValue() : 0;
+    }
+
+    /**
      * Resolves a damage-locator collision point
      * @param {vec3} out
      * @param {Number} locator
@@ -3040,6 +3087,15 @@ export class EveSpaceObject2 extends EveObject
     OnTurretsCounted(count)
     {
     }
+}
+
+
+/** Sets a scalar fader to a stable explicit strength. */
+function SetFaderStrength(fader, value)
+{
+    fader.value = value;
+    fader.fading = 0;
+    fader.fadeTime = -1;
 }
 
 
