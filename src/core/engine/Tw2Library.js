@@ -85,6 +85,10 @@ export class Tw2Library extends Tw2EventEmitter
         .RegisterSetting("postprocessDefault", true)
         .RegisterSetting("postprocessInjectTonemapping", true)
         .RegisterSetting("postprocessInjectDynamicExposure", true)
+        // postprocessGodRays: false skips the god rays pass even when the post
+        // process authors one. Not a Carbon switch; for clients that cannot yet
+        // afford the pass's look. See EveSpaceScene.RenderGodRays.
+        .RegisterSetting("postprocessGodRays", true)
         // forceUberDepthOff: TEMPORARY. Forces every UBER_DEPTH permutation OFF.
         // UBER_DEPTH_ON fades a surface against DepthMap; without a published
         // DepthMap the fade resolves to zero and the surface contributes no

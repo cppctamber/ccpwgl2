@@ -2436,6 +2436,7 @@ export class EveSpaceScene extends meta.Model
     RenderGodRays(sceneTarget)
     {
         if (!this.visible.post || !this.postProcess2) return false;
+        if (!tw2.settings.GetValue("postprocessGodRays")) return false;
 
         const godRays = this.postProcess2.GetIfAvailable("godRays");
         if (!godRays) return false;
