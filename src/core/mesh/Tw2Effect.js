@@ -743,9 +743,10 @@ export class Tw2Effect extends meta.Model
      * @param {Number} offset
      * @param {Number} size - floats the shader declared for this constant
      * @param {String} name
+     * @param {Boolean} [isSRGB=false] - Carbon shader annotation; RGB is gamma 2.2 encoded
      * @private
      */
-    _PushStageParameter(stage, parameter, constantBuffer, offset, size, name)
+    _PushStageParameter(stage, parameter, constantBuffer, offset, size, name, isSRGB = false)
     {
         const
             value = parameter && parameter.value,
@@ -767,7 +768,16 @@ export class Tw2Effect extends meta.Model
             return;
         }
 
-        stage.parameters.push({ parameter, constantBuffer, offset, size });
+        stage.parameters.push({
+            parameter,
+            constantBuffer,
+            offset,
+            size,
+            // Carbon only applies this annotation to vector constants. Its
+            // Tr2Vector2/3/4 parameters convert gamma-encoded values with
+            // pow(value, 2.2); vec4 leaves W (alpha/data) untouched.
+            isSRGB: !!isSRGB && parameter instanceof Tw2VectorParameter && size >= 2 && size <= 4
+        });
     }
 
     /**
@@ -895,7 +905,7 @@ export class Tw2Effect extends meta.Model
                                 continue;
                             }
 
-                            const { name, type, offset, size, isAutoregister, elements } = stageRes.constants[k];
+                            const { name, type, offset, size, isAutoregister, elements, isSRGB } = stageRes.constants[k];
                             let parameter;
 
                             if (name in this.parameters)
@@ -903,13 +913,13 @@ export class Tw2Effect extends meta.Model
                                 parameter = this.parameters[name];
                                 try
                                 {
-                                    if (parameter.Bind(constantBuffer, offset, size))
+                                    if (!isSRGB && parameter.Bind(constantBuffer, offset, size))
                                     {
                                         stage.reroutedParameters.push(parameter);
                                     }
                                     else
                                     {
-                                        this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name);
+                                        this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name, isSRGB);
                                     }
                                 }
                                 catch(err)
@@ -919,7 +929,7 @@ export class Tw2Effect extends meta.Model
                             }
                             else if (tw2.HasVariable(name))
                             {
-                                this._PushStageParameter(stage, tw2.GetVariable(name), constantBuffer, offset, size, name);
+                                this._PushStageParameter(stage, tw2.GetVariable(name), constantBuffer, offset, size, name, isSRGB);
                             }
                             else if (isAutoregister && type)
                             {
@@ -928,7 +938,7 @@ export class Tw2Effect extends meta.Model
                                 if (parameter)
                                 {
                                     this.parameters[name] = parameter;
-                                    this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name);
+                                    this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name, isSRGB);
                                 }
                             }
                             else if (this.autoParameter && elements === 1)
@@ -966,13 +976,13 @@ export class Tw2Effect extends meta.Model
                                 if (parameter)
                                 {
                                     this.parameters[name] = parameter;
-                                    if (parameter.Bind(constantBuffer, offset, size))
+                                    if (!isSRGB && parameter.Bind(constantBuffer, offset, size))
                                     {
                                         stage.reroutedParameters.push(parameter);
                                     }
                                     else
                                     {
-                                        this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name);
+                                        this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name, isSRGB);
                                     }
                                 }
                             }
@@ -1366,6 +1376,18 @@ export class Tw2Effect extends meta.Model
             {
                 let pp = stages.parameters[j];
                 pp.parameter.Apply(pp.constantBuffer, pp.offset, pp.size);
+                if (pp.isSRGB)
+                {
+                    // Carbon's Tr2Vector2/3/4Parameter uses gamma 2.2 for
+                    // shader constants annotated as sRGB. A vec4's W is
+                    // alpha or non-colour data and is deliberately unchanged.
+                    const count = pp.size === 4 ? 3 : pp.size;
+                    for (let component = 0; component < count; component++)
+                    {
+                        const index = pp.offset + component;
+                        pp.constantBuffer[index] = Math.pow(pp.constantBuffer[index], 2.2);
+                    }
+                }
             }
 
             for (let j = 0; j < stages.textures.length; ++j)
