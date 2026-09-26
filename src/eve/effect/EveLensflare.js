@@ -276,9 +276,14 @@ export class EveLensflare extends meta.Model
             negPos = g.vec3_1,
             dist = g.vec4_1;
 
+        // `position` is where the sun IS (Carbon: m_direction = Normalize(-m_position),
+        // EveLensflare.cpp:199-210), while the scene's sunDirection is the way
+        // its light TRAVELS (EveSpaceScene.cpp:594-598). Copying it unnegated
+        // passed the visibility test only with the sun behind the camera, and
+        // the flare then projected through the centre, opposite the sun.
         if (this.useSceneSunDirection && sunDirection)
         {
-            vec3.copy(this.position, sunDirection);
+            vec3.negate(this.position, sunDirection);
         }
 
         vec3.transformMat4(cameraPos, [ 0, 0, 0 ], device.viewInverse);
