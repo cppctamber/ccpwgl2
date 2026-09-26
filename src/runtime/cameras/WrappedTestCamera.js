@@ -202,7 +202,57 @@ export class WrappedTestCamera extends meta.Model
         this.distance = distance;
     }
 
-    /** Clears transient orbit, pan and wheel input without changing the pose. */
+    /**
+     * Gets the pose currently used to build the view matrix.
+     *
+     * Mouse input is deliberately stored as offsets from the authored pose so
+     * the legacy animated reset can return to it. Consumers which display or
+     * serialize the camera need the combined values instead.
+     *
+     * @param {Object} [out={}]
+     * @returns {{distance: Number, rotationX: Number, rotationY: Number, poi: vec3}}
+     */
+    GetControlValues(out = {})
+    {
+        out.distance = this.distance + this._distance;
+        out.rotationX = this.rotationX + this._rotationX;
+        out.rotationY = this.rotationY + this._rotationY;
+        out.poi = vec3.set(
+            out.poi || vec3.create(),
+            this.poi[0] - this._translationX,
+            this.poi[1] + this._translationY,
+            this.poi[2] - this._translationZ
+        );
+        return out;
+    }
+
+    /**
+     * Bakes accumulated orbit, pan and wheel input into the authored pose.
+     * Additional rotations are intentionally left separate because they are
+     * supplied by camera effects rather than direct controls.
+     *
+     * @returns {WrappedTestCamera}
+     */
+    CommitMotion()
+    {
+        const values = this.GetControlValues();
+        this.distance = values.distance;
+        this.rotationX = values.rotationX;
+        this.rotationY = values.rotationY;
+        vec3.copy(this.poi, values.poi);
+
+        this._distance = 0;
+        this._rotationX = 0;
+        this._rotationY = 0;
+        this._translationX = 0;
+        this._translationY = 0;
+        this._translationZ = 0;
+        this._rotationSpeedX = 0;
+        this._rotationSpeedY = 0;
+        return this;
+    }
+
+    /** Clears transient input and returns to the authored pose. */
     ResetMotion()
     {
         const names = [

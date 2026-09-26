@@ -422,7 +422,36 @@ export class TnyCameraTest extends meta.Model
         return this;
     }
 
-    /** Clears transient input accumulated by the wrapped orbit camera. */
+    /**
+     * Gets the combined authored and interactive orbit-camera pose.
+     * @param {Object} [out={}]
+     * @returns {{distance: Number, rotationX: Number, rotationY: Number, poi: vec3}}
+     */
+    GetControlValues(out = {})
+    {
+        if (this.wrapped) return this.wrapped.GetControlValues(out);
+        out.distance = this._distance;
+        out.rotationX = this._rotationX;
+        out.rotationY = this._rotationY;
+        out.poi = vec3.copy(out.poi || vec3.create(), this._poi);
+        return out;
+    }
+
+    /**
+     * Bakes interactive orbit, pan and wheel input into the camera's public pose.
+     * @returns {TnyCameraTest}
+     */
+    CommitMotion()
+    {
+        if (this.wrapped)
+        {
+            this.wrapped.CommitMotion();
+            this.SyncFromWrapped();
+        }
+        return this;
+    }
+
+    /** Clears transient input and returns to the authored pose. */
     ResetMotion()
     {
         this.wrapped?.ResetMotion?.();
