@@ -997,9 +997,16 @@ export class EveSpaceScene extends meta.Model
             this.starField.Update(dt);
         }
 
+        // Pack LAST frame's block requests before the objects update, as Carbon
+        // does (EveSpaceScene.cpp:518-521, objects at :549-559). Each object
+        // reads its offset from this pack and then queues next frame's block, so
+        // the texture drawn and the offsets drawn with always come from the same
+        // pack. Packing after the objects paired this frame's layout with last
+        // frame's offsets: when two ships swapped priority - camera direction
+        // changes their pixel size - one read the other's block and flashed.
+        this._dataTextureManager.Update();
         this.PerChildObject("Update", dt);
         this.PerChildObject("UpdateImpactOverlay", this._updateContext);
-        this._dataTextureManager.Update();
 
         // AFTER the children, because their emitters have just queued this
         // frame's emit requests and this is what expands them. Running it
