@@ -1730,16 +1730,11 @@ export class EveTurretSet extends EveObjectSet
                             this._recheckTimeLeft -= dt;
                             if (this._recheckTimeLeft <= 0)
                             {
-                                const targetMoved = vec3.squaredDistance(
-                                    this._selectionTargetPosition,
-                                    this._targetPosition
-                                ) > EveTurretSet.TARGET_RESELECT_EPSILON_SQUARED;
-                                const pair = targetMoved
-                                    ? this.GetClosestTurretAndLocator()
-                                    : {
-                                        turret: this._activeTurret,
-                                        locator: this.target?.GetLocator?.() ?? -1
-                                    };
+                                // Carbon re-evaluates the turret/locator pair on
+                                // every loop recheck, even for a stationary
+                                // target. The randomized locator is what spreads
+                                // sustained fire across the target hull.
+                                const pair = this.GetClosestTurretAndLocator();
                                 const forcedLoop = this.firingEffect.IsLoopFiringForced?.() ?? false;
                                 if (forcedLoop)
                                 {
@@ -1754,10 +1749,7 @@ export class EveTurretSet extends EveObjectSet
                                 {
                                     this.DoStartFiring(false, false, pair);
                                 }
-                                if (targetMoved)
-                                {
-                                    vec3.copy(this._selectionTargetPosition, this._targetPosition);
-                                }
+                                vec3.copy(this._selectionTargetPosition, this._targetPosition);
                                 if (!forcedLoop) this._recheckTimeLeft = 2;
                             }
                         }
