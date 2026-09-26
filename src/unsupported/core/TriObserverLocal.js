@@ -18,7 +18,10 @@ export class TriObserverLocal extends meta.Model
     @meta.vector3
     front = vec3.create();
 
-    @meta.struct()
+    // Carbon exposes IBluePlacementObserver here. Authored EVE graphs use an
+    // AudEmitter, and a named struct is required so Model.Clone can rebuild
+    // the nested value graph after GetValues serializes it.
+    @meta.struct("AudEmitter")
     observer = null;
 
 }

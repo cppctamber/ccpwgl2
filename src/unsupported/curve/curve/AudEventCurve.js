@@ -1,8 +1,8 @@
 import { meta } from "utils";
-import { tw2 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "curve";
 import { wstring } from "core/reader/Tw2BlackPropertyReaders";
-import { AudEmitter } from "@carbonenginejs/runtime/audio";
+import { AudEmitter as CjsAudEmitter } from "@carbonenginejs/runtime/audio";
+import { AudEmitter } from "../../AudEmitter";
 
 
 @meta.define("AudEventKey", true)
@@ -111,14 +111,20 @@ export class AudEventCurve extends Tw2Curve
         const existing = this.sourceTriObserver.observer;
         if (existing instanceof AudEmitter)
         {
+            this.audioEmitter = existing.GetBackingEmitter();
+            return this.audioEmitter;
+        }
+
+        if (existing instanceof CjsAudEmitter)
+        {
             this.audioEmitter = existing;
             return existing;
         }
 
         const emitter = new AudEmitter();
-        emitter.Initialize(this.name);
+        emitter.name = this.name;
         this.sourceTriObserver.observer = emitter;
-        this.audioEmitter = tw2.audMan ? tw2.audMan.AdoptEmitter(emitter) : emitter;
+        this.audioEmitter = emitter.GetBackingEmitter();
         return this.audioEmitter;
     }
 
