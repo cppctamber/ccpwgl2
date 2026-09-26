@@ -22,7 +22,7 @@ import {
     Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
+    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2FogRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
     RS_COLORWRITEENABLE,
@@ -606,6 +606,7 @@ export class EveSpaceScene extends meta.Model
     _sceneTarget = null;
     _postProcessRenderer = null;
     _godRaysRenderer = null;
+    _fogRenderer = null;
     _depthOfFieldRenderer = null;
     _depthAccumulator = null;
     _depthContext = null;
@@ -1918,6 +1919,8 @@ export class EveSpaceScene extends meta.Model
         // rays for every default (`hdr=0`) session. `sceneTarget` may be null,
         // and the pass then blits additively onto the canvas, which is the same
         // thing Carbon does to its own scene image.
+        // Fog, then god rays: Carbon's order (Tr2PostProcessRenderer.cpp:709-718).
+        this.RenderFog(sceneTarget);
         this.RenderGodRays(sceneTarget);
 
         // After god rays, before the composite - Carbon's order
@@ -2355,6 +2358,47 @@ export class EveSpaceScene extends meta.Model
         gl.disable(gl.DEPTH_TEST);
         device.RenderTexture(sceneTarget.texture);
         gl.enable(gl.DEPTH_TEST);
+    }
+
+    /**
+     * Renders environment fog into the scene image, before god rays.
+     *
+     * Needs the scene target: the composite reads a copy of the scene while
+     * writing it. Self-disables on error, like the god ray pass.
+     * @param {Tw2RenderTarget|null} sceneTarget
+     * @returns {Boolean}
+     */
+    RenderFog(sceneTarget)
+    {
+        if (!sceneTarget || !this.visible.post || !this.postProcess2) return false;
+
+        const fog = this.postProcess2.GetIfAvailable("fog");
+        if (!fog) return false;
+
+        if (!this._fogRenderer) this._fogRenderer = new Tw2FogRenderer();
+
+        const depthHandler = this.GetDepthHandler(false);
+        const depth = depthHandler && depthHandler.rendered ? depthHandler.depthTextureRes : null;
+
+        try
+        {
+            return this._fogRenderer.Render(fog, depth, sceneTarget);
+        }
+        catch (err)
+        {
+            this.visible.post = false;
+            if (tw2.Warning) tw2.Warning({ name: "Fog", description: String(err && err.message || err) });
+            return false;
+        }
+    }
+
+    /**
+     * Gets the fog renderer's last report, if fog has run
+     * @returns {Object|null}
+     */
+    GetFogReport()
+    {
+        return this._fogRenderer ? this._fogRenderer.GetReport() : null;
     }
 
     /**
