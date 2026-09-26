@@ -22,7 +22,7 @@ import {
     Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2FogRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
+    Tw2PostProcess, Tw2PostProcess2, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2FogRenderer, Tw2DepthOfFieldRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
     RS_COLORWRITEENABLE,
@@ -1919,7 +1919,15 @@ export class EveSpaceScene extends meta.Model
         // rays for every default (`hdr=0`) session. `sceneTarget` may be null,
         // and the pass then blits additively onto the canvas, which is the same
         // thing Carbon does to its own scene image.
-        // What the EVE client adds to the scene's default post process.
+        // What the EVE client adds to the scene's default post process. The
+        // client always gives a scene one; a scene without gets an empty one,
+        // so the injected effects (dynamic exposure) still apply to it.
+        if (!this.postProcess2 && tw2.settings.GetValue("postprocessDefault"))
+        {
+            this.postProcess2 = new Tw2PostProcess2();
+            this.postProcess2.name = "ccpwgl default";
+        }
+
         if (this.postProcess2)
         {
             this.postProcess2.InjectClientDefaults({
