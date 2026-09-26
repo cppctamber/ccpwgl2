@@ -3,7 +3,8 @@ import { tw2, device } from "global";
 import { RS_COLORWRITEENABLE } from "constant";
 import { vec3, vec4, mat4 } from "math";
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
-import { EveOccluder } from "./EveOccluder";
+import { EveOccluder, Tr2OcclusionBuffer } from "./EveOccluder";
+import { EveLensflarePerObjectData } from "./EveLensflarePerObjectData";
 
 
 @meta.define("EveLensflare", true)
@@ -82,6 +83,7 @@ export class EveLensflare extends meta.Model
     _transform = mat4.create();
     _backBuffer = null;
     _isVisible = true;
+    _perObjectData = null;
 
 
     /**
@@ -189,7 +191,12 @@ export class EveLensflare extends meta.Model
 
         this.backgroundOcclusionIntensity = this.occlusionIntensity;
 
+        // Two readers, two meanings. The gles2 shaders multiply by these lanes;
+        // the translated ones read the occlusion buffer instead - see
+        // Tr2OcclusionBuffer - and index it by the lanes' BIT PATTERN, which
+        // Tw2GodRaysRenderer overrides locally for that reason.
         tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, this.occlusionIntensity, 0, 0 ]);
+        Tr2OcclusionBuffer.SetValue(this.occlusionIntensity);
         g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
     }
 
@@ -216,9 +223,12 @@ export class EveLensflare extends meta.Model
             this.flares[i].GetBatches(mode, accumulator, perObjectData);
         }
 
+        // The mesh draws with the lens flare's own per-object data, as Carbon's
+        // EveLensflare::GetBatches does; the flares are transforms with theirs.
         if (this.mesh)
         {
-            this.mesh.GetBatches(mode, accumulator, perObjectData);
+            if (!this._perObjectData) this._perObjectData = new EveLensflarePerObjectData();
+            this.mesh.GetBatches(mode, accumulator, this._perObjectData.Pack(this._direction, 1));
         }
 
         return accumulator.length !== c;

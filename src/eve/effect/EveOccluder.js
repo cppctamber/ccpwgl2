@@ -212,3 +212,96 @@ export class EveOccluder extends meta.Model
     static global = null;
 
 }
+
+
+/**
+ * Carbon's `Tr2OcclusionBuffer` (`EveOccluder.cpp:15-122`): the typed buffer
+ * the translated lens flare, lens grime and god ray shaders multiply by, bound
+ * as `FlareOcclusionBuffer`.
+ *
+ * Carbon allocates 13 R32_UINT words per lens flare, fills the counters from
+ * occluder sprites with `atomic_iadd`, and a compute pass reduces them so word
+ * 0 of each block is the visibility, 0 to 1, as float bits. A cleared block is
+ * 1.0. WebGL2 has neither the atomics nor the compute pass, so this holds ONE
+ * block of ONE word, written from the CPU: every lens flare's indices and
+ * `LensflareFxOccScale` point at element 0.
+ *
+ * diverged: one shared element instead of per-flare blocks. Index 0 is also
+ * the only index whose float bit pattern is not a denormal, which a GPU may
+ * flush to zero on upload - per-flare blocks need that settled first.
+ *
+ * The gles2 shaders never read this; they take the intensity from
+ * `LensflareFxOccScale` as a plain scale.
+ */
+export class Tr2OcclusionBuffer
+{
+
+    /**
+     * Sets the visibility every reader sees, 0 to 1
+     * @param {Number} value
+     */
+    static SetValue(value)
+    {
+        if (Tr2OcclusionBuffer._value === value) return;
+        Tr2OcclusionBuffer._value = value;
+        Tr2OcclusionBuffer._dirty = true;
+    }
+
+    /**
+     * Gets the 1x1 texture for a binding, in the binding's format: RGBA32F from
+     * runtimes that report no format (the GLSL reads `.x` as a float), R32UI
+     * through a usampler2D (the GLSL does `uintBitsToFloat`), or R32F
+     * @param {WebGL2RenderingContext} gl
+     * @param {String|null} format
+     * @returns {WebGLTexture}
+     */
+    static GetTexture(gl, format)
+    {
+        const key = format || "RGBA32F";
+        const textures = Tr2OcclusionBuffer._textures;
+
+        if (Tr2OcclusionBuffer._dirty)
+        {
+            for (const k in textures) textures[k].uploaded = false;
+            Tr2OcclusionBuffer._dirty = false;
+        }
+
+        let entry = textures[key];
+        if (!entry)
+        {
+            entry = textures[key] = { texture: gl.createTexture(), uploaded: false };
+            gl.bindTexture(gl.TEXTURE_2D, entry.texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+
+        if (!entry.uploaded)
+        {
+            const value = Tr2OcclusionBuffer._value;
+            gl.bindTexture(gl.TEXTURE_2D, entry.texture);
+            if (key === "R32UI")
+            {
+                const bits = new Uint32Array(new Float32Array([ value ]).buffer);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32UI, 1, 1, 0, gl.RED_INTEGER, gl.UNSIGNED_INT, bits);
+            }
+            else if (key === "R32F")
+            {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, 1, 1, 0, gl.RED, gl.FLOAT, new Float32Array([ value ]));
+            }
+            else
+            {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, 1, 1, 0, gl.RGBA, gl.FLOAT, new Float32Array([ value, value, value, value ]));
+            }
+            entry.uploaded = true;
+        }
+
+        return entry.texture;
+    }
+
+    static _value = 1;
+    static _dirty = false;
+    static _textures = {};
+
+}

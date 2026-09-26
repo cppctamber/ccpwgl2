@@ -532,6 +532,9 @@ export class Tw2ShaderProgram
                         // RGBA32F unless the runtime names the Carbon view it
                         // emulates (R32F, or R32UI read through a usampler2D).
                         format: binding.format || null,
+                        // The Carbon resource a bufferTexture emulates, which
+                        // is how the binder finds its source (`bt<r>` is not).
+                        carbonName: binding.carbonName || null,
                         // Two spellings of the same fact. The emitter names the
                         // lowering `cjsSemantic` in memory, but the container
                         // wire format deliberately does not carry that name -

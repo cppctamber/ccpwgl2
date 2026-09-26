@@ -5,7 +5,7 @@ import { mat4 } from "math";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
 import { Tw2MultiRenderTarget } from "../Tw2MultiRenderTarget";
-import { Tw2TextureParameter } from "../parameter";
+import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
 
 
 // Authored `.fx` paths, NOT compiled ones. `Tw2Device.ToEffectPath` substitutes
@@ -55,9 +55,12 @@ const GR_FACTORS = [ 1000.0, 0.2, 128.0, 2.0 ];
  *    scene depth instead of the downsampled copy it was handed.
  * 4. **The result is multiplied by `FlareOcclusionBuffer`.** That comes from the
  *    lens flare occlusion system, which ccpwgl does not have - the shader it
- *    needs uses `atomic_iadd`, which has no WebGL2 lowering. `config.js`
- *    defaults the buffer to white so the rays draw unoccluded; black there
- *    multiplies the whole pass away with nothing to attribute it to.
+ *    needs uses `atomic_iadd`, which has no WebGL2 lowering. The translated
+ *    body reads it as a bufferTexture, which the Carbon binder fills from
+ *    `Tr2OcclusionBuffer` (1.0 unless occlusion says otherwise), indexed by the
+ *    bit pattern of `LensflareFxOccScale.y`. The `config.js` global of the same
+ *    name never reaches a bufferTexture. Black here multiplies the whole pass
+ *    away with nothing to attribute it to.
  */
 @meta.define("Tw2GodRaysRenderer")
 export class Tw2GodRaysRenderer
@@ -284,6 +287,17 @@ export class Tw2GodRaysRenderer
         if (p.Intensity) p.Intensity.SetValue([ godRays.intensity, 0, 1, 1 ]);
         if (p.grFactors) p.grFactors.SetValue(GR_FACTORS);
         if (p.ProjectionMat) p.ProjectionMat.SetValue(this._BuildProjectionMat());
+
+        // See note 4 on the class. The gles2 body multiplies by the global's .y,
+        // which EveLensflare fills with the occlusion intensity. The translated
+        // body indexes FlareOcclusionBuffer by .y's BIT PATTERN, so any intensity
+        // there reads past the buffer and returns 0. Give only that one Carbon's
+        // default, (1, 0, 0, 0): element 0, which is Tr2OcclusionBuffer's value.
+        if (!p.LensflareFxOccScale && effect.effectFilePath.indexOf("/effect.gles2/") === -1)
+        {
+            p.LensflareFxOccScale = new Tw2Vector4Parameter("LensflareFxOccScale", [ 1, 0, 0, 0 ]);
+            effect.BindParameters();
+        }
 
         if (godRays.noiseTexturePath)
         {

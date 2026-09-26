@@ -67,6 +67,8 @@ class Tw2CarbonResourceBinder
 
         // Post-fx buffer textures by register index
         this._bufferTextureSources = {};
+        // Buffer textures by Carbon resource name: `(gl, format) => texture`
+        this._namedBufferTextureSources = {};
         this._zeroBufferTextures = {};
 
         // Dedicated scratch unit for texture creation/upload binds, so
@@ -140,6 +142,42 @@ class Tw2CarbonResourceBinder
     SetBufferTextureSource(registerIndex, texture)
     {
         this._bufferTextureSources[registerIndex] = texture || null;
+    }
+
+    /**
+     * Registers the source for every bufferTexture emulating a named Carbon
+     * buffer, whatever register it sits at. The source is asked per binding
+     * because the same buffer is emitted in different formats: RGBA32F by
+     * runtimes that report none, R32UI or R32F by those that do.
+     * @param {String} carbonName - e.g. "FlareOcclusionBuffer"
+     * @param {Function|null} source - `(gl, format) => WebGLTexture|null`
+     */
+    SetNamedBufferTextureSource(carbonName, source)
+    {
+        this._namedBufferTextureSources[carbonName] = source || null;
+    }
+
+    /**
+     * Gets the texture bound for a bufferTexture entry
+     * @param {Object} entry - program.carbonDataTextures entry
+     * @returns {WebGLTexture}
+     * @private
+     */
+    _GetBufferTexture(entry)
+    {
+        const byRegister = this._bufferTextureSources[entry.registerIndex];
+        if (byRegister) return byRegister;
+
+        const named = entry.carbonName && this._namedBufferTextureSources[entry.carbonName];
+        let texture = null;
+        if (named)
+        {
+            // On the scratch unit: a source may create or upload its texture,
+            // and the unit still active belongs to the previous binding.
+            this.gl.activeTexture(this.gl.TEXTURE0 + this._scratchUnit);
+            texture = named(this.gl, entry.format);
+        }
+        return texture || this._GetZeroBufferTexture(entry.format);
     }
 
     /**
@@ -299,9 +337,11 @@ class Tw2CarbonResourceBinder
                 }
                 else if (entry.kind === "bufferTexture")
                 {
+                    // Resolved before activeTexture: a named source may create
+                    // or upload its texture on the scratch unit.
+                    const texture = this._GetBufferTexture(entry);
                     gl.activeTexture(gl.TEXTURE0 + entry.unit);
-                    gl.bindTexture(gl.TEXTURE_2D,
-                        this._bufferTextureSources[entry.registerIndex] || this._GetZeroBufferTexture(entry.format));
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
                 }
             }
             gl.activeTexture(gl.TEXTURE0);

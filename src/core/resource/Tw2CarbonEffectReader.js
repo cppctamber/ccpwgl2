@@ -251,7 +251,16 @@ export class Tw2CarbonShaderFactory
         // Temporary VFX allowlist: preserve authored culling and blending.
         "/space/specialfx/ubershader.",
         "/space/specialfx/particles/dynamic/1layerdynv2.",
-        "/space/spaceobject/v5/fx/quadsimpleinstancedlight."
+        "/space/spaceobject/v5/fx/quadsimpleinstancedlight.",
+        // Armor/hull damage is submitted as a decal batch but its DX11 effect
+        // still has to supply the authored ONE/INVSRCALPHA blend and disabled
+        // depth writes. The GLES container already applies these six states;
+        // dropping them only on the Carbon path makes the overlay replace the
+        // hull with its bright intermediate color.
+        "/space/spaceobject/v5/fx/impact/fxarmorimpactv5.",
+        "/space/spaceobject/v5/fx/impact/skinned_fxarmorimpactv5.",
+        "/space/spaceobject/v5/fx/impact/unpacked_fxarmorimpactv5.",
+        "/space/spaceobject/v5/fx/impact/unpackedskinned_fxarmorimpactv5."
     ];
 
     _createPass(group, path)
@@ -353,7 +362,7 @@ export class Tw2CarbonShaderFactory
         // New-format binding kinds (structuredUbo bones, structuredTexture
         // lights, bufferTexture post-fx) ride along for the Carbon program/
         // upload layer; legacy Tw2Effect binding ignores them.
-        stage.carbonBindings = shaderRecord.bindings || [];
+        stage.carbonBindings = withBufferTextureNames(shaderRecord.bindings || [], manifestStage);
         // The pass's resource transforms (detail-map merges and deliberate
         // drops), beside the bindings they rewrote. The transform is the only
         // record of what merged - the emitted GLSL just has the result.
@@ -495,6 +504,35 @@ function buildConstants(stage, manifestStage, shaderRecord)
     }
 
     stage.constants.sort((a, b) => a.offset - b.offset);
+}
+
+/**
+ * Names each bufferTexture binding after the Carbon resource it emulates.
+ *
+ * The emitter names a Buffer<> lowering by its GLSL symbol (`bt0`), but the
+ * register means a different buffer in every effect - FlareOcclusionBuffer in
+ * the god rays, an exposure buffer elsewhere - so the binder can only pick the
+ * right source by Carbon's name. That name is on the stage's resource record
+ * for the same register. The emitter's records are shared, so this copies.
+ * @param {Array<Object>} bindings emitter shader record bindings
+ * @param {Object} manifestStage
+ * @returns {Array<Object>}
+ */
+function withBufferTextureNames(bindings, manifestStage)
+{
+    const resources = new Map(
+        (manifestStage?.bindings || [])
+            .filter((entry) => entry.kind === "resource")
+            .map((entry) => [ entry.registerIndex, entry ])
+    );
+
+    return bindings.map((entry) =>
+    {
+        if (entry.kind !== "bufferTexture") return entry;
+        const resource = resources.get(entry.registerIndex);
+        const carbonName = resource && (resource.name || resource.metadataName || resource.carbon?.name);
+        return carbonName ? { ...entry, carbonName } : entry;
+    });
 }
 
 /**

@@ -10,6 +10,7 @@ import { Tw2GpuParticleRenderer } from "particle/gpu/Tw2GpuParticleRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
 import { EvePlanet } from "./object/EvePlanet";
+import { Tr2OcclusionBuffer } from "./effect/EveOccluder";
 import { EveUpdateContext } from "./EveUpdateContext";
 import { ComputeAutoNearFar, GetSceneBoundingSphere, GetShadowFitObjects } from "./EveSceneNearFar";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
@@ -1075,6 +1076,7 @@ export class EveSpaceScene extends meta.Model
         });
 
         Tw2CarbonResourceBinder.Get(d).SetLightList(collector.GetLightList());
+        Tw2CarbonResourceBinder.Get(d).SetNamedBufferTextureSource("FlareOcclusionBuffer", Tr2OcclusionBuffer.GetTexture);
 
         // Carbon blends the lighting overrides in the same per-frame block that
         // resolves the lights (`EveSpaceScene.cpp:1336`), before anything reads
