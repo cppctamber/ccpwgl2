@@ -135,7 +135,19 @@ export class Tw2GodRaysRenderer
             n = b / (a - 1),
             f = b / (a + 1);
 
-        if (Number.isFinite(n) && Number.isFinite(f) && f !== n && n > 0)
+        // A reversed buffer holds `B/z - C` (B = fn/(f-n), C = n/(f-n); see the
+        // ProjectionToView pair in EveSpaceScene), not `A - B/z`. Solving the
+        // shader's `m32 / (1 + m22 - depth) = z` for that gives m22 = -f/(f-n)
+        // and m32 = -fn/(f-n), which in the GL matrix's own terms are
+        // `(a - 1) / 2` and `b / 2` - finite for an infinite far plane too. The
+        // forward pair below reconstructs every reversed depth as ~1m, so the
+        // march sees no silhouettes: a flat glow instead of shafts.
+        if (device.reversedDepthBuffer)
+        {
+            out[10] = (a - 1) / 2;
+            out[14] = b / 2;
+        }
+        else if (Number.isFinite(n) && Number.isFinite(f) && f !== n && n > 0)
         {
             out[10] = n / (f - n);
             out[14] = f * n / (f - n);
