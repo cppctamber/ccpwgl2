@@ -118,7 +118,10 @@ export class Tw2PostProcess2 extends meta.Model
 
         if (tonemapping && !this.tonemapping && !this._injected.has("tonemapping"))
         {
+            // Uncharted2, not the class default ACES: EVE's compiled composite
+            // carries only the Uncharted2 curve (see Tr2PPTonemappingEffect).
             this.tonemapping = new Tr2PPTonemappingEffect();
+            this.tonemapping.method = Tr2PPTonemappingEffect.Method.UNCHARTED2;
             this._injected.add("tonemapping");
             injected.push("tonemapping");
         }

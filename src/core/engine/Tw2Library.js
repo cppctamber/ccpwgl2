@@ -77,7 +77,7 @@ export class Tw2Library extends Tw2EventEmitter
         // enableExperimentalBatchContext: the Carbon-shaped render batch context.
         .RegisterSetting("enableExperimentalBatchContext", false)
         // postprocessInjectTonemapping / postprocessInjectDynamicExposure: give a
-        // post process that lacks them a Carbon-default tonemapping and dynamic
+        // post process that lacks them an Uncharted2 tonemapping and a Carbon-default dynamic
         // exposure effect, standing in for what the EVE client adds to the
         // scene's default post process. See Tw2PostProcess2.InjectClientDefaults.
         .RegisterSetting("postprocessInjectTonemapping", true)
