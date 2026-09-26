@@ -3,6 +3,8 @@ import { tw2, device } from "global";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2TextureParameter } from "../parameter";
 import { Tr2PPTonemappingEffect } from "./effect/Tr2PPTonemappingEffect";
+import { Tw2DynamicExposureRenderer } from "./Tw2DynamicExposureRenderer";
+import { Tw2CarbonResourceBinder } from "../carbon/Tw2CarbonResourceBinder";
 
 
 const EFFECT_PATH = "res:/graphics/effect/managed/space/postprocess/tonemapping.fx";
@@ -41,6 +43,8 @@ const DEFAULT_PARAMETERS = {
     ExposureAdjust: 1,
     ExposureInfluence: 1,
     ExposureMiddleValue: 0.55,
+    MinExposure: -3.7,
+    MaxExposure: 10,
     BloomBrightness: 0,
     GrimeWeight: 0,
 
@@ -103,10 +107,10 @@ const DEFAULT_PARAMETERS = {
  * - `ApplyFade` sets no option; it expresses an absent fade as `FadeAmount` 0,
  *   even though the container declares a `FADE_TOGGLE` axis.
  *
- * One is deliberately NOT reproduced: dynamic exposure. Carbon builds, merges
- * and measures a luminance histogram in compute shaders, and WebGL2 has no
- * compute stage. The option is forced off, which is a configuration Carbon
- * supports, and the composite degrades to fixed exposure rather than to none.
+ * Dynamic exposure is measured by `Tw2DynamicExposureRenderer` before the
+ * composite draws, and published to the tonemap as its `Exposure` buffer. The
+ * option is only enabled on a frame that measured; otherwise the composite
+ * degrades to fixed exposure, a configuration Carbon supports.
  */
 @meta.define("Tw2PostProcessRenderer")
 export class Tw2PostProcessRenderer
@@ -114,6 +118,7 @@ export class Tw2PostProcessRenderer
 
     _effect = null;
     _populated = false;
+    _exposure = new Tw2DynamicExposureRenderer();
 
     /**
      * Gets or creates the composite effect
@@ -158,8 +163,10 @@ export class Tw2PostProcessRenderer
      * left at its previous value persists across frames on a shared effect.
      *
      * @param {Tw2PostProcess2|null} postProcess
+     * @param {Tr2PPDynamicExposureEffect|null} [dynamicExposure] - the effect,
+     * only when its buffer was measured this frame
      */
-    Apply(postProcess)
+    Apply(postProcess, dynamicExposure = null)
     {
         const
             effect = this.EnsureEffect(),
@@ -187,8 +194,7 @@ export class Tw2PostProcessRenderer
             DESATURATE_TOGGLE: TOGGLE("DESATURATE", !!desaturate),
             VIGNETTE_TOGGLE: TOGGLE("VIGNETTE", !!vignette),
             LUT_TOGGLE: TOGGLE("LUT", luts.length > 0),
-            // Compute-only in Carbon; see the class note.
-            DYNAMIC_EXPOSURE_TOGGLE: TOGGLE("DYNAMIC_EXPOSURE", false),
+            DYNAMIC_EXPOSURE_TOGGLE: TOGGLE("DYNAMIC_EXPOSURE", !!dynamicExposure),
             // Carbon's tone curve selection (Tr2PostProcessRenderer.cpp:1557-1575).
             // EVE's composite declares neither option and ignores both; Frontier's
             // falls back to its default path without them, which with no ACES
@@ -198,9 +204,22 @@ export class Tw2PostProcessRenderer
 
         const p = effect.parameters;
 
-        // Exposure. With no dynamic exposure the composite still applies
-        // ExposureAdjust, so this degrades to fixed exposure rather than to none.
-        this.SetParameter(p, "ExposureAdjust", Math.pow(2, postProcess ? postProcess.exposureAdjustment : 0));
+        // Exposure (`Tonemapping::ApplyDynamicExposure`, cpp:350-366). With no
+        // dynamic exposure the composite still applies ExposureAdjust, so this
+        // degrades to fixed exposure rather than to none.
+        const exposureAdjustment = postProcess ? postProcess.exposureAdjustment : 0;
+        if (dynamicExposure)
+        {
+            this.SetParameter(p, "ExposureMiddleValue", dynamicExposure.middleValue);
+            this.SetParameter(p, "ExposureInfluence", dynamicExposure.influence);
+            this.SetParameter(p, "MinExposure", dynamicExposure.minExposure);
+            this.SetParameter(p, "MaxExposure", dynamicExposure.maxExposure);
+            this.SetParameter(p, "ExposureAdjust", Math.pow(2, exposureAdjustment + dynamicExposure.adjustment));
+        }
+        else
+        {
+            this.SetParameter(p, "ExposureAdjust", Math.pow(2, exposureAdjustment));
+        }
         this.SetParameter(p, "OutputGamma", 1);
 
         // No bloom chain yet: brightness 0 leaves BlitCurrent contributing
@@ -346,7 +365,19 @@ export class Tw2PostProcessRenderer
         const effect = this.EnsureEffect();
         if (!effect.IsGood() || !sceneTarget || !sceneTarget.IsGood()) return false;
 
-        this.Apply(postProcess);
+        // Carbon measures after DoF and TAA, on the image the tonemap is about
+        // to read (cpp:726-745); that is this scene target. Carbon's quality
+        // gate is MEDIUM (`dynamicExposureQualityRequirement`, cpp:26).
+        let dynamicExposure = postProcess ? postProcess.GetIfAvailable("dynamicExposure") : null;
+        if (dynamicExposure && device.shaderModel === "lo") dynamicExposure = null;
+        if (dynamicExposure)
+        {
+            Tw2CarbonResourceBinder.Get(device).SetNamedBufferTextureSource("Exposure",
+                (gl, format) => this._exposure.GetExposureTexture(gl, format));
+            if (!this._exposure.Render(dynamicExposure, sceneTarget)) dynamicExposure = null;
+        }
+
+        this.Apply(postProcess, dynamicExposure);
 
         const { gl } = tw2;
 

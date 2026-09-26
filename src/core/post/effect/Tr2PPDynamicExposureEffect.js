@@ -5,22 +5,17 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
 /**
  * Automatic exposure driven by a luminance histogram
  *
- * NOT IMPLEMENTED. Carbon builds, merges and measures the histogram in compute
- * shaders, and WebGL2 has no compute stage. The class exists so shipped data
- * hydrates without loss and so the composite can be told the effect is absent,
- * which is a supported configuration in Carbon.
- *
- * This was previously recorded as not implementable at all. That is too strong:
- * of Carbon's four passes, ExposureToTexture already translates to WebGL2,
- * MeasureExposure is excluded only for a groupshared declaration inside a
- * one-thread dispatch, and only the histogram build needs a replacement
- * algorithm. See `/docs/research/dynamic-exposure-without-compute.md`.
+ * Data only. `Tw2DynamicExposureRenderer` measures it, before the composite, in
+ * place of Carbon's three compute passes: the same per-pixel 64-bin histogram
+ * and the same MeasureExposure maths, built with a point scatter and a
+ * fragment pass because WebGL2 has no compute stage.
  *
  * With the effect absent the composite still applies `ExposureAdjust`, so this
- * is a degradation to fixed exposure rather than to none.
+ * is a degradation to fixed exposure rather than to none - and 69 of the 168
+ * shipped environment templates carry no dynamic exposure at all.
  *
- * Any replacement — a mip-chain luminance reduction, say — is a different
- * algorithm with different behaviour and must not be described as parity.
+ * A mip-chain luminance average would be a different algorithm with different
+ * behaviour and must not be described as parity.
  *
  * @ccp Tr2PPDynamicExposureEffect
  */
