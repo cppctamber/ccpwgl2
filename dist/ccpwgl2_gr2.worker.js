@@ -178,6 +178,24 @@
    * The format subpaths must remain directly importable from authored source, so
    * this base carries no decorators. Formats return plain support reports;
    * CjsResourceProbe.from() is the optional resource-layer normalization.
+   *
+   * A concrete format declares these statics (checked by validateContract):
+   * - `id`: stable format identity;
+   * - `mediaTypes`: canonical MediaType categories;
+   * - `extensions`: lowercase dotted suffixes offered for routing;
+   * - `outputs`: the defineOutputs map of exact output selectors;
+   * - `requestResponseType`: how the source is acquired (default "arraybuffer");
+   * - `worker`: null, or a browser-worker execution descriptor.
+   *
+   * An output descriptor carries `output`, `payloadType`, `role`, `readMode`,
+   * `decoded`, `passthrough`, `default`, `probes` and `requires`. It declares
+   * a reader path; it never claims that path has run for a given input.
+   *
+   * Four questions stay separate: `is` (boolean routing), `inspect`
+   * (structure), `getSupport` (advice, never verified) and `verifySupport`
+   * (proof by the real read). Routing uses `is` or a route probe only; support
+   * reports never select a route, so a decoder limitation cannot change which
+   * format owns the bytes.
    */
   class CjsFormat {
     /**
@@ -298,6 +316,11 @@
      *
      * Concrete formats may override this with header/environment reasoning. The
      * public getSupport() method normalizes its result into the uniform contract.
+     *
+     * A probe that returns no `variants` already reports every declared output
+     * as supported whenever the input is recognised and `supported` is not
+     * false or "none", so an override is only worth writing for a condition
+     * the output declaration cannot express.
      */
     static probeSupport(input) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -352,6 +375,12 @@
      * This is an explicit diagnostic/capability operation. Normal resource
      * loading calls readAsync() once and treats its successful result as proof;
      * it must not verify and then decode the same payload a second time.
+     *
+     * Proof is output-specific: `options.emit` selects the output, defaulting to
+     * the declared default. An undeclared output fails with
+     * CJS_FORMAT_OUTPUT_UNDECLARED without running a reader. Otherwise the
+     * report has `verified: true` and either `supported: true` or a structured
+     * `error` (name, code, message, details, cause).
      */
     static verifySupport(input) {
       var _arguments3 = arguments,
@@ -1881,8 +1910,9 @@
 
   // Clean-room BitKnit2 (Granny .gr2 section format 4) codec support.
   //
-  // The decoder was written solely from the published format specification
-  // (docs/formats/bitknit2.md) by an isolated agent with no access to any other
+  // BitKnit2 is RAD Game Tools' format; this is not RAD code. The decoder was
+  // written solely from the facts-only format specification
+  // (docs/resource/formats/bitknit2.md) by an isolated agent with no access to any other
   // BitKnit implementation, then validated byte-exact against 539 real EVE .gr2
   // streams. The raw-quantum encoder is the direct inverse of the decoder's raw
   // branch and is covered by exact vectors and quantum-boundary tests. Replaced
@@ -6877,6 +6907,8 @@
    * CMF has no shear channel, so authored Granny shear is rejected rather than
    * discarded. Inverse bind matrices are rebuilt from the rest pose hierarchy
    * in the row-major, translation-in-elements-12..14 layout Granny uses.
+   * Track-group layering, accumulation and loop metadata, text tracks, and
+   * vector tracks that do not name a morph target are not carried into CMF.
    */
 
   function convertError(message) {
@@ -10638,7 +10670,45 @@
     };
   }
 
-  /** Serialize a native CMF graph to a canonical 32-bit little-endian GR2 file. */
+  /**
+   * Serialize a native CMF graph to a canonical 32-bit little-endian GR2 file.
+   *
+   * Output is a version-7 Granny container holding the standard reflected
+   * `granny_file_info` geometry and animation graph in one outer section, with
+   * pointer and mixed-marshalling fixups, a 2.12 type tag and the file CRC. CMF
+   * LODs become separate `Name LOD <threshold>` meshes; materials, mesh
+   * bindings, skin and inverse-bind data, morph targets, and skeletal or
+   * scalar-morph animation are written. Not written: GSF, cameras, lights,
+   * textures, EVE `MeshBoundsInfo` extended data (every `ExtendedData` is null),
+   * and size-reducing Oodle1/BitKnit2 section coding.
+   *
+   * Packed tangent output uses the legacy angle frame; CMF `PackedTangent`
+   * (quaternion) and `PackedTangentLegacy` inputs are both accepted.
+   *
+   * Curve packing picks the smallest representation whose decoded samples stay
+   * within tolerance, moving from 8-bit to 16-bit to float. Granny format 0
+   * (`DaKeyframes32f`) is never selected: its implicit timing depends on
+   * file-level `TimeStep` semantics that are not established.
+   *
+   * @param {object} input Native CMF v1 graph.
+   * @param {object} [writerOptions] Writer options.
+   * @param {"preserve"|"packed"|"unpacked"} [writerOptions.tangentMode] Default
+   *     `"preserve"` keeps the source layout; `"packed"` writes one
+   *     normalized-uint8 `Tangent[4]` frame; `"unpacked"` writes float
+   *     normal/tangent/binormal channels.
+   * @param {"none"|"bitknit2Raw"} [writerOptions.sectionCompression] Default
+   *     `"none"`. `"bitknit2Raw"` frames the section and both fixup tables as
+   *     BitKnit2 raw quanta (format 4); it adds bytes and is not compression.
+   * @param {boolean} [writerOptions.compressedCurves] Default `true`; `false`
+   *     writes float knot/control curves.
+   * @param {number} [writerOptions.tolerance] Scalar/general curve error, default 0.1.
+   * @param {number} [writerOptions.positionTolerance] Default 0.1.
+   * @param {number} [writerOptions.orientationTolerance] Angular error in
+   *     radians, default 0.1 degrees.
+   * @param {number} [writerOptions.scaleShearTolerance] Default 0.1.
+   * @param {string} [writerOptions.sourceName] Written to `FromFileName`, default "".
+   * @returns {Uint8Array} Complete GR2 file bytes.
+   */
   function writeGr2(input) {
     var writerOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var options = validateOptions(writerOptions);
@@ -10652,7 +10722,13 @@
     });
   }
 
-  /** Convert shared or GR2-shaped geometry through CMF, then serialize GR2. */
+  /**
+   * Convert shared or GR2-shaped geometry through CMF, then serialize GR2.
+   *
+   * A four-component `tangent` with no `normal` or `binormal` is a packed frame
+   * and enters CMF as `PackedTangentLegacy`, so the CMF step keeps the packed
+   * layout instead of expanding it.
+   */
   function writeSharedGr2(input) {
     var writerOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var options = validateOptions(writerOptions);
@@ -10818,9 +10894,13 @@
    * @typedef {object} Gr2SharedRoot
    * @property {number} grannyFileFormatRevision Granny file format revision.
    * @property {string} grannyFileSource Original source filename, or an empty string.
-   * @property {object[]} meshes Mesh records with deinterleaved vertex channels.
+   * @property {object[]} meshes Mesh records with deinterleaved flat numeric
+   *     vertex channels (`VERTEX_CHANNELS`), `boneBindings`, `morphTargets`
+   *     (sparse ones carry `vertexIndices`) and `indices` groups whose `faces`
+   *     is a flat triangle-index array.
    * @property {object[]} models Model records with skeleton and mesh bindings.
-   * @property {object[]} animations Animation records and transform tracks.
+   * @property {object[]} animations Animation records: `trackGroups` ->
+   *     `transformTracks` -> curves.
    */
 
   /**
@@ -12066,7 +12146,33 @@
    * reads `.gr2` geometry/skeleton/animation graphs and `.gsf` state profiles,
    * emits GR2 JSON, hydrated caller-supplied classes, or CMF-shaped output, and
    * writes pure-JavaScript GR2 geometry from CMF without pretending those
-   * classes are the engine runtime itself.
+   * classes are the engine runtime itself. It needs no native Granny library,
+   * GPU or filesystem. Section decompression covers None, Oodle1 and BitKnit2.
+   *
+   * `emit`: `"json"` (default) and its alias `"gr2Json"` return the plain GR2
+   * graph; `"gr2"` and `"cmf"` return the GR2 or CMF graph hydrated with
+   * caller classes and require a non-empty `classes` map; `"raw"` returns the
+   * reflected `granny_file_info` result. With `"json"`/`"gr2Json"`, `classes`
+   * hydrates only the listed nodes. After raw reflection the JSON and CMF paths
+   * branch from one shared projection; CMF does not pass through the JSON output.
+   *
+   * Read options (all default `false`): `decompressCurves` adds decoded
+   * `knots`/`controls`/`dimension` to supported compressed curves while keeping
+   * the raw fields; `unpackTangents` expands packed tangent frames, primary and
+   * morph-target together, into normal/tangent/binormal channels;
+   * `rebuildMissingNormals`, `rebuildMissingTangents`, `rebuildMissingBiNormals`
+   * and `rebuildMissingBounds` fill absent data only and never repair authored
+   * channels. `unpackTangents` and the three channel rebuilds may be a function
+   * `(context) => boolean` deciding per mesh; `context` carries `reader`,
+   * `options`, `raw`, `json`, `mesh`, `meshIndex`, `feature` and `channel`.
+   *
+   * Hydration constructs each registered class with no arguments and calls
+   * `SetValues(fields)`; valid keys are in `CjsGr2Format.classKeys`.
+   * `ToJSON`/`toJSON` return a JSON-compatible value, not JSON text.
+   *
+   * `readGsf` projects a Granny State (`.gsf`) document: container revision,
+   * model and retarget hints, state machine, animation slots and sets,
+   * referenced relative `.gr2` files, token count, editor data and extended data.
    */
   class CjsGr2Format extends CjsGeometryFormat {
     /**

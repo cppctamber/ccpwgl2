@@ -137,6 +137,6 @@
     "rollup": "^4.62.2"
   },
   "dependencies": {
-    "@carbonenginejs/runtime": "^0.1.0-alpha.4"
+    "@carbonenginejs/runtime": "^0.1.0-alpha.7"
   }
 }
