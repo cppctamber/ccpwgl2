@@ -1919,6 +1919,15 @@ export class EveSpaceScene extends meta.Model
         // rays for every default (`hdr=0`) session. `sceneTarget` may be null,
         // and the pass then blits additively onto the canvas, which is the same
         // thing Carbon does to its own scene image.
+        // What the EVE client adds to the scene's default post process.
+        if (this.postProcess2)
+        {
+            this.postProcess2.InjectClientDefaults({
+                tonemapping: tw2.settings.GetValue("postprocessInjectTonemapping"),
+                dynamicExposure: tw2.settings.GetValue("postprocessInjectDynamicExposure")
+            });
+        }
+
         // Fog, then god rays: Carbon's order (Tr2PostProcessRenderer.cpp:709-718).
         this.RenderFog(sceneTarget);
         this.RenderGodRays(sceneTarget);

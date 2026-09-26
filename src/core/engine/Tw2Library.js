@@ -76,6 +76,12 @@ export class Tw2Library extends Tw2EventEmitter
         .RegisterSetting("enableExperimentalShadows", false)
         // enableExperimentalBatchContext: the Carbon-shaped render batch context.
         .RegisterSetting("enableExperimentalBatchContext", false)
+        // postprocessInjectTonemapping / postprocessInjectDynamicExposure: give a
+        // post process that lacks them a Carbon-default tonemapping and dynamic
+        // exposure effect, standing in for what the EVE client adds to the
+        // scene's default post process. See Tw2PostProcess2.InjectClientDefaults.
+        .RegisterSetting("postprocessInjectTonemapping", true)
+        .RegisterSetting("postprocessInjectDynamicExposure", true)
         // forceUberDepthOff: TEMPORARY. Forces every UBER_DEPTH permutation OFF.
         // UBER_DEPTH_ON fades a surface against DepthMap; without a published
         // DepthMap the fade resolves to zero and the surface contributes no

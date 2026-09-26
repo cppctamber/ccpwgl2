@@ -1,4 +1,6 @@
 import { meta } from "utils";
+import { Tr2PPTonemappingEffect } from "./effect/Tr2PPTonemappingEffect";
+import { Tr2PPDynamicExposureEffect } from "./effect/Tr2PPDynamicExposureEffect";
 
 
 /**
@@ -87,6 +89,59 @@ export class Tw2PostProcess2 extends meta.Model
 
     @meta.float
     exposureAdjustment = 0;
+
+    /** Slots filled by InjectClientDefaults rather than by the loaded data. */
+    _injected = new Set();
+
+    /**
+     * Fills the slots the EVE client supplies itself
+     *
+     * Carbon takes tonemapping and dynamic exposure only from the scene's
+     * default post process (`EveSpaceScene.cpp:391-397`), and the client builds
+     * that object: of the shipped environment templates only one carries a
+     * tonemapping effect and many carry no dynamic exposure, yet the game shows
+     * both. Without them the composite clips HDR at 1.0 - the flat white sun and
+     * blown shields.
+     *
+     * ccpwgl-only (not Carbon): the client's values are not available, so an
+     * absent slot gets a Carbon-default effect. Present slots are never touched,
+     * and the injected ones stay ordinary effects that can be tuned or nulled.
+     *
+     * @param {Object} [options]
+     * @param {Boolean} [options.tonemapping=true]
+     * @param {Boolean} [options.dynamicExposure=true]
+     * @returns {Array<String>} the slots injected by this call
+     */
+    InjectClientDefaults({ tonemapping = true, dynamicExposure = true } = {})
+    {
+        const injected = [];
+
+        if (tonemapping && !this.tonemapping && !this._injected.has("tonemapping"))
+        {
+            this.tonemapping = new Tr2PPTonemappingEffect();
+            this._injected.add("tonemapping");
+            injected.push("tonemapping");
+        }
+
+        if (dynamicExposure && !this.dynamicExposure && !this._injected.has("dynamicExposure"))
+        {
+            this.dynamicExposure = new Tr2PPDynamicExposureEffect();
+            this._injected.add("dynamicExposure");
+            injected.push("dynamicExposure");
+        }
+
+        return injected;
+    }
+
+    /**
+     * Identifies whether a slot was filled by InjectClientDefaults
+     * @param {String} slot
+     * @returns {Boolean}
+     */
+    IsInjected(slot)
+    {
+        return this._injected.has(slot);
+    }
 
     /**
      * Gets an effect if it is present and active
