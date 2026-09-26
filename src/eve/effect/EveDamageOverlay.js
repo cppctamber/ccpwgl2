@@ -7,7 +7,6 @@ import { RM_DECAL } from "constant";
 
 
 const IMPACT_HOLE_TO_ARMOR_DAMAGE_RATIO = 12;
-const IMPACT_HOLE_TO_HULL_DAMAGE_RATIO = 4;
 const IMPACT_ARMOR_SIZE_FACTOR = 0.0129;
 const IMPACT_ARMOR_SIZE_MAX = 10;
 
@@ -266,9 +265,18 @@ export class EveDamageOverlay extends meta.Model
         else if (armor > 0.05) this.configuration = EveDamageOverlay.ImpactConfiguration.IMPACT_ARMOR;
         else if (hull > 0) this.configuration = EveDamageOverlay.ImpactConfiguration.IMPACT_HULL;
 
+        // diverged: Carbon's goal is 12 * (1 - armor) + 4 * (1 - hull) holes, at
+        // most 16 (EveDamageOverlay.cpp:467), picked with replacement. Here
+        // armour damage places up to 12 distinct holes and hull damage fills the
+        // remaining enabled locators, with a minimum size growing with hull
+        // damage, so a ship at zero hull is blackened throughout - the
+        // operator's requirement for this viewer, not Carbon's behaviour.
+        const enabledLocatorCount = this.damageLocatorCount - this._disabledDamageLocators.length;
+        const armorGoal = Math.min(enabledLocatorCount,
+            IMPACT_HOLE_TO_ARMOR_DAMAGE_RATIO * Clamp01(1 - armor));
+        const hullDamage = Clamp01(1 - hull);
         this.armorImpactGoalCount = Math.trunc(
-            IMPACT_HOLE_TO_ARMOR_DAMAGE_RATIO * Clamp01(1 - armor) +
-            IMPACT_HOLE_TO_HULL_DAMAGE_RATIO * Clamp01(1 - hull));
+            armorGoal + (enabledLocatorCount - armorGoal) * hullDamage);
         this.hullDamageFactor = Linearize(0.9, 0.1, hull);
 
         if (this.hullDamageFlickerCurve)
@@ -278,21 +286,31 @@ export class EveDamageOverlay extends meta.Model
             this.hullDamageFlickerCurve.offset = 1 - modifier;
         }
 
-        const enabledLocatorCount = this.damageLocatorCount - this._disabledDamageLocators.length;
         if (createArmorImpacts && enabledLocatorCount)
         {
             const random = SeededRandom((this.seed + this._armorImpacts.size) >>> 0);
-            for (let impactIndex = this._armorImpacts.size;
-                impactIndex < this.armorImpactGoalCount;
-                impactIndex++)
+            const minimumImpactSize = 0.2 + 0.6 * hullDamage;
+            for (const impact of this._armorImpacts.values())
             {
-                let locator = Math.floor(random() * enabledLocatorCount);
-                for (const disabled of this._disabledDamageLocators)
+                impact.size = Math.max(impact.size, minimumImpactSize);
+            }
+            const used = new Set(Array.from(this._armorImpacts.values(), impact =>
+                impact.damageLocatorIndex));
+            const available = [];
+            for (let locator = 0; locator < this.damageLocatorCount; locator++)
+            {
+                if (!used.has(locator) && !this._disabledDamageLocators.includes(locator))
                 {
-                    if (disabled > locator) break;
-                    locator++;
+                    available.push(locator);
                 }
-                this.CreateImpact(locator, 0.2 + random() * 0.6, this.debugForceSpawnDebris);
+            }
+            while (this._armorImpacts.size < this.armorImpactGoalCount && available.length)
+            {
+                const candidate = Math.floor(random() * available.length);
+                const locator = available.splice(candidate, 1)[0];
+                this.CreateImpact(locator,
+                    minimumImpactSize + random() * (0.6 - 0.4 * hullDamage),
+                    this.debugForceSpawnDebris);
             }
         }
 
