@@ -99,9 +99,14 @@ export class Tw2PostProcess2 extends meta.Model
      * Carbon takes tonemapping and dynamic exposure only from the scene's
      * default post process (`EveSpaceScene.cpp:391-397`), and the client builds
      * that object: of the shipped environment templates only one carries a
-     * tonemapping effect and many carry no dynamic exposure, yet the game shows
-     * both. Without them the composite clips HDR at 1.0 - the flat white sun and
-     * blown shields.
+     * tonemapping effect and many carry no dynamic exposure.
+     *
+     * Only the dynamic exposure changes EVE's image. EVE's compiled composite
+     * has no TONE_MAPPING_METHOD axis - its Uncharted2 curve is baked in and
+     * runs with or without a tonemapping effect - so the injected tonemapping
+     * matters only to composites that have the axis (Frontier). An earlier
+     * measurement credited it with removing clipping; that was a first-load
+     * transient in the measurement, not the curve.
      *
      * ccpwgl-only (not Carbon): the client's values are not available, so an
      * absent slot gets a Carbon-default effect. Present slots are never touched,
