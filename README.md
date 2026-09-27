@@ -1,3 +1,7 @@
+> **Deprecation notice:** CCPWGL2 will be deprecated in the near future and
+> replaced by [CarbonEngineJS](https://github.com/carbonenginejs). Use it at
+> your own risk. Notice will be given here before the replacement happens.
+
 CCP WebGL Library
 ======
 A webgl implementation of CCP Game's Eve Online graphics engine.
