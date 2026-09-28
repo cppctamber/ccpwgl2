@@ -167,6 +167,18 @@
     VIDEO: "video"
   });
 
+  /**
+   * A format's name for messages: its `static className`, inherited from the
+   * nearest format that declares one. Formats are not schema-registered, and a
+   * format imports nothing outside the formats tree (a single format is
+   * importable on its own), so this does not reach for global/compose.
+   *
+   * @param {Function} Constructor A CjsFormat subclass.
+   * @returns {string} The declared name, or "<unnamed format>".
+   */
+  function FormatName(Constructor) {
+    return typeof (Constructor === null || Constructor === void 0 ? void 0 : Constructor.className) === "string" ? Constructor.className : "<unnamed format>";
+  }
   var OUTPUT_ROLE_RUNTIME = "runtime";
   var OUTPUT_ROLE_DEBUG = "debug";
   var READ_MODE_SYNC = "sync";
@@ -222,7 +234,7 @@
 
     /** Read through the concrete instance implementation. */
     Read(_input) {
-      var error = new Error("".concat(this.constructor.name, ".Read is not implemented."));
+      var error = new Error("".concat(FormatName(this.constructor), ".Read is not implemented."));
       error.code = "CJS_FORMAT_READ_NOT_IMPLEMENTED";
       throw error;
     }
@@ -407,9 +419,9 @@
           yield _this3.readAsync(input, _objectSpread2(_objectSpread2({}, values), {}, {
             emit: capability.output
           }));
-          return freezeVerification(report, capability, true, null);
+          return createVerification(report, capability, true, null);
         } catch (error) {
-          return freezeVerification(report, capability, false, error);
+          return createVerification(report, capability, false, error);
         }
       })();
     }
@@ -446,7 +458,7 @@
     }
 
     /**
-     * Freeze and validate one format's authoritative input map.
+     * Validate one format's authoritative input map.
      *
      * Mirrors `defineOutputs`, including the one-default rule: a format that can
      * be written from several payloads still has one obvious answer to "write
@@ -493,7 +505,7 @@
       return inputs;
     }
 
-    /** Freeze and validate one format's authoritative output map. */
+    /** Validate one format's authoritative output map. */
     static defineOutputs() {
       var definitions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       if (!definitions || typeof definitions !== "object" || Array.isArray(definitions)) {
@@ -544,44 +556,44 @@
         throw new TypeError("CjsFormat.validateContract requires a CjsFormat subclass.");
       }
       if (typeof Constructor.id !== "string" || !Constructor.id) {
-        throw new TypeError("".concat(Constructor.name, " must declare a non-empty id."));
+        throw new TypeError("".concat(FormatName(Constructor), " must declare a non-empty id."));
       }
       if (!Array.isArray(Constructor.mediaTypes) || Constructor.mediaTypes.length === 0) {
-        throw new TypeError("".concat(Constructor.name, " must declare non-empty mediaTypes."));
+        throw new TypeError("".concat(FormatName(Constructor), " must declare non-empty mediaTypes."));
       }
       for (var mediaType of Constructor.mediaTypes) {
         if (!Object.values(MediaType).includes(mediaType)) {
-          throw new TypeError("".concat(Constructor.name, " media type ").concat(JSON.stringify(mediaType), " is not canonical."));
+          throw new TypeError("".concat(FormatName(Constructor), " media type ").concat(JSON.stringify(mediaType), " is not canonical."));
         }
       }
       if (!Array.isArray(Constructor.extensions)) {
-        throw new TypeError("".concat(Constructor.name, " must declare extensions."));
+        throw new TypeError("".concat(FormatName(Constructor), " must declare extensions."));
       }
       if (!Constructor.outputs || typeof Constructor.outputs !== "object" || Array.isArray(Constructor.outputs)) {
-        throw new TypeError("".concat(Constructor.name, " must declare outputs."));
+        throw new TypeError("".concat(FormatName(Constructor), " must declare outputs."));
       }
       if (typeof Constructor.requestResponseType !== "string" || !Constructor.requestResponseType) {
-        throw new TypeError("".concat(Constructor.name, " must declare a requestResponseType."));
+        throw new TypeError("".concat(FormatName(Constructor), " must declare a requestResponseType."));
       }
       if (Constructor.worker !== null) {
         if (!Constructor.worker || typeof Constructor.worker !== "object") {
-          throw new TypeError("".concat(Constructor.name, ".worker must be null or a descriptor object."));
+          throw new TypeError("".concat(FormatName(Constructor), ".worker must be null or a descriptor object."));
         }
         if (typeof Constructor.worker.module !== "string" || !Constructor.worker.module || typeof Constructor.worker.exportName !== "string" || !Constructor.worker.exportName || !Array.isArray(Constructor.worker.outputTypes)) {
-          throw new TypeError("".concat(Constructor.name, ".worker has an invalid execution descriptor."));
+          throw new TypeError("".concat(FormatName(Constructor), ".worker has an invalid execution descriptor."));
         }
         for (var output of Constructor.worker.outputTypes) {
           if (!Constructor.getOutputCapability(output)) {
-            throw new TypeError("".concat(Constructor.name, ".worker names undeclared output ").concat(JSON.stringify(output), "."));
+            throw new TypeError("".concat(FormatName(Constructor), ".worker names undeclared output ").concat(JSON.stringify(output), "."));
           }
         }
         if (Constructor.worker.defaultOutput && !Constructor.getOutputCapability(Constructor.worker.defaultOutput)) {
-          throw new TypeError("".concat(Constructor.name, ".worker names an undeclared default output."));
+          throw new TypeError("".concat(FormatName(Constructor), ".worker names an undeclared default output."));
         }
       }
       for (var retired of ["type", "inputTypes", "outputTypes", "debugOutputTypes", "implementationStatus"]) {
         if (Object.hasOwn(Constructor, retired)) {
-          throw new TypeError("".concat(Constructor.name, " must not declare retired static ").concat(retired, "."));
+          throw new TypeError("".concat(FormatName(Constructor), " must not declare retired static ").concat(retired, "."));
         }
       }
       var defaults = 0;
@@ -590,12 +602,12 @@
         var _output = _ref9[0];
         var capability = _ref9[1];
         if (capability.output !== _output) {
-          throw new TypeError("".concat(Constructor.name, " output ").concat(_output, " has a mismatched descriptor."));
+          throw new TypeError("".concat(FormatName(Constructor), " output ").concat(_output, " has a mismatched descriptor."));
         }
         if (capability.default) defaults++;
       }
       if (Object.keys(Constructor.outputs).length > 0 && defaults !== 1) {
-        throw new TypeError("".concat(Constructor.name, " must declare exactly one default output."));
+        throw new TypeError("".concat(FormatName(Constructor), " must declare exactly one default output."));
       }
     }
   }
@@ -709,7 +721,7 @@
     var direct = outputs.find(entry => entry.output.toLowerCase() === normalized);
     return (direct === null || direct === void 0 ? void 0 : direct.output) || "";
   }
-  function freezeVerification(report, capability, supported, error) {
+  function createVerification(report, capability, supported, error) {
     var errorReport = error ? serializeError(error) : null;
     var outputs = report.outputs.map(entry => entry.output === capability.output ? _objectSpread2(_objectSpread2({}, entry), {}, {
       supported,
@@ -856,6 +868,8 @@
       return !!this.GetClass(type);
     }
   }
+  /** Registered name; `constructor.name` does not survive minification. */
+  CjsGeometryFormat.className = "CjsGeometryFormat";
   CjsGeometryFormat.mediaTypes = ["geometry"];
 
   /**
@@ -1522,64 +1536,64 @@
    * Each entry exposes the numeric format and the function used by
    * {@link decodeCurve}.
    */
-  var CURVE_DECODERS = Object.freeze([Object.freeze({
+  var CURVE_DECODERS = [{
     format: FORMAT_DA_KEYFRAMES_32F,
     decode: decodeDaKeyframes32f
-  }), Object.freeze({
+  }, {
     format: FORMAT_DA_K32F_C32F,
     decode: decodeDaK32fC32f
-  }), Object.freeze({
+  }, {
     format: FORMAT_DA_IDENTITY,
     decode: decodeDaIdentity
-  }), Object.freeze({
+  }, {
     format: FORMAT_DA_CONSTANT_32F,
     decode: decodeDaConstant32f
-  }), Object.freeze({
+  }, {
     format: FORMAT_D3_CONSTANT_32F,
     decode: decodeD3Constant32f
-  }), Object.freeze({
+  }, {
     format: FORMAT_D4_CONSTANT_32F,
     decode: decodeD4Constant32f
-  }), Object.freeze({
+  }, {
     format: FORMAT_DA_K16U_C16U,
     decode: decodeDaK16uC16u
-  }), Object.freeze({
+  }, {
     format: FORMAT_DA_K8U_C8U,
     decode: decodeDaK8uC8u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D4N_K16U_C15U,
     decode: decodeD4nK16uC15u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D4N_K8U_C7U,
     decode: decodeD4nK8uC7u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D3_K16U_C16U,
     decode: decodeD3K16uC16u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D3_K8U_C8U,
     decode: decodeD3K8uC8u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D9I1_K16U_C16U,
     decode: decodeD9I1K16uC16u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D9I3_K16U_C16U,
     decode: decodeD9I3K16uC16u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D9I1_K8U_C8U,
     decode: decodeD9I1K8uC8u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D9I3_K8U_C8U,
     decode: decodeD9I3K8uC8u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D3I1_K32F_C32F,
     decode: decodeD3I1K32fC32f
-  }), Object.freeze({
+  }, {
     format: FORMAT_D3I1_K16U_C16U,
     decode: decodeD3I1K16uC16u
-  }), Object.freeze({
+  }, {
     format: FORMAT_D3I1_K8U_C8U,
     decode: decodeD3I1K8uC8u
-  })]);
+  }];
   for (var i$1 = 0; i$1 < CURVE_DECODERS.length; i$1++) {
     if (CURVE_DECODERS[i$1].format !== i$1) {
       throw new Error("gr2reader: curve decoder table corrupt at format ".concat(i$1));
@@ -1837,11 +1851,11 @@
   }
 
   /**
-   * Frozen convenience namespace for animation-curve decoding helpers.
+   * Convenience namespace for animation-curve decoding helpers.
    *
    * The same constants and functions are also exported directly from curves.js.
    */
-  var curves = Object.freeze({
+  var curves = {
     FORMAT_DA_KEYFRAMES_32F,
     FORMAT_DA_K32F_C32F,
     FORMAT_DA_IDENTITY,
@@ -1906,7 +1920,7 @@
     decodeD3I1u,
     decodeD3I1K16uC16u,
     decodeD3I1K8uC8u
-  });
+  };
 
   // Clean-room BitKnit2 (Granny .gr2 section format 4) codec support.
   //
@@ -4751,6 +4765,12 @@
   /**
    * Evaluates cubic Hermite interpolation using Carbon argument order.
    *
+   * Source: math/include/Vector3_inline.h:235-246 (basis reference)
+   * Carbon: Hermite(const Vector3&, const Vector3&, const Vector3&, const Vector3&, float)
+   * Custom: Scalar specialization of the same basis and argument order. The native
+   * scalar Hermite in trinity/trinity/TriMath.cpp:928-949 additionally accepts dt;
+   * this helper uses normalized duration 1.
+   *
    * @param {number} startValue
    * @param {number} startTangent
    * @param {number} endValue
@@ -4772,6 +4792,10 @@
   /**
    * Evaluates the derivative of cubic Hermite interpolation using Carbon
    * argument order.
+   *
+   * Reference: math/include/Vector3_inline.h:235-246, Hermite basis.
+   * Custom: Analytic derivative of num.cubicHermite; no native derivative symbol
+   * has been established. The shared argument order is not a direct-port claim.
    *
    * @param {number} startValue
    * @param {number} startTangent
@@ -4939,6 +4963,11 @@
 
   /**
    * Converts from linear color space to Carbon gamma 2.2 color space
+   *
+   * Source: trinity/trinity/TriUtil.h:58-61
+   * Carbon: TriLinearToGamma(float)
+   * Adapted: Math.pow uses JavaScript number intermediates instead of native float.
+   *
    * @param {Number} a
    * @returns {Number}
    */
@@ -4948,6 +4977,11 @@
 
   /**
    * Converts from Carbon gamma 2.2 color space to linear color space
+   *
+   * Source: trinity/trinity/TriUtil.h:136-139
+   * Carbon: TriGammaToLinear(float)
+   * Adapted: Math.pow uses JavaScript number intermediates instead of native float.
+   *
    * @param {Number} a
    * @returns {Number}
    */
@@ -5645,6 +5679,10 @@
    * of two vectors. Carbon spells it `MaxVectorComponent`, and uses it to reduce a
    * colour to the single value that decides how bright it counts as.
    *
+   * Source: trinity/trinity/Tr2ShLightingManager.cpp:385-388
+   * Carbon: MaxVectorComponent(const Vector3& v)
+   * Adapted: Math.max replaces nested std::max; NaN behavior can differ.
+   *
    * @param {vec3} a
    * @returns {Number}
    */
@@ -6218,7 +6256,7 @@
    *
    * @type {number[]}
    */
-  var NULL_TANGENT_UNORM = Object.freeze([0, 1, 0, 1]);
+  var NULL_TANGENT_UNORM = [0, 1, 0, 1];
 
   /**
    * Test whether a packed tangent payload is the null-frame sentinel.
@@ -6409,7 +6447,7 @@
   function cross(a, b) {
     return cross$1([0, 0, 0], a, b);
   }
-  var tangents = Object.freeze({
+  var tangents = {
     TAU: TANGENT_TAU,
     PI: TANGENT_PI,
     NULL_TANGENT_UNORM,
@@ -6429,7 +6467,7 @@
     generateNormals,
     generateTangents,
     generateBiNormals
-  });
+  };
 
   /**
    * Granny State semantic helpers.
@@ -7557,7 +7595,7 @@
   var Usage = Object.freeze(["Position", "Normal", "Tangent", "Binormal", "TexCoord", "Color", "BoneIndices", "BoneWeights", "PackedTangent", "PackedTangentLegacy"]);
   var CMF_CLASS_KEYS = Object.freeze(["Root", "Section", "Metadata", "MetadataEntry", "Mesh", "IndexGroup", "VertexElement", "MeshLod", "MeshArea", "LodMeshArea", "BoneBinding", "MorphTargets", "MorphTarget", "LodMorphTarget", "AudioOcclusionMesh", "Skeleton", "BoneMask", "BoneWeight", "Animation", "AnimationChannel", "AnimationCurve"]);
   var GR2_CLASS_KEYS = Object.freeze(["Root", "Mesh", "BoneBinding", "IndexGroup", "MorphTarget", "Model", "Skeleton", "Bone", "Animation", "TrackGroup", "TransformTrack", "VectorTrack", "Curve"]);
-  Object.freeze(Array.from(new Set([...CMF_CLASS_KEYS, ...GR2_CLASS_KEYS])));
+  Array.from(new Set([...CMF_CLASS_KEYS, ...GR2_CLASS_KEYS]));
 
   /**
    * Count all indices stored by shared geometry index groups.
@@ -7836,7 +7874,7 @@
   }
 
   var _excluded$1 = ["decl", "topology", "morphTargetSet"];
-  var VERTEX_CHANNELS$1 = Object.freeze([["position", "Position", 3], ["normal", "Normal", 3], ["tangent", "Tangent", 3], ["binormal", "Binormal", 3], ["texcoord0", "TexCoord", 2, 0], ["texcoord1", "TexCoord", 2, 1], ["color0", "Color", 4, 0], ["blendIndice", "BoneIndices", 4, 0, "UInt16"], ["blendWeight", "BoneWeights", 4, 0], ["packedTangent", "PackedTangent", 4, 0, "Int16Norm"], ["packedTangentLegacy", "PackedTangentLegacy", 4, 0, "UInt16Norm"]]);
+  var VERTEX_CHANNELS$1 = [["position", "Position", 3], ["normal", "Normal", 3], ["tangent", "Tangent", 3], ["binormal", "Binormal", 3], ["texcoord0", "TexCoord", 2, 0], ["texcoord1", "TexCoord", 2, 1], ["color0", "Color", 4, 0], ["blendIndice", "BoneIndices", 4, 0, "UInt16"], ["blendWeight", "BoneWeights", 4, 0], ["packedTangent", "PackedTangent", 4, 0, "Int16Norm"], ["packedTangentLegacy", "PackedTangentLegacy", 4, 0, "UInt16Norm"]];
 
   /**
    * Builds a CMF document from normalized shared geometry for the CMF format
@@ -8506,11 +8544,11 @@
     return map;
   }
 
-  var NO_CURVE = Object.freeze({
+  var NO_CURVE = {
     format: 0,
     degree: 0,
     error: "no curve data"
-  });
+  };
   function copyNoCurve() {
     return _objectSpread2({}, NO_CURVE);
   }
@@ -10965,7 +11003,7 @@
     }
     return out;
   }
-  var VERTEX_CHANNELS = Object.freeze([["position", "Position", 3, true], ["blendIndice", "BoneIndices", 4], ["tangent", "Tangent", 4, true], ["normal", "Normal", 3], ["texcoord0", "TextureCoordinates0", 2, true], ["texcoord1", "TextureCoordinates1", 2, true], ["binormal", "Binormal", 4, true], ["blendWeight", "BoneWeights", 4]]);
+  var VERTEX_CHANNELS = [["position", "Position", 3, true], ["blendIndice", "BoneIndices", 4], ["tangent", "Tangent", 4, true], ["normal", "Normal", 3], ["texcoord0", "TextureCoordinates0", 2, true], ["texcoord1", "TextureCoordinates1", 2, true], ["binormal", "Binormal", 4, true], ["blendWeight", "BoneWeights", 4]];
   function emitVertexChannels(vertices) {
     var channels = {};
     for (var _ref3 of VERTEX_CHANNELS) {
@@ -11779,13 +11817,13 @@
     return instance;
   }
 
-  var CLASS_KEYS = Object.freeze(Array.from(new Set([...CLASS_KEYS$1, ...CMF_CLASS_KEYS])));
+  var CLASS_KEYS = Array.from(new Set([...CLASS_KEYS$1, ...CMF_CLASS_KEYS]));
   var OUTPUT_JSON = "json";
   var OUTPUT_GR2 = "gr2";
   var OUTPUT_GR2_JSON = "gr2Json";
   var OUTPUT_CMF = "cmf";
   var OUTPUT_RAW = "raw";
-  var DEFAULT_VALUES = Object.freeze({
+  var DEFAULT_VALUES = {
     emit: OUTPUT_JSON,
     decompressCurves: false,
     unpackTangents: false,
@@ -11793,8 +11831,8 @@
     rebuildMissingTangents: false,
     rebuildMissingBiNormals: false,
     rebuildMissingBounds: false,
-    classes: Object.freeze({})
-  });
+    classes: {}
+  };
   var OPTION_KEYS = new Set(["emit", "decompressCurves", "unpackTangents", "rebuildMissingNormals", "rebuildMissingTangents", "rebuildMissingBiNormals", "rebuildMissingBounds", "classes"]);
   function normalizeEmit(emit) {
     if (emit === undefined || emit === OUTPUT_JSON) return OUTPUT_JSON;
@@ -12433,6 +12471,8 @@
       })();
     }
   }
+  /** Registered name; `constructor.name` does not survive minification. */
+  CjsGr2Format.className = "CjsGr2Format";
   CjsGr2Format.classKeys = CLASS_KEYS;
   CjsGr2Format.id = "CjsGr2Format";
   // Same shape as the other geometry writers: a native CMF v1 graph is the
