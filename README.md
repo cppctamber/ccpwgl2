@@ -1,6 +1,7 @@
-> **Deprecation notice:** CCPWGL2 will be deprecated in the near future and
-> replaced by [CarbonEngineJS](https://github.com/carbonenginejs). Use it at
-> your own risk. Notice will be given here before the replacement happens.
+> **Deprecation notice:** CCPWGL2 is now deprecated. Going forward, updates
+> will be limited to critical issues. Its replacement,
+> [CarbonEngineJS](https://github.com/carbonenginejs), is nearing readiness.
+> Further transition updates will be posted here.
 
 CCP WebGL Library
 ======
