@@ -1043,6 +1043,8 @@ export class Tw2Effect extends meta.Model
                             const p = {
                                 parameter: texture,
                                 slot: textureDefinition.registerIndex,
+                                // Carbon chooses a texture view per resource binding.
+                                isSRGB: technique.passes[i].isCarbon ? !!textureDefinition.isSRGB : undefined,
                                 sampler: null
                             };
 
@@ -1398,7 +1400,7 @@ export class Tw2Effect extends meta.Model
                 // to that unit so it matches the shader's uniform1i. In-range
                 // registers have no map entry and bind to unit == register.
                 const unit = program.carbonSamplerUnits ? (program.carbonSamplerUnits.get(tex.slot) ?? tex.slot) : tex.slot;
-                tex.parameter.Apply(unit, tex.sampler, program.volumeSlices[tex.sampler.registerIndex]);
+                tex.parameter.Apply(unit, tex.sampler, program.volumeSlices[tex.sampler.registerIndex], tex.isSRGB);
             }
         }
 

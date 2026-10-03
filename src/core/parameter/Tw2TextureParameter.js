@@ -248,8 +248,9 @@ export class Tw2TextureParameter extends Tw2Parameter
      * @param {Number} stage
      * @param {Tw2SamplerState} sampler
      * @param {Number} slices
+     * @param {Boolean} [isSRGB] Carbon resource-view colour space; omitted for legacy bindings.
      */
-    Apply(stage, sampler, slices)
+    Apply(stage, sampler, slices, isSRGB)
     {
         // A sampler with no resource must still receive a correctly typed
         // texture. The array case was forced on us - binding nothing (or a 2D
@@ -286,7 +287,7 @@ export class Tw2TextureParameter extends Tw2Parameter
             }
 
             device.gl.activeTexture(device.gl.TEXTURE0 + stage);
-            this.textureRes.Bind(sampler, slices);
+            this.textureRes.Bind(sampler, slices, isSRGB);
 
             if (!this._samplers)
             {

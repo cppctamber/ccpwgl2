@@ -20,6 +20,11 @@ export class Tw2TextureRes extends Tw2Resource
 {
     texture = null;
 
+    /** Retained DDS bytes shared by lazily realized colour-space views. */
+    _ddsSource = null;
+    _ddsColorSpace = false;
+    _colorSpaceViews = new Map();
+
     _averageColor = new Float32Array(4);
     _averageVideoTime = -1;
 
@@ -153,6 +158,8 @@ export class Tw2TextureRes extends Tw2Resource
 
     DeleteGL()
     {
+        for (const view of this._colorSpaceViews.values()) view.DeleteGL();
+        this._colorSpaceViews.clear();
         if (this.texture)
         {
             device.gl.deleteTexture(this.texture);
@@ -181,6 +188,8 @@ export class Tw2TextureRes extends Tw2Resource
         this._debugInfo = null;
         this._volumeSource = null;
         this._volumeRealizeFailed = null;
+        this._ddsSource = null;
+        this._ddsColorSpace = false;
 
         const format = Tw2TextureRes.GetFormat(this._extension);
         if (!format) throw new ErrResourceFormatUnsupported({ format: this._extension });
@@ -232,6 +241,7 @@ export class Tw2TextureRes extends Tw2Resource
         if (!format) return false;
 
         const info = format.ParseDDS(this._volumeSource, gl);
+        info.isSRGB = this._isSRGB;
 
         if (this.texture) gl.deleteTexture(this.texture);
         this.texture = null;
@@ -265,11 +275,52 @@ export class Tw2TextureRes extends Tw2Resource
         return matched;
     }
 
-    Bind(sampler, slicesUniform)
+    /**
+     * Returns a cached DDS view with the colour space requested by a Carbon
+     * binding. WebGL has no texture views, so each alternate view owns an
+     * upload while sharing the original source bytes and resource lifetime.
+     * @param {Boolean} isSRGB
+     * @param {Tw2SamplerState} sampler
+     * @returns {Tw2TextureRes|null}
+     */
+    _GetColorSpaceView(isSRGB, sampler)
+    {
+        if (typeof isSRGB !== "boolean" || !this._ddsSource || !this._ddsColorSpace
+            || device.glVersion < 2 || this._isSRGB === isSRGB) return null;
+
+        const key = `${sampler.samplerType}:${isSRGB}`;
+        let view = this._colorSpaceViews.get(key);
+        if (!view)
+        {
+            view = new Tw2TextureRes();
+            view.path = this.path;
+            view._extension = "dds";
+            try
+            {
+                TextureFormatDDS.Prepare(view, device.gl, this._ddsSource, { isSRGB });
+                view.OnPrepared({ hide: true });
+                this._colorSpaceViews.set(key, view);
+            }
+            catch (error)
+            {
+                view.DeleteGL();
+                throw error;
+            }
+        }
+        return view;
+    }
+
+    Bind(sampler, slicesUniform, isSRGB)
     {
         const d = device, { gl } = device;
 
         this.KeepAlive();
+        const colorView = this._GetColorSpaceView(isSRGB, sampler);
+        if (colorView)
+        {
+            colorView.Bind(sampler, slicesUniform);
+            return;
+        }
 
         if (this._target === null)
         {
@@ -341,6 +392,9 @@ export class Tw2TextureRes extends Tw2Resource
     _ClearMeta()
     {
         this._extension = null;
+        this._ddsSource = null;
+        this._ddsColorSpace = false;
+        this._volumeSource = null;
         this._isAttached = false;
         this._isDepth = false;
         this._forceNearest = false;

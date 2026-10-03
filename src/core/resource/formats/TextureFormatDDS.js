@@ -218,7 +218,7 @@ export const TextureFormatDDS =
         };
     },
 
-    Prepare(res, gl, arrayBuffer)
+    Prepare(res, gl, arrayBuffer, options = {})
     {
         let texture;
         try
@@ -232,6 +232,17 @@ export const TextureFormatDDS =
                 reason: err.message,
                 cause: err
             });
+        }
+
+        // The resource annotation selects the view independently of the DDS
+        // header. Keep the same bytes for linear and sRGB consumers.
+        const linearFormat = texture.pixelFormat.replace(/-srgb$/, "");
+        const supportsColorSpace = [ "rgba8unorm", "bgra8unorm", "bc1-rgba-unorm", "bc2-rgba-unorm", "bc3-rgba-unorm", "bc7-rgba-unorm" ].includes(linearFormat);
+        res._ddsSource = arrayBuffer;
+        res._ddsColorSpace = supportsColorSpace;
+        if (supportsColorSpace && typeof options.isSRGB === "boolean")
+        {
+            texture = { ...texture, pixelFormat: linearFormat + (options.isSRGB ? "-srgb" : "") };
         }
 
         // Carbon averages the last authored mip, never the base-level pixels.
@@ -248,6 +259,7 @@ export const TextureFormatDDS =
         if (texture.dimension === "3d")
         {
             const info = this.ParseDDS(arrayBuffer, gl);
+            if (supportsColorSpace) info.isSRGB = texture.pixelFormat.endsWith("-srgb");
             if (device.tw2.GetDebugMode()) res._debugInfo = this.GetDebugInfo(res, info);
 
             // A volume is consumed two different ways and the file cannot say
@@ -328,19 +340,19 @@ export const TextureFormatDDS =
         if (pixelFormat.startsWith("bc1-"))
         {
             info.internalFormat = isSRGB
-                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT", "COMPRESSED_RGBA_S3TC_DXT1_EXT", extensions.s3tc)
+                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT")
                 : this.GetExtConstant(extensions.s3tc, "COMPRESSED_RGBA_S3TC_DXT1_EXT");
         }
         else if (pixelFormat.startsWith("bc2-"))
         {
             info.internalFormat = isSRGB
-                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT", "COMPRESSED_RGBA_S3TC_DXT3_EXT", extensions.s3tc)
+                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT")
                 : this.GetExtConstant(extensions.s3tc, "COMPRESSED_RGBA_S3TC_DXT3_EXT");
         }
         else if (pixelFormat.startsWith("bc3-"))
         {
             info.internalFormat = isSRGB
-                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT", "COMPRESSED_RGBA_S3TC_DXT5_EXT", extensions.s3tc)
+                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT")
                 : this.GetExtConstant(extensions.s3tc, "COMPRESSED_RGBA_S3TC_DXT5_EXT");
         }
         else if (pixelFormat.startsWith("bc4-"))
@@ -569,7 +581,8 @@ export const TextureFormatDDS =
 
         res._type = decodeCompressed ? gl.UNSIGNED_BYTE : (info.type ?? gl.UNSIGNED_BYTE);
         res._format = decodeCompressed ? gl.RGBA : info.format;
-        res._internalFormat = decodeCompressed ? gl.RGBA8 : info.internalFormat;
+        res._internalFormat = info.isSRGB ? gl.SRGB8_ALPHA8 : (decodeCompressed ? gl.RGBA8 : info.internalFormat);
+        res._isSRGB = !!info.isSRGB;
         res._target = gl.TEXTURE_3D;
 
         res._mipCount = info.mipmaps;
